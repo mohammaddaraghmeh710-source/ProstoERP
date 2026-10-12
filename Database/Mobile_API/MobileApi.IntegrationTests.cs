@@ -42,6 +42,7 @@ class MobileApiTests
         if (body != null) request.Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
         return await client.SendAsync(request);
     }
+    static Task<HttpResponseMessage> News(string token=null,int brand=29){return Send("api/Get_News",token,new{BrandID=brand},true);}
     static async Task<JObject> Json(HttpResponseMessage response)
     { return JObject.Parse(await response.Content.ReadAsStringAsync()); }
     static JObject LoginBody(string suppliedPassword=null)
@@ -95,7 +96,7 @@ SET IDENTITY_INSERT dbo.Branches OFF;
 INSERT dbo.UsersMembers(Type,UserName,Password,FullName_Ar,Fullname_En,IsActive,IsDeleted,Gender,Nationality,Employee_Number)
 VALUES(4,N'mobile_test',@password,N'Test',N'Test',1,0,1,1,61004);
 UPDATE dbo.UsersMembers SET Brand_ID=29,Branch_ID=12 WHERE UserName=N'mobile_test';
-INSERT dbo.News(Title_AR,Title_En,IsActive,IsDeleted,Item_Order,AddedDate) VALUES(N'visible',N'visible',1,0,0,GETDATE()),(N'inactive',N'inactive',0,0,0,GETDATE()),(N'deleted',N'deleted',1,1,0,GETDATE());
+INSERT dbo.News(Brand_ID,Title_AR,Title_En,IsActive,IsDeleted,Item_Order,AddedDate) VALUES(29,N'visible',N'visible',1,0,0,GETDATE()),(29,N'inactive',N'inactive',0,0,0,GETDATE()),(29,N'deleted',N'deleted',1,1,0,GETDATE()),(30,N'other-brand',N'other-brand',1,0,0,GETDATE()),(NULL,N'unassigned',N'unassigned',1,0,0,GETDATE());
 INSERT dbo.Information_Pages(Title_Ar,Title_En,Summary_Ar,Summary_En,Details_Ar,Details_En,Item_Order,IsPublished,PublishMode,IsDeleted,VersionNumber,CreatedBy,CreatedUtc,AllUserTypes,AccessRevision)
 SELECT name,name,N's',N's',N'd',N'd',0,1,'immediate',0,1,1,SYSUTCDATETIME(),allTypes,0
 FROM (VALUES('public',1),('employee',0),('other',0),('draft',1),('future',1),('expired',1),('deleted',1),('scheduled',1),('brand_other',1))v(name,allTypes);
@@ -118,7 +119,7 @@ INSERT dbo.Information_Page_Roles(PageID,UserTypeID) SELECT ID,CASE WHEN Title_E
         Check((await Send("api/Users/Login", post:true)).StatusCode == HttpStatusCode.BadRequest, "missing login body rejected");
         Check((await Send("api/Users/Login", body:new { Username="mobile_test" }, post:true)).StatusCode == HttpStatusCode.BadRequest, "missing password rejected");
         Check((await Send("api/Users/Login", body:LoginBody("wrong"), post:true)).StatusCode == HttpStatusCode.Unauthorized, "wrong password rejected");
-        Check((await Send("api/Get_News")).StatusCode == HttpStatusCode.Unauthorized, "anonymous news rejected");
+        Check((await News()).StatusCode == HttpStatusCode.Unauthorized, "anonymous news rejected");
         Check((await Send("api/Get_InfoPages", "bad-token")).StatusCode == HttpStatusCode.Unauthorized, "malformed token rejected");
         string token = await Login();
         var omitted=LoginBody(); omitted.Remove("AppBuild"); ((JObject)omitted["Device"]).Remove("Manufacturer"); ((JObject)omitted["Device"]).Remove("MACID");
@@ -174,19 +175,39 @@ INSERT dbo.Information_Page_Roles(PageID,UserTypeID) SELECT ID,CASE WHEN Title_E
         string hiddenToken=(string)(await Json(await Send("api/Users/Login",body:hiddenMac,post:true)))["Data"]["AccessToken"];
         Check(StoredSession(hiddenToken)["MACID"]==DBNull.Value,"OS placeholder MAC saved as unavailable rather than real hardware ID");
         await Send("api/Logout",iosToken,post:true);
-        Check((await Send("api/Get_News",iosToken)).StatusCode==HttpStatusCode.Unauthorized && (await Send("api/Get_News",token)).StatusCode==HttpStatusCode.OK,"logout revokes only its session while another device stays signed in");
+        Check((await News(iosToken)).StatusCode==HttpStatusCode.Unauthorized && (await News(token)).StatusCode==HttpStatusCode.OK,"logout revokes only its session while another device stays signed in");
         string legacy=Convert.ToBase64String(Guid.NewGuid().ToByteArray().Concat(Guid.NewGuid().ToByteArray()).ToArray()).TrimEnd('=').Replace('+','-').Replace('/','_');
         Sql(@"INSERT dbo.MobileApi_Sessions(TokenHash,UserID,PasswordFingerprint,CreatedUtc,LastSeenUtc,ExpiresUtc,AbsoluteExpiresUtc)
 SELECT @legacy,UserID,PasswordFingerprint,CreatedUtc,LastSeenUtc,ExpiresUtc,AbsoluteExpiresUtc FROM dbo.MobileApi_Sessions WHERE TokenHash=@original;",
             new SqlParameter("@legacy",Hash(legacy)),new SqlParameter("@original",Hash(token)));
-        Check((await Send("api/Get_News",legacy)).StatusCode==HttpStatusCode.Unauthorized && StoredSession(legacy)["DeviceID"]==DBNull.Value,"session without approved device cannot bypass policy");
+        Check((await News(legacy)).StatusCode==HttpStatusCode.Unauthorized && StoredSession(legacy)["DeviceID"]==DBNull.Value,"session without approved device cannot bypass policy");
         Sql("UPDATE dbo.UsersMembers SET Employee_Number=61005 WHERE UserName=N'mobile_test'");
         string renumbered=(string)(await Json(await Send("api/Users/Login",body:LoginBody(),post:true)))["Data"]["AccessToken"];
         Check((int)StoredSession(token)["EmployeeNumber"]==61004 && (int)StoredSession(renumbered)["EmployeeNumber"]==61005,"employee number is an immutable snapshot per login");
         Sql("UPDATE dbo.UsersMembers SET Employee_Number=61004 WHERE UserName=N'mobile_test'");
-        var news = await Json(await Send("api/Get_News", token));
+        var news = await Json(await News(token));
         Check((int)news["Count"]==1 && (string)news["Data"][0]["Title_En"]=="visible", "news excludes inactive and deleted records");
         Check(news["Data"][0]["Image"].Type==JTokenType.Null, "empty news image is null");
+        Check((int)news["Data"][0]["Brand_ID"]==29,"news explicitly assigned to requested brand");
+        Check((await Send("api/Get_News",token,post:true)).StatusCode==HttpStatusCode.BadRequest,"news requires BrandID");
+        Check((await Send("api/Get_News?BrandID=29",token,post:true)).StatusCode==HttpStatusCode.BadRequest,"news does not accept URL brand instead of body");
+        Check((await Send("api/Get_News",token,new{},true)).StatusCode==HttpStatusCode.BadRequest,"news rejects missing body brand");
+        Check((await Send("api/Get_News",token,new{BrandID=29,UserID=1},true)).StatusCode==HttpStatusCode.BadRequest,"news rejects caller identity in body");
+        Check((await Send("api/Get_News?BrandID=30",token,new{BrandID=29},true)).StatusCode==HttpStatusCode.OK,"news takes brand from body and ignores conflicting query");
+        Check((await Send("api/Get_News?BrandID=29",token)).StatusCode==HttpStatusCode.MethodNotAllowed,"news old GET method no longer supported");
+        Check((await News(token,0)).StatusCode==HttpStatusCode.BadRequest,"news rejects nonpositive brand");
+        var deniedNews=await Send("api/Get_News?UserID=1",token,new {BrandID=30},true);
+        Check(deniedNews.StatusCode==HttpStatusCode.Forbidden&&(string)(await Json(deniedNews))["Error"]["Code"]=="BRAND_ACCESS_DENIED","news denies other brand despite forged user ID");
+        Sql("UPDATE dbo.Brands SET IsActive=0 WHERE ID=29");
+        Check((await News(token)).StatusCode==HttpStatusCode.Forbidden,"news denies inactive brand");
+        Sql("UPDATE dbo.Brands SET IsActive=1 WHERE ID=29");
+        try{Sql("DECLARE @actor int=(SELECT ID FROM dbo.UsersMembers WHERE UserName=N'mobile_test');EXEC dbo.News_AdminSave @Actor=@actor,@BrandID=29,@Title_AR=N'forbidden';");throw new Exception("Non-admin save accepted");}catch(SqlException ex){Check(ex.Number==51950,"news saving revalidates administrator");}
+        try{Sql("DECLARE @actor int=(SELECT ID FROM dbo.UsersMembers WHERE UserName=N'device_admin');EXEC dbo.News_AdminSave @Actor=@actor,@BrandID=999,@Title_AR=N'forbidden';");throw new Exception("Invalid brand accepted");}catch(SqlException ex){Check(ex.Number==51951,"news requires available brand in SQL");}
+        Sql("DECLARE @actor int=(SELECT ID FROM dbo.UsersMembers WHERE UserName=N'device_admin');EXEC dbo.News_AdminSave @Actor=@actor,@BrandID=30,@Title_AR=N'admin-created',@Title_En=N'admin-created';");
+        Check((int)(await Json(await News(token)))["Count"]==1,"saving another brand does not leak it to employee");
+        Sql("DECLARE @actor int=(SELECT ID FROM dbo.UsersMembers WHERE UserName=N'device_admin'),@pid int=(SELECT PID FROM dbo.News WHERE Title_En=N'admin-created');EXEC dbo.News_AdminSave @Actor=@actor,@BrandID=29,@PID=@pid,@Title_AR=N'admin-updated',@Title_En=N'admin-updated';");
+        Check((int)(await Json(await News(token)))["Count"]==2,"edited news brand reflected in API");
+        Sql("UPDATE dbo.News SET IsActive=0 WHERE Title_En=N'admin-updated'");
         var pages = await Json(await Send("api/Get_InfoPages?UserID=1&UserTypeID=1&Brand_ID=30&BrandID=30", token));
         Check((int)pages["Count"]==3 && pages["Data"].All(p => new[]{"public","employee","scheduled"}.Contains((string)p["Title_En"])), "pages enforce role, publication schedule and deletion; supplied identity ignored");
         var restricted = pages["Data"].Single(p => (string)p["Title_En"]=="employee");
@@ -194,30 +215,33 @@ SELECT @legacy,UserID,PasswordFingerprint,CreatedUtc,LastSeenUtc,ExpiresUtc,Abso
         Check(pages["Data"].Single(p => (string)p["Title_En"]=="public")["UserTypeIDs"].Count()==3, "all-types access expanded");
         Check(!pages["Data"].Any(p => (string)p["Title_En"]=="brand_other"), "other-brand page hidden despite forged brand query");
         Sql("UPDATE dbo.UsersMembers SET Brand_ID=30 WHERE UserName=N'mobile_test'");
+        Check((await News(token)).StatusCode==HttpStatusCode.Forbidden,"news uses current employee assignment, not login snapshot");
+        Check((string)(await Json(await News(token,30)))["Data"][0]["Title_En"]=="other-brand","news follows newly assigned brand without new token");
         Check((int)(await Json(await Send("api/Get_InfoPages",token)))["Count"]==1,"information pages use current brand without rebinding the token");
         Sql("UPDATE dbo.UsersMembers SET Brand_ID=NULL WHERE UserName=N'mobile_test'");
+        Check((await News(token)).StatusCode==HttpStatusCode.Forbidden,"brandless employee cannot select arbitrary news brand");
         Check((int)(await Json(await Send("api/Get_InfoPages",token)))["Count"]==0,"brandless employee receives no information pages");
         Sql("UPDATE dbo.UsersMembers SET Brand_ID=29 WHERE UserName=N'mobile_test'");
         ChangeSession(token,"ExpiresUtc=DATEADD(minute,1,SYSUTCDATETIME())");
-        news = await Json(await Send("api/Get_News",token));
+        news = await Json(await News(token));
         Check((DateTime)news["Session"]["ExpiresAt"]>DateTime.UtcNow.AddHours(7), "activity renews idle expiry");
         ChangeSession(token,"AbsoluteExpiresUtc=DATEADD(minute,2,SYSUTCDATETIME())");
-        news = await Json(await Send("api/Get_News",token));
+        news = await Json(await News(token));
         Check((DateTime)news["Session"]["ExpiresAt"]==(DateTime)news["Session"]["AbsoluteExpiresAt"], "renewal capped at absolute expiry");
         ChangeSession(token,"ExpiresUtc=DATEADD(second,-1,SYSUTCDATETIME())");
-        Check((await Send("api/Get_News",token)).StatusCode==HttpStatusCode.Unauthorized,"expired session cannot revive");
+        Check((await News(token)).StatusCode==HttpStatusCode.Unauthorized,"expired session cannot revive");
         token=await Login();
         Sql("UPDATE dbo.UsersMembers SET Type=7 WHERE UserName='mobile_test'");
         Check((await Send("api/Get_InfoPages",token)).StatusCode==HttpStatusCode.Unauthorized,"retired external employee type cannot use employee token");
         Sql("UPDATE dbo.UsersMembers SET IsActive=0 WHERE UserName='mobile_test'");
-        Check((await Send("api/Get_News",token)).StatusCode==HttpStatusCode.Unauthorized,"disabled account session rejected");
+        Check((await News(token)).StatusCode==HttpStatusCode.Unauthorized,"disabled account session rejected");
         Check((await Send("api/Users/Login",body:LoginBody(),post:true)).StatusCode==HttpStatusCode.Unauthorized,"disabled login rejected");
         Sql("UPDATE dbo.UsersMembers SET IsActive=1,IsDeleted=1 WHERE UserName='mobile_test'");
         Check((await Send("api/Users/Login",body:LoginBody(),post:true)).StatusCode==HttpStatusCode.Unauthorized,"deleted login rejected");
         Sql("UPDATE dbo.UsersMembers SET IsDeleted=0,Type=4 WHERE UserName='mobile_test'");
         token=await Login();
         Sql("UPDATE dbo.UsersMembers SET Password=N'changed' WHERE UserName='mobile_test'");
-        Check((await Send("api/Get_News",token)).StatusCode==HttpStatusCode.Unauthorized,"password change invalidates session");
+        Check((await News(token)).StatusCode==HttpStatusCode.Unauthorized,"password change invalidates session");
         Sql("UPDATE dbo.UsersMembers SET Password=@password WHERE UserName='mobile_test'",new SqlParameter("@password",encrypted));
         token=await Login();
         Check((await Send("api/Logout",token,post:true)).StatusCode==HttpStatusCode.OK,"logout succeeds");
@@ -226,21 +250,21 @@ SELECT @legacy,UserID,PasswordFingerprint,CreatedUtc,LastSeenUtc,ExpiresUtc,Abso
         var third=LoginBody();third["Device"]["DeviceID"]="device-C";
         int thirdRequest=(int)(await Json(await Send("api/Users/AddNewDevices",body:third,post:true)))["Data"]["RequestID"];
         Decide("ApproveReplace",thirdRequest);
-        Check((await Send("api/Get_News",token)).StatusCode==HttpStatusCode.Unauthorized && (await Send("api/Users/Login",body:LoginBody(),post:true)).StatusCode==HttpStatusCode.Forbidden,"replace approval revokes old tokens and blocks old devices");
+        Check((await News(token)).StatusCode==HttpStatusCode.Unauthorized && (await Send("api/Users/Login",body:LoginBody(),post:true)).StatusCode==HttpStatusCode.Forbidden,"replace approval revokes old tokens and blocks old devices");
         string thirdToken=(string)(await Json(await Send("api/Users/Login",body:third,post:true)))["Data"]["AccessToken"];
         int thirdDevice=(int)Scalar("SELECT ID FROM dbo.MobileApi_Devices WHERE DeviceID=N'device-C'");
         Decide("Revoke",device:thirdDevice);
-        Check((await Send("api/Get_News",thirdToken)).StatusCode==HttpStatusCode.Unauthorized && (await Send("api/Users/Login",body:third,post:true)).StatusCode==HttpStatusCode.Forbidden,"single device revocation does not reopen enrollment");
+        Check((await News(thirdToken)).StatusCode==HttpStatusCode.Unauthorized && (await Send("api/Users/Login",body:third,post:true)).StatusCode==HttpStatusCode.Forbidden,"single device revocation does not reopen enrollment");
         thirdRequest=(int)(await Json(await Send("api/Users/AddNewDevices",body:third,post:true)))["Data"]["RequestID"];
         Decide("Reject",thirdRequest);
         Check((string)(await Json(await Send("api/v1/devices/status",body:third,post:true)))["Data"]["Status"]=="Rejected","rejected request status returned");
         thirdRequest=(int)(await Json(await Send("api/Users/AddNewDevices",body:third,post:true)))["Data"]["RequestID"];
         Decide("ApproveAdd",thirdRequest);
-        Check((await Send("api/Get_News",thirdToken)).StatusCode==HttpStatusCode.Unauthorized,"reapproval never revives previously revoked tokens");
+        Check((await News(thirdToken)).StatusCode==HttpStatusCode.Unauthorized,"reapproval never revives previously revoked tokens");
         thirdToken=(string)(await Json(await Send("api/Users/Login",body:third,post:true)))["Data"]["AccessToken"];
         await Send("api/Users/AddNewDevices",body:LoginBody(),post:true);
         Decide("ResetAll");
-        Check((await Send("api/Get_News",thirdToken)).StatusCode==HttpStatusCode.Unauthorized && (int)Scalar("SELECT COUNT(*) FROM dbo.MobileApi_DeviceRequests WHERE Status='Pending'")==0,"reset revokes sessions and cancels pending requests");
+        Check((await News(thirdToken)).StatusCode==HttpStatusCode.Unauthorized && (int)Scalar("SELECT COUNT(*) FROM dbo.MobileApi_DeviceRequests WHERE Status='Pending'")==0,"reset revokes sessions and cancels pending requests");
         var fourth=LoginBody();fourth["Device"]["DeviceID"]="device-D";
         var fifth=LoginBody();fifth["Device"]["DeviceID"]="device-E";
         var races=await Task.WhenAll(Send("api/Users/Login",body:fourth,post:true),Send("api/Users/Login",body:fifth,post:true));
@@ -297,7 +321,7 @@ SELECT @legacy,UserID,PasswordFingerprint,CreatedUtc,LastSeenUtc,ExpiresUtc,Abso
         Check(response.StatusCode==HttpStatusCode.OK && response.Headers.CacheControl.NoStore,"BIO successful response and no-store");
         Check(JToken.DeepEquals(initial["User"],logged["User"]),"BIO returns identical public employee DTO including BIOID");
         string token=(string)logged["AccessToken"];
-        Check(token!=normalToken && (await Send("api/Get_News",token)).StatusCode==HttpStatusCode.OK,"BIO issues a fresh usable employee Bearer token");
+        Check(token!=normalToken && (await News(token)).StatusCode==HttpStatusCode.OK,"BIO issues a fresh usable employee Bearer token");
         ChangeSession(normalToken,"ExpiresUtc=DATEADD(second,-1,SYSUTCDATETIME())");
         Check((await Send("api/Users/LoginViaBIO",body:new{BIOID=id},post:true)).StatusCode==HttpStatusCode.OK,"BIO login remains available after source access token expires");
         Check((string)logged["Session"]["DeviceID"]=="bio-device-A" && (string)logged["Session"]["MACID"]=="AA:BB:CC:DD:EE:02","BIO reuses only previously submitted device snapshot");
@@ -312,7 +336,7 @@ SELECT @legacy,UserID,PasswordFingerprint,CreatedUtc,LastSeenUtc,ExpiresUtc,Abso
         Check((string)rotated["User"]["BIOID"]!=id,"password login rotates BIOID on that device");await BioDenied(id,HttpStatusCode.Unauthorized,"BIOID_INVALID");id=(string)rotated["User"]["BIOID"];
         int device=(int)Scalar("SELECT ID FROM dbo.MobileApi_Devices WHERE DeviceID=N'bio-device-A'");
         BioDecision("Revoke",device:device);await BioDenied(id,HttpStatusCode.Forbidden,"DEVICE_NOT_APPROVED");
-        Check((await Send("api/Get_News",token)).StatusCode==HttpStatusCode.Unauthorized,"revoking device also invalidates BIO-issued token");
+        Check((await News(token)).StatusCode==HttpStatusCode.Unauthorized,"revoking device also invalidates BIO-issued token");
         int request=(int)(await Json(await Send("api/Users/AddNewDevices",body:body,post:true)))["Data"]["RequestID"];
         BioDecision("ApproveAdd",request:request);await BioDenied(id,HttpStatusCode.Unauthorized,"BIOID_REVOKED");
         id=(string)(await Json(await Send("api/Users/Login",body:body,post:true)))["Data"]["User"]["BIOID"];

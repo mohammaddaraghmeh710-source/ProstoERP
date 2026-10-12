@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
@@ -32,7 +32,7 @@ class CustomerApiTests
   Check((await Send("http://localhost/"+root+"login",body:new{Username="customer",Password=password},post:true)).StatusCode==HttpStatusCode.Forbidden,"HTTPS required before credentials");
   Check((await Send(root+"login",body:new{Username="customer",Password="wrong"},post:true)).StatusCode==HttpStatusCode.Unauthorized,"Wrong password denied");
   string first=await Login(),second=await Login("customer2");
-  Check((await Send("api/Get_News",first)).StatusCode==HttpStatusCode.Unauthorized,"Customer token cannot authenticate as employee");
+  Check((await Send("api/Get_News",first,new{BrandID=29},true)).StatusCode==HttpStatusCode.Unauthorized,"Customer token cannot authenticate as employee");
   byte[] employeeBytes=new byte[32];using(var random=RandomNumberGenerator.Create())random.GetBytes(employeeBytes);
   string employee=Convert.ToBase64String(employeeBytes).TrimEnd('=').Replace('+','-').Replace('/','_');
   using(var sha=SHA256.Create()) Sql("UPDATE UsersMembers SET Password=N'test' WHERE ID=2;INSERT MobileApi_Devices(UserID,DeviceID,DevicePlatform,DeviceModel,OSVersion,AppVersion,IsApproved) VALUES(2,'test-device','Android','Test','14','1',1);INSERT MobileApi_Sessions(TokenHash,UserID,PasswordFingerprint,CreatedUtc,LastSeenUtc,ExpiresUtc,AbsoluteExpiresUtc,DeviceRegistrationID) SELECT @Hash,2,HASHBYTES('SHA2_256',CONVERT(varbinary(max),Password)),SYSUTCDATETIME(),SYSUTCDATETIME(),DATEADD(hour,1,SYSUTCDATETIME()),DATEADD(day,1,SYSUTCDATETIME()),(SELECT MAX(ID) FROM MobileApi_Devices) FROM UsersMembers WHERE ID=2;",new SqlParameter("@Hash",sha.ComputeHash(employeeBytes)));

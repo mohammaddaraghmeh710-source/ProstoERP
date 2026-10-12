@@ -35,6 +35,7 @@
                     <div class="card-body">
 
                         <!-- Search -->
+                        <div class="mb-3"><asp:Label runat="server" AssociatedControlID="ddlBrand" Text="العلامة التجارية" CssClass="form-label" /><asp:DropDownList ID="ddlBrand" runat="server" CssClass="form-select" /></div>
                         <div class="row g-2 mb-3">
                             <div class="col-lg-6 col-md-6 col-12">
                                 <asp:TextBox ID="txtKeyword" runat="server" CssClass="form-control"
@@ -69,6 +70,7 @@
                             <thead>
                                 <tr>
                                     <th>العنوان</th>
+                                    <th>العلامة التجارية</th>
                                     <th>التاريخ</th>
                                     <th>الحالة</th>
                                     <th>الترتيب</th>
@@ -90,6 +92,7 @@
                                                 <small class="text-muted"><%# Eval("Title_En") %></small>
                                             </td>
 
+                                            <td data-title="العلامة التجارية"><%#: If(Convert.IsDBNull(Eval("BrandName")), "غير محددة", Eval("BrandName")) %></td>
                                             <td data-title="التاريخ">
                                                 <%# If(Eval("Date") Is Nothing, String.Format("{0:dd/MM/yyyy HH:mm}", Eval("AddedDate")), String.Format("{0:dd/MM/yyyy HH:mm}", Eval("Date"))) %>
                                             </td>

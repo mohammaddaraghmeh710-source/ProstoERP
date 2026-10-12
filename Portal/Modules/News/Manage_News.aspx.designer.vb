@@ -12,6 +12,7 @@ Option Explicit On
 
 
 Partial Public Class Manage_News
+    Protected WithEvents ddlBrand As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''btnAddNew control.

@@ -1,4 +1,4 @@
-param([string]$BuildDirectory = 'C:/Projects/ERPProsto/tmp/mobile-api-build')
+﻿param([string]$BuildDirectory = 'C:/Projects/ERPProsto/tmp/mobile-api-build')
 $ErrorActionPreference='Stop'
 $api=Join-Path $PSScriptRoot '../../Prosto_ERP_API'
 $config=[xml](Get-Content (Join-Path $api 'Web.config'))
@@ -31,7 +31,7 @@ try{
  foreach($batch in [regex]::Split([IO.File]::ReadAllText((Join-Path $PSScriptRoot '../Information_Pages/006_Brand_Access_Procedures.sql')),'(?im)^\s*GO\s*$')){
   if($batch.Trim()){Execute-Sql $test.ConnectionString $batch}
  }
- foreach($name in @('001_Sessions.sql','002_Procedures.sql','005_DeviceSessions.sql','006_DeviceAccess.sql','008_BIOLogin.sql')){
+ foreach($name in @('001_Sessions.sql','002_Procedures.sql','005_DeviceSessions.sql','006_DeviceAccess.sql','008_BIOLogin.sql','../News/001_BrandNews.sql')){
   foreach($batch in [regex]::Split([IO.File]::ReadAllText((Join-Path $PSScriptRoot $name)),'(?im)^GO\s*$')){
    if($batch.Trim()){Execute-Sql $test.ConnectionString $batch}
   }

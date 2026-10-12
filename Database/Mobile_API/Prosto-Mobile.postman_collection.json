@@ -78,6 +78,10 @@
       "key": "integration_password",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "brand_id",
+      "value": "29"
     }
   ],
   "item": [
@@ -127,7 +131,8 @@
             "exec": [
               "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
               "if (pm.response.code === 200) { const data = pm.response.json().Data; pm.collectionVariables.set(\"access_token\", data.AccessToken); pm.collectionVariables.set(\"expires_at\", data.ExpiresAt); }",
-              "if(pm.response.code===200){pm.collectionVariables.set('bio_id',pm.response.json().Data.User.BIOID);}"
+              "if(pm.response.code===200){pm.collectionVariables.set('bio_id',pm.response.json().Data.User.BIOID);}",
+              "if(pm.response.code===200){const brand=pm.response.json().Data.User.brand;pm.collectionVariables.set('brand_id',brand?brand.ID:'');}"
             ]
           }
         }
@@ -136,14 +141,27 @@
     {
       "name": "2 - Get_News",
       "request": {
-        "method": "GET",
+        "method": "POST",
         "header": [
           {
             "key": "Accept",
             "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
           }
         ],
-        "url": "{{base_url}}/api/Get_News"
+        "url": "{{base_url}}/api/Get_News",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"BrandID\":{{brand_id}}}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
       },
       "event": [
         {

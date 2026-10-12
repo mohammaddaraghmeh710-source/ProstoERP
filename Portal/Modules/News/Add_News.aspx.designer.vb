@@ -12,6 +12,8 @@ Option Explicit On
 
 
 Partial Public Class Add_News
+    Protected WithEvents ddlBrand As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents lblError As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
     '''txtTitleAr control.

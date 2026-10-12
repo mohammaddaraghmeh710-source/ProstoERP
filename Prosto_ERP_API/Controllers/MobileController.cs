@@ -18,6 +18,8 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Prosto_ERP_API.Mobile
 {
@@ -39,12 +41,14 @@ namespace Prosto_ERP_API.Mobile
                 return Success(new { Success = true, Data = MobileApiSupport.Row(result.Tables[0].Rows[0]) });
             });
         }
-        [HttpGet, Route("Get_News"), MobileSession]
-        public HttpResponseMessage Get_News()
+        [HttpPost, Route("Get_News"), MobileSession]
+        public HttpResponseMessage Get_News([FromBody] NewsRequest model)
         {
+            if(model==null || !ModelState.IsValid || model.BrandID<=0 || (model.Extra!=null && model.Extra.Count>0))
+                return MobileApiSupport.Error(Request,HttpStatusCode.BadRequest,"INVALID_BRAND","أرسل BrandID موجبًا فقط داخل JSON Body.");
             return Execute(() =>
             {
-                var result = MobileApiSupport.Query("dbo.MobileApi_News");
+                var result = MobileApiSupport.Query("dbo.MobileApi_News",MobileApiSupport.P("@Actor",SqlDbType.Int,Session["UserID"]),MobileApiSupport.P("@BrandID",SqlDbType.Int,model.BrandID));
                 var news = result.Tables[0].Rows.Cast<DataRow>().Select(MobileApiSupport.Row).ToList();
                 foreach (var item in news) item["Image"] = MobileApiSupport.AssetUrl(item["Image"]);
                 return Success(new { Success = true, Count = news.Count, Data = news, Session = Session });
@@ -81,6 +85,10 @@ namespace Prosto_ERP_API.Mobile
         private HttpResponseMessage Execute(Func<HttpResponseMessage> action)
         {
             try { return action(); }
+            catch (SqlException ex) when (ex.Number == 51953)
+            {
+                return MobileApiSupport.Error(Request,HttpStatusCode.Forbidden,"BRAND_ACCESS_DENIED","العلامة المطلوبة غير متاحة أو لا تطابق علامة الموظف الحالية.");
+            }
             catch (SqlException ex) when (ex.Number == 51710)
             {
                 return MobileApiSupport.Error(Request, HttpStatusCode.Forbidden, "DEVICE_APPROVAL_REQUIRED", "لا يمكنك تسجيل الدخول من جهاز غير معتمد. يمكنك إرسال طلب للسماح بهذا الجهاز إلى مدير النظام.");
@@ -95,5 +103,10 @@ namespace Prosto_ERP_API.Mobile
                 return MobileApiSupport.Error(Request, HttpStatusCode.InternalServerError, "SERVER_ERROR", "Unable to complete the request.");
             }
         }
+    }
+    public sealed class NewsRequest
+    {
+        [Range(1,int.MaxValue)] public int BrandID {get;set;}
+        [JsonExtensionData] public IDictionary<string,JToken> Extra {get;set;}
     }
 }

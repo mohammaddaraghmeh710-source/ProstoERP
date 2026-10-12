@@ -12,47 +12,25 @@ Public Class Manage_News
         End If
 
         If Not Page.IsPostBack Then
+            NewsData.FillBrands(ddlBrand, "جميع العلامات التجارية")
             BindData()
         End If
     End Sub
 
     Private Sub BindData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
-            Dim data = db.Select_News_All().ToList()
-            lstData.DataSource = data
-            lstData.DataBind()
-        End Using
+        lstData.DataSource = NewsData.Listing(SessionManager.GetInstance.Users.UserID)
+        lstData.DataBind()
     End Sub
-
     Private Sub BindData_Filter()
-        Dim kw As String = txtKeyword.Text.Trim()
-
-        Dim isActive As Nullable(Of Boolean) = Nothing
-        If ddlStatus.SelectedValue = "1" Then isActive = True
-        If ddlStatus.SelectedValue = "0" Then isActive = False
-
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
-            Dim data = db.Select_News_All().ToList()
-
-            If Not String.IsNullOrWhiteSpace(kw) Then
-                data = data.Where(Function(x)
-                                      Dim tAr = If(x.Title_AR, "")
-                                      Dim tEn = If(x.Title_En, "")
-                                      Dim bAr = If(x.Brief_Ar, "")
-                                      Dim bEn = If(x.Brief_En, "")
-                                      Return tAr.Contains(kw) OrElse tEn.Contains(kw) OrElse bAr.Contains(kw) OrElse bEn.Contains(kw)
-                                  End Function).ToList()
-            End If
-
-            If isActive.HasValue Then
-                data = data.Where(Function(x) x.IsActive = isActive.Value).ToList()
-            End If
-
-            lstData.DataSource = data
-            lstData.DataBind()
-        End Using
+        Dim active As Boolean? = Nothing
+        If ddlStatus.SelectedValue = "1" Then active = True
+        If ddlStatus.SelectedValue = "0" Then active = False
+        Dim brand As Integer? = Nothing
+        Dim selected As Integer
+        If Integer.TryParse(ddlBrand.SelectedValue, selected) AndAlso selected > 0 Then brand = selected
+        lstData.DataSource = NewsData.Listing(SessionManager.GetInstance.Users.UserID, txtKeyword.Text.Trim(), active, brand)
+        lstData.DataBind()
     End Sub
-
     Protected Sub btnAddNew_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/News/Add_News.aspx")
     End Sub
@@ -64,6 +42,7 @@ Public Class Manage_News
     Protected Sub btnClear_Click(sender As Object, e As EventArgs)
         txtKeyword.Text = ""
         ddlStatus.SelectedValue = "-1"
+        ddlBrand.SelectedValue = "0"
         BindData()
     End Sub
 
@@ -82,7 +61,7 @@ Public Class Manage_News
                 db.Update_News_IsDeleted_ByID(pid, userId)
             End Using
 
-            If String.IsNullOrWhiteSpace(txtKeyword.Text) AndAlso ddlStatus.SelectedValue = "-1" Then
+            If String.IsNullOrWhiteSpace(txtKeyword.Text) AndAlso ddlStatus.SelectedValue = "-1" AndAlso ddlBrand.SelectedValue = "0" Then
                 BindData()
             Else
                 BindData_Filter()

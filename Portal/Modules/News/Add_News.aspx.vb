@@ -8,7 +8,10 @@ Public Class Add_News
     Private NewsImagePath As String = Nothing
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ClearFileSession()
+        If Not IsPostBack Then
+            ClearFileSession()
+            NewsData.FillBrands(ddlBrand, "اختر العلامة التجارية")
+        End If
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -18,6 +21,11 @@ Public Class Add_News
     End Sub
 
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
+        Page.Validate("NewsForm")
+        If Not Page.IsValid Then Return
+        Dim brand As Integer
+        If Not Integer.TryParse(ddlBrand.SelectedValue, brand) OrElse brand <= 0 Then Return
+        lblError.Visible = False
         Dim userId = SessionManager.GetInstance.Users.UserID
 
         Dim orderVal As Nullable(Of Integer) = Nothing
@@ -35,6 +43,7 @@ Public Class Add_News
             End If
         End If
 
+        Try
         Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
 
             Dim files = SaveFilesFromSession()
@@ -45,7 +54,7 @@ Public Class Add_News
                 Next
             End If
 
-            db.Insert_News(
+            NewsData.Save(userId, brand, Nothing,
                 If(String.IsNullOrWhiteSpace(txtTitleAr.Text), Nothing, txtTitleAr.Text.Trim()),
                 If(String.IsNullOrWhiteSpace(txtTitleEn.Text), Nothing, txtTitleEn.Text.Trim()),
                 If(String.IsNullOrWhiteSpace(txtBriefAr.Text), Nothing, txtBriefAr.Text.Trim()),
@@ -54,9 +63,14 @@ Public Class Add_News
                 If(String.IsNullOrWhiteSpace(NewsImagePath), Nothing, NewsImagePath),
                 If(dateVal.HasValue, dateVal.Value, CType(Nothing, DateTime?)),
                 orderVal,
-                userId
+                True
             )
         End Using
+
+        Catch ex As System.Data.SqlClient.SqlException
+            lblError.Text = "تعذّر حفظ الخبر. تحقق من العلامة التجارية وصلاحية الحساب ثم حاول مجددًا."
+            lblError.Visible = True : Return
+        End Try
 
         Response.Redirect("/Modules/News/Manage_News.aspx?added=1")
     End Sub

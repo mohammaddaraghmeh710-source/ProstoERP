@@ -106,15 +106,15 @@
 
 `Data.User` يعيد بيانات الموظف العامة فقط: المعرّف والرقم الوظيفي والاسمين والصورة وأرقام الاتصال والبريد واسم الدخول. كائنات Lookup: `userType` و`brand` و`branch` و`department` و`jobTitle` و`shift` و`gender` و`nationality`؛ كل كائن يضم `ID` و`Title_Ar` و`Title_En` أو يكون `null` إذا لم تُعيّن العلاقة. أُزيلت حقول التدقيق والحالة وترتيب العرض والمعرّفات والأسماء المكررة المسطحة. بيانات التوكن والجلسة مستقلة كما كانت.
 
-### GET /api/Get_News
+### POST /api/Get_News
 
-يتطلب Bearer. لا يتطلب جسم طلب. يعيد فقط `IsActive=1` و`IsDeleted=0` أو `NULL`، حسب اصطلاح الحذف في النظام. الترتيب: `Item_Order` تصاعديًا، ثم `Date` و`PID` تنازليًا.
+يتطلب Bearer وPOST /api/Get_News مع JSON Body يحتوي فقط {"BrandID":29}. لا تُرسل العلامة في URL. يجب أن تطابق العلامة المطلوبة علامة الموظف الحالية وأن تكون فعالة؛ خلاف ذلك يرجع BRAND_ACCESS_DENIED (403). غياب BrandID أو عدم صلاحيته يرجع INVALID_BRAND (400). يرشّح الأخبار عبر News.Brand_ID وليس ناشر الخبر، ويعيد فقط `IsActive=1` و`IsDeleted=0` أو `NULL`، حسب اصطلاح الحذف في النظام. الترتيب: `Item_Order` تصاعديًا، ثم `Date` و`PID` تنازليًا.
 
 ```json
 {"Success":true,"Count":0,"Data":[],"Session":{"UserID":125,"ExpiresAt":"2026-09-22T08:01:00Z","AbsoluteExpiresAt":"2026-10-22T00:00:00Z"}}
 ```
 
-كل خبر يحتوي `PID`, `Title_AR`, `Title_En`, `Brief_Ar`, `Brief_En`, `Details`, `Image`, `Date`, `Item_Order` وحقول الإنشاء والتعديل والحالة. الصورة الفارغة `null`، والصورة النسبية تتحول إلى رابط كامل.
+كل خبر يحتوي `Brand_ID`, `PID`, `Title_AR`, `Title_En`, `Brief_Ar`, `Brief_En`, `Details`, `Image`, `Date`, `Item_Order` وحقول الإنشاء والتعديل والحالة. الصورة الفارغة `null`، والصورة النسبية تتحول إلى رابط كامل.
 
 ### GET /api/Get_InfoPages
 
@@ -159,3 +159,5 @@
 
 
 BIO login: apply `008_BIOLogin.sql` after 006, then deploy the matching API. `Data.User.BIOID` is secret; `POST /api/Users/LoginViaBIO` accepts BIOID-only JSON with current fixed integration Basic credentials. See Device-Login-API.md and Mobile-Login.openapi.json for expiry/revocation/errors. No mobile app code is present in this workspace.
+
+Apply Database/News/001_BrandNews.sql after mobile base/rollback scripts to preserve the required brand-filtered news contract. Portal news add/edit requires an explicit brand; historic local news was assigned to Prosto (29) at the owner request.

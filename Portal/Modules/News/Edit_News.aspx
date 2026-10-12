@@ -17,10 +17,16 @@
                     </div>
 
                     <div class="card-body">
+                        <asp:Label ID="lblError" runat="server" CssClass="alert alert-danger d-block" Visible="false" role="alert" />
                         <asp:HiddenField ID="hfPID" runat="server" />
                         <asp:HiddenField ID="hfImagePath" runat="server" />
 
                         <div class="row g-3">
+                            <div class="col-md-6">
+                                <asp:Label runat="server" AssociatedControlID="ddlBrand" CssClass="form-label" Text="العلامة التجارية" />
+                                <asp:DropDownList ID="ddlBrand" runat="server" CssClass="form-select" />
+                                <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlBrand" InitialValue="0" ValidationGroup="NewsForm" CssClass="text-danger" Display="Dynamic" ErrorMessage="اختر العلامة التجارية." />
+                            </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">العنوان عربي</label>
@@ -77,6 +83,7 @@
                             <!-- بلوك رفع الصورة -->
                             <div id="newsMediaSection" style="display:none;" class="col-12">
                                 <div class="row g-3">
+                            
                                     <div class="col-12">
                                         <label class="form-label">صورة الخبر (اختياري)</label>
 
@@ -101,7 +108,7 @@
 
                         <hr class="my-4" />
 
-                        <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click">
+                        <asp:LinkButton ID="btnSave" runat="server" ValidationGroup="NewsForm" CssClass="btn btn-primary" OnClick="btnSave_Click">
                             حفظ التعديل
                         </asp:LinkButton>
 
