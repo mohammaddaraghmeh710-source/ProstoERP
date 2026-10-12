@@ -1,0 +1,69 @@
+﻿.wg-tree-source { display:none !important; }
+.wg-category-tree { direction:rtl; }
+.wg-tree-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem; padding:.6rem; border-radius:.375rem; }
+.wg-node-label, .wg-group-label { display:flex; align-items:center; gap:.6rem; cursor:pointer; margin:0; }
+.wg-node-label input, .wg-group-label input { width:18px; height:18px; accent-color:#696cff; flex-shrink:0; }
+.wg-selected { background:rgba(105,108,255,.09); }
+.wg-category-tree details { margin-inline-start:1rem; padding-inline-start:1rem; border-inline-start:1px solid #d9dee3; }
+.wg-category-tree summary { padding:.4rem; cursor:pointer; color:#697a8d; }
+.wg-group-label { padding:.4rem; font-size:.85rem; }
+.wg-review-row { border-bottom:1px solid #d9dee3; padding:1rem 0; }
+.wg-role-preview { font-size:.85rem; margin-top:.5rem; }
+.wg-request-history td, .wg-request-history th { white-space:normal; overflow-wrap:anywhere; }
+.wg-status { white-space:normal; line-height:1.5; }
+.wg-status-approved { background:#d1e7dd !important; color:#0f5132 !important; }
+.wg-status-rejected { background:#f8d7da !important; color:#842029 !important; }
+.wg-status-pending { background:#fff3cd !important; color:#664d03 !important; }
+.wg-request-filter { max-width:22rem; }
+.wg-category-current, .wg-node-label { overflow-wrap:anywhere; min-width:0; }
+.wg-responsive-modal .modal-body { overscroll-behavior:contain; }
+.wg-responsive-modal .modal-footer { gap:.5rem; }
+.wg-responsive-modal .modal-footer .btn { min-height:44px; }
+.wg-responsive-modal .wg-tree-row { min-height:44px; }
+.wg-log-details { white-space:pre-wrap; overflow-wrap:anywhere; max-height:12rem; overflow:auto; margin-top:.5rem; }
+#ERPTable[data-wg-datatable] td { white-space:normal; overflow-wrap:anywhere; }
+#ERPTable[data-wg-datatable] td.dataTables_empty { padding:1rem; text-align:center; }
+#ERPTable[data-wg-datatable] td.dataTables_empty::before { display:none; }
+@media(max-width:575px) {
+    .wg-responsive-modal .modal-dialog { margin:0; width:100%; max-width:none; height:100%; }
+    .wg-responsive-modal .modal-content { height:100%; border:0; border-radius:0; }
+    .wg-responsive-modal .modal-body { overflow-y:auto; padding:1rem; }
+    .wg-responsive-modal .modal-footer { flex-wrap:nowrap; padding-bottom:max(1rem,env(safe-area-inset-bottom)); }
+    .wg-responsive-modal .modal-footer .btn { flex:1; margin:0; }
+    .wg-request-filter { max-width:none; }
+}
+@media(max-width:767px) { .wg-category-tree details { margin-inline-start:.5rem; padding-inline-start:.5rem; } .wg-request-history { min-width:640px; } .wg-history-scroll { overflow-x:auto !important; } }
+@media(max-width:767px) {
+    table.wg-mobile-cards { display:block; min-width:0; width:100%; }
+    .wg-mobile-cards thead { display:none; }
+    .wg-mobile-cards tbody { display:block; }
+    .wg-mobile-cards tr { display:block; border:1px solid #d9dee3; border-radius:.5rem; padding:.5rem; margin-bottom:.75rem; }
+    .wg-mobile-cards td { display:block; padding:.45rem; border:0; }
+    .wg-mobile-cards td[data-label]::before { content:attr(data-label); display:block; font-weight:600; font-size:.8rem; color:#697a8d; margin-bottom:.15rem; }
+}
+
+/* User document tables and multi-category selection. */
+
+.wg-form-section { margin-bottom:1.5rem; }
+.wg-section-title { padding:0 0 .8rem; margin-bottom:1rem; border-bottom:1px solid #e5e7eb; color:#566a7f; }
+.wg-form-section .form-control,.wg-form-section .form-select { min-height:42px; }
+.wg-log-data { white-space:pre-wrap; overflow-wrap:anywhere; max-width:340px; max-height:240px; overflow:auto; direction:ltr; }
+.wg-data-table td { white-space:normal; overflow-wrap:anywhere; vertical-align:middle; }
+.wg-data-table .form-check-input { float:none; margin:0; cursor:pointer; }
+.wg-documents-page .table-toolbar { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:1rem; }
+.wg-documents-page .table-pagination { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
+@media(max-width:768px){
+ .wg-documents-page div.dataTables_wrapper div.dataTables_filter label { display:flex; align-items:center; gap:.5rem; width:100%; white-space:normal; }
+ .wg-documents-page div.dataTables_wrapper div.dataTables_filter input { flex:1; min-width:0; width:auto; margin:0; }
+ .wg-documents-page .table-responsive { overflow:visible; }
+ .wg-data-table,.wg-data-table tbody { display:block; border:0!important; }
+ .wg-data-table thead { display:none; }
+ .wg-data-table tbody tr { display:block; margin-bottom:1rem; border:1px solid #e3e8ef; border-radius:12px; overflow:hidden; box-shadow:0 2px 6px #2233550b; }
+ .wg-data-table tbody td { display:flex; justify-content:space-between; gap:12px; padding:10px 12px; border:0; border-bottom:1px solid #edf0f5; text-align:left; }
+ .wg-data-table tbody td:before { content:attr(data-title); flex:0 0 38%; text-align:right; font-weight:600; color:#64748b; }
+ .wg-data-table td.dataTables_empty { display:block;text-align:center; }
+ .wg-data-table td.dataTables_empty:before { display:none; }
+ .wg-log-data { max-width:48vw; }
+}
+
+.wg-documents-page .select2-container {max-width:100%;} .wg-documents-page .select2-selection--multiple {min-height:42px;} .wg-documents-page .select2-selection__choice {white-space:normal;overflow-wrap:anywhere;}

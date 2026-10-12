@@ -1,0 +1,633 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Prosto Customer Feedback API",
+    "version": "1.0.0",
+    "description": "Public HTTPS catalog and submission; no login or employee number. Server owns validation, snapshots, administrator routing, files and audit. No public request-detail or attachment access."
+  },
+  "servers": [
+    {
+      "url": "https://{host}/api/v1/customer-feedback",
+      "variables": {
+        "host": {
+          "default": "localhost",
+          "description": "Replace with the deployed API HTTPS host."
+        }
+      }
+    }
+  ],
+  "security": [],
+  "paths": {
+    "/options": {
+      "get": {
+        "operationId": "getCustomerFeedbackOptions",
+        "summary": "Active types, brands, and brand-specific branches/topics",
+        "parameters": [
+          {
+            "name": "brandID",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "typeID",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "$ref": "#/components/schemas/Options"
+                    }
+                  },
+                  "required": [
+                    "Success",
+                    "Data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit: observe Retry-After seconds.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Seconds until the current limit window expires."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/requests": {
+      "post": {
+        "operationId": "createCustomerFeedback",
+        "summary": "Submit customer data and optional attachments atomically",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/CustomerCreate"
+                  },
+                  "files": {
+                    "type": "array",
+                    "maxItems": 5,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "PDF or image only, 10MiB maximum per file."
+                  }
+                },
+                "required": [
+                  "data"
+                ],
+                "additionalProperties": false
+              },
+              "encoding": {
+                "data": {
+                  "contentType": "application/json"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "$ref": "#/components/schemas/Saved"
+                    }
+                  },
+                  "required": [
+                    "Success",
+                    "Data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit: observe Retry-After seconds.",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Seconds until the current limit window expires."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Customer-Feedback-API.md.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "Error": {
+            "type": "object",
+            "properties": {
+              "Code": {
+                "type": "string"
+              },
+              "Message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "Code",
+              "Message"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "Success",
+          "Error"
+        ],
+        "additionalProperties": false
+      },
+      "CustomerCreate": {
+        "type": "object",
+        "properties": {
+          "OperationID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "OccurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "TypeID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "TopicID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "BrandID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "BranchID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "Name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "Mobile": {
+            "type": "string",
+            "maxLength": 30,
+            "description": "7 to 15 digits, with optional leading +, spaces, parentheses or hyphens."
+          },
+          "Email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true,
+            "maxLength": 254
+          },
+          "Title": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "Details": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "DiscloseIdentity": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "OperationID",
+          "OccurredAt",
+          "TypeID",
+          "TopicID",
+          "BrandID",
+          "BranchID",
+          "Name",
+          "Mobile",
+          "Title",
+          "Details",
+          "DiscloseIdentity"
+        ],
+        "additionalProperties": false
+      },
+      "Saved": {
+        "type": "object",
+        "properties": {
+          "RequestID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "SourceType": {
+            "type": "integer",
+            "enum": [
+              2
+            ]
+          },
+          "Replayed": {
+            "type": "boolean"
+          },
+          "Message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "RequestID",
+          "SourceType",
+          "Replayed",
+          "Message"
+        ],
+        "additionalProperties": false
+      },
+      "Options": {
+        "type": "object",
+        "properties": {
+          "Types": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ID": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "Title_Ar": {
+                  "type": "string"
+                },
+                "Title_En": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "ID",
+                "Title_Ar",
+                "Title_En"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "Brands": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ID": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "Title_Ar": {
+                  "type": "string"
+                },
+                "Title_En": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "ID",
+                "Title_Ar",
+                "Title_En"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "Branches": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ID": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "Title_Ar": {
+                  "type": "string"
+                },
+                "Title_En": {
+                  "type": "string"
+                },
+                "BrandID": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "ID",
+                "Title_Ar",
+                "Title_En",
+                "BrandID"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "Topics": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ID": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "Title_Ar": {
+                  "type": "string"
+                },
+                "Title_En": {
+                  "type": "string"
+                },
+                "Type": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                },
+                "BrandID": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "ID",
+                "Title_Ar",
+                "Title_En",
+                "Type",
+                "BrandID"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "SourceType": {
+            "type": "integer",
+            "enum": [
+              2
+            ]
+          },
+          "RecipientTitle": {
+            "type": "string"
+          },
+          "FileRules": {
+            "type": "object",
+            "properties": {
+              "MaxFiles": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "MaxFileBytes": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "MaxImagePixels": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1
+              },
+              "Extensions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "MaxFiles",
+              "MaxFileBytes",
+              "MaxImagePixels",
+              "Extensions"
+            ],
+            "additionalProperties": false
+          },
+          "RequiredContactFields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "MaxTitleLength": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "MaxDetailsLength": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "Types",
+          "Brands",
+          "Branches",
+          "Topics",
+          "SourceType",
+          "RecipientTitle",
+          "FileRules",
+          "RequiredContactFields",
+          "MaxTitleLength",
+          "MaxDetailsLength"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

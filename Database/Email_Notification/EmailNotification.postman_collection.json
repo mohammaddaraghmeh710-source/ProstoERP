@@ -1,0 +1,72 @@
+{
+  "info": {
+    "name": "Prosto - Brand Email Notification",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "BrandId selects admin-configured Gmail sender. Configure server first. Submitted means SMTP acceptance. No actual credentials in export; no automatic retries."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001"
+    },
+    {
+      "key": "integration_username",
+      "value": ""
+    },
+    {
+      "key": "integration_password",
+      "value": ""
+    },
+    {
+      "key": "brand_id",
+      "value": "29"
+    },
+    {
+      "key": "recipient",
+      "value": "recipient@example.com"
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "{{integration_username}}",
+        "type": "string"
+      },
+      {
+        "key": "password",
+        "value": "{{integration_password}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Send HTML email",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/EmailNotification/Send",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"BrandID\": {{brand_id}},\n  \"To\": \"{{recipient}}\",\n  \"Subject\": \"رسالة من العلامة التجارية\",\n  \"Body\": \"<div dir=\\\"rtl\\\"><h2>مرحبًا</h2><p>نص الرسالة.</p></div>\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "info": {
+    "name": "Prosto - التعاميم",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Use an approved-device token from Get_user. Supply the employee number belonging to that token. File success is binary PDF; errors are JSON. Reuse event_id only for retries."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.example.com"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "employee_number",
+      "value": ""
+    },
+    {
+      "key": "circular_id",
+      "value": ""
+    },
+    {
+      "key": "event_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1 - التعاميم الفعالة",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/circulars?employeeNumber={{employee_number}}&page=1&pageSize=20&unreadOnly=false"
+      }
+    },
+    {
+      "name": "2 - تفاصيل التعميم دون تسجيل قراءة",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/circulars/{{circular_id}}?employeeNumber={{employee_number}}"
+      }
+    },
+    {
+      "name": "3 - مشاهدة PDF وتسجيل القراءة",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/pdf, application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/circulars/{{circular_id}}/file",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"EmployeeNumber\": \"{{employee_number}}\",\n  \"Action\": \"view\",\n  \"EventID\": \"{{event_id}}\",\n  \"OccurredAt\": \"{{$isoTimestamp}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const eventId = pm.collectionVariables.get('event_id') || pm.variables.replaceIn('{{$guid}}');",
+              "pm.variables.set('event_id', eventId);",
+              "pm.collectionVariables.set('last_event_id', eventId);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 - تنزيل PDF وتسجيل القراءة",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/pdf, application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/circulars/{{circular_id}}/file",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"EmployeeNumber\": \"{{employee_number}}\",\n  \"Action\": \"download\",\n  \"EventID\": \"{{event_id}}\",\n  \"OccurredAt\": \"{{$isoTimestamp}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const eventId = pm.collectionVariables.get('event_id') || pm.variables.replaceIn('{{$guid}}');",
+              "pm.variables.set('event_id', eventId);",
+              "pm.collectionVariables.set('last_event_id', eventId);"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

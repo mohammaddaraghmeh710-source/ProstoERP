@@ -1,0 +1,462 @@
+{
+  "info": {
+    "name": "Prosto - Employee Feedback",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Eight mobile feedback endpoints plus existing login. Set baseUrl to the API HTTPS origin. Clear only the operation ID/time pair before a new operation; retain for retries. See Feedback-API.md."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "deviceID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "appVersion",
+      "value": "1.0.0",
+      "type": "string"
+    },
+    {
+      "key": "devicePlatform",
+      "value": "Android",
+      "type": "string"
+    },
+    {
+      "key": "deviceModel",
+      "value": "Postman test device",
+      "type": "string"
+    },
+    {
+      "key": "osVersion",
+      "value": "14",
+      "type": "string"
+    },
+    {
+      "key": "employeeNumber",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "typeID",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "topicID",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "recipientTypeID",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "requestID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "attachmentID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rowVersion",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "createOperationID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "createOccurredAt",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "openOperationID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "openOccurredAt",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "actionOperationID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "actionOccurredAt",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Login (existing API)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(!pm.collectionVariables.get('deviceID'))pm.collectionVariables.set('deviceID',pm.variables.replaceIn('{{$guid}}'));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code===200){const d=pm.response.json().Data;pm.collectionVariables.set('token',d.AccessToken);pm.collectionVariables.set('employeeNumber',d.User.Employee_Number);}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/Users/Login",
+        "description": "See Feedback-API.md. Use the signed-in employee number. Files require the same Bearer authentication.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"Username\":\"{{username}}\",\"Password\":\"{{password}}\",\"AppVersion\":\"{{appVersion}}\",\"Device\":{\"DeviceID\":\"{{deviceID}}\",\"Platform\":\"{{devicePlatform}}\",\"Model\":\"{{deviceModel}}\",\"OSVersion\":\"{{osVersion}}\",\"MACID\":null}}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      }
+    },
+    {
+      "name": "1 - Form options",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/feedback/options?employeeNumber={{employeeNumber}}&type=0",
+        "description": "See Feedback-API.md. Use the signed-in employee number. Files require the same Bearer authentication."
+      }
+    },
+    {
+      "name": "2 - Routing preview",
+      "event": [],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/feedback/routing-preview",
+        "description": "See Feedback-API.md. Use the signed-in employee number. Files require the same Bearer authentication.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"EmployeeNumber\":{{employeeNumber}},\"RecipientTypeID\":{{recipientTypeID}}}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "3 - Follow-up",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/feedback/requests?employeeNumber={{employeeNumber}}&page=1&pageSize=20&scope=all",
+        "description": "See Feedback-API.md. Use the signed-in employee number. Files require the same Bearer authentication."
+      }
+    },
+    {
+      "name": "4 - Submit request and files",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Clear these two collection variables before a NEW operation; keep them for retries.",
+              "if (!pm.collectionVariables.get('createOperationID')) pm.collectionVariables.set('createOperationID', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('createOccurredAt')) pm.collectionVariables.set('createOccurredAt', new Date().toISOString());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code===200) { const d=pm.response.json().Data; pm.collectionVariables.set('requestID',d.RequestID); }"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/feedback/requests",
+        "description": "See Feedback-API.md. Use the signed-in employee number. Files require the same Bearer authentication.",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "data",
+              "value": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{createOperationID}}\",\n  \"OccurredAt\": \"{{createOccurredAt}}\" ,\n  \"TypeID\":{{typeID}}, \"TopicID\":{{topicID}}, \"Title\":\"ملاحظة حول بيئة العمل\", \"Details\":\"تفاصيل الطلب\", \"DiscloseIdentity\":false, \"RecipientTypeID\":{{recipientTypeID}}\n}",
+              "type": "text",
+              "contentType": "application/json"
+            },
+            {
+              "key": "files",
+              "type": "file",
+              "src": [],
+              "disabled": true,
+              "description": "Enable and select up to five images/PDF files. Keep files unchanged on retries."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "5 - Open request details",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Clear these two collection variables before a NEW operation; keep them for retries.",
+              "if (!pm.collectionVariables.get('openOperationID')) pm.collectionVariables.set('openOperationID', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('openOccurredAt')) pm.collectionVariables.set('openOccurredAt', new Date().toISOString());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code===200){const d=pm.response.json().Data;pm.collectionVariables.set('rowVersion',d.Request.RowVersion);if(d.Attachments.length)pm.collectionVariables.set('attachmentID',d.Attachments[0].ID);}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/feedback/requests/{{requestID}}/open",
+        "description": "See Feedback-API.md. Use the signed-in employee number. Files require the same Bearer authentication.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{openOperationID}}\",\n  \"OccurredAt\": \"{{openOccurredAt}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "6 - Close request and attach files",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Clear these two collection variables before a NEW operation; keep them for retries.",
+              "if (!pm.collectionVariables.get('actionOperationID')) pm.collectionVariables.set('actionOperationID', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('actionOccurredAt')) pm.collectionVariables.set('actionOccurredAt', new Date().toISOString());"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/feedback/requests/{{requestID}}/actions",
+        "description": "See Feedback-API.md. Use the signed-in employee number. Files require the same Bearer authentication.",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "data",
+              "value": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{actionOperationID}}\",\n  \"OccurredAt\": \"{{actionOccurredAt}}\" ,\n  \"Action\":\"close\", \"Comment\":\"تمت المتابعة وإغلاق الطلب.\", \"RowVersion\":\"{{rowVersion}}\"\n}",
+              "type": "text",
+              "contentType": "application/json"
+            },
+            {
+              "key": "files",
+              "type": "file",
+              "src": [],
+              "disabled": true,
+              "description": "Enable and select up to five images/PDF files. Keep files unchanged on retries."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "6 - Transfer request and attach files",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Clear these two collection variables before a NEW operation; keep them for retries.",
+              "if (!pm.collectionVariables.get('actionOperationID')) pm.collectionVariables.set('actionOperationID', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('actionOccurredAt')) pm.collectionVariables.set('actionOccurredAt', new Date().toISOString());"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/feedback/requests/{{requestID}}/actions",
+        "description": "See Feedback-API.md. Use the signed-in employee number. Files require the same Bearer authentication.",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "data",
+              "value": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{actionOperationID}}\",\n  \"OccurredAt\": \"{{actionOccurredAt}}\" ,\n  \"Action\":\"transfer\", \"Comment\":\"يرجى المتابعة.\", \"RowVersion\":\"{{rowVersion}}\", \"RecipientTypeID\":{{recipientTypeID}}\n}",
+              "type": "text",
+              "contentType": "application/json"
+            },
+            {
+              "key": "files",
+              "type": "file",
+              "src": [],
+              "disabled": true,
+              "description": "Enable and select up to five images/PDF files. Keep files unchanged on retries."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "7 - Preview attachment",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/feedback/attachments/{{attachmentID}}?employeeNumber={{employeeNumber}}&download=false",
+        "description": "See Feedback-API.md. Use the signed-in employee number. Files require the same Bearer authentication."
+      }
+    },
+    {
+      "name": "8 - Notifications",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/feedback/notifications?employeeNumber={{employeeNumber}}&page=1&pageSize=20&unreadOnly=false",
+        "description": "See Feedback-API.md. Use the signed-in employee number. Files require the same Bearer authentication."
+      }
+    }
+  ]
+}

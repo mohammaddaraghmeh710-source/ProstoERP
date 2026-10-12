@@ -1,0 +1,12 @@
+using System;
+using System.Net.Http;
+using System.Reflection;
+using System.Web;
+using Prosto_ERP_API;
+class TransportTests {
+ sealed class Context:HttpContextBase { readonly HttpRequestBase request;public Context(string peer){request=new Peer(peer);}public override HttpRequestBase Request{get{return request;}} }
+ sealed class Peer:HttpRequestBase {readonly string address;public Peer(string peer){address=peer;}public override string UserHostAddress{get{return address;}}}
+ static bool Allowed(string uri,string peer=null,bool forwarded=false){using(var request=new HttpRequestMessage(HttpMethod.Get,uri)){if(peer!=null)request.Properties["MS_HttpContext"]=new Context(peer);if(forwarded)request.Headers.Add("X-Forwarded-Proto","https");return (bool)typeof(WebApiConfig).Assembly.GetType("Prosto_ERP_API.Mobile.MobileApiSupport").GetMethod("TransportAllowed",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{request});}}
+ static void Check(bool value,string name){if(!value)throw new Exception(name);Console.WriteLine("PASS: "+name);}
+ static int Main(string[] args){try{bool enabled=args.Length>0&&args[0]=="enabled";Check(Allowed("https://example.test/api/Get_News"),"HTTPS accepted");Check(Allowed("REPLACE_WITH_LOCAL_SECRETapi/Get_News","127.0.0.1")==enabled,"Local HTTP follows setting");Check(Allowed("http://example.test:3001/api/Get_News","192.0.2.1")==enabled,"Network HTTP follows setting");Check(Allowed("REPLACE_WITH_LOCAL_SECRETapi/Get_News","192.0.2.1")==enabled,"HTTP policy is independent of host");Check(Allowed("REPLACE_WITH_LOCAL_SECRETapi/Get_News","127.0.0.1",true)==enabled,"Forwarded headers cannot bypass setting");Check(Allowed("REPLACE_WITH_LOCAL_SECRETapi/Get_News")==enabled,"HTTP requires explicit setting");Check(Allowed("http://localhost:3002/api/Get_News","127.0.0.1")==enabled,"HTTP policy covers configured bindings");return 0;}catch(Exception ex){Console.Error.WriteLine(ex);return 1;}}
+}

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <configSections>
+  </configSections>
+  <connectionStrings>
+    <add name="Prosto_ERP_ClassLibrary.My.MySettings.Prosto_ERPConnectionString" connectionString="Server=YOUR_SERVER;Database=YOUR_DATABASE;Integrated Security=True;" providerName="System.Data.SqlClient" />
+    <add name="Prosto_ERP_ClassLibrary.My.MySettings.Prosto_ERPConnectionString1" connectionString="Server=YOUR_SERVER;Database=YOUR_DATABASE;Integrated Security=True;" providerName="System.Data.SqlClient" />
+    <add name="Prosto_ERP_ClassLibrary.My.MySettings.Prosto_ERP_EmptyConnectionString" connectionString="Server=YOUR_SERVER;Database=YOUR_DATABASE;Integrated Security=True;" providerName="System.Data.SqlClient" />
+    <add name="Prosto_ERP_ClassLibrary.My.MySettings.Prosto_LiveConnectionString" connectionString="Server=YOUR_SERVER;Database=YOUR_DATABASE;Integrated Security=True;" providerName="System.Data.SqlClient" />
+    <add name="Prosto_ERP_ClassLibrary.My.MySettings.Prosto_ERPConnectionString2" connectionString="Server=YOUR_SERVER;Database=YOUR_DATABASE;Integrated Security=True;" providerName="System.Data.SqlClient" />
+  </connectionStrings>
+  <system.diagnostics>
+    <sources>
+      <source name="DefaultSource" switchName="DefaultSwitch">
+        <listeners>
+          <add name="FileLog" />
+        </listeners>
+      </source>
+    </sources>
+    <switches>
+      <add name="DefaultSwitch" value="Information" />
+    </switches>
+    <sharedListeners>
+      <add name="FileLog" type="Microsoft.VisualBasic.Logging.FileLogTraceListener, Microsoft.VisualBasic, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" initializeData="FileLogWriter" />
+    </sharedListeners>
+  </system.diagnostics>
+</configuration>

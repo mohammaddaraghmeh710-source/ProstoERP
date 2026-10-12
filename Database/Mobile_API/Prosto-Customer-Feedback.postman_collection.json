@@ -1,0 +1,133 @@
+{
+  "info": {
+    "name": "Prosto - Customer Feedback",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "No login. Configure baseUrl to HTTPS. Get real catalog IDs from options. Reset operationID and occurredAt only for a NEW submission; preserve both and exact files for retries. Read Customer-Feedback-API.md."
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost",
+      "type": "string"
+    },
+    {
+      "key": "brandID",
+      "value": "29",
+      "type": "string"
+    },
+    {
+      "key": "branchID",
+      "value": "25",
+      "type": "string"
+    },
+    {
+      "key": "typeID",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "topicID",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "operationID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "occurredAt",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customerRequestID",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1 - Available types and brands",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer-feedback/options"
+      }
+    },
+    {
+      "name": "1 - Branches and topics for selected brand/type",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer-feedback/options?brandID={{brandID}}&typeID={{typeID}}"
+      }
+    },
+    {
+      "name": "2 - Submit customer request with files",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Clear both variables for a NEW submission; retain them unchanged for network retries.",
+              "if(!pm.collectionVariables.get('operationID')) pm.collectionVariables.set('operationID',pm.variables.replaceIn('{{$guid}}'));",
+              "if(!pm.collectionVariables.get('occurredAt')) pm.collectionVariables.set('occurredAt',new Date().toISOString());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code===200)pm.collectionVariables.set('customerRequestID',pm.response.json().Data.RequestID);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer-feedback/requests",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "data",
+              "value": "{\n  \"OperationID\":\"{{operationID}}\",\n  \"OccurredAt\":\"{{occurredAt}}\",\n  \"TypeID\":{{typeID}},\n  \"TopicID\":{{topicID}},\n  \"BrandID\":{{brandID}},\n  \"BranchID\":{{branchID}},\n  \"Name\":\"اسم الزبون\",\n  \"Mobile\":\"+962790001234\",\n  \"Email\":\"customer@example.com\",\n  \"Title\":\"ملاحظة حول الخدمة\",\n  \"Details\":\"تفاصيل الشكوى أو الاقتراح\",\n  \"DiscloseIdentity\":true\n}",
+              "type": "text",
+              "contentType": "application/json"
+            },
+            {
+              "key": "files",
+              "type": "file",
+              "src": [],
+              "disabled": true,
+              "description": "Optional PDFs/images, up to five files, 10MiB each."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

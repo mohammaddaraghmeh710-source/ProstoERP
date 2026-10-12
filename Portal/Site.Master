@@ -1,0 +1,1234 @@
+﻿<%@ Master Language="VB" AutoEventWireup="false" CodeBehind="Site.master.vb" Inherits="CRM.Site" %>
+
+
+<html
+lang="ar"
+class="light-style"
+dir="rtl"
+data-theme="theme-default"
+data-assets-path="/assets/"
+data-template="horizontal-menu-template">
+
+<head runat="server" id="Head1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مايوركا | نظام إدارة الموظفين</title>
+    <meta name="description" content="" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/img/Prosto/Fav-Red.png" />
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/flag-icons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="/assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="/assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="/assets/css/demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/typeahead-js/typeahead.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/apex-charts/apex-charts.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/swiper/swiper.css" />
+    <%--<link rel="stylesheet" href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />--%>
+    <%--<link rel="stylesheet" href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />--%>
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/flatpickr/flatpickr.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/select2/select2.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/quill/editor.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/quill/typography.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/pickr/pickr-themes.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/jquery-timepicker/jquery-timepicker.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
+    <link rel="stylesheet" href="/assets/vendor/css/pages/ui-carousel.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-rowgroup-bs5/rowgroup.bootstrap5.css" />
+    <link rel="stylesheet" href="/assets/vendor/css/pages/page-profile.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/sweetalert2/sweetalert2.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/animate-css/animate.css" />
+    <link href="/assets/css/table-style.css" rel="stylesheet" />
+
+    <!-- Scripts -->
+    <script src="/assets/vendor/js/helpers.js"></script>
+    <script src="/assets/vendor/js/template-customizer.js"></script>
+    <script src="/assets/js/config.js"></script>
+
+    <style>
+        .select2-selection__clear {
+            display: none;
+        }
+
+
+        [dir=rtl] #template-customizer .template-customizer-open-btn
+        {
+            display:none;
+        }
+    </style>
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server"></asp:ContentPlaceHolder>
+    <link rel="stylesheet" href="/assets/css/erp-theme.css?v=20260906" />
+</head>
+
+
+
+
+<body class="erp-ui">
+    <a class="erp-skip-link" href="#erp-main-content">انتقل إلى المحتوى</a>
+    <form id="form1" runat="server">
+        <asp:ScriptManager ID="ScriptManager" runat="server" EnablePageMethods="true" />
+        <!-- Layout wrapper -->
+        <div class="layout-wrapper layout-navbar-full layout-horizontal layout-without-menu">
+            <div class="layout-container">
+                <!-- Navbar -->
+                <nav class="layout-navbar navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+                    <div class="container-xxl">
+                        <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4">
+                            <a href="#" class="app-brand-link gap-2">
+                                <span class="app-brand-logo demo">
+                                    <img src="/assets/img/Prosto/Logo_Circle.png" class="erp-brand-logo" alt="بروستو" />
+                                </span>
+                                <span class="erp-brand-name menu-text fw-bold">مايوركا للمأكولات الشامية</span>
+                            </a>
+
+                            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-xl-none">
+                                <i class="bx bx-x bx-sm align-middle"></i>
+                            </a>
+                        </div>
+                        <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                            <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                                <i class="bx bx-menu bx-sm"></i>
+                            </a>
+                        </div>
+                        <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                            <ul class="navbar-nav flex-row align-items-center ms-auto">
+                                <!-- Language -->
+                                <li class="nav-item dropdown-language dropdown me-2 me-xl-0" runat="server"  id="liLanguage">
+                                    <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                                        <i class="fi fi-sa fis rounded-circle fs-3 me-1"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                                                <i class="fi fi-sa fis rounded-circle fs-4 me-1"></i>
+                                                <span class="align-middle">Arabic</span>
+                                            </a>
+                                        </li>
+                                      <%--  <li style="display:none">
+                                            <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
+                                                <i class="fi fi-us fis rounded-circle fs-4 me-1"></i>
+                                                <span class="align-middle">English</span>
+                                            </a>
+                                        </li>--%>
+
+                                        <%--
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);" data-language="de">
+                                                <i class="fi fi-de fis rounded-circle fs-4 me-1"></i>
+                                                <span class="align-middle">German</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);" data-language="pt">
+                                                <i class="fi fi-pt fis rounded-circle fs-4 me-1"></i>
+                                                <span class="align-middle">Portuguese</span>
+                                            </a>
+                                        </li>--%>
+                                    </ul>
+                                </li>
+                                <!--/ Language -->
+
+                                <!-- Search -->
+                                <li class="nav-item navbar-search-wrapper me-2 me-xl-0" style="display:none">
+                                    <a class="nav-item nav-link search-toggler" href="javascript:void(0);">
+                                        <i class="bx bx-search bx-sm"></i>
+                                    </a>
+                                </li>
+                                <!-- /Search -->
+
+                                <!-- Style Switcher -->
+                                <li class="nav-item me-2 me-xl-0">
+                                    <a class="nav-link style-switcher-toggle hide-arrow" href="javascript:void(0);">
+                                        <i class="bx bx-sm"></i>
+                                    </a>
+                                </li>
+                                <!--/ Style Switcher -->
+
+                                <!-- Quick links  -->
+                                <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0" runat="server" id="liQuicklinks" >
+                                    <a
+                                        class="nav-link dropdown-toggle hide-arrow"
+                                        href="javascript:void(0);"
+                                        data-bs-toggle="dropdown"
+                                        data-bs-auto-close="outside"
+                                        aria-expanded="false">
+                                        <i class="bx bx-grid-alt bx-sm"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end py-0">
+                                        <div class="dropdown-menu-header border-bottom">
+                                            <div class="dropdown-header d-flex align-items-center py-3">
+                                                <h5 class="text-body mb-0 me-auto">ادارة النظام</h5>
+                                                <%--<a
+                                                    href="javascript:void(0)"
+                                                    class="dropdown-shortcuts-add text-body"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    title="Add shortcuts"><i class="bx bx-sm bx-plus-circle"></i></a>--%>
+                                            </div>
+                                        </div>
+
+                                        <div class="row row-bordered overflow-visible g-0">
+                                            <div class="dropdown-shortcuts-item col" runat="server" visible="false">
+                                                <span class="dropdown-shortcuts-icon bg-label-secondary rounded-circle mb-2">
+                                                    <i class="bx bx-cog fs-4"></i>
+                                                </span>
+                                                <a href="/modules/brands/manageBrands.aspx" class="stretched-link">ادارة النظام</a>
+                                                <small class="text-muted mb-0">العلامة التجارية</small>
+                                            </div>
+                                            <div class="dropdown-shortcuts-item col">
+                                                <span class="dropdown-shortcuts-icon bg-label-secondary rounded-circle mb-2">
+                                                    <i class="bx bx-pie-chart-alt-2 fs-4"></i>
+                                                </span>
+                                                <a href="/modules/Branches/ManageBranches.aspx" class="stretched-link">ادارة النظام</a>
+                                                <small class="text-muted mb-0">الافرع</small>
+                                            </div>
+                                            <div class="dropdown-shortcuts-item col">
+                                                <span class="dropdown-shortcuts-icon bg-label-secondary rounded-circle mb-2">
+                                                    <i class="bx bx-cog fs-4"></i>
+                                                </span>
+                                                <a href="/modules/Departments/ManageDepartments.aspx" class="stretched-link">ادارة النظام</a>
+                                                <small class="text-muted mb-0">الاقسام</small>
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="row row-bordered overflow-visible g-0">
+
+                                            <div class="dropdown-shortcuts-item col">
+                                                <span class="dropdown-shortcuts-icon bg-label-secondary rounded-circle mb-2">
+                                                    <i class="bx bx-food-menu fs-4"></i>
+                                                </span>
+                                                <a href="/modules/JobTitles/ManageJobTitles.aspx" class="stretched-link">ادارة النظام</a>
+                                                <small class="text-muted mb-0">المحطات التعريفية</small>
+                                            </div>
+                                            <div class="dropdown-shortcuts-item col">
+                                                <span class="dropdown-shortcuts-icon bg-label-secondary rounded-circle mb-2">
+                                                    <i class="bx bx-calendar fs-4"></i>
+                                                </span>
+                                                <a href="/modules/Shift/ManageShift.aspx" class="stretched-link">ادارة النظام</a>
+                                                <small class="text-muted mb-0">فترات العمل</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="row row-bordered overflow-visible g-0">
+
+                                            <div class="dropdown-shortcuts-item col">
+                                                <span class="dropdown-shortcuts-icon bg-label-secondary rounded-circle mb-2">
+                                                    <i class="bx bx-user fs-4"></i>
+                                                </span>
+                                                <a href="/modules/Users/ManageUsers.aspx" class="stretched-link">ادارة النظام</a>
+                                                <small class="text-muted mb-0">الموظفين</small>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                </li>
+                                <!-- Quick links -->
+
+                                <!-- Notification -->
+                                <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-2" runat="server" id="liNotification" >
+                                    <a
+                                        class="nav-link dropdown-toggle hide-arrow"
+                                        href="javascript:void(0);"
+                                        data-bs-toggle="dropdown"
+                                        data-bs-auto-close="outside"
+                                        aria-expanded="false">
+                                        <i class="bx bx-bell bx-sm"></i>
+                                        <span class="badge bg-danger rounded-pill badge-notifications">5</span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end py-0">
+                                        <li class="dropdown-menu-header border-bottom">
+                                            <div class="dropdown-header d-flex align-items-center py-3">
+                                                <h5 class="text-body mb-0 me-auto">Notification</h5>
+                                                <a
+                                                    href="javascript:void(0)"
+                                                    class="dropdown-notifications-all text-body"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    title="Mark all as read"><i class="bx fs-4 bx-envelope-open"></i></a>
+                                            </div>
+                                        </li>
+                                        <li class="dropdown-notifications-list scrollable-container">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="avatar">
+                                                                <img src="/assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">Congratulation Lettie 🎉</h6>
+                                                            <p class="mb-0">Won the monthly best seller gold badge</p>
+                                                            <small class="text-muted">1h ago</small>
+                                                        </div>
+                                                        <div class="flex-shrink-0 dropdown-notifications-actions">
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="avatar">
+                                                                <span class="avatar-initial rounded-circle bg-label-danger">CF</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">Charles Franklin</h6>
+                                                            <p class="mb-0">Accepted your connection</p>
+                                                            <small class="text-muted">12hr ago</small>
+                                                        </div>
+                                                        <div class="flex-shrink-0 dropdown-notifications-actions">
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="avatar">
+                                                                <img src="/assets/img/avatars/2.png" alt class="w-px-40 h-auto rounded-circle" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">New Message ✉️</h6>
+                                                            <p class="mb-0">You have new message from Natalie</p>
+                                                            <small class="text-muted">1h ago</small>
+                                                        </div>
+                                                        <div class="flex-shrink-0 dropdown-notifications-actions">
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="avatar">
+                                                                <span class="avatar-initial rounded-circle bg-label-success"><i class="bx bx-cart"></i></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">Whoo! You have new order 🛒</h6>
+                                                            <p class="mb-0">ACME Inc. made new order $1,154</p>
+                                                            <small class="text-muted">1 day ago</small>
+                                                        </div>
+                                                        <div class="flex-shrink-0 dropdown-notifications-actions">
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="avatar">
+                                                                <img src="/assets/img/avatars/9.png" alt class="w-px-40 h-auto rounded-circle" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">Application has been approved 🚀</h6>
+                                                            <p class="mb-0">Your ABC project application has been approved.</p>
+                                                            <small class="text-muted">2 days ago</small>
+                                                        </div>
+                                                        <div class="flex-shrink-0 dropdown-notifications-actions">
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="avatar">
+                                                                <span class="avatar-initial rounded-circle bg-label-success"><i class="bx bx-pie-chart-alt"></i></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">Monthly report is generated</h6>
+                                                            <p class="mb-0">July monthly financial report is generated</p>
+                                                            <small class="text-muted">3 days ago</small>
+                                                        </div>
+                                                        <div class="flex-shrink-0 dropdown-notifications-actions">
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="avatar">
+                                                                <img src="/assets/img/avatars/5.png" alt class="w-px-40 h-auto rounded-circle" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">Send connection request</h6>
+                                                            <p class="mb-0">Peter sent you connection request</p>
+                                                            <small class="text-muted">4 days ago</small>
+                                                        </div>
+                                                        <div class="flex-shrink-0 dropdown-notifications-actions">
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="avatar">
+                                                                <img src="/assets/img/avatars/6.png" alt class="w-px-40 h-auto rounded-circle" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">New message from Jane</h6>
+                                                            <p class="mb-0">Your have new message from Jane</p>
+                                                            <small class="text-muted">5 days ago</small>
+                                                        </div>
+                                                        <div class="flex-shrink-0 dropdown-notifications-actions">
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 me-3">
+                                                            <div class="avatar">
+                                                                <span class="avatar-initial rounded-circle bg-label-warning"><i class="bx bx-error"></i></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">CPU is running high</h6>
+                                                            <p class="mb-0">CPU Utilization Percent is currently at 88.63%,</p>
+                                                            <small class="text-muted">5 days ago</small>
+                                                        </div>
+                                                        <div class="flex-shrink-0 dropdown-notifications-actions">
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                                                            <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="dropdown-menu-footer border-top">
+                                            <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">View all notifications
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <!--/ Notification -->
+
+
+                                <!-- User -->
+                                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                                    <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                                        <div class="avatar avatar-online">
+                                            <asp:Image ID="imgUserAvatarNavbar" runat="server" CssClass="rounded-circle" />
+                                        </div>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <!-- فقط صورة المستخدم + الاسم + نوع المستخدم -->
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);">
+                                                <div class="d-flex">
+                                                    <div class="flex-shrink-0 me-3">
+                                                        <div class="avatar avatar-online">
+                                                            <asp:Image ID="imgUserAvatarDropdown" runat="server" CssClass="rounded-circle" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <span class="fw-semibold d-block lh-1">
+                                                            <asp:Label ID="lblUserFullName" runat="server" />
+                                                        </span>
+                                                        <small>
+                                                            <asp:Label ID="lblUserType" runat="server" />
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <div class="dropdown-divider"></div>
+                                        </li>
+
+                                        <!-- ملفي الشخصي -->
+                                        <li>
+                                            <a id="lnkMyProfile" runat="server" class="dropdown-item">
+                                                <i class="bx bx-user me-2"></i>
+                                                <span class="align-middle">ملفي الشخصي</span>
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <div class="dropdown-divider"></div>
+                                        </li>
+
+                                        <!-- تسجيل الخروج -->
+                                        <li>
+                                            <asp:LinkButton ID="btnLogout"
+                                                runat="server"
+                                                CssClass="dropdown-item"
+                                                OnClick="btnLogout_Click"
+                                                CausesValidation="False">
+                <i class="bx bx-power-off me-2"></i>
+                <span class="align-middle">تسجيل الخروج</span>
+                                            </asp:LinkButton>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <!--/ User -->
+
+
+                            </ul>
+                        </div>
+                        <!-- Search Small Screens -->
+                        <div class="navbar-search-wrapper search-input-wrapper container-xxl d-none">
+                            <input
+                                type="text"
+                                class="form-control search-input border-0"
+                                placeholder="Search..."
+                                aria-label="Search..." />
+                            <i class="bx bx-x bx-sm search-toggler cursor-pointer"></i>
+                        </div>
+                    </div>
+                </nav>
+                <!-- / Navbar -->
+
+                <!-- Layout container -->
+                <div class="layout-page">
+                    <!-- Content wrapper -->
+                    <div class="content-wrapper">
+                        <!-- Menu -->
+                       
+                            <aside id="layout-menu" class="layout-menu-horizontal menu-horizontal menu bg-menu-theme flex-grow-0">
+
+
+  <div class="container-xxl d-flex h-100" id="divmenu" runat="server">
+    <ul class="menu-inner">
+      <li class="menu-item"><a href="javascript:void(0)" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-broadcast"></i><div>التعاميم</div></a><ul class="menu-sub">
+        <li class="menu-item"><a class="menu-link" href="/Modules/Circulars/Index.aspx"><div>تعاميم</div></a></li>
+        <% If CRM.SessionManager.GetInstance.Users.UserType = 1 Then %>
+        <li class="menu-item"><a class="menu-link" href="/Modules/Circulars/Index.aspx?admin=1"><div>إدارة التعاميم</div></a></li>
+        <% End If %>
+      </ul></li>
+      <li class="menu-item"><a href="javascript:void(0)" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-file"></i><div>الصفحات المعلوماتية</div></a><ul class="menu-sub" id="informationPagesMenu">
+        <asp:Literal ID="litInformationPageLinks" runat="server" EnableViewState="false" />
+        <% If CRM.SessionManager.GetInstance.Users.UserType = 1 Then %>
+        <li class="menu-item"><a class="menu-link" href="/Modules/Information_Pages/Manage.aspx"><div>إدارة الصفحات</div></a></li>
+        <li class="menu-item"><a class="menu-link" href="/Modules/Information_Pages/Logs.aspx"><div>سجل العمليات والزيارات</div></a></li>
+        <% End If %>
+      </ul></li>
+      <li class="menu-item"><a href="/Modules/Correspondence/ManageCorrespondence.aspx" class="menu-link"><i class="menu-icon tf-icons bx bx-message-rounded-dots"></i><div>المراسلات</div><asp:UpdatePanel ID="upCorrespondenceCount" runat="server" UpdateMode="Conditional" RenderMode="Inline"><ContentTemplate><span class="badge rounded-pill bg-primary ms-2" data-correspondence-count aria-label="المحادثات غير المقروءة"><asp:Literal ID="litCorrespondenceCount" runat="server" Text="0" /></span><asp:Timer ID="tmCorrespondenceCount" runat="server" Interval="30000" OnTick="CorrespondenceCount_Tick" /></ContentTemplate></asp:UpdatePanel></a></li>
+<li class="menu-item"><a href="javascript:void(0)" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-message-square-detail"></i><div>الشكاوى والاقتراحات</div><asp:UpdatePanel ID="upFeedbackCount" runat="server" UpdateMode="Conditional" RenderMode="Inline"><ContentTemplate><span class="badge rounded-pill bg-primary ms-2" aria-label="الطلبات غير المقروءة"><asp:Literal ID="litFeedbackCount" runat="server" Text="0" /></span></ContentTemplate></asp:UpdatePanel></a><ul class="menu-sub">
+<li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback/ManageEmployeeFeedback.aspx"><div>متابعة الطلبات</div></a></li>
+<li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback/EmployeeFeedbackNotifications.aspx"><div>الإشعارات</div></a></li>
+<% If CRM.SessionManager.GetInstance.Users.UserType = 1 Then %><li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback/EmployeeFeedbackReports.aspx"><div>الإحصائيات والتقارير</div></a></li><li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback/EmployeeFeedbackLogs.aspx"><div>سجل المشاهدات والإجراءات</div></a></li><% End If %>
+</ul></li>
+<% If CRM.SessionManager.GetInstance.Users.UserType = 1 Then %>
+
+
+      <!-- Dashboards -->
+      <li class="menu-item active">
+        <a href="/modules/Brands_Dashboards/Brands_Dashboards.aspx" class="menu-link">
+          <i class="menu-icon tf-icons bx bx-home"></i>
+          <div data-i18n="الصفحة الرئيسية">الصفحة الرئيسية</div>
+        </a>
+      </li>
+
+      <!-- Administrator -->
+      <li class="menu-item">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-cog"></i>
+          <div data-i18n="ادارة النظام">ادارة النظام</div>
+        </a>
+        <ul class="menu-sub"><li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback_Permissions/ManageEmployeeFeedbackPermissions.aspx"><div>صلاحيات الشكاوى والاقتراحات</div></a></li><li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback_Types/ManageEmployeeFeedbackTypes.aspx"><div>أنواع الشكاوى والاقتراحات</div></a></li><li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback_Topics/ManageEmployeeFeedbackTopics.aspx"><div>مواضيع الشكاوى والاقتراحات</div></a></li><li class="menu-item"><a class="menu-link" href="/Modules/CRM_Payment_Methods/ManageCRMPaymentMethods.aspx"><i class="menu-icon tf-icons bx bx-credit-card"></i><div data-i18n="طرق الدفع">طرق الدفع</div></a></li>
+<li class="menu-item"><a class="menu-link" href="/Modules/CRM_Account_Types/ManageCRMAccountTypes.aspx"><i class="menu-icon tf-icons bx bx-category"></i><div data-i18n="انواع العملاء">انواع العملاء</div></a></li>
+<li class="menu-item"><a class="menu-link" href="/Modules/CRM_Contract_Types/ManageCRMContractTypes.aspx"><i class="menu-icon tf-icons bx bx-file"></i><div data-i18n="انواع العقود">انواع العقود</div></a></li>
+
+
+          <li class="menu-item">
+            <a href="/Modules/Brands/ManageBrands.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-store-alt"></i>
+              <div data-i18n="العلامات التجارية">العلامات التجارية</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/Branches/ManageBranches.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-git-branch"></i>
+              <div data-i18n="الافرع">الافرع</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/Departments/ManageDepartments.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-building-house"></i>
+              <div data-i18n="الاقسام">الاقسام</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/JobTitles/ManageJobTitles.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-id-card"></i>
+              <div data-i18n="المحطات التعريفية">المحطات التعريفية</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/JobTitle_Items_Types/ManageJobTitle_Items_types.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-category"></i>
+              <div data-i18n="انواع الادوات">انواع الادوات</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-wrench"></i>
+              <div data-i18n="الاداوات">الاداوات</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/Suppliers/ManageSuppliers.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-package"></i>
+              <div data-i18n="الموردين">الموردين</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/Maintenance_Companies/ManageMaintenance_Companies.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-buildings"></i>
+              <div data-i18n="شركات الصيانة">شركات الصيانة</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/Shift/ManageShift.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-time-five"></i>
+              <div data-i18n="فترات العمل">فترات العمل </div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/HR_Vacations_Types/Manage_HR_Vacations_Types.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-calendar"></i>
+              <div data-i18n="أنواع الإجازات">أنواع الإجازات</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/HR_Leaves_Types/Manage_HR_Leaves_Types.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-time-five"></i>
+              <div data-i18n="أنواع المغادرات">أنواع المغادرات</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/Genders/ManageGenders.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user"></i>
+              <div data-i18n="الجنس">الجنس </div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/Nationalities/ManageNationalities.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-world"></i>
+              <div data-i18n="الجنسيات">الجنسيات </div>
+            </a>
+          </li>
+
+             <li class="menu-item">
+            <a href="/Modules/News/Manage_News.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user"></i>
+              <div data-i18n="الاخبار">الاخبار </div>
+            </a>
+          </li>
+
+
+          <li class="menu-item">
+            <a href="/Modules/Users_Types/Manage_Users_Types.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-group"></i>
+              <div data-i18n="أنواع الموظفين">أنواع الموظفين</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="/Modules/Attendance_Integration/ManageAttendanceIntegration.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-time-five"></i>
+              <div data-i18n="إعدادات API">إعدادات API</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="/Modules/Users/ManageUsers.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user"></i>
+              <div data-i18n="الموظفين">الموظفين </div>
+            </a>
+          </li>
+
+        </ul>
+      </li>
+        
+
+      <% End If %>
+<% If CanUseCRM() Then %>
+<li class="menu-item"><a href="javascript:void(0)" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-buildings"></i><div data-i18n="ادارة العملاء">ادارة العملاء</div></a><ul class="menu-sub"><li class="menu-item"><a class="menu-link" href="/Modules/CRM_Accounts/ManageCRMAccounts.aspx"><i class="menu-icon tf-icons bx bx-buildings"></i><div data-i18n="العملاء">العملاء</div></a></li>
+<li class="menu-item"><a class="menu-link" href="/Modules/CRM_Contacts/ManageCRMContacts.aspx"><i class="menu-icon tf-icons bx bx-user"></i><div data-i18n="جهات الاتصال">جهات الاتصال</div></a></li>
+<li class="menu-item"><a class="menu-link" href="/Modules/CRM_Activity_Logs/ManageCRMActivityLogs.aspx"><i class="menu-icon tf-icons bx bx-history"></i><div data-i18n="سجل النشاطات">سجل النشاطات</div></a></li>
+</ul></li>
+<% End If %>
+<% If CRM.SessionManager.GetInstance.Users.UserType = 1 Then %>
+<!-- Work Guide Management -->
+      <li class="menu-item">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-book-open"></i>
+          <div data-i18n="ادارة دليل العمل">ادارة دليل العمل</div>
+        </a>
+
+        <ul class="menu-sub">
+
+          <li class="menu-item">
+            <a href="/Modules/WorkGuide_Activity_Logs/ManageWorkGuideActivityLogs.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-history"></i>
+              <div data-i18n="سجل نشاط دليل العمل">سجل نشاط دليل العمل</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="/Modules/WorkGuide_Access_Requests/ManageWorkGuideAccessRequests.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-check-shield"></i>
+              <div data-i18n="طلبات صلاحيات دليل العمل">طلبات صلاحيات دليل العمل</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="/Modules/WorkGuide_Roles/ManageWorkGuideRoles.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-lock-alt"></i>
+              <div data-i18n="الصلاحيات">الصلاحيات</div>
+            </a>
+          </li>
+
+           
+
+          <li class="menu-item">
+            <a href="/Modules/WorkGuide_Categories/ManageWorkGuideCategories.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-category-alt"></i>
+              <div data-i18n="التصنيفات">التصنيفات</div>
+            </a>
+          </li>
+
+
+             <li class="menu-item">
+            <a href="/Modules/WorkGuide_Documents/ManageWorkGuide_Documents.aspx" class="menu-link">
+         <i class="menu-icon tf-icons bx bx-book-open"></i>
+              <div data-i18n="ملفات دليل العمل">ملفات دليل العمل</div>
+            </a>
+          </li>
+
+             <li class="menu-item">
+                <a href="/Modules/WorkGuide_User_Category_Roles/ManageWorkGuide_User_Category_Roles.aspx" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-book-open"></i>
+                    <div data-i18n="إدارة صلاحيات دليل العمل">إدارة صلاحيات دليل العمل</div>
+                </a>
+            </li>
+
+        </ul>
+      </li>
+
+      <!-- Checklist -->
+
+      <!-- Checklist -->
+      <li class="menu-item ">
+        <a href="/Modules/Checklist/ManageChecklist.aspx" class="menu-link">
+          <i class="menu-icon tf-icons bx bx-clipboard"></i>
+          <div data-i18n="قائمة التقييم">قائمة التقييم</div>
+        </a>
+      </li>
+
+      <!-- Checklist Employees -->
+      <li class="menu-item ">
+        <a href="/Modules/Checklist_employees/ManageChecklist_Employees.aspx" class="menu-link">
+          <i class="menu-icon tf-icons bx bx-user-check"></i>
+          <div data-i18n="قائمة تقييم الموظفين">قائمة تقييم الموظفين </div>
+        </a>
+      </li>
+
+       
+
+         <!-- Manage LMS -->
+      <li class="menu-item">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-cog"></i>
+          <div data-i18n="ادارة نظام التدريب">ادارة نظام التدريب </div>
+        </a>
+        <ul class="menu-sub">
+
+          <li class="menu-item">
+            <a href="/Modules/LMS_Training_Level_Types/Manage_LMS_Training_Level_Types.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user"></i>
+              <div data-i18n="انواع المستويات">انواع المستويات </div>
+            </a>
+          </li>
+             <li class="menu-item">
+            <a href="/Modules/LMS_Training_Levels/Manage_LMS_Training_Levels.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user"></i>
+              <div data-i18n=" المستويات"> المستويات </div>
+            </a>
+          </li>
+             <li class="menu-item">
+            <a href="/Modules/LMS_TR_Training_Videos/Manage_LMS_TR_Training_Videos.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user"></i>
+              <div data-i18n=" فيديوهات التدريب">فيديوهات التدريب </div>
+            </a>
+          </li>
+
+
+        </ul>
+      </li>
+
+
+
+            <!-- LMS Levels Types  -->
+      <li class="menu-item ">
+        <a href="/Modules/LMS/LMS_TR_Level_Types.aspx" class="menu-link">
+          <i class="menu-icon tf-icons bx bx-user-check"></i>
+          <div data-i18n="انواع التدريب">انواع التدريب </div>
+        </a>
+      </li>
+
+
+      <!-- Evaluation Menu -->
+      <li class="menu-item" runat="server" visible="false">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-layout"></i>
+          <div data-i18n="صفحات نظام التقييم">صفحات نظام التقييم</div>
+        </a>
+
+        <ul class="menu-sub">
+
+          <!-- لوحة العلامات التجارية -->
+          <li class="menu-item">
+            <a href="/modules/Brands_Dashboards/Brands_Dashboards.aspx" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-store"></i>
+              <div data-i18n="لوحة العلامات التجارية">لوحة العلامات التجارية</div>
+            </a>
+          </li>
+
+          <!-- لوحة الفروع -->
+          <li class="menu-item">
+            <a href="/modules/Branches_Dashboards/Branches_Dashboards.aspx?BrandID=26" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-network-chart"></i>
+              <div data-i18n="لوحة الفروع">لوحة الفروع</div>
+            </a>
+          </li>
+
+          <!-- لوحة المفتش -->
+          <li class="menu-item">
+            <a href="/Modules/Branch_Shift_Manager/Branch_Shift_Manager_Dashboard.aspx?BranchID=14&ShiftID=12" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-search-alt-2"></i>
+              <div data-i18n="لوحة المفتش">لوحة المفتش</div>
+            </a>
+          </li>
+
+          <!-- لوحة القسم -->
+          <li class="menu-item">
+            <a href="/Modules/Departments_Dashboards/Department_Dashboard.aspx?DepartmentID=33&amp;ShiftID=11" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-grid-alt"></i>
+              <div data-i18n="لوحة القسم">لوحة القسم</div>
+            </a>
+          </li>
+
+          <!-- صفحة الموظف -->
+          <li class="menu-item">
+            <a href="/modules/Employees/MyProfile.aspx?EmployeeID=3" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-id-card"></i>
+              <div data-i18n="صفحة الموظف">صفحة الموظف</div>
+            </a>
+          </li>
+
+        </ul>
+      </li>
+
+      <!-- Companies -->
+      <li class="menu-item" runat="server" visible="false">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-buildings"></i>
+          <div data-i18n="ادارة الشركة">ادارة الشركة</div>
+        </a>
+
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="layouts-container.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-store"></i>
+              <div data-i18n="العلامة التجارية">العلامة التجارية</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="layouts-without-menu.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-git-branch"></i>
+              <div data-i18n="الافرع">الافرع</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="../vertical-menu-template/" class="menu-link" target="_blank">
+              <i class="menu-icon tf-icons bx bx-box"></i>
+              <div data-i18n="الاصول">الاصول</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="layouts-fluid.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-file"></i>
+              <div data-i18n="العقود">العقود</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Job Discription and Tasks -->
+      <li class="menu-item" runat="server" visible="false">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-collection"></i>
+          <div data-i18n="الوظائف والمهام">الوظائف والمهام</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-briefcase"></i>
+              <div data-i18n="الوظائف">الوظائف</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-task"></i>
+              <div data-i18n="المهام">المهام</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="pages-faq.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-book-open"></i>
+              <div data-i18n="الادلة الارشادية">الادلة الارشادية</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Employee Managment -->
+      <li class="menu-item" runat="server" visible="false">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-group"></i>
+          <div data-i18n="ادارة الموظفين">ادارة الموظفين</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="#" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user"></i>
+              <div data-i18n="الموظفين">الموظفين</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-sitemap"></i>
+              <div data-i18n="الهيكل التنظيمي">الهيكل التنظيمي</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-lock-alt"></i>
+              <div data-i18n="العهد">العهد</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Attendance Managment -->
+      <li class="menu-item" runat="server" visible="false">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-timer"></i>
+          <div data-i18n="مراقبة الدوام">مراقبة الدوام</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="charts-apex.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-calendar-check"></i>
+              <div data-i18n="كشوفات الدوام">كشوفات الدوام</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-calendar-minus"></i>
+              <div data-i18n="الاجازات">الاجازات</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-log-out"></i>
+              <div data-i18n="المغادرات">المغادرات</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-wallet"></i>
+              <div data-i18n="رصيد الاجازات">رصيد الاجازات</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-hourglass"></i>
+              <div data-i18n="رصيد المغادرات">رصيد المغادرات</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Fainancal -->
+      <li class="menu-item" runat="server" visible="false">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-wallet"></i>
+          <div data-i18n="المالية">المالية</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-money"></i>
+              <div data-i18n="كشوفات الرواتب">كشوفات الرواتب</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="#" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-credit-card"></i>
+              <div data-i18n="السلف">السلف</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-minus-circle"></i>
+              <div data-i18n="الخصومات">الخصومات</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Maintanance -->
+      <li class="menu-item" runat="server" visible="false">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-wrench"></i>
+          <div data-i18n="الصيانة">الصيانة</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-message-square-detail"></i>
+              <div data-i18n="طلبات الصيانة">طلبات الصيانة</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="tables-basic.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-refresh"></i>
+              <div data-i18n="الصيانة الدورية">الصيانة الدورية</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="tables-basic.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-receipt"></i>
+              <div data-i18n="المبالغ المستحقة">المبالغ المستحقة</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Requets -->
+      <li class="menu-item" runat="server" visible="false">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-bar-chart-square"></i>
+          <div data-i18n="ادارة الطلبات">ادارة الطلبات</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="#" class="menu-link ">
+              <i class="menu-icon tf-icons bx bx-plus-circle"></i>
+              <div data-i18n="انشاء طلب جديد">انشاء طلب جديد</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="maps-leaflet.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-error-circle"></i>
+              <div data-i18n="طلبات بحاجة الى اجراء">طلبات بحاجة الى اجراء</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="maps-leaflet.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-list-check"></i>
+              <div data-i18n="متابعة الطلبات">متابعة الطلبات</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Misc -->
+      <li class="menu-item" runat="server" visible="false">
+        <a href="#" class="menu-link">
+          <i class="menu-icon tf-icons bx bx-message-rounded"></i>
+          <div data-i18n="الرسائل">الرسائل</div>
+        </a>
+      </li>
+
+    <% End If %>
+</ul>
+  </div>
+</aside>
+
+                       
+                        <!-- / Menu -->
+
+
+                        <!-- Content -->
+                        <div id="erp-main-content" tabindex="-1">
+<asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                        </asp:ContentPlaceHolder>
+</div>
+                        <!--/ Content -->
+
+
+
+
+
+
+                        <!-- Footer -->
+                        <footer class="content-footer footer bg-footer-theme">
+                            <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+                                جميع الحقوق محفوظة 
+                        
+                                    ©
+                 
+                                <script>
+                                    document.write(new Date().getFullYear());
+                                </script>
+                                   مايوركا للمأكولات الشامية 
+                 
+                              
+                               
+                                <div>بروستو · شيش</div>
+                            </div>
+                        </footer>
+                        <!-- / Footer -->
+
+                        <div class="content-backdrop fade"></div>
+                    </div>
+                    <!--/ Content wrapper -->
+                </div>
+
+                <!--/ Layout container -->
+            </div>
+        </div>
+    </form>
+
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+    <!--/ Layout wrapper -->
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18n.js"></script>
+    <script src="/assets/vendor/libs/typeahead-js/typeahead.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
+
+
+
+    <!-- Vendors JS -->
+
+    <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+    <script src="/assets/vendor/libs/datatables/jquery.dataTables.js"></script>
+    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
+    <script src="/assets/vendor/libs/datatables-responsive/datatables.responsive.js"></script>
+    <script src="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.js"></script>
+    <script src="/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.js"></script>
+    <script src="/assets/vendor/libs/datatables-buttons/datatables-buttons.js"></script>
+    <script src="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.js"></script>
+    <script src="/assets/vendor/libs/jszip/jszip.js"></script>
+    <script src="/assets/vendor/libs/pdfmake/pdfmake.js"></script>
+    <script src="/assets/vendor/libs/datatables-buttons/buttons.html5.js"></script>
+    <script src="/assets/vendor/libs/datatables-buttons/buttons.print.js"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave-phone.js"></script>
+    <script src="/assets/vendor/libs/select2/select2.js"></script>
+    <script src="/assets/vendor/libs/swiper/swiper.js"></script>
+    <script src="/assets/vendor/libs/quill/katex.js"></script>
+    <script src="/assets/vendor/libs/quill/quill.js"></script>
+    <script src="/assets/vendor/libs/datatables/jquery.dataTables.js"></script>
+    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
+    <script src="/assets/vendor/libs/datatables-responsive/datatables.responsive.js"></script>
+    <script src="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.js"></script>
+    <script src="/assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+    <script src="/assets/vendor/libs/moment/moment.js"></script>
+    <script src="/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js"></script>
+    <script src="/assets/vendor/libs/jquery-timepicker/jquery-timepicker.js"></script>
+    <script src="/assets/vendor/libs/pickr/pickr.js"></script>
+
+
+    <!-- Flat Picker -->
+    
+    <script src="/assets/vendor/libs/flatpickr/flatpickr.js"></script>
+
+    <!-- Row Group JS -->
+    <script src="/assets/vendor/libs/datatables-rowgroup/datatables.rowgroup.js"></script>
+    <script src="/assets/vendor/libs/datatables-rowgroup-bs5/rowgroup.bootstrap5.js"></script>
+    <!-- Form Validation -->
+    <script src="/assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js"></script>
+    <script src="/assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js"></script>
+    <script src="/assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js"></script>
+
+
+    <!-- Main JS -->
+    <script src="/assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <%--<script src="/assets/js/cards-analytics.js"></script>--%>
+
+    <script src="/assets/js/dashboards-analytics.js"></script>
+    <script src="/assets/js/form-layouts.js"></script>
+    <script src="/assets/js/ui-carousel.js"></script>
+    <script src="/assets/js/forms-editors.js"></script>
+    <script src="/assets/js/forms-pickers.js"></script>
+    <%--<script src="/assets/js/tables-datatables-advanced.js"></script>--%>
+    <%--<script src="/assets/js/tables-datatables-basic.js"></script>--%>
+    <script src="/assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
+    <script src="/assets/js/extended-ui-sweetalert2.js"></script>
+    <script src="/assets/js/table-script.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,575 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Prosto Employee Circulars API",
+    "version": "1.0.0",
+    "description": "Active targeted circulars. File operations validate access, log the operation, and mark the current version read. List/detail metadata does not mark read. Approved mobile device Bearer token required."
+  },
+  "servers": [
+    {
+      "url": "https://{host}",
+      "variables": {
+        "host": {
+          "default": "api.example.com"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "Circular": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Title": {
+            "type": "string"
+          },
+          "Summary": {
+            "type": "string"
+          },
+          "CircularDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "StartUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "EndUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "IsEnabled": {
+            "type": "boolean"
+          },
+          "AllowDownload": {
+            "type": "boolean"
+          },
+          "Audience": {
+            "type": "string",
+            "enum": [
+              "all",
+              "roles",
+              "organization"
+            ]
+          },
+          "FileName": {
+            "type": "string"
+          },
+          "FileSizeBytes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ModifiedUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "CreatedUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "IsRead": {
+            "type": "boolean"
+          },
+          "FirstReadUtc": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastReadUtc": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Status": {
+            "type": "string",
+            "enum": [
+              "active"
+            ]
+          },
+          "FileEndpoint": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "Error": {
+            "type": "object",
+            "properties": {
+              "Code": {
+                "type": "string"
+              },
+              "Message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "FileEvent": {
+        "type": "object",
+        "required": [
+          "EmployeeNumber",
+          "Action",
+          "EventID"
+        ],
+        "properties": {
+          "EmployeeNumber": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "Action": {
+            "type": "string",
+            "enum": [
+              "view",
+              "download"
+            ]
+          },
+          "EventID": {
+            "type": "string",
+            "format": "uuid",
+            "description": "New UUID per user operation; reuse for retries of that operation."
+          },
+          "OccurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Optional client time; server UTC is authoritative."
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/v1/circulars": {
+      "get": {
+        "operationId": "listCirculars",
+        "parameters": [
+          {
+            "name": "employeeNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "maximum": 100000,
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 250
+            }
+          },
+          {
+            "name": "unreadOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "type": "object",
+                      "properties": {
+                        "Counts": {
+                          "type": "object",
+                          "properties": {
+                            "Total": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "Unread": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "Active": {
+                              "type": "integer",
+                              "format": "int32"
+                            }
+                          }
+                        },
+                        "TotalItems": {
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "Page": {
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "PageSize": {
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "Items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Circular"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/circulars/{id}": {
+      "get": {
+        "operationId": "circularDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "employeeNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "$ref": "#/components/schemas/Circular"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/circulars/{id}/file": {
+      "post": {
+        "operationId": "circularFile",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FileEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Raw PDF bytes. Action=view: inline; action=download: attachment. No JSON success envelope.",
+            "headers": {
+              "Content-Disposition": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Circular-Version": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Circulars-API.md error codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+﻿
+.crm-form-section { margin-bottom:1.5rem; }
+.crm-section-title { padding:0 0 .8rem; margin-bottom:1rem; border-bottom:1px solid #e5e7eb; color:#566a7f; }
+.crm-form-section .form-control,.crm-form-section .form-select { min-height:42px; }
+.crm-log-data { white-space:pre-wrap; overflow-wrap:anywhere; max-width:340px; max-height:240px; overflow:auto; direction:ltr; }
+.crm-table td { white-space:normal; overflow-wrap:anywhere; vertical-align:middle; }
+.crm-table .form-check-input { float:none; margin:0; cursor:pointer; }
+.crm-shell .table-toolbar { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:1rem; }
+.crm-shell .table-pagination { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
+@media(max-width:768px){
+ .crm-shell div.dataTables_wrapper div.dataTables_filter label { display:flex; align-items:center; gap:.5rem; width:100%; white-space:normal; }
+ .crm-shell div.dataTables_wrapper div.dataTables_filter input { flex:1; min-width:0; width:auto; margin:0; }
+ .crm-shell .table-responsive { overflow:visible; }
+ .crm-table,.crm-table tbody { display:block; border:0!important; }
+ .crm-table thead { display:none; }
+ .crm-table tbody tr { display:block; margin-bottom:1rem; border:1px solid #e3e8ef; border-radius:12px; overflow:hidden; box-shadow:0 2px 6px #2233550b; }
+ .crm-table tbody td { display:flex; justify-content:space-between; gap:12px; padding:10px 12px; border:0; border-bottom:1px solid #edf0f5; text-align:left; }
+ .crm-table tbody td:before { content:attr(data-title); flex:0 0 38%; text-align:right; font-weight:600; color:#64748b; }
+ .crm-table td.dataTables_empty { display:block;text-align:center; }
+ .crm-table td.dataTables_empty:before { display:none; }
+ .crm-log-data { max-width:48vw; }
+}

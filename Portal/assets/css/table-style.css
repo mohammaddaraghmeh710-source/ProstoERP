@@ -1,0 +1,420 @@
+﻿/* ====== Table toolbar (RTL, Arabic, Pixinvent-like) ====== */
+.table-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    direction: rtl;
+}
+
+    .table-toolbar .dataTables_length label,
+    .table-toolbar .dataTables_filter label {
+        margin-bottom: 0;
+        font-weight: 500;
+        font-size: .875rem;
+        color: #566a7f;
+    }
+
+    .table-toolbar .dataTables_length select,
+    .table-toolbar .dataTables_filter input {
+        margin-inline-start: .35rem;
+        display: inline-block;
+    }
+    
+
+    /* length (show N records) */
+    .table-toolbar .dataTables_length select {
+        width: auto;
+        min-width: 60px;
+        padding-inline: .5rem;
+    }
+
+    /* search */
+    .table-toolbar .dataTables_filter input {
+        width: 200px;
+    }
+
+/* container tweaks for mobile */
+@media (max-width: 576px) {
+    .table-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .table-toolbar .dataTables_filter {
+            width: 100%;
+        }
+
+            .table-toolbar .dataTables_filter input {
+                width: 100%;
+            }
+}
+
+/* ====== basic table styling (ERP_ProstoTBL) ====== */
+.ERP_ProstoTBL {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+    .ERP_ProstoTBL thead th {
+        /*background-color: #f5f5f9;*/
+        color: #566a7f;
+        padding: 0.75rem;
+        border-bottom: 1px solid rgba(67, 89, 113, 0.15);
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .ERP_ProstoTBL tbody td {
+        padding: 0.75rem;
+        border-bottom: 1px solid rgba(67, 89, 113, 0.08);
+        vertical-align: middle;
+    }
+
+    /* zebra rows */
+    .ERP_ProstoTBL tbody tr:nth-child(even) {
+        background-color: #fcfcfd;
+    }
+
+    .ERP_ProstoTBL tbody tr:hover {
+        background-color: #f3f6fb;
+    }
+
+    /* responsive wrap for long text */
+    .ERP_ProstoTBL td {
+        word-break: break-word;
+    }
+
+/* ====== pagination (wrapper) ====== */
+.table-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .75rem;
+    margin-top: 1rem;
+    direction: rtl;
+}
+
+    /* total records label */
+    .table-pagination .total-records {
+        font-size: .8125rem;
+        color: #697a8d;
+    }
+
+    /* the UL pagination */
+    .table-pagination .pagination {
+        margin-bottom: 0;
+    }
+
+    /* ====== pagination (RTL, numbers from right to left) ====== */
+    .table-pagination .pagination {
+        display: inline-flex;
+        flex-direction: row-reverse;
+    }
+
+    .table-pagination .page-item {
+        margin-inline: 0.15rem;
+    }
+
+    .table-pagination .page-link {
+        border-radius: 50% !important;
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* active page */
+    .table-pagination .page-item.active .page-link {
+        background-color: #696cff;
+        border-color: #696cff;
+        color: #fff;
+    }
+
+    /* disabled */
+    .table-pagination .page-item.disabled .page-link {
+        opacity: 0.6;
+    }
+
+    /* arrows icons direction */
+    .table-pagination .page-link .bx {
+        font-size: 1rem;
+    }
+
+/* ====== mobile card style for rows ====== */
+@media (max-width: 768px) {
+    #ERPTable {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 1.25rem;
+    }
+
+        #ERPTable thead {
+            display: none !important;
+        }
+
+        #ERPTable tbody tr {
+            display: block;
+            background: #fff;
+            border: 1px solid rgba(67,89,113,.08);
+            border-radius: .9rem;
+            box-shadow: 0 6px 15px rgba(67,89,113,.07);
+            margin-bottom: 1.25rem;
+            overflow: hidden;
+        }
+
+        #ERPTable tbody td {
+            display: block !important;
+            position: relative;
+            padding: .7rem 42% .7rem .75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(67,89,113,.04);
+            word-break: break-word;
+            white-space: normal;
+        }
+
+            #ERPTable tbody td:last-child {
+                border-bottom: 0;
+            }
+
+            #ERPTable tbody td:before {
+                content: attr(data-title);
+                position: absolute;
+                right: .85rem;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 38%;
+                text-align: right;
+                font-weight: 500;
+                color: #697a8d;
+                white-space: nowrap;
+                font-size: .765rem;
+            }
+
+    .table-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .5rem;
+    }
+
+        .table-toolbar .dataTables_filter {
+            width: 100%;
+        }
+
+            .table-toolbar .dataTables_filter input {
+                width: 100%;
+            }
+
+        .table-toolbar .dataTables_length {
+            align-self: flex-start;
+        }
+}
+
+/* ====== Extra: "no data" message inside table ====== */
+.no-data-title {
+    display: inline-block;
+    padding: 0.75rem 1rem;
+    color: #a1acb8;
+    font-size: .875rem;
+}
+
+/* ====== Ensure buttons in cells look neat in mobile cards ====== */
+@media (max-width: 768px) {
+    #ERPTable tbody td .btn {
+        margin-inline: .15rem;
+    }
+
+    #ERPTable tbody td[data-title="تعديل"],
+    #ERPTable tbody td[data-title="حذف"] {
+        text-align: left;
+    }
+}
+
+/* ====== Small tweaks for length & search on very small screens ====== */
+@media (max-width: 480px) {
+    .table-toolbar .dataTables_length label,
+    .table-toolbar .dataTables_filter label {
+        font-size: .8rem;
+    }
+
+    .table-toolbar .dataTables_filter input {
+        font-size: .8rem;
+    }
+
+    .table-toolbar .form-select,
+    .table-toolbar .form-control {
+        min-height: 2rem;
+        padding: .15rem .35rem;
+    }
+}
+
+/* ====== Wrapper for table + toolbar so it doesn't overflow horizontally ====== */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+    .table-wrapper table {
+        width: 100%;
+        min-width: 600px;
+    }
+
+/* On mobile we allow the custom card style to show instead of horizontal scroll */
+@media (max-width: 768px) {
+    .table-wrapper table {
+        min-width: 0;
+    }
+}
+
+/* ====== RTL alignment for "عرض" label and select ====== */
+.table-toolbar .dataTables_length {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+}
+
+    .table-toolbar .dataTables_length label span {
+        margin-inline-end: .25rem;
+    }
+
+/* ====== small badge for record count (if needed) ====== */
+.record-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    padding-inline: .35rem;
+    background-color: #e7e7ff;
+    color: #696cff;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+/* ====== Utility: text clamp for long values ====== */
+.text-ellipsis-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+/* ====== spacing between mobile cards and bottom pagination ====== */
+@media (max-width: 768px) {
+    .table-pagination {
+        margin-top: 0.5rem;
+    }
+}
+
+/* ====== RTL tweak for pagination info text ====== */
+.table-pagination .total-records {
+    direction: rtl;
+}
+
+/* ====== Input + select look (Bootstrap-ish) ====== */
+.table-toolbar .form-control,
+.table-toolbar .form-select {
+    border-radius: .375rem;
+    border: 1px solid #d9dee3;
+    box-shadow: none;
+}
+
+    .table-toolbar .form-control:focus,
+    .table-toolbar .form-select:focus {
+        border-color: #696cff;
+        box-shadow: 0 0 0 0.15rem rgba(105, 108, 255, 0.2);
+    }
+
+/* ====== Small gutter tweak if inside card-body ====== */
+.card .table-toolbar {
+    margin-top: .25rem;
+}
+
+/* ====== Search icon box style (if you wrap it later) ====== */
+.table-toolbar .search-wrapper {
+    position: relative;
+}
+
+    .table-toolbar .search-wrapper .bx {
+        position: absolute;
+        right: .6rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        color: #a1acb8;
+    }
+
+    .table-toolbar .search-wrapper input {
+        padding-right: 2rem;
+    }
+
+/* ====== Very small devices: center the pagination ====== */
+@media (max-width: 576px) {
+    .table-pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+        .table-pagination .total-records {
+            width: 100%;
+            text-align: center;
+            margin-bottom: .25rem;
+        }
+}
+
+/* ====== minor spacing for toolbar children ====== */
+.table-toolbar > * {
+    margin-inline: .25rem;
+}
+
+.table-toolbar .form-select,
+.table-toolbar .form-control {
+    min-height: 2.125rem;
+    padding: .25rem .5rem;
+    font-size: .875rem;
+}
+
+.table-toolbar .dataTables_filter .form-control {
+    width: 190px;
+}
+.d-flex {
+    display: ruby !important;
+}
+
+/* ===== Custom mobile layout: full-width search, hide length ===== */
+@media (max-width: 768px) {
+
+    /* إخفاء "إظهار عدد الصفحات" */
+    .table-toolbar .dataTables_length {
+        display: none !important;
+    }
+
+    /* خلي التولبار عمودي والأبناء بعرض كامل بدون هوامش */
+    .table-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .table-toolbar > * {
+            margin-inline: 0 !important; /* إزالة الهامش اليمين/يسار */
+        }
+
+        /* جعل البحث col-12 فعلياً */
+        .table-toolbar .dataTables_filter,
+        .table-toolbar .dataTables_filter label {
+            width: 100% !important;
+            display: block;
+        }
+
+            .table-toolbar .dataTables_filter input {
+                width: 100% !important;
+                display: block;
+            }
+}
+

@@ -1,0 +1,1928 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Prosto Employee Feedback Mobile API",
+    "version": "1.0.0",
+    "description": "Server-owned routing, permissions, employee snapshots, file persistence and audit logs. No mobile statistics, general logs, standalone notification-read or separate uploads. See Feedback-API.md."
+  },
+  "servers": [
+    {
+      "url": "https://{host}/api/v1/feedback",
+      "variables": {
+        "host": {
+          "default": "localhost",
+          "description": "Replace with the deployed HTTPS API host."
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "paths": {
+    "/options": {
+      "get": {
+        "operationId": "getFeedbackOptions",
+        "summary": "Dynamic request form options",
+        "tags": [
+          "Employee feedback"
+        ],
+        "parameters": [
+          {
+            "name": "employeeNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "$ref": "#/components/schemas/Options"
+                    }
+                  },
+                  "required": [
+                    "Success",
+                    "Data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/routing-preview": {
+      "post": {
+        "operationId": "previewFeedbackRouting",
+        "summary": "Resolve all permitted recipients and fallback",
+        "tags": [
+          "Employee feedback"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "$ref": "#/components/schemas/RoutingResult"
+                    }
+                  },
+                  "required": [
+                    "Success",
+                    "Data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Routing"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/requests": {
+      "get": {
+        "operationId": "listFeedbackRequests",
+        "summary": "Unified personal follow-up and five counts",
+        "tags": [
+          "Employee feedback"
+        ],
+        "parameters": [
+          {
+            "name": "employeeNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "default": 1,
+              "maximum": 1000000
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "default": 20,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 300
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                0,
+                1,
+                2,
+                3,
+                4
+              ],
+              "default": 0
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "sent",
+                "action",
+                "active",
+                "closed"
+              ],
+              "default": "all"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "$ref": "#/components/schemas/Requests"
+                    }
+                  },
+                  "required": [
+                    "Success",
+                    "Data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createFeedbackRequest",
+        "summary": "Submit data and files atomically; server captures employee snapshot",
+        "tags": [
+          "Employee feedback"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "$ref": "#/components/schemas/Saved"
+                    }
+                  },
+                  "required": [
+                    "Success",
+                    "Data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/Create"
+                  },
+                  "files": {
+                    "type": "array",
+                    "maxItems": 5,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Optional PDF or image files, maximum 10MiB each."
+                  }
+                },
+                "required": [
+                  "data"
+                ],
+                "additionalProperties": false
+              },
+              "encoding": {
+                "data": {
+                  "contentType": "application/json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/requests/{id}/open": {
+      "post": {
+        "operationId": "openFeedbackRequest",
+        "summary": "Read detail, log actual view, mark this request notifications read",
+        "tags": [
+          "Employee feedback"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "$ref": "#/components/schemas/Detail"
+                    }
+                  },
+                  "required": [
+                    "Success",
+                    "Data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Event"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/requests/{id}/actions": {
+      "post": {
+        "operationId": "actOnFeedbackRequest",
+        "summary": "Transfer or close with required explanation and optional files",
+        "tags": [
+          "Employee feedback"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "$ref": "#/components/schemas/Saved"
+                    }
+                  },
+                  "required": [
+                    "Success",
+                    "Data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/Action"
+                  },
+                  "files": {
+                    "type": "array",
+                    "maxItems": 5,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Optional PDF or image files, maximum 10MiB each."
+                  }
+                },
+                "required": [
+                  "data"
+                ],
+                "additionalProperties": false
+              },
+              "encoding": {
+                "data": {
+                  "contentType": "application/json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attachments/{id}": {
+      "get": {
+        "operationId": "getFeedbackAttachment",
+        "summary": "Authorized preview or download of actual file bytes",
+        "tags": [
+          "Employee feedback"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "employeeNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private file content; Bearer required. Inline by default; download=true sets attachment disposition.",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/gif": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "listFeedbackNotifications",
+        "summary": "List notifications without marking read",
+        "tags": [
+          "Employee feedback"
+        ],
+        "parameters": [
+          {
+            "name": "employeeNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "default": 1,
+              "maximum": 1000000
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "default": 20,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "unreadOnly",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "$ref": "#/components/schemas/Notifications"
+                    }
+                  },
+                  "required": [
+                    "Success",
+                    "Data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "See Feedback-API.md for Error.Code behavior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "AccessToken from POST /api/Users/Login"
+      }
+    },
+    "schemas": {
+      "Event": {
+        "type": "object",
+        "properties": {
+          "EmployeeNumber": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "OperationID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "OccurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Actual device event time with explicit UTC offset. Reuse unchanged when retrying."
+          }
+        },
+        "required": [
+          "EmployeeNumber",
+          "OperationID",
+          "OccurredAt"
+        ],
+        "additionalProperties": false
+      },
+      "Create": {
+        "type": "object",
+        "properties": {
+          "EmployeeNumber": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "OperationID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "OccurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Actual device event time with explicit UTC offset. Reuse unchanged when retrying."
+          },
+          "TypeID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "TopicID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "Title": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "Details": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "DiscloseIdentity": {
+            "type": "boolean"
+          },
+          "RecipientTypeID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "EmployeeNumber",
+          "OperationID",
+          "OccurredAt",
+          "TypeID",
+          "TopicID",
+          "Title",
+          "Details",
+          "DiscloseIdentity",
+          "RecipientTypeID"
+        ],
+        "additionalProperties": false
+      },
+      "Action": {
+        "type": "object",
+        "properties": {
+          "EmployeeNumber": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "OperationID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "OccurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Actual device event time with explicit UTC offset. Reuse unchanged when retrying."
+          },
+          "Action": {
+            "type": "string",
+            "enum": [
+              "transfer",
+              "close"
+            ]
+          },
+          "Comment": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "RowVersion": {
+            "type": "string",
+            "format": "byte",
+            "description": "Base64 eight-byte version from last open."
+          },
+          "RecipientTypeID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "description": "Required for transfer; omit for close."
+          }
+        },
+        "required": [
+          "EmployeeNumber",
+          "OperationID",
+          "OccurredAt",
+          "Action",
+          "Comment",
+          "RowVersion"
+        ],
+        "additionalProperties": false
+      },
+      "Routing": {
+        "type": "object",
+        "properties": {
+          "EmployeeNumber": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "RecipientTypeID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "RequestID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "EmployeeNumber",
+          "RecipientTypeID"
+        ],
+        "additionalProperties": false
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "Error": {
+            "type": "object",
+            "properties": {
+              "Code": {
+                "type": "string"
+              },
+              "Message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "Code",
+              "Message"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "Success",
+          "Error"
+        ],
+        "additionalProperties": false
+      },
+      "Saved": {
+        "type": "object",
+        "properties": {
+          "RequestID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "Replayed": {
+            "type": "boolean"
+          },
+          "Message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "RequestID",
+          "Replayed",
+          "Message"
+        ],
+        "additionalProperties": false
+      },
+      "Counts": {
+        "type": "object",
+        "properties": {
+          "TotalRequests": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "SentRequests": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ActiveRequests": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ClosedRequests": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ActionRequiredRequests": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "TotalRequests",
+          "SentRequests",
+          "ActiveRequests",
+          "ClosedRequests",
+          "ActionRequiredRequests"
+        ],
+        "additionalProperties": false
+      },
+      "Attachment": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "File_Type": {
+            "type": "string"
+          },
+          "FileSize": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "GroupID": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "FileName": {
+            "type": "string"
+          },
+          "PreviewUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "DownloadUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "ID",
+          "File_Type",
+          "FileSize",
+          "GroupID",
+          "FileName",
+          "PreviewUrl",
+          "DownloadUrl"
+        ],
+        "additionalProperties": false
+      },
+      "Workflow": {
+        "type": "object",
+        "properties": {
+          "GroupID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ActionType": {
+            "type": "integer",
+            "enum": [
+              1,
+              2,
+              3
+            ]
+          },
+          "AddedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Comment": {
+            "type": "string",
+            "nullable": true
+          },
+          "SenderName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ReceiverNames": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "GroupID",
+          "ActionType",
+          "AddedDate",
+          "Comment",
+          "SenderName",
+          "ReceiverNames"
+        ],
+        "additionalProperties": false
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "SourceType": {
+            "type": "integer",
+            "enum": [
+              1,
+              2
+            ]
+          },
+          "BrandName": {
+            "type": "string",
+            "nullable": true
+          },
+          "BranchName": {
+            "type": "string",
+            "nullable": true
+          },
+          "CapturedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "IsBackfilled": {
+            "type": "boolean"
+          },
+          "CanViewContact": {
+            "type": "boolean"
+          },
+          "ApplicantName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ApplicantNameEn": {
+            "type": "string",
+            "nullable": true
+          },
+          "ApplicantEmployeeNumber": {
+            "type": "integer",
+            "nullable": true
+          },
+          "ApplicantPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "ApplicantMobile": {
+            "type": "string",
+            "nullable": true
+          },
+          "ApplicantEmail": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "SourceType",
+          "BrandName",
+          "BranchName",
+          "CapturedAt",
+          "IsBackfilled",
+          "CanViewContact",
+          "ApplicantName",
+          "ApplicantNameEn",
+          "ApplicantEmployeeNumber",
+          "ApplicantPhone",
+          "ApplicantMobile",
+          "ApplicantEmail"
+        ],
+        "additionalProperties": false
+      },
+      "AllowedAction": {
+        "type": "object",
+        "properties": {
+          "Code": {
+            "type": "string",
+            "enum": [
+              "transfer",
+              "close"
+            ]
+          },
+          "Title": {
+            "type": "string"
+          },
+          "CommentRequired": {
+            "type": "boolean"
+          },
+          "RecipientRequired": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "Code",
+          "Title",
+          "CommentRequired",
+          "RecipientRequired"
+        ],
+        "additionalProperties": false
+      },
+      "Detail": {
+        "type": "object",
+        "properties": {
+          "Request": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "Contact": {
+            "$ref": "#/components/schemas/Contact"
+          },
+          "Attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Attachment"
+            }
+          },
+          "Workflow": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Workflow"
+            }
+          },
+          "AllowedActions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AllowedAction"
+            }
+          },
+          "RecipientTypes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "Replayed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "Request",
+          "Contact",
+          "Attachments",
+          "Workflow",
+          "AllowedActions",
+          "RecipientTypes",
+          "Replayed"
+        ],
+        "additionalProperties": false
+      },
+      "Requests": {
+        "type": "object",
+        "properties": {
+          "Counts": {
+            "$ref": "#/components/schemas/Counts"
+          },
+          "TotalItems": {
+            "type": "integer"
+          },
+          "Page": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "Items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "Counts",
+          "TotalItems",
+          "Page",
+          "PageSize",
+          "Items"
+        ],
+        "additionalProperties": false
+      },
+      "Notifications": {
+        "type": "object",
+        "properties": {
+          "UnreadCount": {
+            "type": "integer"
+          },
+          "TotalItems": {
+            "type": "integer"
+          },
+          "Page": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "Items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "UnreadCount",
+          "TotalItems",
+          "Page",
+          "PageSize",
+          "Items"
+        ],
+        "additionalProperties": false
+      },
+      "Options": {
+        "type": "object",
+        "properties": {
+          "Types": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "Topics": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "Permissions": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "RecipientTypes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "Statuses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "FileRules": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "MaxTitleLength": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "MaxDetailsLength": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "MaxCommentLength": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "Types",
+          "Topics",
+          "Permissions",
+          "RecipientTypes",
+          "Statuses",
+          "FileRules",
+          "MaxTitleLength",
+          "MaxDetailsLength",
+          "MaxCommentLength"
+        ],
+        "additionalProperties": false
+      },
+      "RoutingResult": {
+        "type": "object",
+        "properties": {
+          "RecipientTypeID": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "Recipients": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "CanSend": {
+            "type": "boolean"
+          },
+          "IsFallback": {
+            "type": "boolean"
+          },
+          "Message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "RecipientTypeID",
+          "Recipients",
+          "CanSend",
+          "IsFallback",
+          "Message"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+# Local tooling and build output
+.vs/
+.dotnet_cli/
+.nuget/
+packages/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.log
+*.cache
+*.pfx
+*.p12
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+# Local settings containing credentials
+/Portal/Web.config
+/Prosto_ERP_API/Web.config
+/Prosto_ERP_ClassLibrary/app.config
+/Database/BioTime/BioTime.IntegrationTests.cs
+# Local publish settings and data
+*.pubxml
+*.pubxml.user
+*.bak
+*.mdf
+*.ldf
+/Prosto_ERP_ClassLibrary/My Project/Settings.Designer.vb
+/Database/Email_Notification/README.md
+/Database/Password_Reset/README.md
+/Database/Mobile_API/Transport.IntegrationTests.cs
+/Prosto_ERP_API/Authentication/AuthenticationAttribute.cs
+/Database/BioTime/BioTime.IntegrationTests.cs
+/Prosto_ERP_ClassLibrary/My Project/Settings.settings
+/Portal/App_Data/
+/Portal/FileManager/
+/Database/Branch25_Trial/allocation.csv
+/Portal/Uploads/

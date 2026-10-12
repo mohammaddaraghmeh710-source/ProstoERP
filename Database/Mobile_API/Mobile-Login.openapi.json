@@ -1,0 +1,803 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Prosto Mobile Login and Device Session",
+    "version": "1.4.0",
+    "description": "Employee login permits the first device automatically and subsequent devices only after administrator approval. All employee bearer tokens require an approved device. Public customer submission is unchanged."
+  },
+  "servers": [
+    {
+      "url": "https://{host}",
+      "variables": {
+        "host": {
+          "default": "localhost",
+          "description": "Replace with deployed HTTPS API host."
+        }
+      }
+    }
+  ],
+  "security": [],
+  "paths": {
+    "/api/Users/Login": {
+      "post": {
+        "operationId": "mobileEmployeeLogin",
+        "summary": "Authenticate employee, store device/session snapshot, issue opaque Bearer token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "type": "object",
+                      "properties": {
+                        "User": {
+                          "$ref": "#/components/schemas/EmployeeProfile"
+                        },
+                        "AccessToken": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9_-]{43}$"
+                        },
+                        "TokenType": {
+                          "type": "string",
+                          "enum": [
+                            "Bearer"
+                          ]
+                        },
+                        "ExpiresAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "AbsoluteExpiresAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "IdleTimeoutMinutes": {
+                          "type": "integer"
+                        },
+                        "Session": {
+                          "$ref": "#/components/schemas/Session"
+                        }
+                      },
+                      "required": [
+                        "User",
+                        "AccessToken",
+                        "TokenType",
+                        "ExpiresAt",
+                        "AbsoluteExpiresAt",
+                        "IdleTimeoutMinutes",
+                        "Session"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "Success",
+                    "Data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid credentials/device payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials or inactive account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "HTTPS_REQUIRED or DEVICE_APPROVAL_REQUIRED; no access token issued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/AddNewDevices": {
+      "post": {
+        "operationId": "requestDeviceApproval",
+        "summary": "Request approval for this device without issuing a token",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Credential-verified device state. No token. Call Users/Login after approval.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceAccessResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many pending device requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/status": {
+      "post": {
+        "operationId": "deviceApprovalStatus",
+        "summary": "Check this employee/device approval status using credentials",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Credential-verified device state. No token. Call Users/Login after approval.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceAccessResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many pending device requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/LoginViaBIO": {
+      "post": {
+        "operationId": "mobileLoginViaBIO",
+        "summary": "Issue a fresh session using a device-bound BIOID secret",
+        "security": [
+          {
+            "FixedIntegrationBasic": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BioLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Same login response DTO; fresh token, same BIOID. Previously submitted device snapshot.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "Data": {
+                      "type": "object",
+                      "properties": {
+                        "User": {
+                          "$ref": "#/components/schemas/EmployeeProfile"
+                        },
+                        "AccessToken": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9_-]{43}$"
+                        },
+                        "TokenType": {
+                          "type": "string",
+                          "enum": [
+                            "Bearer"
+                          ]
+                        },
+                        "ExpiresAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "AbsoluteExpiresAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "IdleTimeoutMinutes": {
+                          "type": "integer"
+                        },
+                        "Session": {
+                          "$ref": "#/components/schemas/Session"
+                        }
+                      },
+                      "required": [
+                        "User",
+                        "AccessToken",
+                        "TokenType",
+                        "ExpiresAt",
+                        "AbsoluteExpiresAt",
+                        "IdleTimeoutMinutes",
+                        "Session"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "Success",
+                    "Data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_BIOID_FORMAT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "BASIC_AUTH_REQUIRED, BASIC_AUTH_INVALID, BIOID_INVALID, BIOID_EXPIRED, BIOID_REVOKED, PASSWORD_CHANGED",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "HTTPS_REQUIRED, ACCOUNT_INACTIVE, ACCOUNT_DELETED, DEVICE_NOT_APPROVED, ACCOUNT_TYPE_NOT_ALLOWED",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "SERVER_ERROR",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Device": {
+        "type": "object",
+        "properties": {
+          "DeviceID": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "Platform": {
+            "type": "string",
+            "enum": [
+              "Android",
+              "iOS"
+            ]
+          },
+          "Manufacturer": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "Model": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "OSVersion": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "MACID": {
+            "type": "string",
+            "maxLength": 32,
+            "nullable": true,
+            "description": "Actual MAC when available, otherwise null/omitted. OS placeholder values are normalized to null."
+          }
+        },
+        "required": [
+          "DeviceID",
+          "Platform",
+          "Model",
+          "OSVersion"
+        ]
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "Username": {
+            "type": "string",
+            "maxLength": 250
+          },
+          "Password": {
+            "type": "string",
+            "maxLength": 1024,
+            "format": "password",
+            "writeOnly": true
+          },
+          "AppVersion": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "AppBuild": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "Device": {
+            "$ref": "#/components/schemas/Device"
+          }
+        },
+        "required": [
+          "Username",
+          "Password",
+          "AppVersion",
+          "Device"
+        ]
+      },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "UserID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "EmployeeNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "AppVersion": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "AppBuild": {
+            "type": "string",
+            "maxLength": 50,
+            "nullable": true
+          },
+          "DeviceID": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "DevicePlatform": {
+            "type": "string",
+            "enum": [
+              "Android",
+              "iOS"
+            ]
+          },
+          "DeviceManufacturer": {
+            "type": "string",
+            "maxLength": 100,
+            "nullable": true
+          },
+          "DeviceModel": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "OSVersion": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "MACID": {
+            "type": "string",
+            "maxLength": 17,
+            "nullable": true
+          },
+          "CreatedUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "AbsoluteExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "UserID",
+          "EmployeeNumber",
+          "AppVersion",
+          "DeviceID",
+          "DevicePlatform",
+          "DeviceModel",
+          "OSVersion",
+          "CreatedUtc",
+          "ExpiresAt",
+          "AbsoluteExpiresAt"
+        ],
+        "description": "Only supplied usable client metadata is returned. Manufacturer, MACID and AppBuild are omitted when absent, blank or null. MAC is optional and normalized; privacy placeholders are omitted."
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "Error": {
+            "type": "object",
+            "properties": {
+              "Code": {
+                "type": "string"
+              },
+              "Message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "Code",
+              "Message"
+            ]
+          }
+        },
+        "required": [
+          "Success",
+          "Error"
+        ]
+      },
+      "Lookup": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Title_Ar": {
+            "type": "string",
+            "nullable": true
+          },
+          "Title_En": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "ID",
+          "Title_Ar",
+          "Title_En"
+        ],
+        "nullable": true,
+        "additionalProperties": false
+      },
+      "EmployeeProfile": {
+        "type": "object",
+        "properties": {
+          "BIOID": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43}$",
+            "description": "Reusable secret per employee/device, protected in biometric secure storage."
+          },
+          "ID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Employee_Number": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "FullName_Ar": {
+            "type": "string",
+            "nullable": true
+          },
+          "Fullname_En": {
+            "type": "string",
+            "nullable": true
+          },
+          "User_Image": {
+            "type": "string",
+            "nullable": true
+          },
+          "PhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "MobileNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "Email": {
+            "type": "string",
+            "nullable": true
+          },
+          "UserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "userType": {
+            "$ref": "#/components/schemas/Lookup"
+          },
+          "brand": {
+            "$ref": "#/components/schemas/Lookup"
+          },
+          "branch": {
+            "$ref": "#/components/schemas/Lookup"
+          },
+          "department": {
+            "$ref": "#/components/schemas/Lookup"
+          },
+          "jobTitle": {
+            "$ref": "#/components/schemas/Lookup"
+          },
+          "shift": {
+            "$ref": "#/components/schemas/Lookup"
+          },
+          "gender": {
+            "$ref": "#/components/schemas/Lookup"
+          },
+          "nationality": {
+            "$ref": "#/components/schemas/Lookup"
+          }
+        },
+        "required": [
+          "BIOID",
+          "ID",
+          "Employee_Number",
+          "FullName_Ar",
+          "Fullname_En",
+          "User_Image",
+          "PhoneNumber",
+          "MobileNumber",
+          "Email",
+          "UserName",
+          "userType",
+          "brand",
+          "branch",
+          "department",
+          "jobTitle",
+          "shift",
+          "gender",
+          "nationality"
+        ],
+        "additionalProperties": false
+      },
+      "DeviceAccessResult": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "Data": {
+            "type": "object",
+            "properties": {
+              "RequestID": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "Status": {
+                "type": "string",
+                "enum": [
+                  "NotRequested",
+                  "Pending",
+                  "Approved",
+                  "Rejected",
+                  "Cancelled"
+                ]
+              },
+              "CanLogin": {
+                "type": "boolean"
+              },
+              "CreatedUtc": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              },
+              "DecidedUtc": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              }
+            },
+            "required": [
+              "RequestID",
+              "Status",
+              "CanLogin",
+              "CreatedUtc",
+              "DecidedUtc"
+            ]
+          }
+        },
+        "required": [
+          "Success",
+          "Data"
+        ]
+      },
+      "BioLogin": {
+        "type": "object",
+        "properties": {
+          "BIOID": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43}$",
+            "minLength": 43,
+            "maxLength": 43
+          }
+        },
+        "required": [
+          "BIOID"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "FixedIntegrationBasic": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "Current fixed integration API credentials, required only on LoginViaBIO."
+      }
+    }
+  }
+}

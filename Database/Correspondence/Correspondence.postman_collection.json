@@ -1,0 +1,567 @@
+{
+  "info": {
+    "name": "ERP Prosto — Correspondence API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Read MOBILE-API.md before use. Set the actual API baseUrl, current login accessToken/employeeNumber and IDs from responses. Examples send real operations to the chosen environment; use a test environment and synthetic users. Send requests individually: do not run the whole collection as a workflow. Operation/timestamp variables persist to support retries; clear both for a new action. Keep UUID/body/files unchanged on retry. Catalog management remains in the portal."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://YOUR-API-HOST",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "employeeNumber",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "brandID",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "recipientID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "priorityID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "closureReasonID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "threadID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "messageID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "notificationID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "visitID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "oldestID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "latestID",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Options — active catalogs and permissions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/options?employeeNumber={{employeeNumber}}&task=false&brandID={{brandID}}"
+      }
+    },
+    {
+      "name": "02 Task closure reasons",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/options?employeeNumber={{employeeNumber}}&task=true&brandID={{brandID}}"
+      }
+    },
+    {
+      "name": "03 Allowed recipients",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/recipients?employeeNumber={{employeeNumber}}&brandID={{brandID}}&page=1&pageSize=30&search="
+      }
+    },
+    {
+      "name": "04 Personal threads and counts",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads?employeeNumber={{employeeNumber}}&page=1&pageSize=20&filter=all&kind=0&priorityID=0"
+      }
+    },
+    {
+      "name": "05 Administrator oversight list",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads?employeeNumber={{employeeNumber}}&supervisory=true&page=1&pageSize=20"
+      }
+    },
+    {
+      "name": "06 Create correspondence (multipart)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "data",
+              "value": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{operation_create}}\",\n  \"OccurredAt\": \"{{occurred_create}}\",\n  \"RecipientIDs\": [\n    {{recipientID}}\n  ],\n  \"BrandID\": {{brandID}},\n  \"Title\": \"مراسلة تجريبية\",\n  \"Brief\": null,\n  \"Body\": \"نص الرسالة\",\n  \"PriorityID\": {{priorityID}},\n  \"RequiresCompletion\": false,\n  \"DueDate\": null,\n  \"RelatedThreadID\": null\n}",
+              "type": "text",
+              "contentType": "application/json"
+            },
+            {
+              "key": "files",
+              "type": "file",
+              "src": [],
+              "disabled": true,
+              "description": "Enable and choose a local file; duplicate this key for additional files (maximum five)."
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// These values persist for safe retries. Clear BOTH variables before a genuinely new action.",
+              "if (!pm.collectionVariables.get('operation_create')) pm.collectionVariables.set('operation_create', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('occurred_create')) pm.collectionVariables.set('occurred_create', new Date().toISOString());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) { const d = pm.response.json().Data; if (d.ThreadIDs && d.ThreadIDs.length) pm.collectionVariables.set(\"threadID\", d.ThreadIDs[0]); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 Open personal thread",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads/{{threadID}}/open",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{operation_open}}\",\n  \"OccurredAt\": \"{{occurred_open}}\",\n  \"Supervisory\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// These values persist for safe retries. Clear BOTH variables before a genuinely new action.",
+              "if (!pm.collectionVariables.get('operation_open')) pm.collectionVariables.set('operation_open', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('occurred_open')) pm.collectionVariables.set('occurred_open', new Date().toISOString());"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Open administrative visit",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads/{{threadID}}/open",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{operation_visit}}\",\n  \"OccurredAt\": \"{{occurred_visit}}\",\n  \"Supervisory\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// These values persist for safe retries. Clear BOTH variables before a genuinely new action.",
+              "if (!pm.collectionVariables.get('operation_visit')) pm.collectionVariables.set('operation_visit', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('occurred_visit')) pm.collectionVariables.set('occurred_visit', new Date().toISOString());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) pm.collectionVariables.set(\"visitID\", pm.response.json().Data.VisitID);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 Latest messages and read receipts",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads/{{threadID}}/messages?employeeNumber={{employeeNumber}}&pageSize=30"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) { const d = pm.response.json().Data; if (d.LatestID) pm.collectionVariables.set(\"latestID\", d.LatestID); if (d.OldestID) pm.collectionVariables.set(\"oldestID\", d.OldestID); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 Older messages",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads/{{threadID}}/messages?employeeNumber={{employeeNumber}}&beforeID={{oldestID}}&pageSize=30"
+      }
+    },
+    {
+      "name": "11 Poll new messages",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads/{{threadID}}/messages?employeeNumber={{employeeNumber}}&afterID={{latestID}}&pageSize=30"
+      }
+    },
+    {
+      "name": "12 Administrative messages",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads/{{threadID}}/messages?employeeNumber={{employeeNumber}}&supervisory=true&visitID={{visitID}}&pageSize=30"
+      }
+    },
+    {
+      "name": "13 Reply (multipart)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads/{{threadID}}/messages",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "data",
+              "value": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{operation_reply}}\",\n  \"OccurredAt\": \"{{occurred_reply}}\",\n  \"Body\": \"رد تجريبي\"\n}",
+              "type": "text",
+              "contentType": "application/json"
+            },
+            {
+              "key": "files",
+              "type": "file",
+              "src": [],
+              "disabled": true,
+              "description": "Enable and choose a local file; duplicate this key for additional files (maximum five)."
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// These values persist for safe retries. Clear BOTH variables before a genuinely new action.",
+              "if (!pm.collectionVariables.get('operation_reply')) pm.collectionVariables.set('operation_reply', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('occurred_reply')) pm.collectionVariables.set('occurred_reply', new Date().toISOString());"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 Acknowledge displayed incoming message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads/{{threadID}}/read",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{operation_read}}\",\n  \"OccurredAt\": \"{{occurred_read}}\",\n  \"MessageIDs\": [\n    {{messageID}}\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// These values persist for safe retries. Clear BOTH variables before a genuinely new action.",
+              "if (!pm.collectionVariables.get('operation_read')) pm.collectionVariables.set('operation_read', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('occurred_read')) pm.collectionVariables.set('occurred_read', new Date().toISOString());"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 Close — creator only",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads/{{threadID}}/close",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{operation_close}}\",\n  \"OccurredAt\": \"{{occurred_close}}\",\n  \"ClosureReasonID\": {{closureReasonID}},\n  \"IsCompleted\": true,\n  \"Explanation\": \"توضيح الإنهاء\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// These values persist for safe retries. Clear BOTH variables before a genuinely new action.",
+              "if (!pm.collectionVariables.get('operation_close')) pm.collectionVariables.set('operation_close', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('occurred_close')) pm.collectionVariables.set('occurred_close', new Date().toISOString());"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "16 Personal notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/notifications?employeeNumber={{employeeNumber}}&page=1&pageSize=20&unreadOnly=false"
+      }
+    },
+    {
+      "name": "17 Acknowledge notification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/notifications/{{notificationID}}/read",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{operation_notice}}\",\n  \"OccurredAt\": \"{{occurred_notice}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// These values persist for safe retries. Clear BOTH variables before a genuinely new action.",
+              "if (!pm.collectionVariables.get('operation_notice')) pm.collectionVariables.set('operation_notice', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('occurred_notice')) pm.collectionVariables.set('occurred_notice', new Date().toISOString());"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "18 Administrative archive — inactive creator",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/correspondence/threads/{{threadID}}/archive",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"EmployeeNumber\": {{employeeNumber}},\n  \"OperationID\": \"{{operation_archive}}\",\n  \"OccurredAt\": \"{{occurred_archive}}\",\n  \"Explanation\": \"توقف حساب منشئ التكليف\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// These values persist for safe retries. Clear BOTH variables before a genuinely new action.",
+              "if (!pm.collectionVariables.get('operation_archive')) pm.collectionVariables.set('operation_archive', pm.variables.replaceIn('{{$guid}}'));",
+              "if (!pm.collectionVariables.get('occurred_archive')) pm.collectionVariables.set('occurred_archive', new Date().toISOString());"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

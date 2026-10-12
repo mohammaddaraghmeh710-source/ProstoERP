@@ -1,0 +1,183 @@
+﻿{
+  "entities": {
+    "Account_Types": [
+      [
+        "Name_AR",
+        "nvarchar(200)",
+        "الاسم",
+        "text"
+      ],
+      [
+        "Name_EN",
+        "nvarchar(200)",
+        "الاسم الإنجليزي",
+        "text"
+      ],
+      [
+        "Notes",
+        "nvarchar(2000)",
+        "ملاحظات",
+        "memo"
+      ]
+    ],
+    "Contract_Types": [
+      [
+        "Name_AR",
+        "nvarchar(200)",
+        "الاسم",
+        "text"
+      ],
+      [
+        "Name_EN",
+        "nvarchar(200)",
+        "الاسم الإنجليزي",
+        "text"
+      ],
+      [
+        "Notes",
+        "nvarchar(2000)",
+        "ملاحظات",
+        "memo"
+      ]
+    ],
+    "Payment_Methods": [
+      [
+        "Name_AR",
+        "nvarchar(200)",
+        "الاسم",
+        "text"
+      ],
+      [
+        "Name_EN",
+        "nvarchar(200)",
+        "الاسم الإنجليزي",
+        "text"
+      ],
+      [
+        "Notes",
+        "nvarchar(2000)",
+        "ملاحظات",
+        "memo"
+      ]
+    ],
+    "Accounts": [
+      [
+        "Name_AR",
+        "nvarchar(200)",
+        "اسم العميل",
+        "text"
+      ],
+      [
+        "Name_EN",
+        "nvarchar(200)",
+        "الاسم الإنجليزي",
+        "text"
+      ],
+      [
+        "Account_Type_ID",
+        "int",
+        "نوع العميل",
+        "Account_Types"
+      ],
+      [
+        "Owner_ID",
+        "int",
+        "مسؤول العميل",
+        "Users"
+      ],
+      [
+        "Phone",
+        "nvarchar(50)",
+        "هاتف الشركة",
+        "text"
+      ],
+      [
+        "Email",
+        "nvarchar(254)",
+        "بريد الشركة",
+        "email"
+      ],
+      [
+        "Address",
+        "nvarchar(500)",
+        "العنوان",
+        "memo"
+      ],
+      [
+        "Country",
+        "nvarchar(100)",
+        "البلد",
+        "text"
+      ],
+      [
+        "Website",
+        "nvarchar(500)",
+        "الموقع الإلكتروني",
+        "url"
+      ],
+      [
+        "Registration_Number",
+        "nvarchar(100)",
+        "رقم تسجيل الشركة",
+        "text"
+      ],
+      [
+        "Notes",
+        "nvarchar(2000)",
+        "ملاحظات",
+        "memo"
+      ]
+    ],
+    "Contacts": [
+      [
+        "Account_ID",
+        "int",
+        "العميل",
+        "Accounts"
+      ],
+      [
+        "Name_AR",
+        "nvarchar(200)",
+        "الاسم",
+        "text"
+      ],
+      [
+        "Job_Title",
+        "nvarchar(200)",
+        "المسمى الوظيفي",
+        "text"
+      ],
+      [
+        "Phone",
+        "nvarchar(50)",
+        "الهاتف",
+        "text"
+      ],
+      [
+        "Email",
+        "nvarchar(254)",
+        "البريد الإلكتروني",
+        "email"
+      ],
+      [
+        "Gender",
+        "nvarchar(20)",
+        "الجنس",
+        "gender"
+      ],
+      [
+        "Notes",
+        "nvarchar(2000)",
+        "ملاحظات",
+        "memo"
+      ]
+    ]
+  },
+  "titles": {
+    "Account_Types": "أنواع العملاء",
+    "Contract_Types": "أنواع العقود",
+    "Payment_Methods": "طرق الدفع",
+    "Accounts": "العملاء",
+    "Contacts": "جهات الاتصال"
+  }
+}

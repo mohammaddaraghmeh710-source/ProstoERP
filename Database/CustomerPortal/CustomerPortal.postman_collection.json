@@ -1,0 +1,355 @@
+{
+  "info": {
+    "name": "ERP Customer Portal API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Set identifiers from options. Generate a new operation UUID for each new submission; keep it unchanged for retries."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost"
+    },
+    {
+      "key": "username",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "brandID",
+      "value": "1"
+    },
+    {
+      "key": "categoryID",
+      "value": "1"
+    },
+    {
+      "key": "typeID",
+      "value": "1"
+    },
+    {
+      "key": "topicID",
+      "value": "1"
+    },
+    {
+      "key": "branchID",
+      "value": "1"
+    },
+    {
+      "key": "documentID",
+      "value": "1"
+    },
+    {
+      "key": "requestID",
+      "value": "1"
+    },
+    {
+      "key": "attachmentID",
+      "value": "1"
+    },
+    {
+      "key": "guideOperationID",
+      "value": "bcac6c47-70b9-42d8-b6bd-d4acbe6e4797"
+    },
+    {
+      "key": "feedbackOperationID",
+      "value": "61c28f96-a96b-4bbd-972c-030852d83ca7"
+    }
+  ],
+  "item": [
+    {
+      "name": "تسجيل دخول العميل",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"Username\": \"{{username}}\",\n  \"Password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) pm.collectionVariables.set(\"token\", pm.response.json().Data.Token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "هوية العميل",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/me"
+      }
+    },
+    {
+      "name": "العلامات التجارية",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/guide/brands"
+      }
+    },
+    {
+      "name": "التصنيفات المسموحة",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/guide/categories?brandID={{brandID}}"
+      }
+    },
+    {
+      "name": "الملفات المسموحة",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/guide/documents?brandID={{brandID}}&page=1&pageSize=20"
+      }
+    },
+    {
+      "name": "تفاصيل الملف",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/guide/documents/{{documentID}}"
+      }
+    },
+    {
+      "name": "عرض PDF",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/guide/documents/{{documentID}}/file"
+      }
+    },
+    {
+      "name": "تنزيل PDF",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/guide/documents/{{documentID}}/file?download=true"
+      }
+    },
+    {
+      "name": "تصنيفات طلب الصلاحية",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/guide/access-request-options?brandID={{brandID}}"
+      }
+    },
+    {
+      "name": "تقديم طلب صلاحية",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/guide/access-requests",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"OperationID\": \"{{guideOperationID}}\",\n  \"BrandID\": \"{{brandID}}\",\n  \"CategoryIDs\": [\n    \"{{categoryID}}\"\n  ],\n  \"Reason\": \"سبب طلب الصلاحية\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "طلباتي للصلاحيات",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/guide/access-requests?brandID=0&status=P&page=1&pageSize=20"
+      }
+    },
+    {
+      "name": "خيارات الشكوى والاقتراح",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/feedback/options?brandID={{brandID}}&typeID={{typeID}}"
+      }
+    },
+    {
+      "name": "تقديم شكوى أو اقتراح",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/feedback/requests",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "data",
+              "value": "{\"OperationID\": \"{{feedbackOperationID}}\", \"TypeID\": \"{{typeID}}\", \"TopicID\": \"{{topicID}}\", \"BrandID\": \"{{brandID}}\", \"BranchID\": \"{{branchID}}\", \"Mobile\": \"0790000000\", \"Title\": \"طلب من التطبيق\", \"Details\": \"تفاصيل الطلب\"}",
+              "type": "text",
+              "contentType": "application/json"
+            },
+            {
+              "key": "files",
+              "type": "file",
+              "src": [],
+              "disabled": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "طلباتي",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/feedback/requests?page=1&pageSize=20&status=0"
+      }
+    },
+    {
+      "name": "تفاصيل طلبي",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/feedback/requests/{{requestID}}"
+      }
+    },
+    {
+      "name": "مرفق طلبي",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/feedback/attachments/{{attachmentID}}"
+      }
+    },
+    {
+      "name": "تسجيل الخروج",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/customer/logout"
+      }
+    }
+  ]
+}

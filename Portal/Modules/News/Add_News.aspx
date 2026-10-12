@@ -1,0 +1,112 @@
+﻿<%@ Page Title="إضافة خبر" Language="vb" AutoEventWireup="false"
+    MasterPageFile="~/Site.Master"
+    CodeBehind="Add_News.aspx.vb"
+    Inherits="CRM.Add_News" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server"></asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div class="container-xxl flex-grow-1 container-p-y" style="direction: rtl; text-align: right;">
+        <div class="row">
+            <div class="col-12">
+
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">إضافة خبر</h5>
+                        <a class="btn btn-outline-secondary" href="/Modules/News/Manage_News.aspx">رجوع</a>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label">العنوان عربي</label>
+                                <asp:TextBox ID="txtTitleAr" runat="server" CssClass="form-control" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">العنوان إنجليزي</label>
+                                <asp:TextBox ID="txtTitleEn" runat="server" CssClass="form-control" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">نبذة عربي</label>
+                                <asp:TextBox ID="txtBriefAr" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">نبذة إنجليزي</label>
+                                <asp:TextBox ID="txtBriefEn" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">التفاصيل</label>
+                                <asp:TextBox ID="txtDetails" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="6" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">تاريخ الخبر</label>
+                                <asp:TextBox ID="txtDate" runat="server" CssClass="form-control" TextMode="DateTimeLocal" />
+                                <small class="text-muted d-block mt-1">اختياري - إن لم يتم إدخاله سيتم الاعتماد على تاريخ الإنشاء.</small>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">الترتيب</label>
+                                <asp:TextBox ID="txtOrder" runat="server" CssClass="form-control" TextMode="Number" />
+                            </div>
+
+                            <!-- رابط فتح البلوك الإضافي -->
+                            <div class="col-12">
+                                <div class="mt-3 mb-1">
+                                    <a href="javascript:void(0)" class="fw-bold text-primary" onclick="toggleNewsMediaSection()">
+                                        صورة الخبر (اختياري)
+                                    </a>
+                                    <small class="text-muted d-block">اضغط هنا لعرض/إخفاء رفع صورة الخبر.</small>
+                                </div>
+                            </div>
+
+                            <!-- بلوك رفع الصورة -->
+                            <div id="newsMediaSection" style="display:none;" class="col-12">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label">صورة الخبر</label>
+                                        <ajaxToolkit:AjaxFileUpload ID="NewsImageUploader"
+                                            AllowedFileTypes="jpeg,jpg,png,webp"
+                                            MaximumNumberOfFiles="1"
+                                            MaxFileSize="100024"
+                                            runat="server"
+                                            OnUploadComplete="NewsImageUploader_UploadComplete"
+                                            OnUploadStart="NewsImageUploader_UploadStart" />
+                                        <span class="text-danger d-block mt-1" style="font-size:12px;">
+                                            يمكن تحميل الملفات من نوع (jpeg,jpg,png,webp)
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click">
+                            حفظ
+                        </asp:LinkButton>
+
+                        <a class="btn btn-outline-secondary" href="/Modules/News/Manage_News.aspx">إلغاء</a>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function toggleNewsMediaSection() {
+            var sec = document.getElementById('newsMediaSection');
+            if (!sec) return;
+            if (sec.style.display === 'none' || sec.style.display === '') sec.style.display = 'block';
+            else sec.style.display = 'none';
+        }
+    </script>
+</asp:Content>

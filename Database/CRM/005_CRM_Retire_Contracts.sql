@@ -1,0 +1,35 @@
+﻿-- Explicitly requested retirement of contracts and all dependent features.
+DROP PROCEDURE IF EXISTS dbo.CRM_Save_Contracts;
+DROP PROCEDURE IF EXISTS dbo.CRM_Save_Installments;
+DROP PROCEDURE IF EXISTS dbo.CRM_Save_Invoices;
+DROP PROCEDURE IF EXISTS dbo.CRM_Save_Payments;
+DROP PROCEDURE IF EXISTS dbo.CRM_Save_Followups;
+DROP PROCEDURE IF EXISTS dbo.CRM_Select_Contracts;
+DROP PROCEDURE IF EXISTS dbo.CRM_Select_Installments;
+DROP PROCEDURE IF EXISTS dbo.CRM_Select_Invoices;
+DROP PROCEDURE IF EXISTS dbo.CRM_Select_Payments;
+DROP PROCEDURE IF EXISTS dbo.CRM_Select_Followups;
+DROP PROCEDURE IF EXISTS dbo.CRM_Select_Alerts;
+DROP PROCEDURE IF EXISTS dbo.CRM_Change_State;
+DROP PROCEDURE IF EXISTS dbo.CRM_Attach_File;
+DROP PROCEDURE IF EXISTS dbo.CRM_Download_File;
+DROP PROCEDURE IF EXISTS dbo.CRM_Select_Attachments;
+DROP PROCEDURE IF EXISTS dbo.CRM_Read_Settings;
+DROP PROCEDURE IF EXISTS dbo.CRM_Save_Settings;
+DROP PROCEDURE IF EXISTS dbo.CRM_Select_Email_Status;
+DROP PROCEDURE IF EXISTS dbo.CRM_Queue_Notifications;
+DROP VIEW IF EXISTS dbo.CRM_v_Contracts;
+DROP VIEW IF EXISTS dbo.CRM_v_Installments;
+DROP VIEW IF EXISTS dbo.CRM_v_Invoices;
+DROP VIEW IF EXISTS dbo.CRM_v_Payments;
+DROP VIEW IF EXISTS dbo.CRM_v_Followups;
+DROP VIEW IF EXISTS dbo.CRM_v_Alerts;
+DROP TABLE IF EXISTS dbo.CRM_Attachments;
+DROP TABLE IF EXISTS dbo.CRM_Email_Outbox;
+DROP TABLE IF EXISTS dbo.CRM_Followups;
+DROP TABLE IF EXISTS dbo.CRM_Payments;
+DROP TABLE IF EXISTS dbo.CRM_Invoices;
+DROP TABLE IF EXISTS dbo.CRM_Installments;
+DROP TABLE IF EXISTS dbo.CRM_Contracts;
+DROP TABLE IF EXISTS dbo.CRM_Settings;
+GO
