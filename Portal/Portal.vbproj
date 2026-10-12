@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -2894,8 +2894,13 @@
     <Compile Include="AppCode\EncryptDecrypt.vb" />
     <Compile Include="AppCode\RememberMeToken.vb" />
     <Compile Include="AppCode\EmployeeSessionResetGuard.vb" />
-    <Compile Include="ForgotPassword.aspx.vb"><DependentUpon>ForgotPassword.aspx</DependentUpon></Compile>
-    <Compile Include="ForgotPassword.aspx.designer.vb"><DependentUpon>ForgotPassword.aspx</DependentUpon></Compile>
+    <Compile Include="ForgotPassword.aspx.vb">
+      <DependentUpon>ForgotPassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ForgotPassword.aspx.designer.vb">
+      <DependentUpon>ForgotPassword.aspx</DependentUpon>
+    </Compile>
     <Content Include="ForgotPassword.aspx" />
     <Compile Include="AppCode\SessionManager.vb" />
     <Compile Include="AppCode\UserEntity.vb" />
@@ -3905,11 +3910,21 @@
     <Content Include="assets\js\work-guide-datatables.js" />
   </ItemGroup>
   <ItemGroup>
-        <Compile Include="AppCode\AttendanceData.vb" />
-    <Compile Include="Modules\Employees\AttendanceHistory.aspx.vb"><DependentUpon>AttendanceHistory.aspx</DependentUpon><SubType>ASPXCodeBehind</SubType></Compile>
-    <Compile Include="Modules\Employees\AttendanceHistory.aspx.designer.vb"><DependentUpon>AttendanceHistory.aspx</DependentUpon></Compile>
-    <Compile Include="Modules\Attendance_Integration\ManageAttendanceIntegration.aspx.vb"><DependentUpon>ManageAttendanceIntegration.aspx</DependentUpon><SubType>ASPXCodeBehind</SubType></Compile>
-    <Compile Include="Modules\Attendance_Integration\ManageAttendanceIntegration.aspx.designer.vb"><DependentUpon>ManageAttendanceIntegration.aspx</DependentUpon></Compile>
+    <Compile Include="AppCode\AttendanceData.vb" />
+    <Compile Include="Modules\Employees\AttendanceHistory.aspx.vb">
+      <DependentUpon>AttendanceHistory.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employees\AttendanceHistory.aspx.designer.vb">
+      <DependentUpon>AttendanceHistory.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Attendance_Integration\ManageAttendanceIntegration.aspx.vb">
+      <DependentUpon>ManageAttendanceIntegration.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Attendance_Integration\ManageAttendanceIntegration.aspx.designer.vb">
+      <DependentUpon>ManageAttendanceIntegration.aspx</DependentUpon>
+    </Compile>
     <Compile Include="AppCode\CRMData.vb" />
     <Compile Include="AppCode\CRMModel.vb" />
     <Compile Include="PageBase\CRMModulePage.vb">
