@@ -72,7 +72,7 @@ namespace Prosto_ERP_API.Mobile
             return Execute(() =>
             {
                 MobileApiSupport.Query("dbo.MobileApi_Logout", MobileApiSupport.P("@TokenHash", SqlDbType.Binary, Request.Properties["MobileTokenHash"], 32));
-                return Success(new { Success = true, Data = (object)null });
+                return Responses.ApiResponseHandler.Success(Request);
             });
         }
         private Dictionary<string, object> Session { get { return (Dictionary<string, object>)Request.Properties["MobileSession"]; } }

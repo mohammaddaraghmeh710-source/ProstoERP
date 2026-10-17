@@ -119,10 +119,7 @@ namespace Prosto_ERP_API.Mobile
         }
         internal static HttpResponseMessage Error(HttpRequestMessage request, HttpStatusCode status, string code, string message)
         {
-            var response = request.CreateResponse(status, new { Success = false, Error = new { Code = code, Message = message } });
-            NoCache(response);
-            if (status == HttpStatusCode.Unauthorized) response.Headers.WwwAuthenticate.Add(new AuthenticationHeaderValue("Bearer"));
-            return response;
+            return Responses.ApiResponseHandler.Error(request, status, code, message);
         }
         internal static void NoCache(HttpResponseMessage response)
         {

@@ -171,6 +171,8 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Shared\Serialization\OmitEmptyJsonValuesHandler.cs" />
+    <Compile Include="Shared\Responses\ApiResponseHandler.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Controllers\SwaggerController.cs" />
     <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
@@ -203,15 +205,11 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Shared\Authentication\AuthenticationAttribute.cs" />
     <Compile Include="Features\Learning\ERPController.cs" />
-    <Compile Include="Features\Learning\Models\ERPRequests.cs" />
-    <Compile Include="Features\Feedback\Models\FeedbackRequests.cs" />
     <Compile Include="Features\Feedback\FeedbackException.cs" />
     <Compile Include="Features\Feedback\Data\FeedbackDb.cs" />
-    <Compile Include="Features\EmailNotifications\Models\EmailNotificationRequest.cs" />
     <Compile Include="Features\Attendance\Authentication\AttendanceAuthenticationAttribute.cs" />
     <Compile Include="Features\Attendance\AttendanceController.cs" />
     <Compile Include="Features\Attendance\Authentication\AttendanceCredentialAuthenticationAttribute.cs" />
-    <Compile Include="Features\Attendance\Models\AttendanceTransactionsRequest.cs" />
     <Compile Include="Features\Attendance\Services\BioTimeAttendanceService.cs" />
     <Compile Include="Shared\Mobile\MobileApi.cs" />
     <Compile Include="Features\EmployeeAccess\MobileController.cs" />
@@ -227,16 +225,8 @@
     <Compile Include="Features\CustomerPortal\CustomerPortalController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
-    <Compile Include="Features\EmployeeAccess\Models\BioLoginRequest.cs" />
-    <Compile Include="Features\News\Models\NewsRequest.cs" />
-    <Compile Include="Features\PasswordReset\Models\PasswordResetRequests.cs" />
-    <Compile Include="Features\Correspondence\Models\CorrespondenceRequests.cs" />
-    <Compile Include="Features\Circulars\Models\CircularFileEvent.cs" />
-    <Compile Include="Features\CustomerFeedback\Models\CustomerFeedbackCreate.cs" />
-    <Compile Include="Features\CustomerPortal\Models\CustomerPortalRequests.cs" />
     <Compile Include="Features\PasswordReset\ResetException.cs" />
     <Compile Include="Features\CustomerPortal\Authentication\CustomerSessionAttribute.cs" />
-    <Compile Include="Features\EmployeeAccess\Models\MobileLoginRequest.cs" />
     <Compile Include="Shared\Authentication\MobileTransportAttribute.cs" />
     <Compile Include="Shared\Authentication\MobileSessionAttribute.cs" />
     <Compile Include="Features\Attendance\BioTimeException.cs" />
@@ -312,6 +302,10 @@
   </Target> -->
 
   <ItemGroup>
+    <ProjectReference Include="..\ProstoERP.Contracts\ProstoERP.Contracts.csproj">
+      <Project>{8C0D0D70-C871-4FA4-AEB4-19959A2D08C8}</Project>
+      <Name>ProstoERP.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ProstoERP.Application\ProstoERP.Application.csproj">
       <Project>{228991F9-72E4-44D5-A24B-F9B1F393D799}</Project>
       <Name>ProstoERP.Application</Name>

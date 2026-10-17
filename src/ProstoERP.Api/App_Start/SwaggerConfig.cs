@@ -20,7 +20,9 @@ namespace Prosto_ERP_API
                 c.SingleApiVersion("v1", "Prosto ERP API")
                     .Description("Explore and test the ERP API. Login returns an access token for employee endpoints. " +
                                  "Use Authorize with Bearer followed by a space and the token. " +
-                                 "Integration and attendance endpoints use their configured Basic credentials.");
+                                 "Integration and attendance endpoints use their configured Basic credentials. " +
+                                 "JSON responses omit null, empty-string and empty-collection properties recursively; " +
+                                 "false and zero remain present. Optional Data may be absent when empty.");
                 c.UseFullTypeNameInSchemaIds();
                 c.BasicAuth("basic").Description("Integration credentials, or brand attendance credentials for attendance endpoints.");
                 c.ApiKey("bearer").Name("Authorization").In("header")

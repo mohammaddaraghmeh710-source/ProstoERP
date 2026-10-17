@@ -8,6 +8,10 @@ for responsibilities and build-tool details. Application projects live under
 `src/`, Aspire under `orchestration/`, and database scripts under `database/`.
 Page URLs and legacy assembly names remain unchanged.
 
+For mobile backend development, see [Mobile backend foundation](docs/MOBILE_BACKEND.md)
+for the shared contracts, response handler, empty-value JSON policy, contract
+export command, and preparation for later deployment.
+
 ## Fresh local development on macOS
 
 The solution includes a source-built development replacement for the unavailable

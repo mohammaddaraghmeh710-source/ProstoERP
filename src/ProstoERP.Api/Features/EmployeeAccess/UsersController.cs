@@ -71,11 +71,11 @@ namespace Prosto_ERP_API.Mobile
             var session = MobileApiSupport.Row(result.Tables[1].Rows[0]);
             foreach (var name in new[] { "DeviceManufacturer", "MACID", "AppBuild" })
                 if (session[name] == null || string.IsNullOrEmpty(Convert.ToString(session[name]))) session.Remove(name);
-            return Success(new { Success = true, Data = new {
+            return Responses.ApiResponseHandler.Success(Request, new {
                 User = user, AccessToken = token, TokenType = "Bearer",
                 ExpiresAt = session["ExpiresAt"], AbsoluteExpiresAt = session["AbsoluteExpiresAt"],
                 IdleTimeoutMinutes = MobileApiSupport.IdleMinutes, Session = session
-            }});
+            });
         }
         [HttpPost, Route("AddNewDevices")]
         public HttpResponseMessage Add_New_Devices([FromBody] MobileLoginRequest model) { return DeviceAccess(model, true); }
@@ -88,7 +88,7 @@ namespace Prosto_ERP_API.Mobile
                 var result = MobileApiSupport.QueryDeviceAccess(model, submit);
                 if (result.Tables.Count == 0 || result.Tables[0].Rows.Count == 0)
                     return MobileApiSupport.Error(Request, HttpStatusCode.Unauthorized, "INVALID_CREDENTIALS", "بيانات الدخول غير صحيحة أو الحساب غير فعال.");
-                return Success(new { Success = true, Data = MobileApiSupport.Row(result.Tables[0].Rows[0]) });
+                return Responses.ApiResponseHandler.Success(Request, MobileApiSupport.Row(result.Tables[0].Rows[0]));
             });
         }
         // Explicit public DTO: new database columns never leak into employee responses.
@@ -113,6 +113,7 @@ namespace Prosto_ERP_API.Mobile
             if (data[id] == null) return null;
             return new { ID = data[id], Title_Ar = data[prefix + "_Ar"], Title_En = data[prefix + "_En"] };
         }
+        // Retained for the password-reset partial controller's existing response shape.
         private HttpResponseMessage Success(object body)
         {
             var response = Request.CreateResponse(HttpStatusCode.OK, body);

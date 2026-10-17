@@ -3,6 +3,7 @@
 .dotnet_cli/
 .nuget/
 .local-development/
+artifacts/
 __pycache__/
 packages/
 [Bb]in/

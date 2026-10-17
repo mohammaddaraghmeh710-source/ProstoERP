@@ -10,6 +10,7 @@ namespace Prosto_ERP_API
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
+            config.MessageHandlers.Add(new Serialization.OmitEmptyJsonValuesHandler());
 
             // Web API routes
             config.MapHttpAttributeRoutes();

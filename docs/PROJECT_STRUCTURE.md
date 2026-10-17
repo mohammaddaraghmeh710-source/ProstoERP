@@ -9,6 +9,7 @@ src/
   Portal/
   ProstoERP.Api/
   ProstoERP.Application/
+  ProstoERP.Contracts/
   ProstoERP.Infrastructure/
   Encryptor/
 orchestration/
@@ -38,6 +39,7 @@ paths adjusted for the new layout. No test projects or new tests are introduced.
 | Solution folder | Contents |
 | --- | --- |
 | src | Portal, ProstoERP.Api, ProstoERP.Application, ProstoERP.Infrastructure, Encryptor |
+| src / ProstoERP.Contracts | Shared mobile request DTOs and common response contracts |
 | orchestration / ProstoERP.AppHost | Separate .NET 10 AppHost source and launch settings |
 | database / migrations | Existing feature SQL scripts and associated documentation |
 | database / development | Limited local baseline, migration selection manifest, and trial tooling |
@@ -65,9 +67,12 @@ the **Local ERP** alternative.
   Moving pages changes their URLs and must be treated as a functional change.
 - API business endpoints and their supporting code live under
   `src/ProstoERP.Api/Features/<feature>`. Each feature contains its controller
-  and the relevant `Models`, `Data`, `Services`, `Authentication`, or `Storage`
+  and the relevant `Data`, `Services`, `Authentication`, or `Storage`
   files. Cross-feature authentication and mobile plumbing live under `Shared`.
   MVC Home/Swagger and the existing Values sample remain under `Controllers`.
+  Shared request DTOs live under `src/ProstoERP.Contracts/Features/<feature>/Models`;
+  response envelopes live under `ProstoERP.Contracts/Common`. See the
+  [mobile backend guide](MOBILE_BACKEND.md) for response handling and contract export.
 - Portal supporting code lives under `src/Portal/Features/<feature>`, with
   `Data`, `Presentation`, `Storage`, `Models`, `Configuration`, `Exports`, or
   supporting `Web` classes grouped alongside each other as appropriate.
