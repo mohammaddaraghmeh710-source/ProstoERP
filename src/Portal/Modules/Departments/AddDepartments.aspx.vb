@@ -1,7 +1,5 @@
-﻿Imports System.IO
-Imports AjaxControlToolkit
-Imports System.Data
-Imports System.Linq
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class AddDepartments
     Inherits PageBase
@@ -9,7 +7,7 @@ Public Class AddDepartments
     Private WorkingMethodVideo_path As String = Nothing
     Private EvaluationMethodVideo_path As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -24,10 +22,10 @@ Public Class AddDepartments
     End Sub
 
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Brands_All() _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlBrand.DataSource = data
             ddlBrand.DataTextField = "Title_Ar"
             ddlBrand.DataValueField = "ID"
@@ -45,7 +43,6 @@ Public Class AddDepartments
         End If
 
         FillBranches(brandId)
-
     End Sub
 
     Private Sub FillBranches(Optional brandId As Integer? = Nothing)
@@ -54,10 +51,10 @@ Public Class AddDepartments
 
         If Not brandId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Branches_ByBrandID(brandId.Value) _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlBranch.DataSource = data
             ddlBranch.DataTextField = "Title_Ar"
             ddlBranch.DataValueField = "ID"
@@ -69,7 +66,7 @@ Public Class AddDepartments
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
         If Not Page.IsValid Then Exit Sub
 
-        Dim branchId As Integer = 0
+        Dim branchId = 0
         Integer.TryParse(ddlBranch.SelectedValue, branchId)
 
         Dim nameAr As String = txtTitleAr.Text.Trim()
@@ -95,7 +92,7 @@ Public Class AddDepartments
             Next
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             db.Insert_Departments(
                 branchId,
                 nameAr,
@@ -107,7 +104,7 @@ Public Class AddDepartments
                 WorkingMethodVideo_path,
                 EvaluationMethodVideo_path,
                 EvaluationMethodVideo_path
-            )
+                )
         End Using
 
         LBLPOP_ModalPopupExtender.Show()
@@ -117,7 +114,7 @@ Public Class AddDepartments
     Protected Sub btnSaveforAllBranches_Click(sender As Object, e As EventArgs)
         If Not Page.IsValid Then Exit Sub
 
-        Dim branchId As Integer = 0
+        Dim branchId = 0
         Integer.TryParse(ddlBranch.SelectedValue, branchId)
 
         Dim nameAr As String = txtTitleAr.Text.Trim()
@@ -143,23 +140,23 @@ Public Class AddDepartments
             Next
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim branches = db.Select_Branches_ByBrandID(ddlBrand.SelectedValue()).ToList()
 
             For Each br In branches
                 db.Insert_Departments(
-                br.ID,
-                nameAr,
-                nameEn,
-                SessionManager.GetInstance.Users.UserID, Date.Now, Nothing, Nothing, 0, 1, 0,
-                policiesAr,
-                policiesEn,
-                WorkingMethodVideo_path,
-                WorkingMethodVideo_path,
-                EvaluationMethodVideo_path,
-                EvaluationMethodVideo_path
-            )
+                    br.ID,
+                    nameAr,
+                    nameEn,
+                    SessionManager.GetInstance.Users.UserID, Date.Now, Nothing, Nothing, 0, 1, 0,
+                    policiesAr,
+                    policiesEn,
+                    WorkingMethodVideo_path,
+                    WorkingMethodVideo_path,
+                    EvaluationMethodVideo_path,
+                    EvaluationMethodVideo_path
+                    )
 
             Next
         End Using
@@ -196,5 +193,6 @@ Public Class AddDepartments
 
     Protected Sub EvaluationMethodVideo_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
-
 End Class
+
+

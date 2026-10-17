@@ -1,7 +1,9 @@
-﻿Public Class ManageBranches
+﻿Imports Prosto_ERP_ClassLibrary
+
+Public Class ManageBranches
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -16,7 +18,7 @@
     End Sub
 
     Protected Sub FillData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim branches = db.Select_Branches_All().AsQueryable()
             branches = branches.OrderByDescending(Function(x) x.ID)
@@ -26,15 +28,15 @@
 
 
             Dim data =
-            (From b In branches.ToList()
-             Join br In brands On b.BrandID Equals br.ID
-             Select New With {
-                 .ID = b.ID,
-                 .Title_Ar = b.Title_Ar,
-                 .Title_En = b.Title_En,
-                 .AddedDate = b.AddedDate,
-                 .BrandTitle_Ar = br.Title_Ar
-             }).ToList()
+                    (From b In branches.ToList()
+                    Join br In brands On b.BrandID Equals br.ID
+                    Select New With {
+                    .ID = b.ID,
+                    .Title_Ar = b.Title_Ar,
+                    .Title_En = b.Title_En,
+                    .AddedDate = b.AddedDate,
+                    .BrandTitle_Ar = br.Title_Ar
+                    }).ToList()
 
             lstData.DataSource = data
             lstData.DataBind()
@@ -44,19 +46,19 @@
 
 
     Private Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs) Handles lstData.ItemCommand
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Try
                 Select Case e.CommandName
                     Case "QRCode"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         Response.Redirect("/modules/QRCode/PrintQRCode.aspx?Type=branches&ID=" & ID.ToString())
 
                     Case "Edit"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         Response.Redirect("/modules/branches/EditBranches.aspx?ID=" & ID.ToString())
 
                     Case "DeleteItem"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         db.Update_Branches_IsDelete_ByID(ID, True)
                         FillData()
 
@@ -78,5 +80,6 @@
     Protected Sub btnAddNewItem_Click(sender As Object, e As EventArgs)
         Response.Redirect("/modules/branches/AddBranches.aspx")
     End Sub
-
 End Class
+
+

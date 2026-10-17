@@ -1,5 +1,6 @@
-﻿Imports System.Linq
-Imports AjaxControlToolkit
+﻿Imports AjaxControlToolkit
+Imports Echo.Encrptor
+Imports Prosto_ERP_ClassLibrary
 
 Public Class EditUsers
     Inherits PageBase
@@ -10,7 +11,7 @@ Public Class EditUsers
         End Get
     End Property
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -33,10 +34,10 @@ Public Class EditUsers
 
     '============ تعبئة القوائم ============
     Private Sub FillUserTypes()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Users_Types_All() _
-                     .Where(Function(x) x.IsDeleted = 0 AndAlso x.ID <> 7) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0 AndAlso x.ID <> 7) _
+                    .ToList()
             ddlUserType.DataSource = data
             ddlUserType.DataTextField = "Title_Ar"
             ddlUserType.DataValueField = "ID"
@@ -46,10 +47,10 @@ Public Class EditUsers
     End Sub
 
     Private Sub FillStatuses()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Users_Status_All() _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlStatus.DataSource = data
             ddlStatus.DataTextField = "Title_Ar"
             ddlStatus.DataValueField = "ID"
@@ -59,10 +60,10 @@ Public Class EditUsers
     End Sub
 
     Private Sub FillGenders()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Genders_All() _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlGender.DataSource = data
             ddlGender.DataTextField = "Title_Ar"
             ddlGender.DataValueField = "ID"
@@ -72,10 +73,10 @@ Public Class EditUsers
     End Sub
 
     Private Sub FillNationalities()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Nationalities_All() _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlNationality.DataSource = data
             ddlNationality.DataTextField = "Title_Ar"
             ddlNationality.DataValueField = "ID"
@@ -85,10 +86,10 @@ Public Class EditUsers
     End Sub
 
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Brands_All() _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlBrand.DataSource = data
             ddlBrand.DataTextField = "Title_Ar"
             ddlBrand.DataValueField = "ID"
@@ -103,10 +104,10 @@ Public Class EditUsers
 
         If Not brandId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Branches_ByBrandID(brandId.Value) _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlBranch.DataSource = data
             ddlBranch.DataTextField = "Title_Ar"
             ddlBranch.DataValueField = "ID"
@@ -121,10 +122,10 @@ Public Class EditUsers
 
         If Not branchId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Departments_ByBranchID(branchId.Value) _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlDepartment.DataSource = data
             ddlDepartment.DataTextField = "Title_Ar"
             ddlDepartment.DataValueField = "ID"
@@ -139,10 +140,10 @@ Public Class EditUsers
 
         If Not departmentId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_JobTitles_ByDepartmentID(departmentId.Value) _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlJobTitle.DataSource = data
             ddlJobTitle.DataTextField = "Title_Ar"
             ddlJobTitle.DataValueField = "ID"
@@ -152,10 +153,10 @@ Public Class EditUsers
     End Sub
 
     Private Sub FillShifts()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Shift_All() _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlShift.DataSource = data
             ddlShift.DataTextField = "Title_Ar"
             ddlShift.DataValueField = "ID"
@@ -189,22 +190,22 @@ Public Class EditUsers
         If String.IsNullOrEmpty(ddlUserType.SelectedValue) Then Exit Sub
 
         ' تحويل القيمة إلى رقم (ID من جدول Users_Types)
-        Dim typeId As Integer = CInt(ddlUserType.SelectedValue)
+        Dim typeId = CInt(ddlUserType.SelectedValue)
 
         Select Case typeId
 
-        '========================
-        ' 1) مدير نظام (ID = 1)
-        '   → لا يظهر أي شيء من حقول الهيكل التنظيمي
-        '========================
+            '========================
+            ' 1) مدير نظام (ID = 1)
+            '   → لا يظهر أي شيء من حقول الهيكل التنظيمي
+            '========================
             Case 1
-            ' ResetOrgPanels already hides everything
+                ' ResetOrgPanels already hides everything
 
-        '========================
-        ' 2) مدير فرع (ID = 2)
-        '   يظهر: العلامة + الفرع (إجباري)
-        '   يخفي: القسم + المسمى + الوردية
-        '========================
+                '========================
+                ' 2) مدير فرع (ID = 2)
+                '   يظهر: العلامة + الفرع (إجباري)
+                '   يخفي: القسم + المسمى + الوردية
+                '========================
             Case 2
                 pnlBrand.Visible = True
                 pnlBranch.Visible = True
@@ -212,11 +213,11 @@ Public Class EditUsers
                 rfvBrand.Enabled = True
                 rfvBranch.Enabled = True
 
-        '========================
-        ' 3) مدير شفت (ID = 3)
-        '   يظهر: العلامة + الفرع + الوردية (كلها إجبارية)
-        '   يخفي: القسم + المحطة التعريفية
-        '========================
+                '========================
+                ' 3) مدير شفت (ID = 3)
+                '   يظهر: العلامة + الفرع + الوردية (كلها إجبارية)
+                '   يخفي: القسم + المحطة التعريفية
+                '========================
             Case 3
                 pnlBrand.Visible = True
                 pnlBranch.Visible = True
@@ -226,10 +227,10 @@ Public Class EditUsers
                 rfvBranch.Enabled = True
                 rfvShift.Enabled = True
 
-        '========================
-        ' 4) موظف (ID = 4)
-        '   يظهر: العلامة + الفرع + القسم + المسمى + الوردية (كلها إجبارية)
-        '========================
+                '========================
+                ' 4) موظف (ID = 4)
+                '   يظهر: العلامة + الفرع + القسم + المسمى + الوردية (كلها إجبارية)
+                '========================
             Case 4
                 pnlBrand.Visible = True
                 pnlBranch.Visible = True
@@ -243,11 +244,11 @@ Public Class EditUsers
                 rfvJobTitle.Enabled = True
                 rfvShift.Enabled = True
 
-        '========================
-        ' 5) مراقب جودة (ID = 5)
-        '   يظهر: العلامة + الفرع (إجباري)
-        '   يخفي: القسم + المسمى + الوردية
-        '========================
+                '========================
+                ' 5) مراقب جودة (ID = 5)
+                '   يظهر: العلامة + الفرع (إجباري)
+                '   يخفي: القسم + المسمى + الوردية
+                '========================
             Case 5
                 pnlBrand.Visible = True
                 pnlBranch.Visible = True
@@ -262,12 +263,13 @@ Public Class EditUsers
     '============ تحميل بيانات المستخدم ============
 
     Private Sub FillData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim u = db.Select_UsersMembers_ByID(UserId).FirstOrDefault()
             If u Is Nothing Then Exit Sub
             If u.Type.GetValueOrDefault() = 7 Then
                 ddlUserType.Items.Add(New ListItem("مستخدم خارجي سابق (موقوف)", "7"))
-                ddlUserType.Enabled = False : btnSave.Enabled = False
+                ddlUserType.Enabled = False
+                btnSave.Enabled = False
             End If
 
             ' نوع
@@ -287,7 +289,7 @@ Public Class EditUsers
             txtEmail.Text = u.Email
             txtUserName.Text = u.UserName
 
-            Dim encryptor As New Echo.Encrptor.TripleDesEncryptor()
+            Dim encryptor As New TripleDesEncryptor()
             Dim DecryptPassword As String = encryptor.Decrypt(u.Password)
 
             hdnPassword.Value = If(DecryptPassword, String.Empty)
@@ -435,23 +437,44 @@ Public Class EditUsers
     '============ حفظ التعديلات ============
 
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
-        If ddlUserType.SelectedValue="7" Then Throw New System.Web.HttpException(403,"أنشئ حساب العميل من إدارة العملاء.")
+        If ddlUserType.SelectedValue = "7" Then _
+            Throw New HttpException(403, "أنشئ حساب العميل من إدارة العملاء.")
         ApplyUserTypeRules()
         If Not Page.IsValid Then Exit Sub
 
-        Dim empNo As Integer = 0
+        Dim empNo = 0
         Integer.TryParse(txtEmployeeNumber.Text, empNo)
 
-        Dim typeId As Integer? = If(String.IsNullOrEmpty(ddlUserType.SelectedValue), CType(Nothing, Integer?), CInt(ddlUserType.SelectedValue))
-        Dim statusId As Integer? = If(String.IsNullOrEmpty(ddlStatus.SelectedValue), CType(Nothing, Integer?), CInt(ddlStatus.SelectedValue))
-        Dim genderId As Integer? = If(String.IsNullOrEmpty(ddlGender.SelectedValue), CType(Nothing, Integer?), CInt(ddlGender.SelectedValue))
-        Dim nationalityId As Integer? = If(String.IsNullOrEmpty(ddlNationality.SelectedValue), CType(Nothing, Integer?), CInt(ddlNationality.SelectedValue))
+        Dim typeId As Integer? =
+                If _
+                (String.IsNullOrEmpty(ddlUserType.SelectedValue), CType(Nothing, Integer?),
+                 CInt(ddlUserType.SelectedValue))
+        Dim statusId As Integer? =
+                If _
+                (String.IsNullOrEmpty(ddlStatus.SelectedValue), CType(Nothing, Integer?), CInt(ddlStatus.SelectedValue))
+        Dim genderId As Integer? =
+                If _
+                (String.IsNullOrEmpty(ddlGender.SelectedValue), CType(Nothing, Integer?), CInt(ddlGender.SelectedValue))
+        Dim nationalityId As Integer? =
+                If _
+                (String.IsNullOrEmpty(ddlNationality.SelectedValue), CType(Nothing, Integer?),
+                 CInt(ddlNationality.SelectedValue))
 
-        Dim brandId As Integer? = If(String.IsNullOrEmpty(ddlBrand.SelectedValue), CType(Nothing, Integer?), CInt(ddlBrand.SelectedValue))
-        Dim branchId As Integer? = If(String.IsNullOrEmpty(ddlBranch.SelectedValue), CType(Nothing, Integer?), CInt(ddlBranch.SelectedValue))
-        Dim deptId As Integer? = If(String.IsNullOrEmpty(ddlDepartment.SelectedValue), CType(Nothing, Integer?), CInt(ddlDepartment.SelectedValue))
-        Dim jobId As Integer? = If(String.IsNullOrEmpty(ddlJobTitle.SelectedValue), CType(Nothing, Integer?), CInt(ddlJobTitle.SelectedValue))
-        Dim shiftId As Integer? = If(String.IsNullOrEmpty(ddlShift.SelectedValue), CType(Nothing, Integer?), CInt(ddlShift.SelectedValue))
+        Dim brandId As Integer? =
+                If(String.IsNullOrEmpty(ddlBrand.SelectedValue), CType(Nothing, Integer?), CInt(ddlBrand.SelectedValue))
+        Dim branchId As Integer? =
+                If _
+                (String.IsNullOrEmpty(ddlBranch.SelectedValue), CType(Nothing, Integer?), CInt(ddlBranch.SelectedValue))
+        Dim deptId As Integer? =
+                If _
+                (String.IsNullOrEmpty(ddlDepartment.SelectedValue), CType(Nothing, Integer?),
+                 CInt(ddlDepartment.SelectedValue))
+        Dim jobId As Integer? =
+                If _
+                (String.IsNullOrEmpty(ddlJobTitle.SelectedValue), CType(Nothing, Integer?),
+                 CInt(ddlJobTitle.SelectedValue))
+        Dim shiftId As Integer? =
+                If(String.IsNullOrEmpty(ddlShift.SelectedValue), CType(Nothing, Integer?), CInt(ddlShift.SelectedValue))
 
         Dim fullNameAr = txtFullNameAr.Text
         Dim fullNameEn = txtFullNameEn.Text
@@ -461,13 +484,8 @@ Public Class EditUsers
         Dim userName = txtUserName.Text
 
 
-
-
-
-
-
         Dim password As String
-        Dim encryptor As New Echo.Encrptor.TripleDesEncryptor()
+        Dim encryptor As New TripleDesEncryptor()
         ' إذا المستخدم ما غيّر كلمة المرور، خذ القيمة القديمة من HiddenField
         If String.IsNullOrWhiteSpace(txtPassword.Text) Then
             Dim encryptedPassword As String = encryptor.Encrypt(hdnPassword.Value)
@@ -476,8 +494,6 @@ Public Class EditUsers
             Dim encryptedPassword As String = encryptor.Encrypt(txtPassword.Text)
             password = encryptedPassword
         End If
-
-
 
 
         Dim userImagePath As String = hdnUserImage.Value
@@ -489,7 +505,7 @@ Public Class EditUsers
             Next
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             db.Update_UsersMembers_ByID(UserId,
                                         typeId,
                                         empNo,
@@ -541,5 +557,6 @@ Public Class EditUsers
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/Users/ManageUsers.aspx")
     End Sub
-
 End Class
+
+

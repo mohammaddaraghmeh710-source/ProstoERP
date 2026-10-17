@@ -75,4 +75,16 @@ Partial Public Class ManageWorkGuide_Documents
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents lstVersions As Global.System.Web.UI.WebControls.ListView
+
+    '''<summary>
+    '''Master property.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated property.
+    '''</remarks>
+    Public Shadows ReadOnly Property Master() As CRM.Site
+        Get
+            Return CType(MyBase.Master, CRM.Site)
+        End Get
+    End Property
 End Class

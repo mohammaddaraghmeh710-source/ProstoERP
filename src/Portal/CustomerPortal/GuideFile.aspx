@@ -192,7 +192,7 @@
         }
 
         @media print {
-            body { <%= If(AllowDocumentPrint, "visibility:hidden;", "display:none !important;") %> }
+            body { <%=If(AllowDocumentPrint, "visibility:hidden;", "display:none !important;")%> }
             .work-guide-viewer-page, .work-guide-viewer-page * { visibility:visible; }
             .work-guide-viewer-page { position:absolute; top:0; left:0; width:100%; }
             .viewer-security-note, #wgPrintButton, .pdf-loading-container { display:none !important; }
@@ -236,8 +236,8 @@
 
             <div class="viewer-security-note">
                 <i class="bx bx-lock-alt"></i>
-                <%= If(AllowDocumentPrint, "الطباعة متاحة حسب الدور المعتمد", "الطباعة غير متاحة حسب الدور المعتمد") %>
-                <button id="wgPrintButton" type="button" class="btn btn-sm btn-label-primary" disabled style='<%= If(AllowDocumentPrint, "", "display:none;") %>' onclick="window.print()">طباعة</button>
+                <%=If(AllowDocumentPrint, "الطباعة متاحة حسب الدور المعتمد", "الطباعة غير متاحة حسب الدور المعتمد")%>
+                <button id="wgPrintButton" type="button" class="btn btn-sm btn-label-primary" disabled style='<%=If(AllowDocumentPrint, "", "display:none;")%>' onclick="window.print()">طباعة</button>
             </div>
 
         </div>
@@ -266,17 +266,17 @@
 
     </div>
 
-    <script src="<%= ResolveUrl("/assets/js/pdf.min.js") %>"></script>
+    <script src="<%=ResolveUrl("/assets/js/pdf.min.js")%>"></script>
 
     <script>
         (function () {
             "use strict";
 
             const pdfStreamUrl =
-                document.getElementById("<%= hfPdfStreamUrl.ClientID %>").value;
+                document.getElementById("<%=hfPdfStreamUrl.ClientID%>").value;
 
             const watermarkText =
-                document.getElementById("<%= hfWatermarkText.ClientID %>").value;
+                document.getElementById("<%=hfWatermarkText.ClientID%>").value;
 
             const loadingContainer =
                 document.getElementById("pdfLoadingContainer");
@@ -296,9 +296,9 @@
             }
 
             pdfjsLib.GlobalWorkerOptions.workerSrc =
-                "<%= ResolveUrl("/assets/js/pdf.worker.min.js") %>";
+                "<%=ResolveUrl("/assets/js/pdf.worker.min.js")%>";
 
-            const allowPrint = <%= If(AllowDocumentPrint, "true", "false") %>;
+            const allowPrint = <%=If(AllowDocumentPrint, "true", "false")%>;
             disableDownloadAndPrintShortcuts();
             loadPdf();
 

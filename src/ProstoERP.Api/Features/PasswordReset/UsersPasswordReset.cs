@@ -1,23 +1,23 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mail;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Prosto_ERP_API.Authentication;
 
 namespace Prosto_ERP_API.Mobile
 {
     public sealed partial class UsersController
     {
-        readonly PasswordResetService resetService;
+        private readonly PasswordResetService resetService;
 
         public UsersController()
         {
@@ -28,12 +28,14 @@ namespace Prosto_ERP_API.Mobile
             resetService = service;
         }
 
-        PasswordResetService ResetService()
+        private PasswordResetService ResetService()
         {
             return resetService ?? new PasswordResetService();
         }
 
-        [HttpPost, Route("RequestPasswordReset"), IntegrationBasicAuthentication]
+        [HttpPost]
+        [Route("RequestPasswordReset")]
+        [IntegrationBasicAuthentication]
         public Task<HttpResponseMessage> RequestPasswordReset(ResetRequest model)
         {
             if (model == null || !ModelState.IsValid || model.HasExtra)
@@ -45,7 +47,9 @@ namespace Prosto_ERP_API.Mobile
                 "تم إرسال رمز التحقق إلى بريدك الإلكتروني.");
         }
 
-        [HttpPost, Route("VerifyPasswordResetOTP"), IntegrationBasicAuthentication]
+        [HttpPost]
+        [Route("VerifyPasswordResetOTP")]
+        [IntegrationBasicAuthentication]
         public Task<HttpResponseMessage> VerifyPasswordResetOTP(VerifyResetRequest model)
         {
             if (model == null || !ModelState.IsValid || model.HasExtra || model.ChallengeID == Guid.Empty)
@@ -55,7 +59,9 @@ namespace Prosto_ERP_API.Mobile
                 "تم التحقق من الرمز. يمكنك تعيين كلمة مرور جديدة.");
         }
 
-        [HttpPost, Route("ResetPassword"), IntegrationBasicAuthentication]
+        [HttpPost]
+        [Route("ResetPassword")]
+        [IntegrationBasicAuthentication]
         public Task<HttpResponseMessage> ResetPassword(CompleteResetRequest model)
         {
             if (model == null || !ModelState.IsValid || model.HasExtra ||
@@ -66,14 +72,14 @@ namespace Prosto_ERP_API.Mobile
                 "تم تغيير كلمة المرور. سجّل الدخول بكلمة المرور الجديدة.");
         }
 
-        HttpResponseMessage ResetError(HttpStatusCode status, string code, string message)
+        private HttpResponseMessage ResetError(HttpStatusCode status, string code, string message)
         {
             var response = MobileApiSupport.Error(Request, status, code, message);
             response.Headers.WwwAuthenticate.Clear();
             return response;
         }
 
-        async Task<HttpResponseMessage> ResetAction(Func<Task<object>> action, string message)
+        private async Task<HttpResponseMessage> ResetAction(Func<Task<object>> action, string message)
         {
             try
             {
@@ -106,21 +112,21 @@ namespace Prosto_ERP_API.Mobile
                 return ResetError(HttpStatusCode.GatewayTimeout, "SMTP_TIMEOUT",
                     "انتهت مهلة الإرسال. أعد المحاولة بعد دقيقة.");
             }
-            catch (MailKit.Security.AuthenticationException)
+            catch (AuthenticationException)
             {
                 return ResetError(HttpStatusCode.BadGateway, "SMTP_AUTH_FAILED",
                     "تعذّر تسجيل الدخول إلى بريد العلامة التجارية. يرجى التواصل مع مدير النظام.");
             }
-            catch (MailKit.Security.SslHandshakeException)
+            catch (SslHandshakeException)
             {
                 return ResetError(HttpStatusCode.BadGateway, "SMTP_TLS_FAILED", "تعذّر الاتصال الآمن بخدمة البريد.");
             }
-            catch (MailKit.Net.Smtp.SmtpCommandException)
+            catch (SmtpCommandException)
             {
                 return ResetError(HttpStatusCode.BadGateway, "SMTP_SEND_FAILED",
                     "رفض خادم البريد إرسال رمز التحقق. يرجى التواصل مع مدير النظام.");
             }
-            catch (MailKit.Net.Smtp.SmtpProtocolException)
+            catch (SmtpProtocolException)
             {
                 return ResetError(HttpStatusCode.BadGateway, "SMTP_SEND_FAILED", "انقطع اتصال خدمة البريد.");
             }
@@ -128,7 +134,7 @@ namespace Prosto_ERP_API.Mobile
             {
                 return ResetError(HttpStatusCode.BadGateway, "SMTP_CONNECTION_FAILED", "تعذّر الاتصال بخدمة البريد.");
             }
-            catch (System.Net.Sockets.SocketException)
+            catch (SocketException)
             {
                 return ResetError(HttpStatusCode.BadGateway, "SMTP_CONNECTION_FAILED", "تعذّر الاتصال بخدمة البريد.");
             }
@@ -138,7 +144,7 @@ namespace Prosto_ERP_API.Mobile
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("Password reset failed ({0}).", ex.GetType().Name);
+                Trace.TraceError("Password reset failed ({0}).", ex.GetType().Name);
                 return ResetError(HttpStatusCode.ServiceUnavailable, "RESET_SERVICE_UNAVAILABLE",
                     "خدمة استعادة كلمة المرور غير متاحة حاليًا. يرجى التواصل مع مدير النظام.");
             }

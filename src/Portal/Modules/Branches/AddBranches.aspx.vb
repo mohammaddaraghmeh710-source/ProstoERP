@@ -1,7 +1,5 @@
-﻿Imports System.IO
-Imports AjaxControlToolkit
-Imports System.Data
-Imports System.Linq
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class AddBranches
     Inherits PageBase
@@ -9,7 +7,7 @@ Public Class AddBranches
     Private WorkingMethodVideo_path As String = Nothing
     Private EvaluationMethodVideo_path As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -23,7 +21,7 @@ Public Class AddBranches
     End Sub
 
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Brands_All().ToList()
 
             ddlBrand.DataSource = data
@@ -40,7 +38,7 @@ Public Class AddBranches
             Return
         End If
 
-        Dim BrandID As Integer = CInt(ddlBrand.SelectedValue)
+        Dim BrandID = CInt(ddlBrand.SelectedValue)
         Dim NameAr As String = txtTitleAr.Text
         Dim NameEn As String = txtTitleEn.Text
 
@@ -62,7 +60,7 @@ Public Class AddBranches
             Next
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             ' التوقيع المتوقع لـ Insert_Branches بعد التعديل:
             ' Insert_Branches(
             '   @BrandID,
@@ -88,7 +86,7 @@ Public Class AddBranches
                 WorkingMethodVideo_path,
                 EvaluationMethodVideo_path,
                 EvaluationMethodVideo_path
-)
+                )
         End Using
 
         LBLPOP_ModalPopupExtender.Show()
@@ -123,5 +121,6 @@ Public Class AddBranches
 
     Protected Sub EvaluationMethodVideo_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
-
 End Class
+
+

@@ -1,15 +1,11 @@
-﻿Imports System
-Imports System.Linq
-Imports System.Collections.Generic
-Imports System.Globalization
-Imports System.IO
-Imports System.Web.UI
-Imports System.Web.UI.WebControls
+﻿Imports System.Globalization
+Imports System.Threading.Tasks
+Imports Prosto_ERP_ClassLibrary
 
 Public Class MyProfile
     Inherits PageBase
 
-    Private ReadOnly db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+    Private ReadOnly db As New Prosto_ERP_DataClassesDataContext()
 
     Protected EmployeeID As Integer
 
@@ -42,18 +38,23 @@ Public Class MyProfile
     End Class
 
     ' ===== Data caches =====
-    Private _employeeEvaluations As List(Of Prosto_ERP_ClassLibrary.Select_Evaluations_ByEmployeeIDResult) ' قديم (مهام + شكاوي)
-    Private _employeeViolations As List(Of Prosto_ERP_ClassLibrary.Select_EvaluationsEmployees_ByEmployeeIDResult) ' جديد (Evaluations_Employees)
+    Private _employeeEvaluations As List(Of Select_Evaluations_ByEmployeeIDResult) _
+    ' قديم (مهام + شكاوي)
+    Private _employeeViolations As List(Of Select_EvaluationsEmployees_ByEmployeeIDResult) _
+    ' جديد (Evaluations_Employees)
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
 
         LoadParameters()
-        pnlAttendance.Visible = EmployeeID > 0 AndAlso (SessionManager.GetInstance.Users.UserType = 1 OrElse EmployeeID = SessionManager.GetInstance.Users.UserID)
+        pnlAttendance.Visible = EmployeeID > 0 AndAlso
+                                (SessionManager.GetInstance.Users.UserType = 1 OrElse
+                                 EmployeeID = SessionManager.GetInstance.Users.UserID)
         If pnlAttendance.Visible Then
-            lnkAttendance.NavigateUrl = "/Modules/Employees/AttendanceHistory.aspx?EmployeeID=" & EmployeeID.ToString(CultureInfo.InvariantCulture)
+            lnkAttendance.NavigateUrl = "/Modules/Employees/AttendanceHistory.aspx?EmployeeID=" &
+                                        EmployeeID.ToString(CultureInfo.InvariantCulture)
             If Not IsPostBack Then RegisterAsyncTask(New PageAsyncTask(AddressOf BindTodayAttendance))
         End If
 
@@ -86,16 +87,18 @@ Public Class MyProfile
         ViewStateUserKey = Session.SessionID
     End Sub
 
-    Private Async Function BindTodayAttendance() As System.Threading.Tasks.Task
+    Private Async Function BindTodayAttendance() As Task
         Try
             Dim actor = SessionManager.GetInstance.Users.UserID
             Dim employee = AttendanceData.Employee(actor, EmployeeID)
             Dim today = AttendanceData.Today()
             Dim data = Await AttendanceData.Transactions(actor, employee, today, today)
-            rptTodayAttendance.DataSource = data : rptTodayAttendance.DataBind()
+            rptTodayAttendance.DataSource = data
+            rptTodayAttendance.DataBind()
             lblNoAttendance.Visible = data.Rows.Count = 0
         Catch ex As Exception
-            litAttendanceMessage.Text = "<div role='alert' class='alert alert-warning'>" & Server.HtmlEncode(AttendanceData.ErrorText(ex)) & "</div>"
+            litAttendanceMessage.Text = "<div role='alert' class='alert alert-warning'>" &
+                                        Server.HtmlEncode(AttendanceData.ErrorText(ex)) & "</div>"
         End Try
     End Function
 
@@ -122,8 +125,8 @@ Public Class MyProfile
         lblEmployeeName.Text = emp.FullName_Ar
         litEmployeeCode.Text = emp.Employee_Number
 
-        Dim deptName As String = ""
-        Dim jobName As String = ""
+        Dim deptName = ""
+        Dim jobName = ""
 
         If emp.Department_ID.HasValue Then
             Dim d = db.Select_Departments_ByID(emp.Department_ID.Value).FirstOrDefault()
@@ -135,18 +138,19 @@ Public Class MyProfile
             If j IsNot Nothing Then jobName = j.Title_Ar
         End If
 
-        Dim deptJob As String = ""
+        Dim deptJob = ""
         If deptName <> "" Then deptJob = deptName
         If jobName <> "" Then
             If deptJob <> "" Then deptJob &= " – " & jobName Else deptJob = jobName
         End If
         litDeptJob.Text = deptJob
 
-        Dim branchText As String = ""
+        Dim branchText = ""
         If emp.Branch_ID.HasValue Then
             Dim br = db.Select_Branches_ByID(emp.Branch_ID.Value).FirstOrDefault()
             If br IsNot Nothing Then
-                Dim brandRow = If(br.BrandID.HasValue, db.Select_Brands_ByID(br.BrandID.Value).FirstOrDefault(), Nothing)
+                Dim brandRow =
+                        If(br.BrandID.HasValue, db.Select_Brands_ByID(br.BrandID.Value).FirstOrDefault(), Nothing)
                 Dim brandName As String = If(brandRow IsNot Nothing, brandRow.Title_Ar, "")
                 Dim branchName As String = br.Title_Ar
                 If brandName <> "" Then branchText = brandName & " – " & branchName Else branchText = branchName
@@ -168,13 +172,17 @@ Public Class MyProfile
         ' آخر تقييم (من القديم + الجديد)
         Dim lastOld As DateTime? = Nothing
         If _employeeEvaluations IsNot Nothing AndAlso _employeeEvaluations.Count > 0 Then
-            Dim x = _employeeEvaluations.Where(Function(e) e.AddedDate.HasValue).OrderByDescending(Function(e) e.AddedDate).FirstOrDefault()
+            Dim x =
+                    _employeeEvaluations.Where(Function(e) e.AddedDate.HasValue).OrderByDescending(
+                        Function(e) e.AddedDate).FirstOrDefault()
             If x IsNot Nothing Then lastOld = x.AddedDate
         End If
 
         Dim lastNew As DateTime? = Nothing
         If _employeeViolations IsNot Nothing AndAlso _employeeViolations.Count > 0 Then
-            Dim y = _employeeViolations.Where(Function(e) e.AddedDate.HasValue).OrderByDescending(Function(e) e.AddedDate).FirstOrDefault()
+            Dim y =
+                    _employeeViolations.Where(Function(e) e.AddedDate.HasValue).OrderByDescending(
+                        Function(e) e.AddedDate).FirstOrDefault()
             If y IsNot Nothing Then lastNew = y.AddedDate
         End If
 
@@ -198,8 +206,8 @@ Public Class MyProfile
     Private Function CalculateScoreFromWeights(totalWeight As Decimal, count As Integer) As Decimal
         If count <= 0 Then Return 0D
 
-        Dim maxScore As Decimal = count * 100D
-        Dim score As Decimal = ((maxScore - totalWeight) / maxScore) * 100D
+        Dim maxScore As Decimal = count*100D
+        Dim score As Decimal = ((maxScore - totalWeight)/maxScore)*100D
 
         If score < 0D Then score = 0D
         If score > 100D Then score = 100D
@@ -223,16 +231,17 @@ Public Class MyProfile
         Dim tasks = _employeeEvaluations.Where(Function(ev) ev.Evaluation_Type = 1).ToList()
 
         Dim tasksWeight As Decimal =
-            tasks.Sum(Function(ev) If(ev IsNot Nothing AndAlso ev.Weight.HasValue, CDec(ev.Weight.Value), 0D))
-
+                tasks.Sum(Function(ev) If(ev IsNot Nothing AndAlso ev.Weight.HasValue, CDec(ev.Weight.Value), 0D))
 
 
         ' 2) المخالفات (الجديد) من Evaluations_Employees
         Dim vCount As Integer = If(_employeeViolations IsNot Nothing, _employeeViolations.Count, 0)
-        Dim vWeight As Decimal = 0D
+        Dim vWeight = 0D
 
         If _employeeViolations IsNot Nothing Then
-            vWeight = _employeeViolations.Sum(Function(ev) If(ev IsNot Nothing AndAlso ev.Weight.HasValue, CDec(ev.Weight.Value), 0D))
+            vWeight =
+                _employeeViolations.Sum(
+                    Function(ev) If(ev IsNot Nothing AndAlso ev.Weight.HasValue, CDec(ev.Weight.Value), 0D))
         End If
 
         Dim tasksScore As Decimal = CalculateScoreFromWeights(tasksWeight + vWeight, tasks.Count + vCount)
@@ -251,15 +260,20 @@ Public Class MyProfile
         divEmployeeGauge.Attributes("class") = GetGaugeCss(finalScore)
 
         ' ===== Counters =====
-        Dim openTasks = _employeeEvaluations.Where(Function(ev) ev.Evaluation_Type = 1 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)).ToList()
-        Dim complaints = _employeeEvaluations.Where(Function(ev) ev.Evaluation_Type = 2 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)).ToList()
+        Dim openTasks =
+                _employeeEvaluations.Where(
+                    Function(ev) ev.Evaluation_Type = 1 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)).
+                ToList()
+        Dim complaints =
+                _employeeEvaluations.Where(
+                    Function(ev) ev.Evaluation_Type = 2 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)).
+                ToList()
 
         litEmployeeViolationsCount.Text = vCount.ToString()
         litOpenTasksCount.Text = openTasks.Count.ToString()
         litComplaintsCount.Text = complaints.Count.ToString()
         litComplaintsBadge.Text = complaints.Count.ToString()
         litTotalEvals.Text = (_employeeEvaluations.Count() + vCount).ToString()
-
 
 
         pnlNoComplaints.Visible = (complaints.Count = 0)
@@ -272,8 +286,8 @@ Public Class MyProfile
 
     Private Sub BindChecklistSummary()
         Dim evals = _employeeEvaluations.
-            Where(Function(ev) ev.Evaluation_Type = 1 AndAlso Not String.IsNullOrWhiteSpace(ev.Checklist_IDs)).
-            ToList()
+                Where(Function(ev) ev.Evaluation_Type = 1 AndAlso Not String.IsNullOrWhiteSpace(ev.Checklist_IDs)).
+                ToList()
 
         If evals.Count = 0 Then
             pnlNoChecklistSummary.Visible = True
@@ -299,14 +313,14 @@ Public Class MyProfile
         End If
 
         Dim allChecklists = (From c In db.Select_Checklist_All()
-                             Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
-                             Where allChecklistIds.Contains(c.ID)
-                             Select New With {
-                                 .ID = c.ID,
-                                 .Title_Ar = c.Title_Ar,
-                                 .CategoryID = c.CheckList_CategoryID,
-                                 .CategoryTitle = cat.Title_Ar
-                             }).ToList()
+                Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
+                Where allChecklistIds.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title_Ar = c.Title_Ar,
+                .CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar
+                }).ToList()
 
         Dim counts As New Dictionary(Of Integer, Integer)()
         For Each ev In evals
@@ -321,21 +335,21 @@ Public Class MyProfile
         Next
 
         Dim summary = (From kvp In counts
-                       Join c In allChecklists On kvp.Key Equals c.ID
-                       Let catId = c.CategoryID
-                       Let css = If(catId = 1, "summary-danger",
-                                    If(catId = 2, "summary-warning", "summary-normal"))
-                       Select New With {
-                           .ChecklistID = c.ID,
-                           .Title = c.Title_Ar,
-                           .CategoryTitle = c.CategoryTitle,
-                           .CategoryID = catId,
-                           .Count = kvp.Value,
-                           .CssClass = css
-                       }).
-                       OrderByDescending(Function(x) x.Count).
-                       ThenBy(Function(x) x.Title).
-                       ToList()
+                Join c In allChecklists On kvp.Key Equals c.ID
+                Let catId = c.CategoryID
+                Let css = If(catId = 1, "summary-danger",
+                             If(catId = 2, "summary-warning", "summary-normal"))
+                Select New With {
+                .ChecklistID = c.ID,
+                .Title = c.Title_Ar,
+                .CategoryTitle = c.CategoryTitle,
+                .CategoryID = catId,
+                .Count = kvp.Value,
+                .CssClass = css
+                }).
+                OrderByDescending(Function(x) x.Count).
+                ThenBy(Function(x) x.Title).
+                ToList()
 
         pnlNoChecklistSummary.Visible = (summary.Count = 0)
         rptChecklistSummary.DataSource = summary
@@ -345,8 +359,8 @@ Public Class MyProfile
     Private Sub BindHistoryFilters()
         ' كما هو في كودك (لم أغيره)
         Dim evals = _employeeEvaluations.
-            Where(Function(ev) ev.Evaluation_Type = 1 AndAlso Not String.IsNullOrWhiteSpace(ev.Checklist_IDs)).
-            ToList()
+                Where(Function(ev) ev.Evaluation_Type = 1 AndAlso Not String.IsNullOrWhiteSpace(ev.Checklist_IDs)).
+                ToList()
 
         ddlChecklistCategoryFilter.Items.Clear()
         ddlChecklistFilter.Items.Clear()
@@ -368,14 +382,14 @@ Public Class MyProfile
         If allChecklistIds.Count = 0 Then Return
 
         Dim allChecklists = (From c In db.Select_Checklist_All()
-                             Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
-                             Where allChecklistIds.Contains(c.ID)
-                             Select New With {
-                                 .ID = c.ID,
-                                 .Title_Ar = c.Title_Ar,
-                                 .CategoryID = c.CheckList_CategoryID,
-                                 .CategoryTitle = cat.Title_Ar
-                             }).ToList()
+                Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
+                Where allChecklistIds.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title_Ar = c.Title_Ar,
+                .CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar
+                }).ToList()
 
         Dim usedCategoryIds As New HashSet(Of Integer)()
         For Each c In allChecklists
@@ -422,47 +436,59 @@ Public Class MyProfile
 
         If Not String.IsNullOrWhiteSpace(txtFromDate.Text) Then
             Dim dt As DateTime
-            If DateTime.TryParseExact(txtFromDate.Text.Trim(), {"dd/MM/yyyy", "yyyy-MM-dd"}, CultureInfo.InvariantCulture, DateTimeStyles.None, dt) Then
+            If _
+                DateTime.TryParseExact(txtFromDate.Text.Trim(), {"dd/MM/yyyy", "yyyy-MM-dd"},
+                                       CultureInfo.InvariantCulture, DateTimeStyles.None, dt) Then
                 fromDate = dt.Date
             End If
         End If
 
         If Not String.IsNullOrWhiteSpace(txtToDate.Text) Then
             Dim dt As DateTime
-            If DateTime.TryParseExact(txtToDate.Text.Trim(), {"dd/MM/yyyy", "yyyy-MM-dd"}, CultureInfo.InvariantCulture, DateTimeStyles.None, dt) Then
+            If _
+                DateTime.TryParseExact(txtToDate.Text.Trim(), {"dd/MM/yyyy", "yyyy-MM-dd"}, CultureInfo.InvariantCulture,
+                                       DateTimeStyles.None, dt) Then
                 toDate = dt.Date
             End If
         End If
 
         If fromDate.HasValue Then
-            evals = evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date >= fromDate.Value).ToList()
+            evals =
+                evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date >= fromDate.Value).ToList()
         End If
         If toDate.HasValue Then
-            evals = evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date <= toDate.Value).ToList()
+            evals =
+                evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date <= toDate.Value).ToList()
         End If
 
-        Dim deptIds = evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().ToList()
-        Dim jobIds = evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().ToList()
-        Dim shiftIds = evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
-        Dim brandIds = evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
+        Dim deptIds =
+                evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().
+                ToList()
+        Dim jobIds =
+                evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().
+                ToList()
+        Dim shiftIds =
+                evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
+        Dim brandIds =
+                evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
 
         Dim deptDict = (From d In db.Select_Departments_All()
-                        Where deptIds.Contains(d.ID)
-                        Select d.ID, d.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where deptIds.Contains(d.ID)
+                Select d.ID, d.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim jobDict = (From j In db.Select_JobTitles_All()
-                       Where jobIds.Contains(j.ID)
-                       Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where jobIds.Contains(j.ID)
+                Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim shiftsDict = (From s In db.Select_Shift_All()
-                          Where shiftIds.Contains(s.ID)
-                          Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where shiftIds.Contains(s.ID)
+                Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim brandsDict = (From b In db.Select_Brands_All()
-                          Where brandIds.Contains(b.ID)
-                          Select b.ID, b.Title_Ar, b.Logo).ToList()
+                Where brandIds.Contains(b.ID)
+                Select b.ID, b.Title_Ar, b.Logo).ToList()
 
-        Dim brandLogoDefault As String = "/assets/img/Prosto/Logo_Circle.png"
+        Dim brandLogoDefault = "/assets/img/Prosto/Logo_Circle.png"
         Dim brandLogoDict As New Dictionary(Of Integer, String)
         For Each b In brandsDict
             Dim logo As String = b.Logo
@@ -482,14 +508,14 @@ Public Class MyProfile
         Next
 
         Dim allChecklists = (From c In db.Select_Checklist_All()
-                             Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
-                             Where allChecklistIds.Contains(c.ID)
-                             Select New With {
-                                 .ID = c.ID,
-                                 .Title_Ar = c.Title_Ar,
-                                 .CategoryID = c.CheckList_CategoryID,
-                                 .CategoryTitle = cat.Title_Ar
-                             }).ToList()
+                Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
+                Where allChecklistIds.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title_Ar = c.Title_Ar,
+                .CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar
+                }).ToList()
 
         Dim checklistDict = allChecklists.ToDictionary(Function(x) x.ID)
 
@@ -508,19 +534,23 @@ Public Class MyProfile
         Dim result As New List(Of EvaluationTaskDto)()
 
         For Each ev In evals
-            Dim deptName As String = ""
-            Dim jobName As String = ""
-            Dim shiftName As String = ""
+            Dim deptName = ""
+            Dim jobName = ""
+            Dim shiftName = ""
             Dim brandLogo As String = brandLogoDefault
 
-            If ev.Department_ID.HasValue AndAlso deptDict.ContainsKey(ev.Department_ID.Value) Then deptName = deptDict(ev.Department_ID.Value)
-            If ev.JobTitle_ID.HasValue AndAlso jobDict.ContainsKey(ev.JobTitle_ID.Value) Then jobName = jobDict(ev.JobTitle_ID.Value)
-            If ev.Shift_ID.HasValue AndAlso shiftsDict.ContainsKey(ev.Shift_ID.Value) Then shiftName = shiftsDict(ev.Shift_ID.Value)
-            If ev.Brand_ID.HasValue AndAlso brandLogoDict.ContainsKey(ev.Brand_ID.Value) Then brandLogo = brandLogoDict(ev.Brand_ID.Value)
+            If ev.Department_ID.HasValue AndAlso deptDict.ContainsKey(ev.Department_ID.Value) Then _
+                deptName = deptDict(ev.Department_ID.Value)
+            If ev.JobTitle_ID.HasValue AndAlso jobDict.ContainsKey(ev.JobTitle_ID.Value) Then _
+                jobName = jobDict(ev.JobTitle_ID.Value)
+            If ev.Shift_ID.HasValue AndAlso shiftsDict.ContainsKey(ev.Shift_ID.Value) Then _
+                shiftName = shiftsDict(ev.Shift_ID.Value)
+            If ev.Brand_ID.HasValue AndAlso brandLogoDict.ContainsKey(ev.Brand_ID.Value) Then _
+                brandLogo = brandLogoDict(ev.Brand_ID.Value)
 
             Dim viols As New List(Of ViolationDto)()
-            Dim hasMatchedChecklist As Boolean = False
-            Dim hasMatchedCategory As Boolean = False
+            Dim hasMatchedChecklist = False
+            Dim hasMatchedCategory = False
 
             If ev.Checklist_IDs IsNot Nothing Then
                 Dim parts = ev.Checklist_IDs.Split(","c)
@@ -541,7 +571,7 @@ Public Class MyProfile
                             hasMatchedChecklist = True
                         End If
 
-                        Dim css As String = "badge-chip badge-primary-soft"
+                        Dim css = "badge-chip badge-primary-soft"
                         Select Case c.CategoryID
                             Case 1 : css = "badge-chip badge-danger-soft"
                             Case 2 : css = "badge-chip badge-warning-soft"
@@ -553,7 +583,7 @@ Public Class MyProfile
                 Next
             End If
 
-            Dim passFilter As Boolean = True
+            Dim passFilter = True
             If selectedCatId.HasValue AndAlso Not hasMatchedCategory Then passFilter = False
             If selectedChecklistId.HasValue AndAlso Not hasMatchedChecklist Then passFilter = False
             If Not passFilter Then Continue For
@@ -563,17 +593,17 @@ Public Class MyProfile
             Dim statusCss As String = If(isClosed, "status-badge status-closed", "status-badge status-open")
 
             result.Add(New EvaluationTaskDto With {
-                .EvaluationID = ev.ID,
-                .DepartmentName = deptName,
-                .JobTitleName = jobName,
-                .ShiftName = shiftName,
-                .BrandLogoUrl = brandLogo,
-                .EvalDate = ev.AddedDate,
-                .Notes = ev.Notes,
-                .Violations = viols,
-                .StatusText = statusText,
-                .StatusCss = statusCss
-            })
+                          .EvaluationID = ev.ID,
+                          .DepartmentName = deptName,
+                          .JobTitleName = jobName,
+                          .ShiftName = shiftName,
+                          .BrandLogoUrl = brandLogo,
+                          .EvalDate = ev.AddedDate,
+                          .Notes = ev.Notes,
+                          .Violations = viols,
+                          .StatusText = statusText,
+                          .StatusCss = statusCss
+                          })
         Next
 
         result = result.OrderByDescending(Function(x) x.EvalDate).ToList()
@@ -584,30 +614,39 @@ Public Class MyProfile
 
     Private Sub BindComplaints()
         ' نفس كودك القديم (لم أغيره)
-        Dim evals = _employeeEvaluations.Where(Function(ev) ev.Evaluation_Type = 2 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)).ToList()
+        Dim evals =
+                _employeeEvaluations.Where(
+                    Function(ev) ev.Evaluation_Type = 2 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)).
+                ToList()
 
-        Dim deptIds = evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().ToList()
-        Dim jobIds = evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().ToList()
-        Dim shiftIds = evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
-        Dim brandIds = evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
+        Dim deptIds =
+                evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().
+                ToList()
+        Dim jobIds =
+                evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().
+                ToList()
+        Dim shiftIds =
+                evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
+        Dim brandIds =
+                evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
 
         Dim deptDict = (From d In db.Select_Departments_All()
-                        Where deptIds.Contains(d.ID)
-                        Select d.ID, d.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where deptIds.Contains(d.ID)
+                Select d.ID, d.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim jobDict = (From j In db.Select_JobTitles_All()
-                       Where jobIds.Contains(j.ID)
-                       Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where jobIds.Contains(j.ID)
+                Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim shiftsDict = (From s In db.Select_Shift_All()
-                          Where shiftIds.Contains(s.ID)
-                          Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where shiftIds.Contains(s.ID)
+                Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim brandsDict = (From b In db.Select_Brands_All()
-                          Where brandIds.Contains(b.ID)
-                          Select b.ID, b.Title_Ar, b.Logo).ToList()
+                Where brandIds.Contains(b.ID)
+                Select b.ID, b.Title_Ar, b.Logo).ToList()
 
-        Dim brandLogoDefault As String = "/assets/img/Prosto/Logo_Circle.png"
+        Dim brandLogoDefault = "/assets/img/Prosto/Logo_Circle.png"
         Dim brandLogoDict As New Dictionary(Of Integer, String)
         For Each b In brandsDict
             Dim logo As String = b.Logo
@@ -627,28 +666,32 @@ Public Class MyProfile
         Next
 
         Dim allChecklists = (From c In db.Select_Checklist_All()
-                             Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
-                             Where allChecklistIds.Contains(c.ID)
-                             Select New With {
-                                 .ID = c.ID,
-                                 .Title_Ar = c.Title_Ar,
-                                 .CategoryID = c.CheckList_CategoryID,
-                                 .CategoryTitle = cat.Title_Ar
-                             }).ToList()
+                Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
+                Where allChecklistIds.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title_Ar = c.Title_Ar,
+                .CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar
+                }).ToList()
 
         Dim checklistDict = allChecklists.ToDictionary(Function(x) x.ID)
         Dim complaints As New List(Of EvaluationTaskDto)()
 
         For Each ev In evals
-            Dim deptName As String = ""
-            Dim jobName As String = ""
-            Dim shiftName As String = ""
+            Dim deptName = ""
+            Dim jobName = ""
+            Dim shiftName = ""
             Dim brandLogo As String = brandLogoDefault
 
-            If ev.Department_ID.HasValue AndAlso deptDict.ContainsKey(ev.Department_ID.Value) Then deptName = deptDict(ev.Department_ID.Value)
-            If ev.JobTitle_ID.HasValue AndAlso jobDict.ContainsKey(ev.JobTitle_ID.Value) Then jobName = jobDict(ev.JobTitle_ID.Value)
-            If ev.Shift_ID.HasValue AndAlso shiftsDict.ContainsKey(ev.Shift_ID.Value) Then shiftName = shiftsDict(ev.Shift_ID.Value)
-            If ev.Brand_ID.HasValue AndAlso brandLogoDict.ContainsKey(ev.Brand_ID.Value) Then brandLogo = brandLogoDict(ev.Brand_ID.Value)
+            If ev.Department_ID.HasValue AndAlso deptDict.ContainsKey(ev.Department_ID.Value) Then _
+                deptName = deptDict(ev.Department_ID.Value)
+            If ev.JobTitle_ID.HasValue AndAlso jobDict.ContainsKey(ev.JobTitle_ID.Value) Then _
+                jobName = jobDict(ev.JobTitle_ID.Value)
+            If ev.Shift_ID.HasValue AndAlso shiftsDict.ContainsKey(ev.Shift_ID.Value) Then _
+                shiftName = shiftsDict(ev.Shift_ID.Value)
+            If ev.Brand_ID.HasValue AndAlso brandLogoDict.ContainsKey(ev.Brand_ID.Value) Then _
+                brandLogo = brandLogoDict(ev.Brand_ID.Value)
 
             Dim viols As New List(Of ViolationDto)()
             If ev.Checklist_IDs IsNot Nothing Then
@@ -657,7 +700,7 @@ Public Class MyProfile
                     Dim id As Integer
                     If Integer.TryParse(p.Trim(), id) AndAlso checklistDict.ContainsKey(id) Then
                         Dim c = checklistDict(id)
-                        Dim css As String = "badge-chip badge-primary-soft"
+                        Dim css = "badge-chip badge-primary-soft"
                         Select Case c.CategoryID
                             Case 1 : css = "badge-chip badge-danger-soft"
                             Case 2 : css = "badge-chip badge-warning-soft"
@@ -669,15 +712,15 @@ Public Class MyProfile
             End If
 
             complaints.Add(New EvaluationTaskDto With {
-                .EvaluationID = ev.ID,
-                .DepartmentName = deptName,
-                .JobTitleName = jobName,
-                .ShiftName = shiftName,
-                .BrandLogoUrl = brandLogo,
-                .EvalDate = ev.AddedDate,
-                .Notes = ev.Notes,
-                .Violations = viols
-            })
+                              .EvaluationID = ev.ID,
+                              .DepartmentName = deptName,
+                              .JobTitleName = jobName,
+                              .ShiftName = shiftName,
+                              .BrandLogoUrl = brandLogo,
+                              .EvalDate = ev.AddedDate,
+                              .Notes = ev.Notes,
+                              .Violations = viols
+                              })
         Next
 
         pnlNoComplaints.Visible = (complaints.Count = 0)
@@ -697,9 +740,12 @@ Public Class MyProfile
         ddlVChecklist.Items.Add(New ListItem("الكل", ""))
 
         ' نملأ الفلاتر من المخالفات الموجودة فعلياً + من جدول checklist employee
-        Dim evals = If(_employeeViolations, New List(Of Prosto_ERP_ClassLibrary.Select_EvaluationsEmployees_ByEmployeeIDResult)) _
-            .Where(Function(x) Not String.IsNullOrWhiteSpace(x.Checklist_IDs)) _
-            .ToList()
+        Dim evals =
+                If _
+                (_employeeViolations,
+                 New List(Of Select_EvaluationsEmployees_ByEmployeeIDResult)) _
+                .Where(Function(x) Not String.IsNullOrWhiteSpace(x.Checklist_IDs)) _
+                .ToList()
 
         If evals.Count = 0 Then Return
 
@@ -714,15 +760,15 @@ Public Class MyProfile
 
         ' نستخدم جدول Checklist_Employee + Categories
         Dim all = (From c In db.Select_Checklist_Employee_All
-                   Join cat In db.Checklist_Employee_Categories_SelectAll On c.CheckList_CategoryID Equals cat.ID
-                   Where ids.Contains(c.ID)
-                   Select New With {
-                       .ID = c.ID,
-                       .Title = c.Title_Ar,
-                       .CategoryID = c.CheckList_CategoryID,
-                       .CategoryTitle = cat.Title_Ar,
-                       .ItemOrder = cat.Item_Order
-                   }).ToList()
+                Join cat In db.Checklist_Employee_Categories_SelectAll On c.CheckList_CategoryID Equals cat.ID
+                Where ids.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title = c.Title_Ar,
+                .CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar,
+                .ItemOrder = cat.Item_Order
+                }).ToList()
 
         Dim catSet As New HashSet(Of Integer)()
         For Each x In all
@@ -730,7 +776,8 @@ Public Class MyProfile
         Next
 
         For Each catId In catSet.OrderBy(Function(z) z)
-            Dim catTitle = all.Where(Function(a) a.CategoryID = catId).Select(Function(a) a.CategoryTitle).FirstOrDefault()
+            Dim catTitle =
+                    all.Where(Function(a) a.CategoryID = catId).Select(Function(a) a.CategoryTitle).FirstOrDefault()
             ddlVCategory.Items.Add(New ListItem(catTitle, catId.ToString()))
         Next
 
@@ -740,7 +787,10 @@ Public Class MyProfile
     End Sub
 
     Private Sub BindEmployeeViolations()
-        Dim evals = If(_employeeViolations, New List(Of Prosto_ERP_ClassLibrary.Select_EvaluationsEmployees_ByEmployeeIDResult)).ToList()
+        Dim evals =
+                If _
+                (_employeeViolations,
+                 New List(Of Select_EvaluationsEmployees_ByEmployeeIDResult)).ToList()
 
         ' 1) status
         Dim s = ddlVStatus.SelectedValue
@@ -756,41 +806,52 @@ Public Class MyProfile
 
         If Not String.IsNullOrWhiteSpace(txtVFrom.Text) Then
             Dim dt As DateTime
-            If DateTime.TryParseExact(txtVFrom.Text.Trim(), {"dd/MM/yyyy", "yyyy-MM-dd"}, CultureInfo.InvariantCulture, DateTimeStyles.None, dt) Then
+            If _
+                DateTime.TryParseExact(txtVFrom.Text.Trim(), {"dd/MM/yyyy", "yyyy-MM-dd"}, CultureInfo.InvariantCulture,
+                                       DateTimeStyles.None, dt) Then
                 fromDate = dt.Date
             End If
         End If
 
         If Not String.IsNullOrWhiteSpace(txtVTo.Text) Then
             Dim dt As DateTime
-            If DateTime.TryParseExact(txtVTo.Text.Trim(), {"dd/MM/yyyy", "yyyy-MM-dd"}, CultureInfo.InvariantCulture, DateTimeStyles.None, dt) Then
+            If _
+                DateTime.TryParseExact(txtVTo.Text.Trim(), {"dd/MM/yyyy", "yyyy-MM-dd"}, CultureInfo.InvariantCulture,
+                                       DateTimeStyles.None, dt) Then
                 toDate = dt.Date
             End If
         End If
 
         If fromDate.HasValue Then
-            evals = evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date >= fromDate.Value).ToList()
+            evals =
+                evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date >= fromDate.Value).ToList()
         End If
         If toDate.HasValue Then
-            evals = evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date <= toDate.Value).ToList()
+            evals =
+                evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date <= toDate.Value).ToList()
         End If
 
         ' dictionaries
-        Dim deptIds = evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().ToList()
-        Dim jobIds = evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().ToList()
-        Dim shiftIds = evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
+        Dim deptIds =
+                evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().
+                ToList()
+        Dim jobIds =
+                evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().
+                ToList()
+        Dim shiftIds =
+                evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
 
         Dim deptDict = (From d In db.Select_Departments_All()
-                        Where deptIds.Contains(d.ID)
-                        Select d.ID, d.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where deptIds.Contains(d.ID)
+                Select d.ID, d.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim jobDict = (From j In db.Select_JobTitles_All()
-                       Where jobIds.Contains(j.ID)
-                       Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where jobIds.Contains(j.ID)
+                Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim shiftsDict = (From sh In db.Select_Shift_All()
-                          Where shiftIds.Contains(sh.ID)
-                          Select sh.ID, sh.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where shiftIds.Contains(sh.ID)
+                Select sh.ID, sh.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         ' Checklist dictionary from Checklist_Employee
         Dim allChecklistIds As New HashSet(Of Integer)()
@@ -804,14 +865,14 @@ Public Class MyProfile
         Next
 
         Dim checklistRows = (From c In db.Select_Checklist_Employee_All
-                             Join cat In db.Checklist_Employee_Categories_SelectAll On c.CheckList_CategoryID Equals cat.ID
-                             Where allChecklistIds.Contains(c.ID)
-                             Select New With {
-                                 .ID = c.ID,
-                                 .Title = c.Title_Ar,
-                                 .CategoryID = c.CheckList_CategoryID,
-                                 .CategoryTitle = cat.Title_Ar
-                             }).ToList()
+                Join cat In db.Checklist_Employee_Categories_SelectAll On c.CheckList_CategoryID Equals cat.ID
+                Where allChecklistIds.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title = c.Title_Ar,
+                .CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar
+                }).ToList()
 
         Dim checklistDict = checklistRows.ToDictionary(Function(x) x.ID)
 
@@ -831,13 +892,16 @@ Public Class MyProfile
         Dim result As New List(Of EvaluationTaskDto)()
 
         For Each ev In evals
-            Dim deptName As String = ""
-            Dim jobName As String = ""
-            Dim shiftName As String = ""
+            Dim deptName = ""
+            Dim jobName = ""
+            Dim shiftName = ""
 
-            If ev.Department_ID.HasValue AndAlso deptDict.ContainsKey(ev.Department_ID.Value) Then deptName = deptDict(ev.Department_ID.Value)
-            If ev.JobTitle_ID.HasValue AndAlso jobDict.ContainsKey(ev.JobTitle_ID.Value) Then jobName = jobDict(ev.JobTitle_ID.Value)
-            If ev.Shift_ID.HasValue AndAlso shiftsDict.ContainsKey(ev.Shift_ID.Value) Then shiftName = shiftsDict(ev.Shift_ID.Value)
+            If ev.Department_ID.HasValue AndAlso deptDict.ContainsKey(ev.Department_ID.Value) Then _
+                deptName = deptDict(ev.Department_ID.Value)
+            If ev.JobTitle_ID.HasValue AndAlso jobDict.ContainsKey(ev.JobTitle_ID.Value) Then _
+                jobName = jobDict(ev.JobTitle_ID.Value)
+            If ev.Shift_ID.HasValue AndAlso shiftsDict.ContainsKey(ev.Shift_ID.Value) Then _
+                shiftName = shiftsDict(ev.Shift_ID.Value)
 
             Dim viols As New List(Of ViolationDto)()
             Dim matchCat As Boolean = (Not selectedCat.HasValue)
@@ -852,7 +916,7 @@ Public Class MyProfile
                         If selectedCat.HasValue AndAlso c.CategoryID = selectedCat.Value Then matchCat = True
                         If selectedItem.HasValue AndAlso id = selectedItem.Value Then matchItem = True
 
-                        Dim css As String = "badge-chip badge-primary-soft"
+                        Dim css = "badge-chip badge-primary-soft"
                         Select Case c.CategoryID
                             Case 1 : css = "badge-chip badge-danger-soft"
                             Case 2 : css = "badge-chip badge-warning-soft"
@@ -872,17 +936,17 @@ Public Class MyProfile
             Dim statusCss As String = If(isClosed, "status-badge status-closed", "status-badge status-open")
 
             result.Add(New EvaluationTaskDto With {
-                .EvaluationID = ev.ID,
-                .DepartmentName = deptName,
-                .JobTitleName = jobName,
-                .ShiftName = shiftName,
-                .BrandLogoUrl = "", ' غير مطلوب هنا
-                .EvalDate = ev.AddedDate,
-                .Notes = ev.Notes,
-                .Violations = viols,
-                .StatusText = statusText,
-                .StatusCss = statusCss
-            })
+                          .EvaluationID = ev.ID,
+                          .DepartmentName = deptName,
+                          .JobTitleName = jobName,
+                          .ShiftName = shiftName,
+                          .BrandLogoUrl = "", ' غير مطلوب هنا
+                          .EvalDate = ev.AddedDate,
+                          .Notes = ev.Notes,
+                          .Violations = viols,
+                          .StatusText = statusText,
+                          .StatusCss = statusCss
+                          })
         Next
 
         result = result.OrderByDescending(Function(x) x.EvalDate).ToList()
@@ -893,9 +957,12 @@ Public Class MyProfile
     End Sub
 
     Private Sub BindViolationsSummary()
-        Dim evals = If(_employeeViolations, New List(Of Prosto_ERP_ClassLibrary.Select_EvaluationsEmployees_ByEmployeeIDResult)) _
-            .Where(Function(ev) Not String.IsNullOrWhiteSpace(ev.Checklist_IDs)) _
-            .ToList()
+        Dim evals =
+                If _
+                (_employeeViolations,
+                 New List(Of Select_EvaluationsEmployees_ByEmployeeIDResult)) _
+                .Where(Function(ev) Not String.IsNullOrWhiteSpace(ev.Checklist_IDs)) _
+                .ToList()
 
         If evals.Count = 0 Then
             pnlNoViolationsSummary.Visible = True
@@ -920,14 +987,14 @@ Public Class MyProfile
         End If
 
         Dim all = (From c In db.Select_Checklist_Employee_All
-                   Join cat In db.Checklist_Employee_Categories_SelectAll On c.CheckList_CategoryID Equals cat.ID
-                   Where allIds.Contains(c.ID)
-                   Select New With {
-                       .ID = c.ID,
-                       .Title = c.Title_Ar,
-                       .CategoryID = c.CheckList_CategoryID,
-                       .CategoryTitle = cat.Title_Ar
-                   }).ToList()
+                Join cat In db.Checklist_Employee_Categories_SelectAll On c.CheckList_CategoryID Equals cat.ID
+                Where allIds.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title = c.Title_Ar,
+                .CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar
+                }).ToList()
 
         Dim counts As New Dictionary(Of Integer, Integer)()
         For Each ev In evals
@@ -941,21 +1008,21 @@ Public Class MyProfile
         Next
 
         Dim summary = (From kvp In counts
-                       Join c In all On kvp.Key Equals c.ID
-                       Let catId = c.CategoryID
-                       Let css = If(catId = 1, "summary-danger",
-                                    If(catId = 2, "summary-warning", "summary-normal"))
-                       Select New With {
-                           .ChecklistID = c.ID,
-                           .Title = c.Title,
-                           .CategoryTitle = c.CategoryTitle,
-                           .CategoryID = catId,
-                           .Count = kvp.Value,
-                           .CssClass = css
-                       }).
-                       OrderByDescending(Function(x) x.Count).
-                       ThenBy(Function(x) x.Title).
-                       ToList()
+                Join c In all On kvp.Key Equals c.ID
+                Let catId = c.CategoryID
+                Let css = If(catId = 1, "summary-danger",
+                             If(catId = 2, "summary-warning", "summary-normal"))
+                Select New With {
+                .ChecklistID = c.ID,
+                .Title = c.Title,
+                .CategoryTitle = c.CategoryTitle,
+                .CategoryID = catId,
+                .Count = kvp.Value,
+                .CssClass = css
+                }).
+                OrderByDescending(Function(x) x.Count).
+                ThenBy(Function(x) x.Title).
+                ToList()
 
         pnlNoViolationsSummary.Visible = (summary.Count = 0)
         rptViolationsSummary.DataSource = summary
@@ -976,21 +1043,24 @@ Public Class MyProfile
     ' ✅ Attachments: دعم القديم + دعم مخالفات الموظف
     ' =========================
 
-    Protected Sub rptComplaints_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptComplaints.ItemCommand
+    Protected Sub rptComplaints_ItemCommand(source As Object, e As RepeaterCommandEventArgs) _
+        Handles rptComplaints.ItemCommand
         If e.CommandName = "ShowAttachments" Then
             Dim evalId As Integer = Convert.ToInt32(e.CommandArgument)
             BindAttachments_Old(evalId)
         End If
     End Sub
 
-    Protected Sub rptViolationsHistory_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptViolationsHistory.ItemCommand
+    Protected Sub rptViolationsHistory_ItemCommand(source As Object, e As RepeaterCommandEventArgs) _
+        Handles rptViolationsHistory.ItemCommand
         If e.CommandName = "ShowAttachments" Then
             Dim evalId As Integer = Convert.ToInt32(e.CommandArgument)
             BindAttachments_Old(evalId)
         End If
     End Sub
 
-    Protected Sub rptEmployeeViolations_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptEmployeeViolations.ItemCommand
+    Protected Sub rptEmployeeViolations_ItemCommand(source As Object, e As RepeaterCommandEventArgs) _
+        Handles rptEmployeeViolations.ItemCommand
         If e.CommandName = "ShowVAttachments" Then
             Dim evalId As Integer = Convert.ToInt32(e.CommandArgument)
             BindAttachments_New(evalId)
@@ -1000,10 +1070,11 @@ Public Class MyProfile
     ' القديم
     Private Sub BindAttachments_Old(evaluationId As Integer)
         Dim atts = (From a In db.Select_Evaluations_Attachments_ByEvaluation_ID(evaluationId)
-                    Select New With {.Title = a.Title, .FilePath = a.File_Path}).ToList()
+                Select New With {.Title = a.Title, .FilePath = a.File_Path}).ToList()
 
         If atts Is Nothing OrElse atts.Count = 0 Then
-            ScriptManager.RegisterStartupScript(Me, Me.GetType(), "noAttAlert", "alert('لا يوجد مرفقات لهذا التقييم');", True)
+            ScriptManager.RegisterStartupScript(Me, Me.GetType(), "noAttAlert", "alert('لا يوجد مرفقات لهذا التقييم');",
+                                                True)
             Return
         End If
 
@@ -1015,10 +1086,11 @@ Public Class MyProfile
     ' الجديد
     Private Sub BindAttachments_New(evaluationId As Integer)
         Dim atts = (From a In db.Select_EvaluationsEmployees_Attachments_ByEvaluation_ID(evaluationId)
-                    Select New With {.Title = a.Title, .FilePath = a.File_Path}).ToList()
+                Select New With {.Title = a.Title, .FilePath = a.File_Path}).ToList()
 
         If atts Is Nothing OrElse atts.Count = 0 Then
-            ScriptManager.RegisterStartupScript(Me, Me.GetType(), "noAttAlert2", "alert('لا يوجد مرفقات لهذا التقييم');", True)
+            ScriptManager.RegisterStartupScript(Me, Me.GetType(), "noAttAlert2", "alert('لا يوجد مرفقات لهذا التقييم');",
+                                                True)
             Return
         End If
 
@@ -1029,13 +1101,16 @@ Public Class MyProfile
 
     Private Sub ShowModal(modalId As String)
         Dim script As String =
-            "setTimeout(function(){" &
-            "var m = new bootstrap.Modal(document.getElementById('" & modalId & "')); m.show();" &
-            "}, 100);"
+                "setTimeout(function(){" &
+                "var m = new bootstrap.Modal(document.getElementById('" & modalId & "')); m.show();" &
+                "}, 100);"
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "show_" & modalId, script, True)
     End Sub
 
     Protected Sub btnOpenEmployeeEvaluation_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/modules/Employees/Employee_Evaluation.aspx?EmployeeID=" & Request.QueryString("EmployeeID").ToString())
+        Response.Redirect(
+            "/modules/Employees/Employee_Evaluation.aspx?EmployeeID=" & Request.QueryString("EmployeeID").ToString())
     End Sub
 End Class
+
+

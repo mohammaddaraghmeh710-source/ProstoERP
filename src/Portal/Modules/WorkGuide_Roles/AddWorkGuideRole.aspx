@@ -56,28 +56,28 @@
                     <div class="col-md-3">
                         <div class="form-check">
                             <asp:CheckBox ID="chkViewCategory" runat="server" CssClass="form-check-input" Checked="true" />
-                            <label class="form-check-label" for="<%= chkViewCategory.ClientID %>">عرض التصنيفات</label>
+                            <label class="form-check-label" for="<%=chkViewCategory.ClientID%>">عرض التصنيفات</label>
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <div class="form-check">
                             <asp:CheckBox ID="chkViewDocument" runat="server" CssClass="form-check-input" Checked="true" />
-                            <label class="form-check-label" for="<%= chkViewDocument.ClientID %>">عرض الملفات</label>
+                            <label class="form-check-label" for="<%=chkViewDocument.ClientID%>">عرض الملفات</label>
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <div class="form-check">
                             <asp:CheckBox ID="chkPrintDocument" runat="server" CssClass="form-check-input" />
-                            <label class="form-check-label" for="<%= chkPrintDocument.ClientID %>">طباعة الملف</label>
+                            <label class="form-check-label" for="<%=chkPrintDocument.ClientID%>">طباعة الملف</label>
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <div class="form-check">
                             <asp:CheckBox ID="chkDownloadDocument" runat="server" CssClass="form-check-input" />
-                            <label class="form-check-label" for="<%= chkDownloadDocument.ClientID %>">تحميل الملف</label>
+                            <label class="form-check-label" for="<%=chkDownloadDocument.ClientID%>">تحميل الملف</label>
                         </div>
                     </div>
 

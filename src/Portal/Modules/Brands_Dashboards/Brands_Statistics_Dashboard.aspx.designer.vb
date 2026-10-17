@@ -255,4 +255,16 @@ Partial Public Class Brands_Statistics_Dashboard
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents rptAttachmentsCarousel As Global.System.Web.UI.WebControls.Repeater
+
+    '''<summary>
+    '''Master property.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated property.
+    '''</remarks>
+    Public Shadows ReadOnly Property Master() As CRM.Site
+        Get
+            Return CType(MyBase.Master, CRM.Site)
+        End Get
+    End Property
 End Class

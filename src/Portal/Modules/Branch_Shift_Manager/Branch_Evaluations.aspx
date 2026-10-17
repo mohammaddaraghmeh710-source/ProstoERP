@@ -175,27 +175,27 @@
                                             <button class="accordion-button px-0 py-0 bg-transparent shadow-0 flex-grow-1 collapsed"
                                                 type="button"
                                                 data-bs-toggle="collapse"
-                                                data-bs-target='<%# "#collapseViolation_" & Eval("EvaluationID") %>'
+                                                data-bs-target='<%# "#collapseViolation_" & Eval("EvaluationID")%>'
                                                 aria-expanded="false"
-                                                aria-controls='<%# "collapseViolation_" & Eval("EvaluationID") %>'>
+                                                aria-controls='<%# "collapseViolation_" & Eval("EvaluationID")%>'>
 
                                                 <div class="w-100">
                                                     <div class="d-flex align-items-center gap-2 mb-2">
-                                                        <img src='<%# Eval("BrandLogoUrl") %>' alt="Brand" class="brand-logo ms-1" />
+                                                        <img src='<%# Eval("BrandLogoUrl")%>' alt="Brand" class="brand-logo ms-1" />
                                                         <div>
-                                                            <div class="task-title"><%# Eval("JobTitleName") %></div>
+                                                            <div class="task-title"><%# Eval("JobTitleName")%></div>
                                                             <div class="task-sub">
-                                                                <i class="bx bx-time-five ms-1"></i> <%# Eval("ShiftName") %>
+                                                                <i class="bx bx-time-five ms-1"></i> <%# Eval("ShiftName")%>
                                                                 <span class="mx-1">•</span>
-                                                                <i class="bx bx-calendar ms-1"></i> <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate")) %>
+                                                                <i class="bx bx-calendar ms-1"></i> <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate"))%>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div class="d-flex flex-wrap violation-badges mb-2">
-                                                        <asp:Repeater ID="rptViolationChips" runat="server" DataSource='<%# Eval("Violations") %>'>
+                                                        <asp:Repeater ID="rptViolationChips" runat="server" DataSource='<%# Eval("Violations")%>'>
                                                             <ItemTemplate>
-                                                                <span class='<%# Eval("CssClass") %>'><%# Eval("Title") %></span>
+                                                                <span class='<%# Eval("CssClass")%>'><%# Eval("Title")%></span>
                                                             </ItemTemplate>
                                                         </asp:Repeater>
                                                     </div>
@@ -205,13 +205,13 @@
                                             <i class="bx bx-chevron-left text-muted ms-2"></i>
                                         </div>
 
-                                        <div id='<%# "collapseViolation_" & Eval("EvaluationID") %>'
+                                        <div id='<%# "collapseViolation_" & Eval("EvaluationID")%>'
                                              class="accordion-collapse collapse" data-bs-parent="#accordionViolations">
                                             <div class="accordion-body pt-2">
 
                                                 <div class="mb-3">
                                                     <span class="fw-semibold d-block mb-1">ملاحظات المفتش:</span>
-                                                    <p class="mb-0"><%# If(String.IsNullOrWhiteSpace(Eval("Notes")), "لا يوجد ملاحظات", Eval("Notes")) %></p>
+                                                    <p class="mb-0"><%# If(String.IsNullOrWhiteSpace(Eval("Notes")), "لا يوجد ملاحظات", Eval("Notes"))%></p>
                                                 </div>
 
                                                 <div>
@@ -219,7 +219,7 @@
                                                         CssClass="btn btn-sm btn-outline-secondary"
                                                         Text="المرفقات"
                                                         CommandName="ShowAttachments"
-                                                        CommandArgument='<%# Eval("EvaluationID") %>' />
+                                                        CommandArgument='<%# Eval("EvaluationID")%>' />
                                                 </div>
                                             </div>
                                         </div>
@@ -251,10 +251,10 @@
                                 <div class="carousel-inner">
                                     <asp:Repeater ID="rptAttachmentsCarousel" runat="server">
                                         <ItemTemplate>
-                                            <div class='carousel-item <%# IIf(Container.ItemIndex = 0, "active", "") %>'>
-                                                <img src='<%# Eval("FilePath") %>' class="attachment-img d-block w-100" alt='<%# Eval("Title") %>' />
+                                            <div class='carousel-item <%# IIf(Container.ItemIndex = 0, "active", "")%>'>
+                                                <img src='<%# Eval("FilePath")%>' class="attachment-img d-block w-100" alt='<%# Eval("Title")%>' />
                                                 <div class="carousel-caption d-none d-md-block">
-                                                    <small class="bg-dark px-2 py-1 rounded-2"><%# Eval("Title") %></small>
+                                                    <small class="bg-dark px-2 py-1 rounded-2"><%# Eval("Title")%></small>
                                                 </div>
                                             </div>
                                         </ItemTemplate>

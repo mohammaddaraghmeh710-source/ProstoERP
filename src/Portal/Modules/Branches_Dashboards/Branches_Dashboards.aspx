@@ -145,42 +145,42 @@
 
                     <ItemTemplate>
     <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-        <a href='<%# Eval("DetailsUrl") %>' 
+        <a href='<%# Eval("DetailsUrl")%>' 
            class="text-decoration-none"
            onclick="showBranchLoader()">
             <div class="card h-100 branch-card">
                 <div class="card-body d-flex flex-column align-items-center text-center">
 
                     <!-- Logo + Name -->
-                    <img src='<%# Eval("BrandLogo") %>' class="branch-logo mb-3">
-                    <h6 class="mb-1 text-body"><%# Eval("BranchName") %></h6>
+                    <img src='<%# Eval("BrandLogo")%>' class="branch-logo mb-3">
+                    <h6 class="mb-1 text-body"><%# Eval("BranchName")%></h6>
 
                     <!-- Rating -->
                     <div class="branch-card-rating mb-1">
-                        <i class='<%# GetStarClass(Eval("Stars"), 1) %>'></i>
-                        <i class='<%# GetStarClass(Eval("Stars"), 2) %>'></i>
-                        <i class='<%# GetStarClass(Eval("Stars"), 3) %>'></i>
-                        <i class='<%# GetStarClass(Eval("Stars"), 4) %>'></i>
-                        <i class='<%# GetStarClass(Eval("Stars"), 5) %>'></i>
+                        <i class='<%# GetStarClass(Eval("Stars"), 1)%>'></i>
+                        <i class='<%# GetStarClass(Eval("Stars"), 2)%>'></i>
+                        <i class='<%# GetStarClass(Eval("Stars"), 3)%>'></i>
+                        <i class='<%# GetStarClass(Eval("Stars"), 4)%>'></i>
+                        <i class='<%# GetStarClass(Eval("Stars"), 5)%>'></i>
                     </div>
                     <div class="small text-muted mb-3 branch-score-text">
-                        <%# String.Format("{0:0.0}%", Eval("Score")) %>
+                        <%# String.Format("{0:0.0}%", Eval("Score"))%>
                     </div>
 
                     <!-- Metrics -->
                     <div class="d-flex justify-content-between w-100 branch-metrics mb-3 text-nowrap">
                         <div class="branch-metrics-item text-center">
-                            <div class="metric-value text-danger"><%# Eval("ComplaintsCount") %></div>
+                            <div class="metric-value text-danger"><%# Eval("ComplaintsCount")%></div>
                             <div class="text-muted small">عدد الشكاوي</div>
                         </div>
 
                         <div class="branch-metrics-item text-center">
-                            <div class="metric-value text-warning"><%# Eval("UnfinishedTasksCount") %></div>
+                            <div class="metric-value text-warning"><%# Eval("UnfinishedTasksCount")%></div>
                             <div class="text-muted small">عدد المهام</div>
                         </div>
 
                         <div class="branch-metrics-item text-center">
-                            <div class="metric-value text-primary"><%# Eval("EmployeesCount") %></div>
+                            <div class="metric-value text-primary"><%# Eval("EmployeesCount")%></div>
                             <div class="text-muted small">عدد الموظفين</div>
                         </div>
                     </div>

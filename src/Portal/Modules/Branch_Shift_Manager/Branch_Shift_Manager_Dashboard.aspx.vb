@@ -1,16 +1,10 @@
-﻿Imports System
-Imports System.Linq
-Imports System.Collections.Generic
-Imports System.Globalization
-Imports System.Web.UI
-Imports System.Web.UI.WebControls
-Imports System.Text
-Imports System.Web.Security
+﻿Imports System.Globalization
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Branch_Shift_Manager_Dashboard
     Inherits PageBase
 
-    Private ReadOnly db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+    Private ReadOnly db As New Prosto_ERP_DataClassesDataContext()
 
     Protected BranchID As Integer
     Protected ShiftID As Integer?
@@ -71,19 +65,18 @@ Public Class Branch_Shift_Manager_Dashboard
         Get
             Return If(TryCast(ViewState("EmployeesFilterType"), String), String.Empty)
         End Get
-        Set(value As String)
+        Set
             ViewState("EmployeesFilterType") = value
         End Set
     End Property
 
 
-
     ' الكاش
-    Private _branchEvaluations As List(Of Prosto_ERP_ClassLibrary.Select_Evaluations_ByBranchIDResult)
+    Private _branchEvaluations As List(Of Select_Evaluations_ByBranchIDResult)
     Private _branchUsers As List(Of BranchUserDto)
 
     ' ========== Page_Load ==========
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -159,20 +152,20 @@ Public Class Branch_Shift_Manager_Dashboard
         ' المستخدمين في الفرع (للاستخدام في عدّ الموظفين لكل قسم)
         _branchUsers =
             (From u In db.Select_UsersMembers_ByBranchID(BranchID)
-             Where (u.IsDeleted = False OrElse u.IsDeleted Is Nothing) _
-               AndAlso u.Type = 4
-             Select New BranchUserDto With {
-                 .ID = u.ID,
-                 .FullName_Ar = u.FullName_Ar,
-                 .Employee_Number = u.Employee_Number,
-                 .User_Image = u.User_Image,
-                 .Gender = u.Gender,
-                 .Department_ID = u.Department_ID,
-                 .JobTitle_ID = u.JobTitle_ID,
-                 .Shift_ID = u.Shif_ID,
-                 .Status = u.Status,
-                 .IsActive = u.IsActive
-             }).ToList()
+                Where (u.IsDeleted = False OrElse u.IsDeleted Is Nothing) _
+                      AndAlso u.Type = 4
+                Select New BranchUserDto With {
+                    .ID = u.ID,
+                    .FullName_Ar = u.FullName_Ar,
+                    .Employee_Number = u.Employee_Number,
+                    .User_Image = u.User_Image,
+                    .Gender = u.Gender,
+                    .Department_ID = u.Department_ID,
+                    .JobTitle_ID = u.JobTitle_ID,
+                    .Shift_ID = u.Shif_ID,
+                    .Status = u.Status,
+                    .IsActive = u.IsActive
+                    }).ToList()
 
         ' اسم الوردية (إن وجد)
         If ShiftID.HasValue Then
@@ -227,7 +220,6 @@ Public Class Branch_Shift_Manager_Dashboard
         ' تاريخ اليوم
         Dim ar As New CultureInfo("ar-JO")
         litTodayDate.Text = DateTime.Now.ToString("dddd dd/MM/yyyy", ar)
-
     End Sub
 
     Private Sub BindEmployeesList(filterType As String)
@@ -242,8 +234,9 @@ Public Class Branch_Shift_Manager_Dashboard
         ' فلترة حسب الوردية إن وجدت
         Dim users = _branchUsers.Where(
             Function(u) (u.IsActive = True OrElse u.IsActive Is Nothing) _
-                     AndAlso (Not ShiftID.HasValue OrElse (u.Shift_ID.HasValue AndAlso u.Shift_ID.Value = ShiftID.Value))
-        ).ToList()
+                        AndAlso
+                        (Not ShiftID.HasValue OrElse (u.Shift_ID.HasValue AndAlso u.Shift_ID.Value = ShiftID.Value))
+            ).ToList()
 
         ' Status mapping (افتراض):
         ' 2 = مجاز, 3 = غياب بدون عذر
@@ -253,7 +246,10 @@ Public Class Branch_Shift_Manager_Dashboard
                 ' users كما هي
             Case "Actual"
                 litEmployeesFilterTitle.Text = "الموظفون الحاضرون فعلياً"
-                users = users.Where(Function(u) Not (u.Status.HasValue AndAlso (u.Status.Value = 2 OrElse u.Status.Value = 3))).ToList()
+                users =
+                    users.Where(
+                        Function(u) Not (u.Status.HasValue AndAlso (u.Status.Value = 2 OrElse u.Status.Value = 3))).
+                        ToList()
             Case "OnLeave"
                 litEmployeesFilterTitle.Text = "الموظفون المجازون"
                 users = users.Where(Function(u) u.Status.HasValue AndAlso u.Status.Value = 2).ToList()
@@ -272,26 +268,31 @@ Public Class Branch_Shift_Manager_Dashboard
 
         ' تجميع حسب القسم
         Dim grouped = users.
-            GroupBy(Function(u) If(u.Department_ID, 0)).
-            Select(Function(g) New EmployeesByDeptDto With {
-                .DepartmentID = g.Key,
-                .DepartmentName = If(g.Key = 0, "بدون قسم", If(deptDict.ContainsKey(g.Key), deptDict(g.Key), "قسم غير معرف")),
-                .Employees = g.Select(Function(u) New EmployeeListItemDto With {
-                    .ID = u.ID,
-                    .FullName = u.FullName_Ar,
-                    .JobTitleName = If(u.JobTitle_ID.HasValue AndAlso jobsDict.ContainsKey(u.JobTitle_ID.Value),
-                                       jobsDict(u.JobTitle_ID.Value),
-                                       "بدون محطة تعريفية")
-                }).OrderBy(Function(x) x.FullName).ToList()})
+                GroupBy(Function(u) If(u.Department_ID, 0)).
+                Select(Function(g) New EmployeesByDeptDto With {
+                          .DepartmentID = g.Key,
+                          .DepartmentName =
+                          If(g.Key = 0, "بدون قسم", If(deptDict.ContainsKey(g.Key), deptDict(g.Key), "قسم غير معرف")),
+                          .Employees = g.Select(Function(u) New EmployeeListItemDto With {
+                                                   .ID = u.ID,
+                                                   .FullName = u.FullName_Ar,
+                                                   .JobTitleName =
+                                                   If _
+                                                   (
+                                                       u.JobTitle_ID.HasValue AndAlso
+                                                       jobsDict.ContainsKey(u.JobTitle_ID.Value),
+                                                       jobsDict(u.JobTitle_ID.Value),
+                                                       "بدون محطة تعريفية")
+                                                   }).OrderBy(Function(x) x.FullName).ToList()})
 
         rptEmployeesByDept.DataSource = grouped
         rptEmployeesByDept.DataBind()
 
         ' إظهار المودال
         Dim script As String =
-            "setTimeout(function(){" &
-            "var m = new bootstrap.Modal(document.getElementById('employeesModal')); m.show();" &
-            "}, 200);"
+                "setTimeout(function(){" &
+                "var m = new bootstrap.Modal(document.getElementById('employeesModal')); m.show();" &
+                "}, 200);"
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "showEmployeesModal", script, True)
     End Sub
 
@@ -359,9 +360,9 @@ Public Class Branch_Shift_Manager_Dashboard
 
         ' 5) إظهار المودال
         Dim script As String =
-        "setTimeout(function(){" &
-        "var m = new bootstrap.Modal(document.getElementById('editEmployeeModal')); m.show();" &
-        "}, 200);"
+                "setTimeout(function(){" &
+                "var m = new bootstrap.Modal(document.getElementById('editEmployeeModal')); m.show();" &
+                "}, 200);"
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "showEditEmployeeModal", script, True)
     End Sub
 
@@ -397,13 +398,14 @@ Public Class Branch_Shift_Manager_Dashboard
     End Sub
 
 
-    Protected Sub ddlEditDepartment_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ddlEditDepartment.SelectedIndexChanged
+    Protected Sub ddlEditDepartment_SelectedIndexChanged(sender As Object, e As EventArgs) _
+        Handles ddlEditDepartment.SelectedIndexChanged
         BindJobTitlesForSelectedDept()
 
         Dim script As String =
-        "setTimeout(function(){" &
-        "var m = new bootstrap.Modal(document.getElementById('editEmployeeModal')); m.show();" &
-        "}, 200);"
+                "setTimeout(function(){" &
+                "var m = new bootstrap.Modal(document.getElementById('editEmployeeModal')); m.show();" &
+                "}, 200);"
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "reopenEditEmployeeModal", script, True)
     End Sub
 
@@ -451,7 +453,6 @@ Public Class Branch_Shift_Manager_Dashboard
         '"cleanupModalBackdrops();"
 
         '    ScriptManager.RegisterStartupScript(Me, Me.GetType(), "hideEditEmployeeModal", script2, True)
-
     End Sub
 
     Private Sub BindEmployeesHeaderStats()
@@ -466,8 +467,9 @@ Public Class Branch_Shift_Manager_Dashboard
         ' فلترة على الموظفين الفعالين + وردية الصفحة إن أردت
         Dim users = _branchUsers.Where(
             Function(u) (u.IsActive = True OrElse u.IsActive Is Nothing) _
-                     AndAlso (Not ShiftID.HasValue OrElse (u.Shift_ID.HasValue AndAlso u.Shift_ID.Value = ShiftID.Value))
-        ).ToList()
+                        AndAlso
+                        (Not ShiftID.HasValue OrElse (u.Shift_ID.HasValue AndAlso u.Shift_ID.Value = ShiftID.Value))
+            ).ToList()
 
         Dim total As Integer = users.Count
 
@@ -511,7 +513,8 @@ Public Class Branch_Shift_Manager_Dashboard
     End Sub
 
     ' ======== حساب السكور ========
-    Private Function CalculateScore(evals As IEnumerable(Of Prosto_ERP_ClassLibrary.Select_Evaluations_ByBranchIDResult)) As Decimal
+    Private Function CalculateScore(evals As IEnumerable(Of Select_Evaluations_ByBranchIDResult)) _
+        As Decimal
         If evals Is Nothing Then
             Return 100D
         End If
@@ -522,10 +525,10 @@ Public Class Branch_Shift_Manager_Dashboard
         End If
 
         Dim totalWeight As Decimal =
-            evals.Sum(Function(ev) If(ev IsNot Nothing AndAlso ev.Weight.HasValue, CDec(ev.Weight.Value), 0D))
+                evals.Sum(Function(ev) If(ev IsNot Nothing AndAlso ev.Weight.HasValue, CDec(ev.Weight.Value), 0D))
 
-        Dim maxScore As Decimal = evaluationCount * 100D
-        Dim score As Decimal = ((maxScore - totalWeight) / maxScore) * 100D
+        Dim maxScore As Decimal = evaluationCount*100D
+        Dim score As Decimal = ((maxScore - totalWeight)/maxScore)*100D
 
         If score < 0D Then score = 0D
         If score > 100D Then score = 100D
@@ -547,7 +550,7 @@ Public Class Branch_Shift_Manager_Dashboard
     Private Sub BindBranchGaugeAndSummary()
         Dim evalsAll = _branchEvaluations.Where(
             Function(ev) ev.Evaluation_Type = 1 OrElse ev.Evaluation_Type = 2
-        ).ToList()
+            ).ToList()
 
         Dim score As Decimal = CalculateScore(evalsAll)
         litBranchScore.Text = score.ToString("0.0", CultureInfo.InvariantCulture) & "%"
@@ -556,11 +559,11 @@ Public Class Branch_Shift_Manager_Dashboard
 
         Dim violations = _branchEvaluations.Where(
             Function(ev) ev.Evaluation_Type = 1 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)
-        ).ToList()
+            ).ToList()
 
         Dim complaints = _branchEvaluations.Where(
             Function(ev) ev.Evaluation_Type = 2 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)
-        ).ToList()
+            ).ToList()
 
         litViolationsCount.Text = violations.Count.ToString()
         litComplaintsCount.Text = complaints.Count.ToString()
@@ -590,16 +593,16 @@ Public Class Branch_Shift_Manager_Dashboard
         Dim list As New List(Of DepartmentEvalDto)()
 
         ' مصفوفة الألوان بالترتيب المطلوب (مثل الصورة)
-        Dim colorClasses As String() = {
-             "dept-bg-secondary",
-            "dept-bg-danger",
-            "dept-bg-primary",
-            "dept-bg-info",
-            "dept-bg-success",
-            "dept-bg-warning"
-        }
+        Dim colorClasses As String() = { _
+                                           "dept-bg-secondary",
+                                           "dept-bg-danger",
+                                           "dept-bg-primary",
+                                           "dept-bg-info",
+                                           "dept-bg-success",
+                                           "dept-bg-warning"
+                                       }
 
-        Dim index As Integer = 0
+        Dim index = 0
 
         For Each d In depts
             Dim deptId As Integer = d.ID
@@ -607,18 +610,18 @@ Public Class Branch_Shift_Manager_Dashboard
             ' تقييم القسم بناءً على كل التقييمات في الفرع لهذا القسم (1 و 2)
             Dim deptEvals = _branchEvaluations.Where(
                 Function(ev) ev.Department_ID.HasValue AndAlso ev.Department_ID.Value = deptId _
-                        AndAlso (ev.Evaluation_Type = 1 OrElse ev.Evaluation_Type = 2)
-            ).ToList()
+                             AndAlso (ev.Evaluation_Type = 1 OrElse ev.Evaluation_Type = 2)
+                ).ToList()
 
             Dim score As Decimal = CalculateScore(deptEvals)
 
-            Dim empCount As Integer = 0
+            Dim empCount = 0
             If _branchUsers IsNot Nothing Then
                 empCount = _branchUsers.Where(
                     Function(u) u.Department_ID.HasValue _
-                            AndAlso u.Department_ID.Value = deptId _
-                            AndAlso (u.IsActive = True OrElse u.IsActive Is Nothing)
-                ).Count()
+                                AndAlso u.Department_ID.Value = deptId _
+                                AndAlso (u.IsActive = True OrElse u.IsActive Is Nothing)
+                    ).Count()
             End If
 
             ' اختيار كلاس اللون حسب ترتيب القسم مع إعادة التكرار عند الانتهاء
@@ -626,42 +629,45 @@ Public Class Branch_Shift_Manager_Dashboard
             index += 1
 
             list.Add(New DepartmentEvalDto With {
-                .DepartmentID = deptId,
-                .DepartmentName = d.Title_Ar,
-                .Score = score,
-                .EmployeesCount = empCount,
-                .BgClass = bgClass
-            })
+                        .DepartmentID = deptId,
+                        .DepartmentName = d.Title_Ar,
+                        .Score = score,
+                        .EmployeesCount = empCount,
+                        .BgClass = bgClass
+                        })
         Next
 
         rptDepartments.DataSource = list
         rptDepartments.DataBind()
-
     End Sub
 
     ' ========== Bind Violations ==========
     Private Sub BindViolations()
         Dim evals = _branchEvaluations.Where(
             Function(ev) ev.Evaluation_Type = 1 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)
-        ).ToList()
+            ).ToList()
 
-        Dim jobIds = evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().ToList()
-        Dim shiftIds = evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
-        Dim brandIds = evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
+        Dim jobIds =
+                evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().
+                ToList()
+        Dim shiftIds =
+                evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
+        Dim brandIds =
+                evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
 
         Dim jobDict = (From j In db.Select_JobTitles_All()
-                       Where jobIds.Contains(j.ID)
-                       Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where jobIds.Contains(j.ID)
+                Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim shiftsDict = (From s In db.Select_Shift_All()
-                          Where shiftIds.Contains(s.ID)
-                          Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where shiftIds.Contains(s.ID)
+                Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim brandsDict = (From b In db.Select_Brands_All()
-                          Where brandIds.Contains(b.ID)
-                          Select b.ID, b.Title_Ar, b.Logo).ToList()
+                Where brandIds.Contains(b.ID)
+                Select b.ID, b.Title_Ar, b.Logo).ToList()
 
-        Dim brandLogoDefault As String = "/assets/img/Prosto/Logo_Circle.png"
+        Dim brandLogoDefault = "/assets/img/Prosto/Logo_Circle.png"
         Dim brandLogoDict As New Dictionary(Of Integer, String)
         For Each b In brandsDict
             Dim logo As String = b.Logo
@@ -685,22 +691,22 @@ Public Class Branch_Shift_Manager_Dashboard
         Next
 
         Dim allChecklists = (From c In db.Select_Checklist_All()
-                             Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
-                             Where allChecklistIds.Contains(c.ID)
-                             Select New With {
-                                 .ID = c.ID,
-                                 .Title_Ar = c.Title_Ar,
-                                 .CheckList_CategoryID = c.CheckList_CategoryID,
-                                 .CategoryTitle = cat.Title_Ar
-                             }).ToList()
+                Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
+                Where allChecklistIds.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title_Ar = c.Title_Ar,
+                .CheckList_CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar
+                }).ToList()
 
         Dim checklistDict = allChecklists.ToDictionary(Function(x) x.ID)
 
         Dim tasks As New List(Of EvaluationTaskDto)()
 
         For Each ev In evals
-            Dim jobName As String = ""
-            Dim shiftName As String = ""
+            Dim jobName = ""
+            Dim shiftName = ""
             Dim brandLogo As String = brandLogoDefault
 
             If ev.JobTitle_ID.HasValue AndAlso jobDict.ContainsKey(ev.JobTitle_ID.Value) Then
@@ -723,7 +729,7 @@ Public Class Branch_Shift_Manager_Dashboard
                     Dim id As Integer
                     If Integer.TryParse(p.Trim(), id) AndAlso checklistDict.ContainsKey(id) Then
                         Dim c = checklistDict(id)
-                        Dim css As String = "badge-chip badge-primary-soft"
+                        Dim css = "badge-chip badge-primary-soft"
                         Select Case c.CheckList_CategoryID
                             Case 1
                                 css = "badge-chip badge-danger-soft"
@@ -734,22 +740,22 @@ Public Class Branch_Shift_Manager_Dashboard
                         End Select
 
                         viols.Add(New ViolationDto With {
-                            .Title = c.Title_Ar,
-                            .CssClass = css
-                        })
+                                     .Title = c.Title_Ar,
+                                     .CssClass = css
+                                     })
                     End If
                 Next
             End If
 
             tasks.Add(New EvaluationTaskDto With {
-                .EvaluationID = ev.ID,
-                .JobTitleName = jobName,
-                .ShiftName = shiftName,
-                .BrandLogoUrl = brandLogo,
-                .EvalDate = ev.AddedDate,
-                .Notes = ev.Notes,
-                .Violations = viols
-            })
+                         .EvaluationID = ev.ID,
+                         .JobTitleName = jobName,
+                         .ShiftName = shiftName,
+                         .BrandLogoUrl = brandLogo,
+                         .EvalDate = ev.AddedDate,
+                         .Notes = ev.Notes,
+                         .Violations = viols
+                         })
         Next
 
         rptViolations.DataSource = tasks
@@ -760,25 +766,29 @@ Public Class Branch_Shift_Manager_Dashboard
     Private Sub BindComplaints()
         Dim evals = _branchEvaluations.Where(
             Function(ev) ev.Evaluation_Type = 2 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)
-        ).ToList()
+            ).ToList()
 
-        Dim jobIds = evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().ToList()
-        Dim shiftIds = evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
-        Dim brandIds = evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
+        Dim jobIds =
+                evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().
+                ToList()
+        Dim shiftIds =
+                evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
+        Dim brandIds =
+                evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
 
         Dim jobDict = (From j In db.Select_JobTitles_All()
-                       Where jobIds.Contains(j.ID)
-                       Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where jobIds.Contains(j.ID)
+                Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim shiftsDict = (From s In db.Select_Shift_All()
-                          Where shiftIds.Contains(s.ID)
-                          Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where shiftIds.Contains(s.ID)
+                Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim brandsDict = (From b In db.Select_Brands_All()
-                          Where brandIds.Contains(b.ID)
-                          Select b.ID, b.Title_Ar, b.Logo).ToList()
+                Where brandIds.Contains(b.ID)
+                Select b.ID, b.Title_Ar, b.Logo).ToList()
 
-        Dim brandLogoDefault As String = "/assets/img/Prosto/Logo_Circle.png"
+        Dim brandLogoDefault = "/assets/img/Prosto/Logo_Circle.png"
         Dim brandLogoDict As New Dictionary(Of Integer, String)
         For Each b In brandsDict
             Dim logo As String = b.Logo
@@ -802,22 +812,22 @@ Public Class Branch_Shift_Manager_Dashboard
         Next
 
         Dim allChecklists = (From c In db.Select_Checklist_All()
-                             Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
-                             Where allChecklistIds.Contains(c.ID)
-                             Select New With {
-                                 .ID = c.ID,
-                                 .Title_Ar = c.Title_Ar,
-                                 .CheckList_CategoryID = c.CheckList_CategoryID,
-                                 .CategoryTitle = cat.Title_Ar
-                             }).ToList()
+                Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
+                Where allChecklistIds.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title_Ar = c.Title_Ar,
+                .CheckList_CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar
+                }).ToList()
 
         Dim checklistDict = allChecklists.ToDictionary(Function(x) x.ID)
 
         Dim complaints As New List(Of EvaluationTaskDto)()
 
         For Each ev In evals
-            Dim jobName As String = ""
-            Dim shiftName As String = ""
+            Dim jobName = ""
+            Dim shiftName = ""
             Dim brandLogo As String = brandLogoDefault
 
             If ev.JobTitle_ID.HasValue AndAlso jobDict.ContainsKey(ev.JobTitle_ID.Value) Then
@@ -840,7 +850,7 @@ Public Class Branch_Shift_Manager_Dashboard
                     Dim id As Integer
                     If Integer.TryParse(p.Trim(), id) AndAlso checklistDict.ContainsKey(id) Then
                         Dim c = checklistDict(id)
-                        Dim css As String = "badge-chip badge-primary-soft"
+                        Dim css = "badge-chip badge-primary-soft"
                         Select Case c.CheckList_CategoryID
                             Case 1
                                 css = "badge-chip badge-danger-soft"
@@ -851,22 +861,22 @@ Public Class Branch_Shift_Manager_Dashboard
                         End Select
 
                         viols.Add(New ViolationDto With {
-                            .Title = c.Title_Ar,
-                            .CssClass = css
-                        })
+                                     .Title = c.Title_Ar,
+                                     .CssClass = css
+                                     })
                     End If
                 Next
             End If
 
             complaints.Add(New EvaluationTaskDto With {
-                .EvaluationID = ev.ID,
-                .JobTitleName = jobName,
-                .ShiftName = shiftName,
-                .BrandLogoUrl = brandLogo,
-                .EvalDate = ev.AddedDate,
-                .Notes = ev.Notes,
-                .Violations = viols
-            })
+                              .EvaluationID = ev.ID,
+                              .JobTitleName = jobName,
+                              .ShiftName = shiftName,
+                              .BrandLogoUrl = brandLogo,
+                              .EvalDate = ev.AddedDate,
+                              .Notes = ev.Notes,
+                              .Violations = viols
+                              })
         Next
 
         rptComplaints.DataSource = complaints
@@ -884,7 +894,7 @@ Public Class Branch_Shift_Manager_Dashboard
     Protected Sub btnCloseAllViolations_Click(sender As Object, e As EventArgs) Handles btnCloseAllViolations.Click
         Dim ids = _branchEvaluations.Where(
             Function(ev) ev.Evaluation_Type = 1 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)
-        ).Select(Function(ev) ev.ID).ToList()
+            ).Select(Function(ev) ev.ID).ToList()
 
         For Each EvaluationID In ids
             CloseEvaluation(EvaluationID)
@@ -901,7 +911,7 @@ Public Class Branch_Shift_Manager_Dashboard
     Protected Sub btnCloseAllComplaints_Click(sender As Object, e As EventArgs) Handles btnCloseAllComplaints.Click
         Dim ids = _branchEvaluations.Where(
             Function(ev) ev.Evaluation_Type = 2 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)
-        ).Select(Function(ev) ev.ID).ToList()
+            ).Select(Function(ev) ev.ID).ToList()
 
         For Each ComplaintID In ids
             CloseEvaluation(ComplaintID)
@@ -915,7 +925,8 @@ Public Class Branch_Shift_Manager_Dashboard
     End Sub
 
     ' ========== Attachments & Close One ==========
-    Protected Sub rptViolations_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptViolations.ItemCommand
+    Protected Sub rptViolations_ItemCommand(source As Object, e As RepeaterCommandEventArgs) _
+        Handles rptViolations.ItemCommand
         If e.CommandName = "ShowAttachments" Then
             Dim evalId As Integer = Convert.ToInt32(e.CommandArgument)
             BindAttachments(evalId)
@@ -925,7 +936,8 @@ Public Class Branch_Shift_Manager_Dashboard
         End If
     End Sub
 
-    Protected Sub rptComplaints_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptComplaints.ItemCommand
+    Protected Sub rptComplaints_ItemCommand(source As Object, e As RepeaterCommandEventArgs) _
+        Handles rptComplaints.ItemCommand
         If e.CommandName = "ShowAttachments" Then
             Dim evalId As Integer = Convert.ToInt32(e.CommandArgument)
             BindAttachments(evalId)
@@ -937,13 +949,13 @@ Public Class Branch_Shift_Manager_Dashboard
 
     Private Sub BindAttachments(evaluationId As Integer)
         Dim atts = (From a In db.Select_Evaluations_Attachments_ByEvaluation_ID(evaluationId)
-                    Select New With {
-                        .Title = a.Title,
-                        .FilePath = a.File_Path
-                    }).ToList()
+                Select New With {
+                .Title = a.Title,
+                .FilePath = a.File_Path
+                }).ToList()
 
         If atts Is Nothing OrElse atts.Count = 0 Then
-            Dim scriptNoAtt As String = "alert('لا يوجد مرفقات لهذا التقييم');"
+            Dim scriptNoAtt = "alert('لا يوجد مرفقات لهذا التقييم');"
             ScriptManager.RegisterStartupScript(Me, Me.GetType(), "noAttAlert", scriptNoAtt, True)
             Return
         End If
@@ -952,9 +964,9 @@ Public Class Branch_Shift_Manager_Dashboard
         rptAttachmentsCarousel.DataBind()
 
         Dim script As String =
-            "setTimeout(function(){" &
-            "var m = new bootstrap.Modal(document.getElementById('attachmentsModal')); m.show();" &
-            "}, 200);"
+                "setTimeout(function(){" &
+                "var m = new bootstrap.Modal(document.getElementById('attachmentsModal')); m.show();" &
+                "}, 200);"
 
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "showAttachmentsModal", script, True)
     End Sub
@@ -994,3 +1006,5 @@ Public Class Branch_Shift_Manager_Dashboard
         Response.Redirect(Request.RawUrl)
     End Sub
 End Class
+
+

@@ -1,6 +1,5 @@
 ﻿
 Public Class AppSettings
-
     Public Enum UserType As Integer
         Admin = 1
         Dewan = 2
@@ -39,6 +38,7 @@ Public Class AppSettings
         Archived = 2
         ForAll = 3
     End Enum
+
     Public Enum InboundStatus As Integer
         Active = 1
         Archived = 2
@@ -55,5 +55,6 @@ Public Class AppSettings
         SearchExpandedInbound = 3
         SearchExpandedOutbound = 4
     End Enum
-
 End Class
+
+

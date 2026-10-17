@@ -18,9 +18,11 @@ Public NotInheritable Class WorkGuidePresentation
     End Function
 
     Public Shared Function ErrorText(ex As SqlException) As String
-        System.Diagnostics.Trace.TraceError("Work guide access: {0}", ex.ToString())
+        Trace.TraceError("Work guide access: {0}", ex.ToString())
         If ex.Number >= 51100 AndAlso ex.Number <= 51109 Then Return ex.Message
         If ex.Number = 2601 OrElse ex.Number = 2627 Then Return "يوجد طلب معلّق لأحد التصنيفات المحددة. حدّث الصفحة."
         Return "تعذّر تنفيذ العملية. يرجى المحاولة مرة أخرى."
     End Function
 End Class
+
+

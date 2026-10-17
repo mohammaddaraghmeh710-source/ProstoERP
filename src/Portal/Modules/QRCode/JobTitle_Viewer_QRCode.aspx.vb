@@ -1,10 +1,9 @@
-﻿Imports System
-Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class JobTitle_Viewer_QRCode
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -13,7 +12,7 @@ Public Class JobTitle_Viewer_QRCode
 
         If Not IsPostBack Then
 
-            Dim jobTitleId As Integer = 0
+            Dim jobTitleId = 0
             If Not Integer.TryParse(Request.QueryString("JobTitle"), jobTitleId) OrElse jobTitleId <= 0 Then
                 ShowError("رقم المحطة التعريفية غير صحيح أو غير موجود في الرابط.")
                 Return
@@ -39,7 +38,6 @@ Public Class JobTitle_Viewer_QRCode
             LoadJobTitleInfo(jobTitleId)
 
         End If
-
     End Sub
 
     Private Sub ShowError(msg As String)
@@ -49,7 +47,7 @@ Public Class JobTitle_Viewer_QRCode
 
     Private Sub LoadJobTitleInfo(jobTitleId As Integer)
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 ' جلب JobTitle
                 Dim jt = db.Select_JobTitles_ByID(jobTitleId).FirstOrDefault()
@@ -58,14 +56,14 @@ Public Class JobTitle_Viewer_QRCode
                     Return
                 End If
 
-                Dim deptId As Integer = 0
+                Dim deptId = 0
                 If jt.DepartmentID.HasValue Then deptId = jt.DepartmentID.Value
                 hidDepartmentID.Value = deptId.ToString()
 
-                Dim deptTitle As String = "-"
-                Dim branchTitle As String = "-"
-                Dim brandTitle As String = "-"
-                Dim brandLogoUrl As String = "/assets/img/avatars/1.png" ' fallback
+                Dim deptTitle = "-"
+                Dim branchTitle = "-"
+                Dim brandTitle = "-"
+                Dim brandLogoUrl = "/assets/img/avatars/1.png" ' fallback
 
                 ' Department
                 If jt.DepartmentID.HasValue AndAlso jt.DepartmentID.Value > 0 Then
@@ -132,7 +130,7 @@ Public Class JobTitle_Viewer_QRCode
 
     Private Sub BindChecklistTypes()
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 Dim types = db.Select_Checklist_Types_All().ToList()
                 types = types.Where(Function(t) (t.IsActive = True OrElse t.IsActive Is Nothing)).ToList()
@@ -158,14 +156,14 @@ Public Class JobTitle_Viewer_QRCode
     ' نفس دالة الوردية
     Private Function GetCurrentShiftId() As Integer
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 Dim nowTime As TimeSpan = DateTime.Now.TimeOfDay
 
                 Dim shifts = (From s In db.Select_Shift_All()
-                              Where (s.IsDeleted = False OrElse s.IsDeleted Is Nothing) _
-                                AndAlso (s.IsActive = True OrElse s.IsActive Is Nothing)
-                              Select s).ToList()
+                        Where (s.IsDeleted = False OrElse s.IsDeleted Is Nothing) _
+                              AndAlso (s.IsActive = True OrElse s.IsActive Is Nothing)
+                        Select s).ToList()
 
                 For Each s In shifts
                     If Not s.Start_Time.HasValue OrElse Not s.End_Time.HasValue Then Continue For
@@ -189,5 +187,6 @@ Public Class JobTitle_Viewer_QRCode
 
         Return 0
     End Function
-
 End Class
+
+

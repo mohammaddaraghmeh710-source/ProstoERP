@@ -2,26 +2,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Prosto ERP API — Swagger</title>
-    <link rel="stylesheet" href="@Url.Content("~/Content/swagger-ui/swagger-ui.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/swagger-ui/swagger-ui.css")"/>
+    <style>
+        .api-module-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 16px 24px; background: #1b1b1b; color: #fff; font: 14px sans-serif; }
+        .api-module-bar select { min-width: 200px; padding: 8px; border-radius: 4px; }
+        .api-module-bar a {
+            color: #a5d6a7;
+        }
+    </style>
 </head>
 <body>
-    <div id="swagger-ui"></div>
-    <script src="@Url.Content("~/Content/swagger-ui/swagger-ui-bundle.js")"></script>
-    <script>
-        window.onload = function () {
-            window.ui = SwaggerUIBundle({
-                url: '@Url.Content("~/swagger/docs/v1")',
-                dom_id: '#swagger-ui',
-                deepLinking: true,
-                validatorUrl: null,
-                persistAuthorization: false,
-                displayRequestDuration: true,
-                presets: [SwaggerUIBundle.presets.apis]
-            });
+<nav class="api-module-bar" aria-label="API documentation module">
+    <label for="api-module">API module</label>
+    <select id="api-module">
+        <option value="mobile">Mobile API</option>
+        <option value="all">All APIs</option>
+    </select>
+    <a id="api-contract" href="@Url.Content("~/swagger/docs/mobile-v1")">Open JSON contract</a>
+</nav>
+<div id="swagger-ui"></div>
+<script src="@Url.Content("~/Content/swagger-ui/swagger-ui-bundle.js")"></script>
+<script>
+    window.onload = function () {
+        var selectedModule = '@ViewData["SwaggerModule"]' === 'All APIs' ? 'all' : 'mobile';
+        var specificationUrl = selectedModule === 'all'
+            ? '@Url.Content("~/swagger/docs/v1")'
+            : '@Url.Content("~/swagger/docs/mobile-v1")';
+        var selector = document.getElementById('api-module');
+        selector.value = selectedModule;
+        selector.onchange = function () {
+            window.location.href = '@Url.Action("Index", "Swagger")' + '?module=' + this.value;
         };
-    </script>
+        document.getElementById('api-contract').href = specificationUrl;
+        window.ui = SwaggerUIBundle({
+            url: specificationUrl,
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            validatorUrl: null,
+            persistAuthorization: false,
+            displayRequestDuration: true,
+            presets: [SwaggerUIBundle.presets.apis]
+        });
+    };
+</script>
 </body>
 </html>

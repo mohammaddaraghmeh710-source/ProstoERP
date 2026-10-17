@@ -102,7 +102,7 @@
                                         <div class="input-group">
                                             <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" placeholder="اكتب جزء من العنوان أو الوصف"></asp:TextBox>
                                             <button type="button" class="btn btn-secondary"
-                                                onclick="__doPostBack('<%= btnSearch.UniqueID %>','')">
+                                                onclick="__doPostBack('<%=btnSearch.UniqueID%>','')">
                                                 بحث
                                             </button>
                                         </div>
@@ -134,33 +134,33 @@
                                                 <tr>
                                                     <!-- العنوان: عربي + إنجليزي -->
                                                     <td data-title="العنوان">
-                                                        <div><%# Eval("Title_Ar") %></div>
-                                                        <small class="text-muted d-block"><%# Eval("Title_En") %></small>
+                                                        <div><%# Eval("Title_Ar")%></div>
+                                                        <small class="text-muted d-block"><%# Eval("Title_En")%></small>
                                                     </td>
 
                                                     <!-- الهيكل التنظيمي: بروستو / الفرع / القسم / المحطة التعريفية / الوردية -->
                                                     <td data-title="الهيكل التنظيمي">
                                                         بروستو /
-                                                        <%# Eval("BranchTitle") %> /
-                                                        <%# Eval("DepartmentTitle") %> /
-                                                        <%# Eval("JobTitleTitle") %> /
-                                                        <%# Eval("ShiftTitle") %>
+                                                        <%# Eval("BranchTitle")%> /
+                                                        <%# Eval("DepartmentTitle")%> /
+                                                        <%# Eval("JobTitleTitle")%> /
+                                                        <%# Eval("ShiftTitle")%>
                                                     </td>
 
                                                     <!-- نوع الموظف -->
                                                     <td data-title="نوع الموظف">
-                                                        <%# Eval("UsersTypesTitle") %>
+                                                        <%# Eval("UsersTypesTitle")%>
                                                     </td>
 
                                                     <!-- الوزن -->
                                                     <td data-title="الوزن">
-                                                        <%# String.Format("{0:0.##}", Eval("Weight")) %>
+                                                        <%# String.Format("{0:0.##}", Eval("Weight"))%>
                                                     </td>
 
                                                     <!-- تعديل -->
                                                     <td data-title="تعديل">
                                                         <asp:LinkButton CssClass="btn btn-icon btn-label-secondary" ID="btnEdit"
-                                                            CommandName="Edit" CommandArgument='<%# Eval("ID") %>' runat="server" ToolTip="تعديل">
+                                                            CommandName="Edit" CommandArgument='<%# Eval("ID")%>' runat="server" ToolTip="تعديل">
                                                             <i class="bx bx-edit-alt"></i>
                                                         </asp:LinkButton>
                                                     </td>
@@ -169,7 +169,7 @@
                                                     <td data-title="حذف">
                                                         <asp:LinkButton CssClass="btn btn-icon btn-label-danger" ID="btnDelete"
                                                             CommandName="DeleteItem"
-                                                            CommandArgument='<%# Eval("ID") %>'
+                                                            CommandArgument='<%# Eval("ID")%>'
                                                             runat="server"
                                                             ToolTip="حذف"
                                                             CausesValidation="false"

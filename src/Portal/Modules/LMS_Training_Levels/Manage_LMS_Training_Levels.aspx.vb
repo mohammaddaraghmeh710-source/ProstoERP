@@ -1,9 +1,9 @@
-﻿Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class Manage_LMS_Training_Levels
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -19,7 +19,7 @@ Public Class Manage_LMS_Training_Levels
     End Sub
 
     Private Sub FillBrandsDDL()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             ' يفترض عندك SP جاهزة للبراند للـ DDL
             Dim brands = db.Select_Brands_All().ToList()
 
@@ -33,7 +33,7 @@ Public Class Manage_LMS_Training_Levels
     End Sub
 
     Private Sub FillLevelTypesDDL()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim types = db.Select_TR_Level_Types_All().ToList()
             ddlLevelType.DataSource = types
             ddlLevelType.DataTextField = "Title_Ar"
@@ -45,7 +45,7 @@ Public Class Manage_LMS_Training_Levels
     End Sub
 
     Private Sub BindData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_TR_Training_Levels_All().ToList()
             lstData.DataSource = data
             lstData.DataBind()
@@ -69,14 +69,14 @@ Public Class Manage_LMS_Training_Levels
         If ddlStatus.SelectedValue = "1" Then isActive = True
         If ddlStatus.SelectedValue = "0" Then isActive = False
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             ' ✅ توقيع SP أصبح: (BrandID, LevelTypeID, Keyword, IsActive)
             Dim data = db.Select_TR_Training_Levels_Filter(
                 brandId,
                 levelTypeId,
                 If(String.IsNullOrWhiteSpace(kw), Nothing, kw),
                 If(isActive.HasValue, CType(isActive.Value, Boolean?), Nothing)
-            ).ToList()
+                ).ToList()
 
             lstData.DataSource = data
             lstData.DataBind()
@@ -100,7 +100,7 @@ Public Class Manage_LMS_Training_Levels
     End Sub
 
     Protected Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs)
-        Dim id As Integer = CInt(e.CommandArgument)
+        Dim id = CInt(e.CommandArgument)
 
         If e.CommandName = "Edit" Then
             Response.Redirect("/Modules/LMS_Training_Levels/Edit_LMS_Training_Levels.aspx?ID=" & id)
@@ -110,7 +110,7 @@ Public Class Manage_LMS_Training_Levels
         If e.CommandName = "DeleteItem" Then
             Dim userId = SessionManager.GetInstance.Users.UserID
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
                 db.Update_TR_Training_Levels_IsDeleted_ByID(id, True, userId)
             End Using
 
@@ -118,5 +118,6 @@ Public Class Manage_LMS_Training_Levels
             BindData_Filter()
         End If
     End Sub
-
 End Class
+
+

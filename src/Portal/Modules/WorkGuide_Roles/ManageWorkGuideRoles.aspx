@@ -36,19 +36,19 @@
 
                         <ItemTemplate>
                             <tr>
-                                <td data-title="الاسم بالعربية"><%# Eval("Title_Ar") %></td>
-                                <td data-title="الاسم بالإنجليزية"><%# Eval("Title_En") %></td>
-                                <td data-title="الكود"><%# Eval("Code") %></td>
+                                <td data-title="الاسم بالعربية"><%# Eval("Title_Ar")%></td>
+                                <td data-title="الاسم بالإنجليزية"><%# Eval("Title_En")%></td>
+                                <td data-title="الكود"><%# Eval("Code")%></td>
                                 <td data-title="الحالة">
-                                    <%# If(Convert.ToBoolean(Eval("IsActive")), "فعال", "غير فعال") %>
+                                    <%# If(Convert.ToBoolean(Eval("IsActive")), "فعال", "غير فعال")%>
                                 </td>
-                                <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate") %></td>
+                                <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate")%></td>
 
                                 <td data-title="تعديل">
                                     <asp:LinkButton CssClass="btn btn-icon btn-label-secondary"
                                         ID="btnEdit"
                                         CommandName="Edit"
-                                        CommandArgument='<%# Eval("ID") %>'
+                                        CommandArgument='<%# Eval("ID")%>'
                                         runat="server"
                                         ToolTip="تعديل">
                                             <i class="bx bx-edit-alt"></i>
@@ -59,7 +59,7 @@
                                     <asp:LinkButton CssClass="btn btn-icon btn-label-danger"
                                         ID="btnDelete"
                                         CommandName="DeleteItem"
-                                        CommandArgument='<%# Eval("ID") %>'
+                                        CommandArgument='<%# Eval("ID")%>'
                                         runat="server"
                                         ToolTip="حذف"
                                         CausesValidation="false"

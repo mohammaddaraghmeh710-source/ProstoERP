@@ -296,8 +296,8 @@
                         <ItemTemplate>
                             <button type="button"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                onclick="selectEvalTypeForTool('<%# Eval("ID") %>');">
-                                <span><%# Eval("Title_Ar") %></span>
+                                onclick="selectEvalTypeForTool('<%# Eval("ID")%>');">
+                                <span><%# Eval("Title_Ar")%></span>
                                 <i class="bx bx-chevron-left"></i>
                             </button>
                         </ItemTemplate>
@@ -378,7 +378,7 @@
 
         // ✅ بعد اختيار النوع: توجيه لصفحة تقييم الأداة مع Type
         function selectEvalTypeForTool(typeId) {
-            var hf = document.getElementById('<%= hidJobTitleItemsID.ClientID %>');
+            var hf = document.getElementById('<%=hidJobTitleItemsID.ClientID%>');
             var jobTitleItemsId = hf ? hf.value : '';
 
             if (!jobTitleItemsId) {

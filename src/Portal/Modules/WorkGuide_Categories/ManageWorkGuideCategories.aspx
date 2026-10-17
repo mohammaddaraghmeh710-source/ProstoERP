@@ -49,19 +49,19 @@
 
                             <ItemTemplate>
                                 <tr>
-                                    <td data-title="العلامة التجارية"><%# Eval("Brand_Title_Ar") %></td>
-                                    <td data-title="التصنيف الأب"><%# If(Eval("Parent_Title_Ar") Is Nothing, "-", Eval("Parent_Title_Ar")) %></td>
-                                    <td data-title="العنوان بالعربية"><%# Eval("Title_Ar") %></td>
-                                    <td data-title="العنوان بالإنجليزية"><%# Eval("Title_En") %></td>
-                                    <td data-title="الترتيب"><%# Eval("Item_Order") %></td>
-                                    <td data-title="الحالة"><%# If(Convert.ToBoolean(Eval("IsActive")), "فعال", "غير فعال") %></td>
-                                    <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate") %></td>
+                                    <td data-title="العلامة التجارية"><%# Eval("Brand_Title_Ar")%></td>
+                                    <td data-title="التصنيف الأب"><%# If(Eval("Parent_Title_Ar") Is Nothing, "-", Eval("Parent_Title_Ar"))%></td>
+                                    <td data-title="العنوان بالعربية"><%# Eval("Title_Ar")%></td>
+                                    <td data-title="العنوان بالإنجليزية"><%# Eval("Title_En")%></td>
+                                    <td data-title="الترتيب"><%# Eval("Item_Order")%></td>
+                                    <td data-title="الحالة"><%# If(Convert.ToBoolean(Eval("IsActive")), "فعال", "غير فعال")%></td>
+                                    <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate")%></td>
 
                                     <td data-title="تعديل">
                                         <asp:LinkButton CssClass="btn btn-icon btn-label-secondary"
                                             ID="btnEdit"
                                             CommandName="Edit"
-                                            CommandArgument='<%# Eval("ID") %>'
+                                            CommandArgument='<%# Eval("ID")%>'
                                             runat="server"
                                             ToolTip="تعديل">
                                             <i class="bx bx-edit-alt"></i>
@@ -72,7 +72,7 @@
                                         <asp:LinkButton CssClass="btn btn-icon btn-label-danger"
                                             ID="btnDelete"
                                             CommandName="DeleteItem"
-                                            CommandArgument='<%# Eval("ID") %>'
+                                            CommandArgument='<%# Eval("ID")%>'
                                             runat="server"
                                             ToolTip="حذف"
                                             CausesValidation="false"

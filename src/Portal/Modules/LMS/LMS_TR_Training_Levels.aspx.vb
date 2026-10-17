@@ -1,10 +1,8 @@
-﻿Imports System
-Imports System.Linq
-Imports System.Web
+﻿Imports System.Globalization
 Imports Prosto_ERP_ClassLibrary
 
 Public Class LMS_TR_Training_Levels
-    Inherits System.Web.UI.Page
+    Inherits Page
 
     Private Property CurrentUserID As Integer
         Get
@@ -12,7 +10,7 @@ Public Class LMS_TR_Training_Levels
             If o Is Nothing Then Return 0
             Return CInt(o)
         End Get
-        Set(value As Integer)
+        Set
             ViewState("CurrentUserID") = value
         End Set
     End Property
@@ -23,7 +21,7 @@ Public Class LMS_TR_Training_Levels
             If o Is Nothing Then Return 0
             Return CInt(o)
         End Get
-        Set(value As Integer)
+        Set
             ViewState("CurrentLevelTypeID") = value
         End Set
     End Property
@@ -34,7 +32,7 @@ Public Class LMS_TR_Training_Levels
             If o Is Nothing Then Return 0
             Return CInt(o)
         End Get
-        Set(value As Integer)
+        Set
             ViewState("FirstLevelID") = value
         End Set
     End Property
@@ -45,16 +43,16 @@ Public Class LMS_TR_Training_Levels
             If o Is Nothing Then Return ""
             Return CStr(o)
         End Get
-        Set(value As String)
+        Set
             ViewState("FirstLevelTitle") = value
         End Set
     End Property
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If Not IsPostBack Then
 
-            Dim userId As Integer = 0
-            Dim levelTypeId As Integer = 0
+            Dim userId = 0
+            Dim levelTypeId = 0
 
             Integer.TryParse(Request.QueryString("UserID"), userId)
             Integer.TryParse(Request.QueryString("Level_Types"), levelTypeId)
@@ -67,7 +65,7 @@ Public Class LMS_TR_Training_Levels
                 Return
             End If
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
                 Dim lt = db.Select_TR_Level_Types_ByID(levelTypeId).FirstOrDefault()
                 If lt IsNot Nothing Then
                     litTr_TypeName.Text = lt.Title_Ar
@@ -102,8 +100,8 @@ Public Class LMS_TR_Training_Levels
 
             ' ===== Load user =====
             Dim usr = (From u In db.Select_UsersMembers_ByID(userId)
-                       Where u.ID = userId AndAlso u.IsDeleted = False AndAlso u.IsActive = True
-                       Select u).FirstOrDefault()
+                    Where u.ID = userId AndAlso u.IsDeleted = False AndAlso u.IsActive = True
+                    Select u).FirstOrDefault()
 
             If usr Is Nothing Then
                 ShowNoData("—")
@@ -111,9 +109,10 @@ Public Class LMS_TR_Training_Levels
             End If
 
             Dim displayName As String =
-                If(Not String.IsNullOrWhiteSpace(Convert.ToString(usr.FullName_Ar)), Convert.ToString(usr.FullName_Ar),
-                   If(Not String.IsNullOrWhiteSpace(Convert.ToString(usr.UserName)), Convert.ToString(usr.UserName),
-                      Convert.ToString(usr.Email)))
+                    If _
+                    (Not String.IsNullOrWhiteSpace(Convert.ToString(usr.FullName_Ar)), Convert.ToString(usr.FullName_Ar),
+                     If(Not String.IsNullOrWhiteSpace(Convert.ToString(usr.UserName)), Convert.ToString(usr.UserName),
+                        Convert.ToString(usr.Email)))
 
             lblEmployeeName.Text = displayName
 
@@ -125,7 +124,7 @@ Public Class LMS_TR_Training_Levels
             Catch
             End Try
 
-            Dim userType As Integer = 0
+            Dim userType = 0
             Try
                 userType = CInt(usr.Type)
             Catch
@@ -133,7 +132,9 @@ Public Class LMS_TR_Training_Levels
             End Try
 
             ' ===== Call SP via LINQ =====
-            Dim levels = db.Select_TR_Training_Levels_WithStats_ByUserType_And_LevelType(userId, userType, levelTypeId).ToList()
+            Dim levels =
+                    db.Select_TR_Training_Levels_WithStats_ByUserType_And_LevelType(userId, userType, levelTypeId).
+                    ToList()
             If levels Is Nothing Then
                 levels = New List(Of Select_TR_Training_Levels_WithStats_ByUserType_And_LevelTypeResult)()
             End If
@@ -186,7 +187,7 @@ Public Class LMS_TR_Training_Levels
             litLockedLevels.Text = lockedCnt.ToString()
 
             ' ✅ إجمالي الساعات = مجموع TotalDurationHours
-            Dim totalHours As Decimal = 0D
+            Dim totalHours = 0D
             Try
                 totalHours = levels.Sum(Function(x) Convert.ToDecimal(If(x.TotalDurationHours, 0D)))
             Catch
@@ -195,9 +196,9 @@ Public Class LMS_TR_Training_Levels
             litTotalHours.Text = Math.Round(totalHours, 2).ToString("0.##")
 
             ' ✅ نسبة الإنجاز = المكتمل / الإجمالي
-            Dim completionPercent As Integer = 0
+            Dim completionPercent = 0
             If total > 0 Then
-                completionPercent = CInt(Math.Round((doneCnt / CType(total, Decimal)) * 100D, 0))
+                completionPercent = CInt(Math.Round((doneCnt/CType(total, Decimal))*100D, 0))
             End If
             If completionPercent < 0 Then completionPercent = 0
             If completionPercent > 100 Then completionPercent = 100
@@ -215,7 +216,7 @@ Public Class LMS_TR_Training_Levels
     ' =========================
 
     Protected Function HtmlAttr(val As Object) As String
-        Dim s As String = ""
+        Dim s = ""
         Try
             s = Convert.ToString(val)
         Catch
@@ -234,7 +235,7 @@ Public Class LMS_TR_Training_Levels
     ' ✅ حسب المطلوب:
     ' 1=open, 2=done, 3=locked
     Protected Function GetStatusKeyById(statusIdObj As Object) As String
-        Dim id As Integer = 0
+        Dim id = 0
         Integer.TryParse(Convert.ToString(statusIdObj), id)
         If id = 1 Then Return "open"
         If id = 2 Then Return "done"
@@ -243,7 +244,7 @@ Public Class LMS_TR_Training_Levels
     End Function
 
     Protected Function GetStatusCssById(statusIdObj As Object) As String
-        Dim id As Integer = 0
+        Dim id = 0
         Integer.TryParse(Convert.ToString(statusIdObj), id)
         If id = 1 Then Return "status-green" ' open
         If id = 2 Then Return "status-blue"  ' done
@@ -252,7 +253,7 @@ Public Class LMS_TR_Training_Levels
     End Function
 
     Protected Function GetStatusIconById(statusIdObj As Object) As String
-        Dim id As Integer = 0
+        Dim id = 0
         Integer.TryParse(Convert.ToString(statusIdObj), id)
         If id = 1 Then Return "bx bx-play-circle"     ' open
         If id = 2 Then Return "bx bx-check-circle"    ' done
@@ -285,7 +286,7 @@ Public Class LMS_TR_Training_Levels
             Dim p As Decimal = Convert.ToDecimal(val)
             If p < 0D Then p = 0D
             If p > 100D Then p = 100D
-            Return p.ToString(System.Globalization.CultureInfo.InvariantCulture)
+            Return p.ToString(CultureInfo.InvariantCulture)
         Catch
             Return "0"
         End Try
@@ -293,8 +294,9 @@ Public Class LMS_TR_Training_Levels
 
     Protected Function GetLockedHintHtmlById(statusIdObj As Object) As String
         If GetStatusKeyById(statusIdObj) <> "locked" Then Return ""
-        Return "<div class='mt-2' style='padding:.6rem .75rem;border-radius:.65rem;background:#fbfcfe;border:1px dashed rgba(148,163,184,.7);color:#475569;font-size:.85rem;'>" &
-               "<i class='bx bx-lock-alt ms-1'></i> لفتح هذا المستوى يجب أولًا إنهاء المستوى السابق.</div>"
+        Return _
+            "<div class='mt-2' style='padding:.6rem .75rem;border-radius:.65rem;background:#fbfcfe;border:1px dashed rgba(148,163,184,.7);color:#475569;font-size:.85rem;'>" &
+            "<i class='bx bx-lock-alt ms-1'></i> لفتح هذا المستوى يجب أولًا إنهاء المستوى السابق.</div>"
     End Function
 
     Protected Function GetActionButtonTextById(statusIdObj As Object) As String
@@ -312,7 +314,7 @@ Public Class LMS_TR_Training_Levels
     End Function
 
     Protected Function GetLevelContentUrl(levelIdObj As Object, statusIdObj As Object) As String
-        Dim levelId As Integer = 0
+        Dim levelId = 0
         Integer.TryParse(Convert.ToString(levelIdObj), levelId)
 
         If GetStatusKeyById(statusIdObj) = "locked" Then
@@ -327,7 +329,7 @@ Public Class LMS_TR_Training_Levels
     Protected Sub btnContinue_Click(sender As Object, e As EventArgs) Handles btnContinue.Click
         If CurrentUserID <= 0 OrElse FirstLevelID <= 0 Then Return
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim hasAnyProgress = db.Select_TR_User_Level_Progress_ByUserID(CurrentUserID).Any()
             If Not hasAnyProgress Then
                 db.Insert_TR_User_Level_Progress(
@@ -338,11 +340,13 @@ Public Class LMS_TR_Training_Levels
                     1,
                     0,
                     SessionManager.GetInstance.Users.UserID
-                )
+                    )
             End If
         End Using
 
-        lblMessage.Text = HttpUtility.HtmlEncode("تم تفعيل " & If(String.IsNullOrWhiteSpace(FirstLevelTitle), "المستوى 1", FirstLevelTitle))
+        lblMessage.Text =
+            HttpUtility.HtmlEncode(
+                "تم تفعيل " & If(String.IsNullOrWhiteSpace(FirstLevelTitle), "المستوى 1", FirstLevelTitle))
         LBLPOP_ModalPopupExtender.Show()
     End Sub
 
@@ -358,3 +362,5 @@ Public Class LMS_TR_Training_Levels
         Context.ApplicationInstance.CompleteRequest()
     End Sub
 End Class
+
+

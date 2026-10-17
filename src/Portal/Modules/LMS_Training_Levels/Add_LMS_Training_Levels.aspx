@@ -3,7 +3,6 @@
     Inherits="CRM.Add_LMS_Training_Levels" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc11" %>
-<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolkit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 </asp:Content>
@@ -225,9 +224,9 @@
           <span class="switch-on"><i class="bx bx-check"></i></span>
           <span class="switch-off"><i class="bx bx-x"></i></span>
         </span>
-        <span class="switch-label"><%# Eval("Title_Ar") %></span>
+        <span class="switch-label"><%# Eval("Title_Ar")%></span>
 
-        <asp:HiddenField ID="hfUTID" runat="server" Value='<%# Eval("ID") %>' />
+        <asp:HiddenField ID="hfUTID" runat="server" Value='<%# Eval("ID")%>' />
       </label>
     </div>
   </ItemTemplate>

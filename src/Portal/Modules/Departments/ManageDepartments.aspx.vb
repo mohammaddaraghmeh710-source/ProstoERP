@@ -1,12 +1,9 @@
-﻿Imports System
-Imports System.Linq
-Imports System.Web.UI
-Imports System.Web.UI.WebControls
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class ManageDepartments
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -28,7 +25,7 @@ Public Class ManageDepartments
     ' Filters Fill
     '========================
     Private Sub FillBrandsFilter()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim brands = db.Select_Brands_All().ToList()
 
             ddlBrandFilter.DataSource = brands
@@ -41,7 +38,7 @@ Public Class ManageDepartments
     End Sub
 
     Private Sub FillBranchesFilter(Optional brandId As Integer = 0)
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim branches As Object
             If brandId > 0 Then
@@ -63,10 +60,10 @@ Public Class ManageDepartments
     ' Data Bind With Filter
     '========================
     Protected Sub FillData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim brandId As String = ddlBrandFilter.SelectedItem.ToString()
-            Dim branchId As Integer = 0
+            Dim branchId = 0
 
 
             Integer.TryParse(ddlBranchFilter.SelectedValue, branchId)
@@ -92,7 +89,7 @@ Public Class ManageDepartments
     ' Filters Events
     '========================
     Protected Sub ddlBrandFilter_SelectedIndexChanged(sender As Object, e As EventArgs)
-        Dim brandId As Integer = 0
+        Dim brandId = 0
         Integer.TryParse(ddlBrandFilter.SelectedValue, brandId)
 
         FillBranchesFilter(brandId)
@@ -117,19 +114,19 @@ Public Class ManageDepartments
     ' ListView Commands
     '========================
     Private Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs) Handles lstData.ItemCommand
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Try
                 Select Case e.CommandName
                     Case "QRCode"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         Response.Redirect("/modules/QRCode/PrintQRCode.aspx?Type=departments&ID=" & ID.ToString())
 
                     Case "Edit"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         Response.Redirect("/modules/departments/EditDepartments.aspx?ID=" & ID.ToString())
 
                     Case "DeleteItem"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         db.Update_Departments_IsDelete_ByID(ID, True)
                         FillData()
                 End Select
@@ -143,5 +140,6 @@ Public Class ManageDepartments
     Protected Sub btnAddNewItem_Click(sender As Object, e As EventArgs)
         Response.Redirect("/modules/departments/AddDepartments.aspx")
     End Sub
-
 End Class
+
+

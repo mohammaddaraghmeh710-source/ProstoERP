@@ -1,17 +1,10 @@
-﻿Imports System
-Imports System.Linq
-Imports System.Collections.Generic
-Imports System.Web
-Imports System.Web.UI
-Imports System.Web.UI.WebControls
-Imports System.Text
-Imports System.Web.Security
-Imports System.Web.Services
+﻿Imports System.Web.Services
+Imports Prosto_ERP_ClassLibrary
 
 Public Class LMS_TR_Training_Videos
     Inherits PageBase
 
-    Private ReadOnly db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+    Private ReadOnly db As New Prosto_ERP_DataClassesDataContext()
 
     Protected LevelID As Integer
     Protected CurrentUserId As Integer
@@ -19,7 +12,7 @@ Public Class LMS_TR_Training_Videos
     Protected UserID_QS As Integer
     Protected LevelTypes_QS As Integer
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -94,21 +87,21 @@ Public Class LMS_TR_Training_Videos
             Dim userMatch As Boolean = (r.UserID IsNot Nothing AndAlso CInt(r.UserID) = CurrentUserId)
 
             Dim vm As New VideoVm With {
-                .LevelID = r.LevelID,
-                .LevelTitle_Ar = r.LevelTitle_Ar,
-                .VideoID = r.VideoID,
-                .VideoTitle_Ar = If(r.VideoTitle_Ar, "-"),
-                .Summary_Ar = If(r.Summary_Ar, "-"),
-                .DurationSeconds = If(r.DurationSeconds, 0),
-                .Item_Order = If(r.Item_Order, 999999),
-                .RawVideoUrl_Ar = If(r.VideoUrl_Ar, ""),
-                .SecureUrl = BuildSecureVideoUrl(If(r.VideoUrl_Ar, "")),
-                .StartDate = If(userMatch, r.StartDate, Nothing),
-                .EndDate = If(userMatch, r.EndDate, Nothing),
-                .LastPositionSeconds = If(userMatch, If(r.LastPositionSeconds, 0), 0),
-                .CompletionPercent = If(userMatch, Convert.ToInt32(r.CompletionPercent), 0),
-                .Status = If(userMatch, Convert.ToInt32(r.Status), 3)
-            }
+                    .LevelID = r.LevelID,
+                    .LevelTitle_Ar = r.LevelTitle_Ar,
+                    .VideoID = r.VideoID,
+                    .VideoTitle_Ar = If(r.VideoTitle_Ar, "-"),
+                    .Summary_Ar = If(r.Summary_Ar, "-"),
+                    .DurationSeconds = If(r.DurationSeconds, 0),
+                    .Item_Order = If(r.Item_Order, 999999),
+                    .RawVideoUrl_Ar = If(r.VideoUrl_Ar, ""),
+                    .SecureUrl = BuildSecureVideoUrl(If(r.VideoUrl_Ar, "")),
+                    .StartDate = If(userMatch, r.StartDate, Nothing),
+                    .EndDate = If(userMatch, r.EndDate, Nothing),
+                    .LastPositionSeconds = If(userMatch, If(r.LastPositionSeconds, 0), 0),
+                    .CompletionPercent = If(userMatch, Convert.ToInt32(r.CompletionPercent), 0),
+                    .Status = If(userMatch, Convert.ToInt32(r.Status), 3)
+                    }
 
             videos.Add(vm)
         Next
@@ -120,13 +113,13 @@ Public Class LMS_TR_Training_Videos
         videos = videos.
             GroupBy(Function(x) x.VideoID).
             Select(Function(g)
-                       Return g.
-                           OrderByDescending(Function(x) If(x.EndDate.HasValue, x.EndDate.Value, DateTime.MinValue)).
-                           ThenByDescending(Function(x) If(x.StartDate.HasValue, x.StartDate.Value, DateTime.MinValue)).
-                           ThenByDescending(Function(x) x.LastPositionSeconds).
-                           ThenByDescending(Function(x) x.CompletionPercent).
-                           First()
-                   End Function).
+                Return g.
+                      OrderByDescending(Function(x) If(x.EndDate.HasValue, x.EndDate.Value, DateTime.MinValue)).
+                      ThenByDescending(Function(x) If(x.StartDate.HasValue, x.StartDate.Value, DateTime.MinValue)).
+                      ThenByDescending(Function(x) x.LastPositionSeconds).
+                      ThenByDescending(Function(x) x.CompletionPercent).
+                      First()
+            End Function).
             OrderBy(Function(x) x.Item_Order).
             ThenBy(Function(x) x.VideoID).
             ToList()
@@ -189,9 +182,9 @@ Public Class LMS_TR_Training_Videos
 
         If Not allLocked Then
             ScriptManager.RegisterStartupScript(Me, Me.GetType(), "autoLoadOpenVideo",
-                "setTimeout(function(){ if(window.autoLoadFirstOpenVideo) autoLoadFirstOpenVideo(); }, 50);", True)
+                                                "setTimeout(function(){ if(window.autoLoadFirstOpenVideo) autoLoadFirstOpenVideo(); }, 50);",
+                                                True)
         End If
-
     End Sub
 
     ' =========================
@@ -199,7 +192,7 @@ Public Class LMS_TR_Training_Videos
     ' =========================
     Protected Sub btnConfirmStart_Click(sender As Object, e As EventArgs)
 
-        Dim firstVideoId As Integer = 0
+        Dim firstVideoId = 0
         Integer.TryParse(hfFirstVideoId.Value, firstVideoId)
 
         If firstVideoId <= 0 Then
@@ -207,27 +200,28 @@ Public Class LMS_TR_Training_Videos
             Return
         End If
 
-        Using ctx As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+        Using ctx As New Prosto_ERP_DataClassesDataContext()
             If Not ctx.Select_TR_User_Video_Progress_ByUserID_And_VideoID(CurrentUserId, firstVideoId).Any() Then
                 ' create progress row for first video => status=1 (open)
-                ctx.Insert_TR_User_Video_Progress(CurrentUserId, firstVideoId, DateTime.Now, Nothing, 0, 0, 1, False, CurrentUserId)
+                ctx.Insert_TR_User_Video_Progress(CurrentUserId, firstVideoId, DateTime.Now, Nothing, 0, 0, 1, False,
+                                                  CurrentUserId)
             End If
         End Using
 
         BindVideos()
 
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "hideStartModal",
-            "try{ var m=document.getElementById('startFirstVideoModal'); if(window.bootstrap) bootstrap.Modal.getOrCreateInstance(m).hide(); }catch(e){}" &
-            "setTimeout(function(){ if(window.autoLoadFirstOpenVideo) autoLoadFirstOpenVideo(); }, 80);",
-            True)
-
+                                            "try{ var m=document.getElementById('startFirstVideoModal'); if(window.bootstrap) bootstrap.Modal.getOrCreateInstance(m).hide(); }catch(e){}" &
+                                            "setTimeout(function(){ if(window.autoLoadFirstOpenVideo) autoLoadFirstOpenVideo(); }, 80);",
+                                            True)
     End Sub
 
     ' =========================
     ' ✅ AJAX WebMethods
     ' =========================
-    <WebMethod()>
-    Public Shared Sub SaveVideoProgress(videoId As Integer, lastPositionSeconds As Integer, completionPercent As Integer, isEnded As Boolean)
+    <WebMethod>
+    Public Shared Sub SaveVideoProgress(videoId As Integer, lastPositionSeconds As Integer, completionPercent As Integer,
+                                        isEnded As Boolean)
 
         Dim u = GetCurrentUserIdSafe()
         If u <= 0 OrElse videoId <= 0 Then Exit Sub
@@ -235,20 +229,21 @@ Public Class LMS_TR_Training_Videos
         lastPositionSeconds = Math.Max(0, lastPositionSeconds)
         completionPercent = Math.Max(0, Math.Min(100, completionPercent))
 
-        Using ctx As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+        Using ctx As New Prosto_ERP_DataClassesDataContext()
 
             ' ✅ 1) إذا الفيديو مكتمل Status=2 => لا نعمل أي تحديث نهائياً
             Dim existing = ctx.Select_TR_User_Video_Progress_ByUserID_And_VideoID(u, videoId).
-            Where(Function(p) p.UserID = u AndAlso p.VideoID = videoId AndAlso p.IsDeleted = False).
-            OrderByDescending(Function(p) p.ID).
-            FirstOrDefault()
+                    Where(Function(p) p.UserID = u AndAlso p.VideoID = videoId AndAlso p.IsDeleted = False).
+                    OrderByDescending(Function(p) p.ID).
+                    FirstOrDefault()
 
             If existing IsNot Nothing AndAlso existing.Status = 2 Then
                 Exit Sub
             End If
 
             ' تحديث آخر نقطة + نسبة المشاهدة
-            ctx.Update_TR_User_Video_Progress_LastPositionSeconds_ByUserID_And_VideoID(u, videoId, lastPositionSeconds, u)
+            ctx.Update_TR_User_Video_Progress_LastPositionSeconds_ByUserID_And_VideoID(u, videoId, lastPositionSeconds,
+                                                                                       u)
             ctx.Update_TR_User_Video_Progress_CompletionPercent_ByUserID_And_VideoID(u, videoId, completionPercent, u)
 
             If isEnded Then
@@ -260,17 +255,16 @@ Public Class LMS_TR_Training_Videos
             End If
 
         End Using
-
     End Sub
 
 
-    <WebMethod()>
+    <WebMethod>
     Public Shared Sub CompleteAndUnlockNext(levelId As Integer, currentVideoId As Integer)
 
         Dim u = GetCurrentUserIdSafe()
         If u <= 0 OrElse levelId <= 0 OrElse currentVideoId <= 0 Then Exit Sub
 
-        Using ctx As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+        Using ctx As New Prosto_ERP_DataClassesDataContext()
 
             ' 1) تأكيد إكمال الفيديو الحالي
             ctx.Update_TR_User_Video_Progress_IsCompleted_ByUserID_And_VideoID(u, currentVideoId)
@@ -286,15 +280,15 @@ Public Class LMS_TR_Training_Videos
 
                 ' ترتيب الفيديوهات داخل المستوى
                 Dim ordered = levelVideos.
-                OrderBy(Function(x) If(x.Item_Order, 999999)).
-                ThenBy(Function(x) x.VideoID).
-                ToList()
+                        OrderBy(Function(x) If(x.Item_Order, 999999)).
+                        ThenBy(Function(x) x.VideoID).
+                        ToList()
 
                 Dim total As Integer = ordered.Count
 
                 ' position = ترتيب الفيديو الحالي (1-based)
-                Dim posIndex As Integer = -1
-                For i As Integer = 0 To ordered.Count - 1
+                Dim posIndex As Integer = - 1
+                For i = 0 To ordered.Count - 1
                     If Convert.ToInt32(ordered(i).VideoID) = currentVideoId Then
                         posIndex = i
                         Exit For
@@ -303,11 +297,12 @@ Public Class LMS_TR_Training_Videos
 
                 If posIndex >= 0 AndAlso total > 0 Then
                     Dim position As Integer = posIndex + 1
-                    Dim percent As Integer = CInt(Math.Floor((position * 100.0R) / total))
+                    Dim percent = CInt(Math.Floor((position*100.0R)/total))
 
                     ' إذا آخر فيديو => المستوى مكتمل 100% + EndDate + Status=2
                     If position >= total Then
-                        ctx.Update_TR_User_Level_Progress_IsComplet_ByUserID_And_LevelID(u, levelId, DateTime.Now, 2, 100, u)
+                        ctx.Update_TR_User_Level_Progress_IsComplet_ByUserID_And_LevelID(u, levelId, DateTime.Now, 2,
+                                                                                         100, u)
                     Else
                         ' غير ذلك => تحديث نسبة فقط (حسب ترتيب الفيديو)
                         ctx.Update_TR_User_Level_Progress_CompletionPercent_ByUserID_And_LevelID(u, levelId, percent, u)
@@ -316,7 +311,9 @@ Public Class LMS_TR_Training_Videos
             End If
 
             ' 3) جلب الفيديو التالي من الـ SP
-            Dim spRow = ctx.Select_TR_Training_Videos_NextVideoID_ByLevelID_And_CurrentVideoID(levelId, currentVideoId).FirstOrDefault()
+            Dim spRow =
+                    ctx.Select_TR_Training_Videos_NextVideoID_ByLevelID_And_CurrentVideoID(levelId, currentVideoId).
+                    FirstOrDefault()
             If spRow Is Nothing OrElse spRow.NextVideoID Is Nothing Then
                 ' لا يوجد فيديو تالي (قد يكون آخر فيديو) => انتهى
                 Exit Sub
@@ -327,9 +324,9 @@ Public Class LMS_TR_Training_Videos
 
             ' 4) تفعيل الفيديو التالي (بدون تصفير التقدم إذا كان موجود)
             Dim existing = ctx.Select_TR_User_Video_Progress_ByUserID_And_VideoID(u, nextVideoID).
-            Where(Function(p) p.UserID = u AndAlso p.VideoID = nextVideoID AndAlso p.IsDeleted = False).
-            OrderByDescending(Function(p) p.ID).
-            FirstOrDefault()
+                    Where(Function(p) p.UserID = u AndAlso p.VideoID = nextVideoID AndAlso p.IsDeleted = False).
+                    OrderByDescending(Function(p) p.ID).
+                    FirstOrDefault()
 
             If existing Is Nothing Then
                 ctx.Insert_TR_User_Video_Progress(u, nextVideoID, DateTime.Now, Nothing, 0, 0, 1, False, u)
@@ -340,13 +337,12 @@ Public Class LMS_TR_Training_Videos
             End If
 
         End Using
-
     End Sub
 
     Protected Sub btnGoNextLevel_Click(sender As Object, e As EventArgs)
 
         Dim currentUserId As Integer = currentUserId
-        Dim userType As Integer = 0
+        Dim userType = 0
 
 
         Try
@@ -359,21 +355,21 @@ Public Class LMS_TR_Training_Videos
 
         If nextLevelId > 0 Then
 
-            Using ctx As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+            Using ctx As New Prosto_ERP_DataClassesDataContext()
 
                 ' لا تكرر الإدخال لو موجود progress مسبقاً
                 Dim exists = ctx.Select_TR_User_Level_Progress_ByUserID_And_LevelID(UserID_QS, nextLevelId).Any()
 
                 If Not exists Then
                     ctx.Insert_TR_User_Level_Progress(
-                    UserID_QS,
-                    nextLevelId,
-                    DateTime.Now,
-                    Nothing,
-                    1,
-                    0,
-                    UserID_QS
-                )
+                        UserID_QS,
+                        nextLevelId,
+                        DateTime.Now,
+                        Nothing,
+                        1,
+                        0,
+                        UserID_QS
+                        )
                 End If
 
             End Using
@@ -381,21 +377,23 @@ Public Class LMS_TR_Training_Videos
 
         ' رجّعه لصفحة المستويات
         Response.Redirect($"LMS_TR_Training_Levels.aspx?UserID={UserID_QS}&Level_Types={LevelTypes_QS}", True)
-
     End Sub
 
-    Private Shared Function GetNextLevelIdSafe(userId As Integer, userType As Integer, levelTypeId As Integer) As Integer
+    Private Shared Function GetNextLevelIdSafe(userId As Integer, userType As Integer, levelTypeId As Integer) _
+        As Integer
         Try
-            Using ctx As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+            Using ctx As New Prosto_ERP_DataClassesDataContext()
 
-                Dim rows = ctx.Select_TR_Training_Levels_WithStats_ByUserType_And_LevelType(userId, userType, levelTypeId).ToList()
+                Dim rows =
+                        ctx.Select_TR_Training_Levels_WithStats_ByUserType_And_LevelType(userId, userType, levelTypeId).
+                        ToList()
                 If rows Is Nothing OrElse rows.Count = 0 Then Return 0
 
                 ' أول مستوى غير مكتمل حسب الترتيب (Status <> 2)
                 Dim nextRow = rows.
-                OrderBy(Function(x) If(x.Item_Order, 999999)).
-                ThenBy(Function(x) x.ID).
-                FirstOrDefault(Function(x) Convert.ToInt32(x.LevelStatusID) <> 2)
+                        OrderBy(Function(x) If(x.Item_Order, 999999)).
+                        ThenBy(Function(x) x.ID).
+                        FirstOrDefault(Function(x) Convert.ToInt32(x.LevelStatusID) <> 2)
 
                 If nextRow Is Nothing Then Return 0
 
@@ -406,8 +404,6 @@ Public Class LMS_TR_Training_Videos
             Return 0
         End Try
     End Function
-
-
 
 
     Private Shared Function GetCurrentUserIdSafe() As Integer
@@ -441,8 +437,8 @@ Public Class LMS_TR_Training_Videos
     ' =========================
     Private Function SecondsToText(sec As Integer) As String
         If sec < 0 Then sec = 0
-        Dim h As Integer = sec \ 3600
-        Dim m As Integer = (sec Mod 3600) \ 60
+        Dim h As Integer = sec\3600
+        Dim m As Integer = (sec Mod 3600)\60
         Dim s As Integer = sec Mod 60
         If h > 0 Then Return $"{h}h {m}m"
         If m > 0 Then Return $"{m}m {s}s"
@@ -511,5 +507,6 @@ Public Class LMS_TR_Training_Videos
         Public Property ActionText As String
         Public Property ActionBtnCss As String
     End Class
-
 End Class
+
+

@@ -1,7 +1,5 @@
-﻿Imports System.IO
-Imports AjaxControlToolkit
-Imports System.Data
-Imports System.Linq
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class AddBrands
     Inherits PageBase
@@ -10,7 +8,7 @@ Public Class AddBrands
     Private EvaluationMethodVideo_path As String = Nothing
     Private WorkingMethodVideo_path As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         ClearFileSession()
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -51,7 +49,7 @@ Public Class AddBrands
             Next
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             ' الإجراء المعدّل:
             ' Insert_Brands(
             '   @Logo,
@@ -74,10 +72,10 @@ Public Class AddBrands
                 txtPolicies_Ar.Text,
                 txtPolicies_En.Text,
                 WorkingMethodVideo_path,
-                WorkingMethodVideo_path,      ' يمكن مستقبلاً إضافة فيديو إنجليزي مستقل
+                WorkingMethodVideo_path, ' يمكن مستقبلاً إضافة فيديو إنجليزي مستقل
                 EvaluationMethodVideo_path,
                 EvaluationMethodVideo_path    ' نفس الفكرة
-            )
+                )
         End Using
 
         LBLPOP_ModalPopupExtender.Show()
@@ -123,5 +121,6 @@ Public Class AddBrands
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/Brands/ManageBrands.aspx")
     End Sub
-
 End Class
+
+

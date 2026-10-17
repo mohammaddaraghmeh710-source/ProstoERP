@@ -119,9 +119,12 @@ def configure():
     # The legacy template compiles fixed credentials into this ignored local source.
     path = ROOT / "src/ProstoERP.Api/Shared/Authentication/AuthenticationAttribute.cs"
     template = Path(str(path) + ".example").read_text()
-    if path.exists() and path.read_text() not in (template, template.replace("REPLACE_WITH_LOCAL_USERNAME", values["basic_username"]).replace("REPLACE_WITH_LOCAL_SECRET", values["basic_password"])):
+    if path.exists() and path.read_text() not in (template, template.replace("REPLACE_WITH_LOCAL_USERNAME",
+                                                                             values["basic_username"]).replace(
+        "REPLACE_WITH_LOCAL_SECRET", values["basic_password"])):
         raise RuntimeError("Refusing to replace custom integration authentication source.")
-    source = template.replace("REPLACE_WITH_LOCAL_USERNAME", values["basic_username"]).replace("REPLACE_WITH_LOCAL_SECRET", values["basic_password"])
+    source = template.replace("REPLACE_WITH_LOCAL_USERNAME", values["basic_username"]).replace(
+        "REPLACE_WITH_LOCAL_SECRET", values["basic_password"])
     if not path.exists() or path.read_text() != source:
         path.write_text(source)
     if stat.S_IMODE(path.stat().st_mode) != 0o600:
@@ -132,20 +135,23 @@ def configure():
     app_setting(config, "LocalDevelopment.Enabled", "true")
     app_setting(config, "LocalDevelopment.EncryptionKey", values["encryption_key"])
     save_xml(config, LOCAL / "DevelopmentTools.exe.config")
-    (LOCAL / "sql.env").write_text("ACCEPT_EULA=Y\nMSSQL_PID=Developer\nMSSQL_SA_PASSWORD=" + values["sql_password"] + "\n")
+    (LOCAL / "sql.env").write_text(
+        "ACCEPT_EULA=Y\nMSSQL_PID=Developer\nMSSQL_SA_PASSWORD=" + values["sql_password"] + "\n")
     (LOCAL / "sql.env").chmod(0o600)
     (LOCAL / "credentials.txt").write_text(
         "Development only. New encryption format; do not connect to a production database.\n"
         "Portal: http://127.0.0.1:52219/Login.aspx\nAPI: http://127.0.0.1:3001/\n"
         "Username: " + values["admin_username"] + "\nPassword: " + values["admin_password"] +
-        "\nSQL Server: 127.0.0.1,14333\nDatabase: " + DATABASE + "\nSQL username: sa\nSQL password: " + values["sql_password"] + "\n")
+        "\nSQL Server: 127.0.0.1,14333\nDatabase: " + DATABASE + "\nSQL username: sa\nSQL password: " + values[
+            "sql_password"] + "\n")
     (LOCAL / "credentials.txt").chmod(0o600)
     print("Development configuration ready. Credentials:", LOCAL / "credentials.txt", flush=True)
     return values
 
 
 def build():
-    run(["msbuild", "ERP_Prosto.sln", "/m:1", "/nr:false", "/p:UseSharedCompilation=false", "/p:Configuration=Debug", "/verbosity:minimal", "/nologo"])
+    run(["msbuild", "ERP_Prosto.sln", "/m:1", "/nr:false", "/p:UseSharedCompilation=false", "/p:Configuration=Debug",
+         "/verbosity:minimal", "/nologo"])
     run(["mcs", "-sdk:4.7.2", "-r:System.Configuration", "-r:src/Encryptor/bin/Debug/Encryptor.dll",
          "-out:" + str(LOCAL / "DevelopmentTools.exe"), "scripts/DevelopmentTools.cs"])
     shutil.copyfile(ROOT / "src/Encryptor/bin/Debug/Encryptor.dll", LOCAL / "Encryptor.dll")
@@ -158,7 +164,8 @@ def build():
 
 def test_key_guards():
     original = ET.parse(LOCAL / "DevelopmentTools.exe.config")
-    cipher = run(["mono", str(LOCAL / "DevelopmentTools.exe"), "encrypt"], input="local test", capture_output=True).stdout
+    cipher = run(["mono", str(LOCAL / "DevelopmentTools.exe"), "encrypt"], input="local test",
+                 capture_output=True).stdout
     with tempfile.TemporaryDirectory(dir=LOCAL) as directory:
         folder = Path(directory)
         for name in ("DevelopmentTools.exe", "Encryptor.dll"):
@@ -175,7 +182,8 @@ def test_key_guards():
         assert process.returncode != 0 and "base64" in process.stderr
         app_setting(original, "LocalDevelopment.EncryptionKey", base64.b64encode(secrets.token_bytes(32)).decode())
         save_xml(original, path)
-        process = subprocess.run(["mono", str(folder / "DevelopmentTools.exe"), "decrypt"], input=cipher, capture_output=True, text=True)
+        process = subprocess.run(["mono", str(folder / "DevelopmentTools.exe"), "decrypt"], input=cipher,
+                                 capture_output=True, text=True)
         assert process.returncode != 0 and "authentication failed" in process.stderr
     print("Encryptor: disabled mode, malformed key and wrong-key rejection passed.")
 
@@ -226,7 +234,8 @@ GO
 """)
     fingerprint = hashlib.sha256(base64.b64decode(values["encryption_key"])).hexdigest()
     sql("IF EXISTS(SELECT 1 FROM sys.extended_properties WHERE class=0 AND name=N'ProstoDevEncryptionKey' AND CONVERT(nvarchar(100),value)<>N'" + fingerprint + "') THROW 51001, 'Local encryption key does not match this database. Restore .local-development/settings.json.', 1;\n"
-        "IF NOT EXISTS(SELECT 1 FROM sys.extended_properties WHERE class=0 AND name=N'ProstoDevEncryptionKey') EXEC sys.sp_addextendedproperty @name=N'ProstoDevEncryptionKey',@value=N'" + fingerprint + "';", DATABASE)
+                                                                                                                                                                "IF NOT EXISTS(SELECT 1 FROM sys.extended_properties WHERE class=0 AND name=N'ProstoDevEncryptionKey') EXEC sys.sp_addextendedproperty @name=N'ProstoDevEncryptionKey',@value=N'" + fingerprint + "';",
+        DATABASE)
     sql((ROOT / "database/development/001_Core.sql").read_text(), DATABASE)
     encrypted = run(["mono", str(LOCAL / "DevelopmentTools.exe"), "encrypt"],
                     input=values["admin_password"], capture_output=True).stdout
@@ -272,7 +281,8 @@ END;
         quote(values["admin_username"]) + "," + quote(encrypted) + ",1,1,1,1,1,1,1);", DATABASE)
     for name in json.loads((ROOT / "database/development/migrations.json").read_text()):
         marker = "ProstoDev:" + name
-        seen = sql("SET NOCOUNT ON; SELECT COUNT(*) FROM sys.extended_properties WHERE class=0 AND name=" + quote(marker) + ";", DATABASE)
+        seen = sql("SET NOCOUNT ON; SELECT COUNT(*) FROM sys.extended_properties WHERE class=0 AND name=" + quote(
+            marker) + ";", DATABASE)
         if "1" in seen.stdout.split():
             continue
         print("Applying", name, flush=True)
@@ -285,8 +295,10 @@ END;
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--database", action="store_true", help="Start Docker SQL Server and apply the development baseline")
-    parser.add_argument("--build", action="store_true", help="Build with Mono, compile local hosting tools and test Encryptor")
+    parser.add_argument("--database", action="store_true",
+                        help="Start Docker SQL Server and apply the development baseline")
+    parser.add_argument("--build", action="store_true",
+                        help="Build with Mono, compile local hosting tools and test Encryptor")
     args = parser.parse_args()
     values = configure()
     if args.build or (args.database and not (LOCAL / "DevelopmentTools.exe").exists()):

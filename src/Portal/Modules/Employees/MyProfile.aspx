@@ -392,7 +392,7 @@
                 <div class="table-responsive"><table class="table table-bordered card-list-table mb-0">
                     <thead><tr><th>وقت الحركة</th><th>الحركة</th><th>الجهاز</th></tr></thead><tbody>
                     <asp:Repeater ID="rptTodayAttendance" runat="server"><ItemTemplate><tr>
-                        <td data-title="وقت الحركة"><%#: Eval("PunchTime") %></td><td data-title="الحركة"><%#: Eval("PunchState") %></td><td data-title="الجهاز"><%#: Eval("Terminal") %></td>
+                        <td data-title="وقت الحركة"><%#: Eval("PunchTime")%></td><td data-title="الحركة"><%#: Eval("PunchState")%></td><td data-title="الجهاز"><%#: Eval("Terminal")%></td>
                     </tr></ItemTemplate></asp:Repeater></tbody>
                 </table></div>
                 <asp:Label ID="lblNoAttendance" runat="server" CssClass="d-block text-center text-muted py-3" Text="لا توجد حركات دوام لهذا اليوم." Visible="false" />
@@ -461,15 +461,15 @@
 
                         <asp:Repeater ID="rptChecklistSummary" runat="server">
                             <ItemTemplate>
-                                <div class='d-flex align-items-center justify-content-between checklist-summary-item mb-2 p-2 <%# Eval("CssClass") %>'>
+                                <div class='d-flex align-items-center justify-content-between checklist-summary-item mb-2 p-2 <%# Eval("CssClass")%>'>
                                     <div class="me-2">
-                                        <div class="fw-semibold small"><%# Eval("Title") %></div>
+                                        <div class="fw-semibold small"><%# Eval("Title")%></div>
                                         <div class="text-muted small">
                                             <i class="bx bx-category-alt ms-1"></i>
-                                            <%# Eval("CategoryTitle") %>
+                                            <%# Eval("CategoryTitle")%>
                                         </div>
                                     </div>
-                                    <span class="badge fs-6"><%# Eval("Count") %>×</span>
+                                    <span class="badge fs-6"><%# Eval("Count")%>×</span>
                                 </div>
                             </ItemTemplate>
                         </asp:Repeater>
@@ -488,15 +488,15 @@
 
                         <asp:Repeater ID="rptViolationsSummary" runat="server">
                             <ItemTemplate>
-                                <div class='d-flex align-items-center justify-content-between checklist-summary-item mb-2 p-2 <%# Eval("CssClass") %>'>
+                                <div class='d-flex align-items-center justify-content-between checklist-summary-item mb-2 p-2 <%# Eval("CssClass")%>'>
                                     <div class="me-2">
-                                        <div class="fw-semibold small"><%# Eval("Title") %></div>
+                                        <div class="fw-semibold small"><%# Eval("Title")%></div>
                                         <div class="text-muted small">
                                             <i class="bx bx-category-alt ms-1"></i>
-                                            <%# Eval("CategoryTitle") %>
+                                            <%# Eval("CategoryTitle")%>
                                         </div>
                                     </div>
-                                    <span class="badge fs-6"><%# Eval("Count") %>×</span>
+                                    <span class="badge fs-6"><%# Eval("Count")%>×</span>
                                 </div>
                             </ItemTemplate>
                         </asp:Repeater>
@@ -562,30 +562,30 @@
                                         <div class="d-flex align-items-center justify-content-between mb-1">
                                             <div class="me-2">
                                                 <div class="fw-semibold small">
-                                                    <%# Eval("DepartmentName") %> – <%# Eval("JobTitleName") %>
+                                                    <%# Eval("DepartmentName")%> – <%# Eval("JobTitleName")%>
                                                 </div>
                                                 <div class="text-muted note-meta-small">
                                                     <i class="bx bx-time-five ms-1"></i>
-                                                    <%# Eval("ShiftName") %>
+                                                    <%# Eval("ShiftName")%>
                                                     <span class="mx-1">•</span>
                                                     <i class="bx bx-calendar ms-1"></i>
-                                                    <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate")) %>
+                                                    <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate"))%>
                                                 </div>
                                             </div>
-                                            <span class='<%# Eval("StatusCss") %>'><%# Eval("StatusText") %></span>
+                                            <span class='<%# Eval("StatusCss")%>'><%# Eval("StatusText")%></span>
                                         </div>
 
                                         <div class="d-flex flex-wrap violation-badges mt-2">
-                                            <asp:Repeater ID="rptHistoryChips" runat="server" DataSource='<%# Eval("Violations") %>'>
+                                            <asp:Repeater ID="rptHistoryChips" runat="server" DataSource='<%# Eval("Violations")%>'>
                                                 <ItemTemplate>
-                                                    <span class='<%# Eval("CssClass") %>'><%# Eval("Title") %></span>
+                                                    <span class='<%# Eval("CssClass")%>'><%# Eval("Title")%></span>
                                                 </ItemTemplate>
                                             </asp:Repeater>
                                         </div>
 
                                         <div class="mt-2">
                                             <span class="fw-semibold d-block mb-1 small">ملاحظات المفتش:</span>
-                                            <p class="mb-1 small"><%# If(String.IsNullOrWhiteSpace(Eval("Notes")), "لا يوجد ملاحظات", Eval("Notes")) %></p>
+                                            <p class="mb-1 small"><%# If(String.IsNullOrWhiteSpace(Eval("Notes")), "لا يوجد ملاحظات", Eval("Notes"))%></p>
                                         </div>
 
                                         <div class="mt-2 d-flex justify-content-end">
@@ -593,7 +593,7 @@
                                                 CssClass="btn btn-sm btn-outline-secondary"
                                                 Text="المرفقات"
                                                 CommandName="ShowAttachments"
-                                                CommandArgument='<%# Eval("EvaluationID") %>' />
+                                                CommandArgument='<%# Eval("EvaluationID")%>' />
                                         </div>
                                     </div>
                                 </div>
@@ -658,30 +658,30 @@
                                         <div class="d-flex align-items-center justify-content-between mb-1">
                                             <div class="me-2">
                                                 <div class="fw-semibold small">
-                                                    <%# Eval("DepartmentName") %> – <%# Eval("JobTitleName") %>
+                                                    <%# Eval("DepartmentName")%> – <%# Eval("JobTitleName")%>
                                                 </div>
                                                 <div class="text-muted note-meta-small">
                                                     <i class="bx bx-time-five ms-1"></i>
-                                                    <%# Eval("ShiftName") %>
+                                                    <%# Eval("ShiftName")%>
                                                     <span class="mx-1">•</span>
                                                     <i class="bx bx-calendar ms-1"></i>
-                                                    <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate")) %>
+                                                    <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate"))%>
                                                 </div>
                                             </div>
-                                            <span class='<%# Eval("StatusCss") %>'><%# Eval("StatusText") %></span>
+                                            <span class='<%# Eval("StatusCss")%>'><%# Eval("StatusText")%></span>
                                         </div>
 
                                         <div class="d-flex flex-wrap violation-badges mt-2">
-                                            <asp:Repeater ID="rptVChips" runat="server" DataSource='<%# Eval("Violations") %>'>
+                                            <asp:Repeater ID="rptVChips" runat="server" DataSource='<%# Eval("Violations")%>'>
                                                 <ItemTemplate>
-                                                    <span class='<%# Eval("CssClass") %>'><%# Eval("Title") %></span>
+                                                    <span class='<%# Eval("CssClass")%>'><%# Eval("Title")%></span>
                                                 </ItemTemplate>
                                             </asp:Repeater>
                                         </div>
 
                                         <div class="mt-2">
                                             <span class="fw-semibold d-block mb-1 small">ملاحظات:</span>
-                                            <p class="mb-1 small"><%# If(String.IsNullOrWhiteSpace(Eval("Notes")), "لا يوجد ملاحظات", Eval("Notes")) %></p>
+                                            <p class="mb-1 small"><%# If(String.IsNullOrWhiteSpace(Eval("Notes")), "لا يوجد ملاحظات", Eval("Notes"))%></p>
                                         </div>
 
                                         <div class="mt-2 d-flex justify-content-end">
@@ -689,7 +689,7 @@
                                                 CssClass="btn btn-sm btn-outline-secondary"
                                                 Text="المرفقات"
                                                 CommandName="ShowVAttachments"
-                                                CommandArgument='<%# Eval("EvaluationID") %>' />
+                                                CommandArgument='<%# Eval("EvaluationID")%>' />
                                         </div>
                                     </div>
                                 </div>
@@ -720,28 +720,28 @@
                                             <button class="accordion-button px-0 py-0 bg-transparent shadow-0 flex-grow-1 collapsed"
                                                 type="button"
                                                 data-bs-toggle="collapse"
-                                                data-bs-target='<%# "#collapseComplaint_" & Eval("EvaluationID") %>'
+                                                data-bs-target='<%# "#collapseComplaint_" & Eval("EvaluationID")%>'
                                                 aria-expanded="false"
-                                                aria-controls='<%# "collapseComplaint_" & Eval("EvaluationID") %>'>
+                                                aria-controls='<%# "collapseComplaint_" & Eval("EvaluationID")%>'>
                                                 <div class="w-100">
                                                     <div class="d-flex align-items-center gap-2 mb-2">
-                                                        <img src='<%# Eval("BrandLogoUrl") %>' alt="Brand" class="brand-logo ms-1" />
+                                                        <img src='<%# Eval("BrandLogoUrl")%>' alt="Brand" class="brand-logo ms-1" />
                                                         <div>
-                                                            <div class="task-title"><%# Eval("DepartmentName") %> – <%# Eval("JobTitleName") %></div>
+                                                            <div class="task-title"><%# Eval("DepartmentName")%> – <%# Eval("JobTitleName")%></div>
                                                             <div class="task-sub">
                                                                 <i class="bx bx-time-five ms-1"></i>
-                                                                <%# Eval("ShiftName") %>
+                                                                <%# Eval("ShiftName")%>
                                                                 <span class="mx-1">•</span>
                                                                 <i class="bx bx-calendar ms-1"></i>
-                                                                <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate")) %>
+                                                                <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate"))%>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div class="d-flex flex-wrap violation-badges mb-2">
-                                                        <asp:Repeater ID="rptViolationChipsComplaint" runat="server" DataSource='<%# Eval("Violations") %>'>
+                                                        <asp:Repeater ID="rptViolationChipsComplaint" runat="server" DataSource='<%# Eval("Violations")%>'>
                                                             <ItemTemplate>
-                                                                <span class='<%# Eval("CssClass") %>'><%# Eval("Title") %></span>
+                                                                <span class='<%# Eval("CssClass")%>'><%# Eval("Title")%></span>
                                                             </ItemTemplate>
                                                         </asp:Repeater>
                                                     </div>
@@ -749,11 +749,11 @@
                                             </button>
                                         </div>
 
-                                        <div id='<%# "collapseComplaint_" & Eval("EvaluationID") %>' class="accordion-collapse collapse" data-bs-parent="#accordionComplaints">
+                                        <div id='<%# "collapseComplaint_" & Eval("EvaluationID")%>' class="accordion-collapse collapse" data-bs-parent="#accordionComplaints">
                                             <div class="accordion-body pt-2">
                                                 <div class="mb-3">
                                                     <span class="fw-semibold d-block mb-1">تفاصيل الشكوى / الملاحظات:</span>
-                                                    <p class="mb-0"><%# Eval("Notes") %></p>
+                                                    <p class="mb-0"><%# Eval("Notes")%></p>
                                                 </div>
 
                                                 <div>
@@ -761,7 +761,7 @@
                                                         CssClass="btn btn-sm btn-outline-secondary"
                                                         Text="المرفقات"
                                                         CommandName="ShowAttachments"
-                                                        CommandArgument='<%# Eval("EvaluationID") %>' />
+                                                        CommandArgument='<%# Eval("EvaluationID")%>' />
                                                 </div>
                                             </div>
                                         </div>
@@ -793,10 +793,10 @@
                                 <div class="carousel-inner">
                                     <asp:Repeater ID="rptAttachmentsCarousel" runat="server">
                                         <ItemTemplate>
-                                            <div class='carousel-item <%# IIf(Container.ItemIndex = 0, "active", "") %>'>
-                                                <img src='<%# Eval("FilePath") %>' class="attachment-img d-block w-100" alt='<%# Eval("Title") %>' />
+                                            <div class='carousel-item <%# IIf(Container.ItemIndex = 0, "active", "")%>'>
+                                                <img src='<%# Eval("FilePath")%>' class="attachment-img d-block w-100" alt='<%# Eval("Title")%>' />
                                                 <div class="carousel-caption d-none d-md-block">
-                                                    <small class="bg-dark px-2 py-1 rounded-2"><%# Eval("Title") %></small>
+                                                    <small class="bg-dark px-2 py-1 rounded-2"><%# Eval("Title")%></small>
                                                 </div>
                                             </div>
                                         </ItemTemplate>

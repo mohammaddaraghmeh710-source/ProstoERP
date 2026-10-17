@@ -36,18 +36,18 @@ The Unit and Integration directories contain placeholders only. Existing feature
 verification tools are retained beside their feature migrations, with relative
 paths adjusted for the new layout. No test projects or new tests are introduced.
 
-| Solution folder | Contents |
-| --- | --- |
-| src | Portal, ProstoERP.Api, ProstoERP.Application, ProstoERP.Infrastructure, Encryptor |
-| src / ProstoERP.Contracts | Shared mobile request DTOs and common response contracts |
-| orchestration / ProstoERP.AppHost | Separate .NET 10 AppHost source and launch settings |
-| database / migrations | Existing feature SQL scripts and associated documentation |
-| database / development | Limited local baseline, migration selection manifest, and trial tooling |
-| tests / Unit, Integration | Empty placeholders; no test projects |
-| scripts | Local configuration, schema generation, and web-service launchers |
-| build | Classic web-project package paths, compiler imports, and Content manifests |
-| Run configurations | Shared Rider launch configurations |
-| docs | Repository overview, editor settings, and this guide |
+| Solution folder                   | Contents                                                                          |
+|-----------------------------------|-----------------------------------------------------------------------------------|
+| src                               | Portal, ProstoERP.Api, ProstoERP.Application, ProstoERP.Infrastructure, Encryptor |
+| src / ProstoERP.Contracts         | Shared mobile request DTOs and common response contracts                          |
+| orchestration / ProstoERP.AppHost | Separate .NET 10 AppHost source and launch settings                               |
+| database / migrations             | Existing feature SQL scripts and associated documentation                         |
+| database / development            | Limited local baseline, migration selection manifest, and trial tooling           |
+| tests / Unit, Integration         | Empty placeholders; no test projects                                              |
+| scripts                           | Local configuration, schema generation, and web-service launchers                 |
+| build                             | Classic web-project package paths, compiler imports, and Content manifests        |
+| Run configurations                | Shared Rider launch configurations                                                |
+| docs                              | Repository overview, editor settings, and this guide                              |
 
 ## Build and run
 
@@ -179,22 +179,22 @@ Features/
 These directories exist where the project has corresponding code; they are not
 empty scaffolding folders or additional projects.
 
-| Feature | Main supporting code |
-| --- | --- |
-| Attendance | API endpoint, BioTime service, authentication, requests, Portal data/formatting, Infrastructure integration |
-| Learning | Legacy ERP endpoint/requests and the Application training catalogue service |
-| EmployeeAccess | Employee login/device endpoints, session helpers, user models, Active Directory helpers |
-| PasswordReset | Existing partial UsersController implementation, requests, service, exception |
-| Feedback | Employee feedback endpoint, models, database helper, presentation, attachments, supporting page base |
-| CustomerFeedback | Public customer feedback endpoint and request model |
-| CustomerPortal | Customer endpoint, session filter, requests, Portal data/presentation and page base |
-| Correspondence | Endpoint, request models, data, formatting, attachments |
-| Circulars | Endpoint, event model, Portal data/presentation, PDF processing, page base |
-| News | Request model and Portal data/presentation |
-| EmailNotifications | Endpoint, request model, email sender |
-| CRM | Portal data, definitions/configuration, presentation, page base |
-| WorkGuide | Portal data, presentation, exports |
-| HRTypes / Contracts | Existing supporting Portal types |
+| Feature             | Main supporting code                                                                                        |
+|---------------------|-------------------------------------------------------------------------------------------------------------|
+| Attendance          | API endpoint, BioTime service, authentication, requests, Portal data/formatting, Infrastructure integration |
+| Learning            | Legacy ERP endpoint/requests and the Application training catalogue service                                 |
+| EmployeeAccess      | Employee login/device endpoints, session helpers, user models, Active Directory helpers                     |
+| PasswordReset       | Existing partial UsersController implementation, requests, service, exception                               |
+| Feedback            | Employee feedback endpoint, models, database helper, presentation, attachments, supporting page base        |
+| CustomerFeedback    | Public customer feedback endpoint and request model                                                         |
+| CustomerPortal      | Customer endpoint, session filter, requests, Portal data/presentation and page base                         |
+| Correspondence      | Endpoint, request models, data, formatting, attachments                                                     |
+| Circulars           | Endpoint, event model, Portal data/presentation, PDF processing, page base                                  |
+| News                | Request model and Portal data/presentation                                                                  |
+| EmailNotifications  | Endpoint, request model, email sender                                                                       |
+| CRM                 | Portal data, definitions/configuration, presentation, page base                                             |
+| WorkGuide           | Portal data, presentation, exports                                                                          |
+| HRTypes / Contracts | Existing supporting Portal types                                                                            |
 
 The legacy MobileController still combines several employee-facing routes. It
 lives under EmployeeAccess without splitting the class or changing its routes.

@@ -1,22 +1,24 @@
 using System;
 using System.Configuration;
-using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Prosto_ERP_ClassLibrary;
+using Echo.Encrptor;
 using Prosto_ERP_API.Notifications;
+using Prosto_ERP_ClassLibrary;
 
 namespace Prosto_ERP_API.Mobile
 {
     public sealed class PasswordResetService
     {
-        readonly AttendanceIntegration db;
-        readonly Func<MailMessage, NetworkCredential, Task> sender;
+        private readonly AttendanceIntegration db;
+        private readonly Func<MailMessage, NetworkCredential, Task> sender;
 
         public PasswordResetService(AttendanceIntegration store = null,
             Func<MailMessage, NetworkCredential, Task> send = null)
@@ -26,19 +28,22 @@ namespace Prosto_ERP_API.Mobile
             sender = send ?? BrandEmailSender.SendGmail;
         }
 
-        static SqlParameter P(string name, object value)
+        private static SqlParameter P(string name, object value)
         {
             return new SqlParameter(name, value ?? DBNull.Value);
         }
 
-        static byte[] Hash(string value)
+        private static byte[] Hash(string value)
         {
             var key = Convert.FromBase64String(ConfigurationManager.AppSettings["PasswordReset.HashKey"] ?? "");
             if (key.Length < 32) throw new ConfigurationErrorsException("Password reset key unavailable.");
-            using (var h = new HMACSHA256(key)) return h.ComputeHash(Encoding.UTF8.GetBytes(value));
+            using (var h = new HMACSHA256(key))
+            {
+                return h.ComputeHash(Encoding.UTF8.GetBytes(value));
+            }
         }
 
-        static string Code()
+        private static string Code()
         {
             using (var rng = RandomNumberGenerator.Create())
             {
@@ -50,7 +55,7 @@ namespace Prosto_ERP_API.Mobile
                     n = BitConverter.ToUInt32(bytes, 0);
                 } while (n >= 4294000000u);
 
-                return (n % 1000000).ToString("D6", System.Globalization.CultureInfo.InvariantCulture);
+                return (n % 1000000).ToString("D6", CultureInfo.InvariantCulture);
             }
         }
 
@@ -110,7 +115,7 @@ namespace Prosto_ERP_API.Mobile
                 }
                 catch
                 {
-                    System.Diagnostics.Trace.TraceWarning("Could not invalidate failed OTP delivery.");
+                    Trace.TraceWarning("Could not invalidate failed OTP delivery.");
                 }
 
                 throw;
@@ -128,11 +133,11 @@ namespace Prosto_ERP_API.Mobile
         public object Complete(string token, string password)
         {
             db.Query("dbo.PasswordReset_Complete", P("@ResetHash", MobileApiSupport.TokenHash(token)),
-                P("@EncryptedPassword", new Echo.Encrptor.TripleDesEncryptor().Encrypt(password)));
+                P("@EncryptedPassword", new TripleDesEncryptor().Encrypt(password)));
             return new { PasswordChanged = true };
         }
 
-        static bool BareEmail(string value)
+        private static bool BareEmail(string value)
         {
             try
             {
@@ -145,7 +150,7 @@ namespace Prosto_ERP_API.Mobile
             }
         }
 
-        static string Mask(string email)
+        private static string Mask(string email)
         {
             var at = email.LastIndexOf('@');
             var local = email.Substring(0, at);

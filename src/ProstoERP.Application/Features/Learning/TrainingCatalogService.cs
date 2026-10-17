@@ -1,4 +1,5 @@
 using System.Linq;
+using Prosto_ERP_ClassLibrary;
 
 namespace ProstoERP.Application.Training
 {
@@ -6,7 +7,7 @@ namespace ProstoERP.Application.Training
     {
         public object GetVideosStatus()
         {
-            using (var db = new Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext())
+            using (var db = new Prosto_ERP_DataClassesDataContext())
             {
                 var items = db.Select_TR_Training_Videos_Status_All()
                     .Select(x => new
@@ -34,7 +35,7 @@ namespace ProstoERP.Application.Training
 
         public object GetLevelsStatus()
         {
-            using (var db = new Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext())
+            using (var db = new Prosto_ERP_DataClassesDataContext())
             {
                 var items = db.Select_TR_Training_Levels_Status_All()
                     .Select(x => new
@@ -62,7 +63,7 @@ namespace ProstoERP.Application.Training
 
         public object GetLevelTypes()
         {
-            using (var db = new Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext())
+            using (var db = new Prosto_ERP_DataClassesDataContext())
             {
                 var items = db.Select_TR_Level_Types_All()
                     .Select(x => new
@@ -86,7 +87,7 @@ namespace ProstoERP.Application.Training
                 return new
                 {
                     Success = true,
-                    Count = items.Count,
+                    items.Count,
                     Data = items
                 };
             }

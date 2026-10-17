@@ -47,15 +47,15 @@
 
                                     <ItemTemplate>
                                         <tr>
-                                            <td data-title="العنوان بالعربية"><%# Eval("Title_Ar") %></td>
-                                            <td data-title="العنوان بالإنجليزية"><%# Eval("Title_En") %></td>
+                                            <td data-title="العنوان بالعربية"><%# Eval("Title_Ar")%></td>
+                                            <td data-title="العنوان بالإنجليزية"><%# Eval("Title_En")%></td>
                                             <td data-title="تاريخ الإنشاء">
-                                                <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("AddedDate")) %>
+                                                <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("AddedDate"))%>
                                             </td>
 
                                             <td data-title="تعديل">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-secondary"
-                                                    ID="btnEdit" CommandName="Edit" CommandArgument='<%# Eval("ID") %>'
+                                                    ID="btnEdit" CommandName="Edit" CommandArgument='<%# Eval("ID")%>'
                                                     runat="server" ToolTip="تعديل \ مشاهدة">
                                                     <i class="bx bx-edit-alt"></i>
                                                 </asp:LinkButton>
@@ -64,7 +64,7 @@
                                             <td data-title="حذف">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-danger" ID="btnDelete"
                                                     CommandName="DeleteItem"
-                                                    CommandArgument='<%# Eval("ID") %>'
+                                                    CommandArgument='<%# Eval("ID")%>'
                                                     runat="server"
                                                     ToolTip="حذف"
                                                     CausesValidation="false"

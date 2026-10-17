@@ -10,83 +10,81 @@
 Option Strict On
 Option Explicit On
 
-Namespace Modules.CRM_Contract_Types
-    
-    Partial Public Class ManageCrmContractTypes
 
-        '''<summary>
-        '''litMessage control.
-        '''</summary>
-        '''<remarks>
-        '''Auto-generated field.
-        '''To modify move field declaration from designer file to code-behind file.
-        '''</remarks>
-        Protected WithEvents litMessage As Global.System.Web.UI.WebControls.Literal
+Partial Public Class ManageCRMContractTypes
 
-        '''<summary>
-        '''pnlBody control.
-        '''</summary>
-        '''<remarks>
-        '''Auto-generated field.
-        '''To modify move field declaration from designer file to code-behind file.
-        '''</remarks>
-        Protected WithEvents pnlBody As Global.System.Web.UI.WebControls.Panel
+    '''<summary>
+    '''litMessage control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents litMessage As Global.System.Web.UI.WebControls.Literal
 
-        '''<summary>
-        '''pnlSearch control.
-        '''</summary>
-        '''<remarks>
-        '''Auto-generated field.
-        '''To modify move field declaration from designer file to code-behind file.
-        '''</remarks>
-        Protected WithEvents pnlSearch As Global.System.Web.UI.WebControls.Panel
+    '''<summary>
+    '''pnlBody control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents pnlBody As Global.System.Web.UI.WebControls.Panel
 
-        '''<summary>
-        '''filterName control.
-        '''</summary>
-        '''<remarks>
-        '''Auto-generated field.
-        '''To modify move field declaration from designer file to code-behind file.
-        '''</remarks>
-        Protected WithEvents filterName As Global.System.Web.UI.WebControls.TextBox
+    '''<summary>
+    '''pnlSearch control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents pnlSearch As Global.System.Web.UI.WebControls.Panel
 
-        '''<summary>
-        '''filterStatus control.
-        '''</summary>
-        '''<remarks>
-        '''Auto-generated field.
-        '''To modify move field declaration from designer file to code-behind file.
-        '''</remarks>
-        Protected WithEvents filterStatus As Global.System.Web.UI.WebControls.DropDownList
+    '''<summary>
+    '''filterName control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents filterName As Global.System.Web.UI.WebControls.TextBox
 
-        '''<summary>
-        '''btnSearch control.
-        '''</summary>
-        '''<remarks>
-        '''Auto-generated field.
-        '''To modify move field declaration from designer file to code-behind file.
-        '''</remarks>
-        Protected WithEvents btnSearch As Global.System.Web.UI.WebControls.LinkButton
+    '''<summary>
+    '''filterStatus control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents filterStatus As Global.System.Web.UI.WebControls.DropDownList
 
-        '''<summary>
-        '''lstData control.
-        '''</summary>
-        '''<remarks>
-        '''Auto-generated field.
-        '''To modify move field declaration from designer file to code-behind file.
-        '''</remarks>
-        Protected WithEvents lstData As Global.System.Web.UI.WebControls.ListView
+    '''<summary>
+    '''btnSearch control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents btnSearch As Global.System.Web.UI.WebControls.LinkButton
 
-        '''<summary>
-        '''Master property.
-        '''</summary>
-        '''<remarks>
-        '''Auto-generated property.
-        '''</remarks>
-        Public Shadows ReadOnly Property Master() As CRM.Site
-            Get
-                Return CType(MyBase.Master, CRM.Site)
-            End Get
-        End Property
-    End Class
-End Namespace
+    '''<summary>
+    '''lstData control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lstData As Global.System.Web.UI.WebControls.ListView
+
+    '''<summary>
+    '''Master property.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated property.
+    '''</remarks>
+    Public Shadows ReadOnly Property Master() As CRM.Site
+        Get
+            Return CType(MyBase.Master, CRM.Site)
+        End Get
+    End Property
+End Class

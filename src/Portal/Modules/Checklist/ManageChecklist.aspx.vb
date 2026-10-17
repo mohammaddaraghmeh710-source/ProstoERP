@@ -1,11 +1,11 @@
-﻿Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class Managechecklist
     Inherits PageBase
 
     Private Const ProstoBrandId As Integer = 26  ' في حال احتجناه لاحقاً
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -25,9 +25,9 @@ Public Class Managechecklist
 
     '=============== تعبئة الفروع (Prosto فقط)
     Private Sub FillBranches()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim branches = db.Select_Branches_ByBrandID(ProstoBrandId).
-                              Where(Function(x) x.IsDeleted = 0).ToList()
+                    Where(Function(x) x.IsDeleted = 0).ToList()
 
             ddlBranch.DataSource = branches
             ddlBranch.DataTextField = "Title_Ar"
@@ -54,10 +54,10 @@ Public Class Managechecklist
             Exit Sub
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
-            Dim branchId As Integer = CInt(ddlBranch.SelectedValue)
+        Using db As New Prosto_ERP_DataClassesDataContext
+            Dim branchId = CInt(ddlBranch.SelectedValue)
             Dim departments = db.Select_Departments_ByBranchID(branchId).
-                                   Where(Function(x) x.IsDeleted = 0).ToList()
+                    Where(Function(x) x.IsDeleted = 0).ToList()
 
             ddlDepartment.DataSource = departments
             ddlDepartment.DataTextField = "Title_Ar"
@@ -83,10 +83,10 @@ Public Class Managechecklist
             Exit Sub
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
-            Dim deptId As Integer = CInt(ddlDepartment.SelectedValue)
+        Using db As New Prosto_ERP_DataClassesDataContext
+            Dim deptId = CInt(ddlDepartment.SelectedValue)
             Dim jobs = db.Select_JobTitles_ByDepartmentID(deptId).
-                            Where(Function(x) x.IsDeleted = 0).ToList()
+                    Where(Function(x) x.IsDeleted = 0).ToList()
 
             ddlJobTitle.DataSource = jobs
             ddlJobTitle.DataTextField = "Title_Ar"
@@ -106,9 +106,9 @@ Public Class Managechecklist
 
         If Not jobTitleId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim items = db.Select_JobTitle_Items_ByJobTitle_ID(jobTitleId.Value).
-                           Where(Function(x) x.IsDeleted = 0 AndAlso x.IsActive = True).ToList()
+                    Where(Function(x) x.IsDeleted = 0 AndAlso x.IsActive = True).ToList()
 
             ddlJobTitleItem.DataSource = items
             ddlJobTitleItem.DataTextField = "Title_Ar"
@@ -140,9 +140,9 @@ Public Class Managechecklist
 
     '=============== تعبئة فترات العمل (Shift)
     Private Sub FillShifts()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim shifts = db.Select_Shift_All().
-                            Where(Function(x) x.IsDeleted = 0).ToList()
+                    Where(Function(x) x.IsDeleted = 0).ToList()
 
             ddlShift.DataSource = shifts
             ddlShift.DataTextField = "Title_Ar"
@@ -155,13 +155,28 @@ Public Class Managechecklist
 
     '=============== تعبئة البيانات من الـ Stored Procedure
     Protected Sub FillData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
-            Dim branchId As Integer? = If(String.IsNullOrEmpty(ddlBranch.SelectedValue), CType(Nothing, Integer?), CInt(ddlBranch.SelectedValue))
-            Dim deptId As Integer? = If(String.IsNullOrEmpty(ddlDepartment.SelectedValue), CType(Nothing, Integer?), CInt(ddlDepartment.SelectedValue))
-            Dim jobId As Integer? = If(String.IsNullOrEmpty(ddlJobTitle.SelectedValue), CType(Nothing, Integer?), CInt(ddlJobTitle.SelectedValue))
-            Dim shiftId As Integer? = If(String.IsNullOrEmpty(ddlShift.SelectedValue), CType(Nothing, Integer?), CInt(ddlShift.SelectedValue))
-            Dim jobTitleItemId As Integer? = If(String.IsNullOrEmpty(ddlJobTitleItem.SelectedValue), CType(Nothing, Integer?), CInt(ddlJobTitleItem.SelectedValue))
+            Dim branchId As Integer? =
+                    If _
+                    (String.IsNullOrEmpty(ddlBranch.SelectedValue), CType(Nothing, Integer?),
+                     CInt(ddlBranch.SelectedValue))
+            Dim deptId As Integer? =
+                    If _
+                    (String.IsNullOrEmpty(ddlDepartment.SelectedValue), CType(Nothing, Integer?),
+                     CInt(ddlDepartment.SelectedValue))
+            Dim jobId As Integer? =
+                    If _
+                    (String.IsNullOrEmpty(ddlJobTitle.SelectedValue), CType(Nothing, Integer?),
+                     CInt(ddlJobTitle.SelectedValue))
+            Dim shiftId As Integer? =
+                    If _
+                    (String.IsNullOrEmpty(ddlShift.SelectedValue), CType(Nothing, Integer?),
+                     CInt(ddlShift.SelectedValue))
+            Dim jobTitleItemId As Integer? =
+                    If _
+                    (String.IsNullOrEmpty(ddlJobTitleItem.SelectedValue), CType(Nothing, Integer?),
+                     CInt(ddlJobTitleItem.SelectedValue))
             Dim search As String = If(String.IsNullOrWhiteSpace(txtSearch.Text), Nothing, txtSearch.Text.Trim())
 
             ' استدعاء SP الجديدة Select_Checklist_ForManage مع JobTitleItemID
@@ -172,7 +187,7 @@ Public Class Managechecklist
                 shiftId,
                 search,
                 jobTitleItemId
-            ).ToList()
+                ).ToList()
 
             lstData.DataSource = data
             lstData.DataBind()
@@ -186,15 +201,15 @@ Public Class Managechecklist
 
     '=============== أوامر الجدول (تعديل / حذف)
     Protected Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs)
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Try
                 Select Case e.CommandName
                     Case "Edit"
-                        Dim ID As Integer = CInt(e.CommandArgument)
+                        Dim ID = CInt(e.CommandArgument)
                         Response.Redirect("/Modules/Checklist/EditChecklist.aspx?ID=" & ID.ToString())
 
                     Case "DeleteItem"
-                        Dim ID As Integer = CInt(e.CommandArgument)
+                        Dim ID = CInt(e.CommandArgument)
                         ' هنا استخدم SP الحذف الناعمة (تحديث IsDeleted = 1)
                         db.Delete_Checklist_ByID(ID, SessionManager.GetInstance.Users.UserID)
                         FillData()
@@ -209,5 +224,6 @@ Public Class Managechecklist
     Protected Sub btnAddNewItem_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/Checklist/AddChecklist.aspx")
     End Sub
-
 End Class
+
+

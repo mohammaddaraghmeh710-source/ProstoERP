@@ -171,32 +171,32 @@
 
                                     <!-- Logo Center -->
                                     <div class="d-flex justify-content-center">
-                                        <img src='<%# Eval("Logo") %>' class="brand-logo-center" alt="Brand Logo" />
+                                        <img src='<%# Eval("Logo")%>' class="brand-logo-center" alt="Brand Logo" />
                                     </div>
 
                                     <!-- Name Under Logo -->
-                                    <h6 class="brand-title-center mb-0"><%# Eval("Title") %></h6>
+                                    <h6 class="brand-title-center mb-0"><%# Eval("Title")%></h6>
 
                                     <!-- Branches Count -->
                                     <div class="brand-meta mb-2">
                                         <i class="bx bx-store-alt fs-4 text-primary"></i>
                                         <div>
                                             <div class="meta-label">عدد الفروع</div>
-                                            <div class="meta-value"><%# Eval("BranchesCount") %></div>
+                                            <div class="meta-value"><%# Eval("BranchesCount")%></div>
                                         </div>
                                     </div>
 
                                    <!-- Actions -->
 <div class="brand-actions mt-3 mt-auto d-grid gap-2">
     <!-- اختيار الفرع -->
-    <a href='<%# Eval("BranchesUrl") %>'
+    <a href='<%# Eval("BranchesUrl")%>'
        class="btn btn-label-primary w-100 d-flex align-items-center justify-content-center"
        onclick="showPageLoader()">
         اختيار الفرع <i class="bx bx-chevron-left ms-1"></i>
     </a>
 
     <!-- احصائيات العلامة التجارية -->
-    <a href='<%# Eval("StatisticsUrl") %>'
+    <a href='<%# Eval("StatisticsUrl")%>'
        class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center"
        onclick="showPageLoader()">
         <i class="bx bx-bar-chart-alt-2 me-1"></i>

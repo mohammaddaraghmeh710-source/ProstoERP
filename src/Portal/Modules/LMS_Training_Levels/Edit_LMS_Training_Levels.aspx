@@ -3,7 +3,6 @@
     Inherits="CRM.Edit_LMS_Training_Levels" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc11" %>
-<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolkit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 </asp:Content>
@@ -231,8 +230,8 @@
                         <ItemTemplate>
                             <div class="form-check d-inline-block me-4 mb-2">
                                 <asp:CheckBox ID="chkUT" style="border:none" runat="server" CssClass="form-check-input" />
-                                <label class="form-check-label"><%# Eval("Title_Ar") %></label>
-                                <asp:HiddenField ID="hfUTID" runat="server" Value='<%# Eval("ID") %>' />
+                                <label class="form-check-label"><%# Eval("Title_Ar")%></label>
+                                <asp:HiddenField ID="hfUTID" runat="server" Value='<%# Eval("ID")%>' />
                             </div>
                         </ItemTemplate>
                     </asp:Repeater>

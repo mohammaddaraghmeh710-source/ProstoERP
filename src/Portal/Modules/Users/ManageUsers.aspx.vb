@@ -1,4 +1,5 @@
-﻿Imports System.Linq
+﻿Imports System.Data.SqlClient
+Imports Prosto_ERP_ClassLibrary
 
 Public Class ManageUsers
     Inherits PageBase
@@ -8,15 +9,16 @@ Public Class ManageUsers
         MyBase.OnInit(e)
     End Sub
 
-    Private Function DeviceQuery(procedure As String, ParamArray args() As System.Data.SqlClient.SqlParameter) As System.Data.DataSet
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext,
-              cn As New System.Data.SqlClient.SqlConnection(db.Connection.ConnectionString),
-              cmd As New System.Data.SqlClient.SqlCommand(procedure, cn),
-              adapter As New System.Data.SqlClient.SqlDataAdapter(cmd)
-            cmd.CommandType = System.Data.CommandType.StoredProcedure
+    Private Function DeviceQuery(procedure As String, ParamArray args() As SqlParameter) _
+        As DataSet
+        Using db As New Prosto_ERP_DataClassesDataContext,
+            cn As New SqlConnection(db.Connection.ConnectionString),
+            cmd As New SqlCommand(procedure, cn),
+            adapter As New SqlDataAdapter(cmd)
+            cmd.CommandType = CommandType.StoredProcedure
             cmd.Parameters.AddWithValue("@Actor", SessionManager.GetInstance.Users.UserID)
             cmd.Parameters.AddRange(args)
-            Dim data As New System.Data.DataSet()
+            Dim data As New DataSet()
             adapter.Fill(data)
             Return data
         End Using
@@ -26,7 +28,7 @@ Public Class ManageUsers
         Get
             Return If(ViewState("DeviceUserID") Is Nothing, 0, CInt(ViewState("DeviceUserID")))
         End Get
-        Set(value As Integer)
+        Set
             ViewState("DeviceUserID") = value
         End Set
     End Property
@@ -50,26 +52,49 @@ Public Class ManageUsers
 
     Protected Function DeviceDate(value As Object) As String
         If value Is Nothing OrElse Convert.IsDBNull(value) Then Return "—"
-        Return TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(CDate(value), DateTimeKind.Utc), TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")).ToString("dd/MM/yyyy HH:mm")
+        Return _
+            TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(CDate(value), DateTimeKind.Utc),
+                                            TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")).ToString(
+                                                "dd/MM/yyyy HH:mm")
     End Function
 
     Private Sub ShowDevices()
-        Dim data = DeviceQuery("dbo.MobileApi_DeviceAdminView", New System.Data.SqlClient.SqlParameter("@UserID", DeviceUserID))
+        Dim data = DeviceQuery("dbo.MobileApi_DeviceAdminView",
+                               New SqlParameter("@UserID", DeviceUserID))
         If data.Tables(0).Rows.Count = 0 Then Return
         Dim employee = data.Tables(0).Rows(0)
-        litDeviceEmployee.Text = Server.HtmlEncode(Convert.ToString(employee("FullName_Ar"))) & " · الرقم الوظيفي " & Server.HtmlEncode(Convert.ToString(employee("Employee_Number"))) & " · ID " & DeviceUserID.ToString()
-        litDeviceSummary.Text = "<div class='d-flex flex-wrap gap-2 mb-3'><span class='badge bg-label-success'>الأجهزة المسموحة: " & employee("ApprovedCount").ToString() & "</span><span class='badge bg-label-warning'>طلبات بانتظار الموافقة: " & employee("PendingCount").ToString() & "</span><span class='badge bg-label-info'>" & If(CBool(employee("AllowNextEnrollment")), "سيُعتمد أول جهاز عند الدخول التالي", "الدخول للأجهزة المعتمدة فقط") & "</span></div>"
+        litDeviceEmployee.Text = Server.HtmlEncode(Convert.ToString(employee("FullName_Ar"))) & " · الرقم الوظيفي " &
+                                 Server.HtmlEncode(Convert.ToString(employee("Employee_Number"))) & " · ID " &
+                                 DeviceUserID.ToString()
+        litDeviceSummary.Text =
+            "<div class='d-flex flex-wrap gap-2 mb-3'><span class='badge bg-label-success'>الأجهزة المسموحة: " &
+            employee("ApprovedCount").ToString() &
+            "</span><span class='badge bg-label-warning'>طلبات بانتظار الموافقة: " & employee("PendingCount").ToString() &
+            "</span><span class='badge bg-label-info'>" &
+            If _
+                (CBool(employee("AllowNextEnrollment")), "سيُعتمد أول جهاز عند الدخول التالي",
+                 "الدخول للأجهزة المعتمدة فقط") & "</span></div>"
         lstDevices.DataSource = data.Tables(1)
         lstDevices.DataBind()
         lstDeviceRequests.DataSource = data.Tables(2)
         lstDeviceRequests.DataBind()
-        Dim history As New System.Text.StringBuilder()
-        For Each row As System.Data.DataRow In data.Tables(3).Rows
-            history.Append("<div class='device-event'><div class='d-flex flex-wrap justify-content-between gap-2'><strong>" & DeviceLabel(row("Action")) & "</strong><small class='text-muted'>" & DeviceDate(row("CreatedUtc")) & "</small></div><div class='small text-muted mt-1'>" & Server.HtmlEncode(Convert.ToString(row("ActorName"))) & " · " & Server.HtmlEncode(Convert.ToString(row("DeviceModel"))) & "</div><div class='device-id'>" & Server.HtmlEncode(Convert.ToString(row("DeviceID"))) & "</div><div class='small'>" & Server.HtmlEncode(Convert.ToString(row("Comment"))) & "</div></div>")
+        Dim history As New StringBuilder()
+        For Each row As DataRow In data.Tables(3).Rows
+            history.Append(
+                "<div class='device-event'><div class='d-flex flex-wrap justify-content-between gap-2'><strong>" &
+                DeviceLabel(row("Action")) & "</strong><small class='text-muted'>" & DeviceDate(row("CreatedUtc")) &
+                "</small></div><div class='small text-muted mt-1'>" &
+                Server.HtmlEncode(Convert.ToString(row("ActorName"))) & " · " &
+                Server.HtmlEncode(Convert.ToString(row("DeviceModel"))) & "</div><div class='device-id'>" &
+                Server.HtmlEncode(Convert.ToString(row("DeviceID"))) & "</div><div class='small'>" &
+                Server.HtmlEncode(Convert.ToString(row("Comment"))) & "</div></div>")
         Next
-        litDeviceHistory.Text = If(history.Length = 0, "<p class='text-muted'>لا توجد قرارات مسجلة بعد.</p>", history.ToString())
+        litDeviceHistory.Text =
+            If(history.Length = 0, "<p class='text-muted'>لا توجد قرارات مسجلة بعد.</p>", history.ToString())
         pnlDevices.Visible = True
-        ClientScript.RegisterStartupScript(Me.GetType(), "deviceModal", "window.addEventListener('load',function(){bootstrap.Modal.getOrCreateInstance(document.getElementById('deviceModal')).show();});", True)
+        ClientScript.RegisterStartupScript(Me.GetType(), "deviceModal",
+                                           "window.addEventListener('load',function(){bootstrap.Modal.getOrCreateInstance(document.getElementById('deviceModal')).show();});",
+                                           True)
     End Sub
 
     Protected Sub DeviceFilterChanged(sender As Object, e As EventArgs)
@@ -89,31 +114,41 @@ Public Class ManageUsers
 
     Private Sub ApplyDeviceDecision(action As String, itemID As Integer)
         Try
-            If DeviceUserID <= 0 OrElse Not {"ApproveReplace", "ApproveAdd", "Reject", "Revoke", "ResetAll"}.Contains(action) Then Throw New InvalidOperationException()
+            If _
+                DeviceUserID <= 0 OrElse
+                Not {"ApproveReplace", "ApproveAdd", "Reject", "Revoke", "ResetAll"}.Contains(action) Then _
+                Throw New InvalidOperationException()
             If txtDeviceComment.Text.Length > 500 Then Throw New ArgumentException()
             DeviceQuery("dbo.MobileApi_ManageDevices",
-                New System.Data.SqlClient.SqlParameter("@UserID", DeviceUserID),
-                New System.Data.SqlClient.SqlParameter("@Action", action),
-                New System.Data.SqlClient.SqlParameter("@RequestID", If(action = "Revoke" OrElse action = "ResetAll", CType(DBNull.Value, Object), itemID)),
-                New System.Data.SqlClient.SqlParameter("@DeviceRegistrationID", If(action = "Revoke", CType(itemID, Object), DBNull.Value)),
-                New System.Data.SqlClient.SqlParameter("@Comment", txtDeviceComment.Text.Trim()))
+                        New SqlParameter("@UserID", DeviceUserID),
+                        New SqlParameter("@Action", action),
+                        New SqlParameter("@RequestID",
+                                         If _
+                                            (action = "Revoke" OrElse action = "ResetAll",
+                                             CType(DBNull.Value, Object), itemID)),
+                        New SqlParameter("@DeviceRegistrationID",
+                                         If _
+                                            (action = "Revoke", CType(itemID, Object),
+                                             DBNull.Value)),
+                        New SqlParameter("@Comment", txtDeviceComment.Text.Trim()))
             litDeviceMessage.Text = "تم حفظ القرار وتحديث صلاحية الدخول بنجاح."
             pnlDeviceMessage.CssClass = "alert alert-success"
             txtDeviceComment.Text = ""
-        Catch ex As System.Data.SqlClient.SqlException When ex.Number = 51712
-            litDeviceMessage.Text = "تغيرت حالة الجهاز أو الطلب. تم تحديث البيانات؛ راجع الحالة الحالية قبل اتخاذ إجراء."
+        Catch ex As SqlException When ex.Number = 51712
+            litDeviceMessage.Text =
+                "تغيرت حالة الجهاز أو الطلب. تم تحديث البيانات؛ راجع الحالة الحالية قبل اتخاذ إجراء."
             pnlDeviceMessage.CssClass = "alert alert-warning"
         Catch ex As Exception
             litDeviceMessage.Text = "تعذر حفظ القرار. تحقق من الصلاحية والبيانات وحاول مرة أخرى."
             pnlDeviceMessage.CssClass = "alert alert-danger"
-            System.Diagnostics.Trace.TraceError("Device administration failed ({0}).", ex.GetType().Name)
+            Diagnostics.Trace.TraceError("Device administration failed ({0}).", ex.GetType().Name)
         End Try
         pnlDeviceMessage.Visible = True
         FillData()
         ShowDevices()
     End Sub
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -129,7 +164,7 @@ Public Class ManageUsers
     End Sub
 
     Private Sub FillUserTypes()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Users_Types_All().ToList()
 
             ddlUserType.DataSource = data
@@ -142,7 +177,7 @@ Public Class ManageUsers
     End Sub
 
     Private Sub FillStatuses()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Users_Status_All().ToList()
 
             ddlStatus.DataSource = data
@@ -155,13 +190,18 @@ Public Class ManageUsers
     End Sub
 
     Protected Sub FillData()
-        Dim deviceRows = DeviceQuery("dbo.MobileApi_DeviceAdminView").Tables(0).Rows.Cast(Of System.Data.DataRow)().ToList()
+        Dim deviceRows =
+                DeviceQuery("dbo.MobileApi_DeviceAdminView").Tables(0).Rows.Cast (Of DataRow)().ToList()
         Dim pending = deviceRows.ToDictionary(Function(r) CInt(r("ID")), Function(r) CInt(r("PendingCount")))
         litDeviceOverview.Text = "<div class='row g-3 mb-3'>" &
-            DeviceMetric("bx-mobile-alt", "الأجهزة المسموحة", deviceRows.Sum(Function(r) CInt(r("ApprovedCount"))), "primary") &
-            DeviceMetric("bx-time-five", "طلبات أجهزة بانتظار الموافقة", deviceRows.Sum(Function(r) CInt(r("PendingCount"))), "warning") &
-            DeviceMetric("bx-user-check", "موظفون بأكثر من جهاز", deviceRows.Where(Function(r) CInt(r("ApprovedCount")) > 1).Count(), "success") & "</div>"
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+                                 DeviceMetric("bx-mobile-alt", "الأجهزة المسموحة",
+                                              deviceRows.Sum(Function(r) CInt(r("ApprovedCount"))), "primary") &
+                                 DeviceMetric("bx-time-five", "طلبات أجهزة بانتظار الموافقة",
+                                              deviceRows.Sum(Function(r) CInt(r("PendingCount"))), "warning") &
+                                 DeviceMetric("bx-user-check", "موظفون بأكثر من جهاز",
+                                              deviceRows.Where(Function(r) CInt(r("ApprovedCount")) > 1).Count(),
+                                              "success") & "</div>"
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim users = db.Select_UsersMembers_All().AsQueryable()
             If chkPendingDevices.Checked Then
                 Dim pendingIDs = pending.Where(Function(p) p.Value > 0).Select(Function(p) p.Key).ToList()
@@ -169,21 +209,21 @@ Public Class ManageUsers
             End If
 
             If Not String.IsNullOrEmpty(ddlUserType.SelectedValue) Then
-                Dim typeId As Integer = CInt(ddlUserType.SelectedValue)
+                Dim typeId = CInt(ddlUserType.SelectedValue)
                 users = users.Where(Function(u) u.Type = typeId)
             End If
 
             If Not String.IsNullOrEmpty(ddlStatus.SelectedValue) Then
-                Dim statusId As Integer = CInt(ddlStatus.SelectedValue)
+                Dim statusId = CInt(ddlStatus.SelectedValue)
                 users = users.Where(Function(u) u.Status = statusId)
             End If
 
             If Not String.IsNullOrEmpty(txtSearch.Text.Trim()) Then
                 Dim term As String = txtSearch.Text.Trim().ToLower()
                 users = users.Where(Function(u) _
-                    (If(u.FullName_Ar, "").ToLower().Contains(term) OrElse
-                     If(u.Fullname_En, "").ToLower().Contains(term) OrElse
-                     If(u.UserName, "").ToLower().Contains(term)))
+                                       (If(u.FullName_Ar, "").ToLower().Contains(term) OrElse
+                                        If(u.Fullname_En, "").ToLower().Contains(term) OrElse
+                                        If(u.UserName, "").ToLower().Contains(term)))
             End If
 
             Dim types = db.Select_Users_Types_All().ToList()
@@ -191,30 +231,33 @@ Public Class ManageUsers
             Dim genders = db.Select_Genders_All().ToList()
 
             Dim result = (From u In users
-                          Let typeTitle = (From t In types Where t.ID = u.Type Select t.Title_Ar).FirstOrDefault()
-                          Let statusTitle = (From s In statuses Where s.ID = u.Status Select s.Title_Ar).FirstOrDefault()
-                          Let genderTitle = (From g In genders Where g.ID = u.Gender Select g.Title_Ar).FirstOrDefault()
-                          Let img = u.User_Image
-                          Let imgUrl =
-                              If(Not String.IsNullOrEmpty(img),
-                                 img,
-                                 If(genderTitle IsNot Nothing AndAlso genderTitle.Trim() = "ذكر",
-                                    "../../assets/img/Prosto/avatar-male.png",
-                                    If(genderTitle IsNot Nothing AndAlso (genderTitle.Trim() = "أنثى" OrElse genderTitle.Trim() = "انثى"),
-                                       "../../assets/img/Prosto/avatar-female.png",
-                                       "../../assets/img/Prosto/avatar.png")))
-                          Select New With {
-                              .ID = u.ID,
-                              .PendingDevices = If(pending.ContainsKey(u.ID), pending(u.ID), 0),
-                              .FullName_Ar = u.FullName_Ar,
-                              .Fullname_En = u.Fullname_En,
-                              .Employee_Number = u.Employee_Number,
-                              .UserName = u.UserName,
-                              .UserTypeTitle = If(typeTitle, ""),
-                              .StatusTitle = If(statusTitle, ""),
-                              .AddedDate = u.AddedDate,
-                              .UserImageUrl = imgUrl
-                          }).OrderByDescending(Function(x) x.ID).ToList()
+                    Let typeTitle = (From t In types Where t.ID = u.Type Select t.Title_Ar).FirstOrDefault()
+                    Let statusTitle = (From s In statuses Where s.ID = u.Status Select s.Title_Ar).FirstOrDefault()
+                    Let genderTitle = (From g In genders Where g.ID = u.Gender Select g.Title_Ar).FirstOrDefault()
+                    Let img = u.User_Image
+                    Let imgUrl =
+                    If(Not String.IsNullOrEmpty(img),
+                       img,
+                       If(genderTitle IsNot Nothing AndAlso genderTitle.Trim() = "ذكر",
+                          "../../assets/img/Prosto/avatar-male.png",
+                          If _
+                             (
+                                 genderTitle IsNot Nothing AndAlso
+                                 (genderTitle.Trim() = "أنثى" OrElse genderTitle.Trim() = "انثى"),
+                                 "../../assets/img/Prosto/avatar-female.png",
+                                 "../../assets/img/Prosto/avatar.png")))
+                    Select New With {
+                    .ID = u.ID,
+                    .PendingDevices = If(pending.ContainsKey(u.ID), pending(u.ID), 0),
+                    .FullName_Ar = u.FullName_Ar,
+                    .Fullname_En = u.Fullname_En,
+                    .Employee_Number = u.Employee_Number,
+                    .UserName = u.UserName,
+                    .UserTypeTitle = If(typeTitle, ""),
+                    .StatusTitle = If(statusTitle, ""),
+                    .AddedDate = u.AddedDate,
+                    .UserImageUrl = imgUrl
+                    }).OrderByDescending(Function(x) x.ID).ToList()
 
             lstData.DataSource = result
             lstData.DataBind()
@@ -227,7 +270,7 @@ Public Class ManageUsers
     End Sub
 
     Protected Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs)
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Try
                 Select Case e.CommandName
                     Case "Devices"
@@ -237,14 +280,14 @@ Public Class ManageUsers
                         ShowDevices()
 
                     Case "QRCode"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         Response.Redirect("/modules/QRCode/PrintQRCode.aspx?Type=employees&ID=" & ID.ToString())
 
                     Case "Edit"
-                        Dim ID As Integer = CInt(e.CommandArgument)
+                        Dim ID = CInt(e.CommandArgument)
                         Response.Redirect("/Modules/Users/EditUsers.aspx?ID=" & ID.ToString())
                     Case "DeleteItem"
-                        Dim ID As Integer = CInt(e.CommandArgument)
+                        Dim ID = CInt(e.CommandArgument)
                         db.Update_UsersMembers_IsDeleted_ByID(ID, True, SessionManager.GetInstance.Users.UserID)
                         FillData()
                 End Select
@@ -259,7 +302,12 @@ Public Class ManageUsers
     End Sub
 
     Private Function DeviceMetric(icon As String, title As String, number As Integer, color As String) As String
-        Return "<div class='col-md-4'><div class='card h-100'><div class='card-body d-flex align-items-center justify-content-between py-3'><div><div class='text-muted small'>" & title & "</div><h4 class='mb-0 mt-1'>" & number.ToString() & "</h4></div><span class='avatar'><span class='avatar-initial rounded bg-label-" & color & "'><i class='bx " & icon & "'></i></span></span></div></div></div>"
+        Return _
+            "<div class='col-md-4'><div class='card h-100'><div class='card-body d-flex align-items-center justify-content-between py-3'><div><div class='text-muted small'>" &
+            title & "</div><h4 class='mb-0 mt-1'>" & number.ToString() &
+            "</h4></div><span class='avatar'><span class='avatar-initial rounded bg-label-" & color & "'><i class='bx " &
+            icon & "'></i></span></span></div></div></div>"
     End Function
-
 End Class
+
+

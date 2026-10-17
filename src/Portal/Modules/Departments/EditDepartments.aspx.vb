@@ -1,7 +1,5 @@
-﻿Imports System.IO
-Imports AjaxControlToolkit
-Imports System.Data
-Imports System.Linq
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class EditDepartments
     Inherits PageBase
@@ -9,7 +7,7 @@ Public Class EditDepartments
     Private WorkingMethodVideo_path As String = Nothing
     Private EvaluationMethodVideo_path As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -23,8 +21,9 @@ Public Class EditDepartments
             cbIsActive.Disabled = False
         End If
     End Sub
+
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Brands_All().ToList()
             ddlBrands.DataSource = data
             ddlBrands.DataTextField = "Title_Ar"
@@ -33,12 +32,14 @@ Public Class EditDepartments
         End Using
         ddlBrands.Items.Insert(0, New ListItem("-- اختر العلامة التجارية --", ""))
     End Sub
+
     Protected Sub ddlBrands_SelectedIndexChanged(sender As Object, e As EventArgs)
         FillBranches(ddlBrands.SelectedValue)
     End Sub
+
     Private Sub FillBranches(Optional brandId As Integer? = Nothing)
         ddlBranch.Items.Clear()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Branches_ByBrandID(brandId).ToList()
 
             ddlBranch.DataSource = data
@@ -51,9 +52,9 @@ Public Class EditDepartments
     End Sub
 
     Private Sub FillData()
-        Dim ID As Integer = CInt(Request.QueryString("ID"))
+        Dim ID = CInt(Request.QueryString("ID"))
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim item = db.Select_Departments_ByID(ID).FirstOrDefault()
             Dim BranchData = db.Select_Branches_ByID(item.BranchID).FirstOrDefault()
             Dim BrandID = BranchData.BrandID
@@ -91,8 +92,8 @@ Public Class EditDepartments
             Return
         End If
 
-        Dim ID As Integer = CInt(Request.QueryString("ID"))
-        Dim BranchID As Integer = CInt(ddlBranch.SelectedValue)
+        Dim ID = CInt(Request.QueryString("ID"))
+        Dim BranchID = CInt(ddlBranch.SelectedValue)
         Dim NameAr As String = txtTitleAr.Text
         Dim NameEn As String = txtTitleEn.Text
         Dim ChActive As Boolean = cbIsActive.Checked
@@ -119,7 +120,7 @@ Public Class EditDepartments
             Next
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             ' التوقيع المفترض بعد التعديل:
             ' Update_Departments_ByID(
             '   @ID,
@@ -150,7 +151,7 @@ Public Class EditDepartments
                 WorkingMethodVideo_path,
                 EvaluationMethodVideo_path,
                 EvaluationMethodVideo_path
-            )
+                )
         End Using
 
         LBLPOP_ModalPopupExtender.Show()
@@ -185,5 +186,6 @@ Public Class EditDepartments
 
     Protected Sub EvaluationMethodVideo_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
-
 End Class
+
+

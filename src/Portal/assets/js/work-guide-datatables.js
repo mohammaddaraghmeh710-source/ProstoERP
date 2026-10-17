@@ -22,8 +22,8 @@
                     infoEmpty: 'لا توجد سجلات مطابقة.',
                     emptyTable: 'لا توجد سجلات مطابقة للبحث.',
                     zeroRecords: 'لا توجد سجلات مطابقة للبحث.',
-                    paginate: { first: 'الأول', last: 'الأخير', next: 'التالي', previous: 'السابق' },
-                    aria: { sortAscending: ': ترتيب تصاعدي', sortDescending: ': ترتيب تنازلي' }
+                    paginate: {first: 'الأول', last: 'الأخير', next: 'التالي', previous: 'السابق'},
+                    aria: {sortAscending: ': ترتيب تصاعدي', sortDescending: ': ترتيب تنازلي'}
                 }
             });
         });
@@ -34,8 +34,10 @@
         field.value = '';
         var table = document.getElementById('ERPTable');
         if (window.jQuery && jQuery.fn.dataTable && table && jQuery.fn.dataTable.isDataTable(table)) {
-            var nodes = jQuery(table).DataTable().rows({ search: 'applied' }).nodes().toArray();
-            field.value = JSON.stringify(nodes.map(function (row) { return Number(row.getAttribute('data-log-id')); }));
+            var nodes = jQuery(table).DataTable().rows({search: 'applied'}).nodes().toArray();
+            field.value = JSON.stringify(nodes.map(function (row) {
+                return Number(row.getAttribute('data-log-id'));
+            }));
         }
         return true;
     };

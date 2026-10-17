@@ -2,14 +2,13 @@
 Imports System.DirectoryServices
 
 Public Class ActiveDirectorySearcher
-
-    Public Shared Function GetSearchedUsers(ByVal ADUser As String) As List(Of ADuserData)
+    Public Shared Function GetSearchedUsers(ADUser As String) As List(Of ADuserData)
         Dim ADUsers As New List(Of ADuserData)
         Try
             Dim ADPath As String = ConfigurationManager.ConnectionStrings("ADconnectionString").ConnectionString
-            Dim entry As DirectoryEntry = New DirectoryEntry(ADPath, "alaa.a", "ala'a5646596666")
+            Dim entry = New DirectoryEntry(ADPath, "alaa.a", "ala'a5646596666")
             'Dim entry As DirectoryEntry = New DirectoryEntry(ADPath)
-            Dim search As DirectorySearcher = New DirectorySearcher(entry)
+            Dim search = New DirectorySearcher(entry)
             search.Filter = "(&(objectClass=user))"
             Dim results As SearchResultCollection = search.FindAll()
 
@@ -35,15 +34,15 @@ Public Class ActiveDirectorySearcher
         Catch ex As Exception
             Return ADUsers
         End Try
-
     End Function
-    Public Shared Function GetSingleUsers(ByVal ADUser As String) As ADuserData
+
+    Public Shared Function GetSingleUsers(ADUser As String) As ADuserData
         Dim ADUsers As ADuserData
         Try
             Dim ADPath As String = ConfigurationManager.ConnectionStrings("ADconnectionString").ConnectionString
-            Dim entry As DirectoryEntry = New DirectoryEntry(ADPath, "alaa.a", "ala'a5646596666")
+            Dim entry = New DirectoryEntry(ADPath, "alaa.a", "ala'a5646596666")
             'Dim entry As DirectoryEntry = New DirectoryEntry(ADPath)
-            Dim search As DirectorySearcher = New DirectorySearcher(entry)
+            Dim search = New DirectorySearcher(entry)
             search.Filter = "(&(objectClass=user))"
             Dim results As SearchResultCollection = search.FindAll()
 
@@ -68,7 +67,7 @@ Public Class ActiveDirectorySearcher
         Catch ex As Exception
             Return ADUsers
         End Try
-
     End Function
-
 End Class
+
+

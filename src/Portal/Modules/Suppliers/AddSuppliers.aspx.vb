@@ -1,7 +1,9 @@
-﻿Public Class AddSuppliers
+﻿Imports Prosto_ERP_ClassLibrary
+
+Public Class AddSuppliers
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -17,7 +19,7 @@
         Dim titleEn = txtTitleEn.Text.Trim()
         Dim userId = SessionManager.GetInstance.Users.UserID
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             db.Insert_Suppliers(titleAr, titleEn, userId)
         End Using
 
@@ -31,5 +33,6 @@
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/Suppliers/ManageSuppliers.aspx")
     End Sub
-
 End Class
+
+

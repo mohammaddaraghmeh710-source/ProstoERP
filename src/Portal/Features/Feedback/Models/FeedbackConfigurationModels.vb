@@ -1,6 +1,4 @@
-Imports System.Linq
-Imports System.Xml.Linq
-Imports Prosto_ERP_ClassLibrary
+
 
 Public Class FeedbackPermission
     Public Property UserTypeID As Integer
@@ -11,22 +9,26 @@ Public Class FeedbackPermission
     Public Property RowVersion As Byte()
     Public Property Targets As String
 End Class
+
 Public Class FeedbackTargetType
     Public Property ID As Integer
     Public Property Title As String
 End Class
+
 Public Class FeedbackLog
     Public Property Request_ID As Integer
     Public Property EventDate As DateTime
     Public Property EventType As String
     Public Property ActorName As String
 End Class
+
 Public Class FeedbackStatistic
     Public Property Dimension As String
     Public Property Value As Integer
     Public Property Label As String
     Public Property Total As Integer
 End Class
+
 Public Class FeedbackRequestRow
     Public Property SourceType As Integer
     Public Property ID As Integer
@@ -41,3 +43,5 @@ Public Class FeedbackRequestRow
     Public Property CurrentRecipient As String
     Public Property UnreadCount As Integer
 End Class
+
+

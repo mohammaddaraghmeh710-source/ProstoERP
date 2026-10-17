@@ -1,9 +1,9 @@
-﻿Imports System
+﻿Imports Prosto_ERP_ClassLibrary
 
 Partial Public Class AddShift
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -12,7 +12,6 @@ Partial Public Class AddShift
         If SessionManager.GetInstance.Users.UserType <> 1 Then
             Response.Redirect("/Default.aspx")
         End If
-
     End Sub
 
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
@@ -22,10 +21,10 @@ Partial Public Class AddShift
         'Dim isActive As Boolean = cbIsApproved.Checked
 
         ' --- قراءة الأوقات كـ TimeSpan? ---
-        Dim startTime As System.Nullable(Of TimeSpan) = Nothing
-        Dim endTime As System.Nullable(Of TimeSpan) = Nothing
-        Dim startRamadan As System.Nullable(Of TimeSpan) = Nothing
-        Dim endRamadan As System.Nullable(Of TimeSpan) = Nothing
+        Dim startTime As Nullable(Of TimeSpan) = Nothing
+        Dim endTime As Nullable(Of TimeSpan) = Nothing
+        Dim startRamadan As Nullable(Of TimeSpan) = Nothing
+        Dim endRamadan As Nullable(Of TimeSpan) = Nothing
 
         Dim ts As TimeSpan
 
@@ -37,32 +36,35 @@ Partial Public Class AddShift
             endTime = ts
         End If
 
-        If Not String.IsNullOrWhiteSpace(txtStartTimeRamadan.Text) AndAlso TimeSpan.TryParse(txtStartTimeRamadan.Text, ts) Then
+        If _
+            Not String.IsNullOrWhiteSpace(txtStartTimeRamadan.Text) AndAlso
+            TimeSpan.TryParse(txtStartTimeRamadan.Text, ts) Then
             startRamadan = ts
         End If
 
-        If Not String.IsNullOrWhiteSpace(txtEndTimeRamadan.Text) AndAlso TimeSpan.TryParse(txtEndTimeRamadan.Text, ts) Then
+        If Not String.IsNullOrWhiteSpace(txtEndTimeRamadan.Text) AndAlso TimeSpan.TryParse(txtEndTimeRamadan.Text, ts) _
+            Then
             endRamadan = ts
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             ' تأكد أن توقيع الإجراء في الـ DBML يطابق البراميتر التالية:
             ' Insert_Shift(Title_Ar, Title_En, Start_Time, End_Time,
             '              Start_Time_Ramadan, End_Time_Ramadan,
             '              AddedUser, IsActive, NewID)
 
-            Dim newId As Integer = 0
+            Dim newId = 0
 
             db.Insert_Shift(
-                title_Ar:=NameAr,
-                title_En:=NameEn,
-                start_Time:=startTime,
-                end_Time:=endTime,
-                start_Time_Ramadan:=startRamadan,
-                end_Time_Ramadan:=endRamadan,
-                addedUser:=SessionManager.GetInstance.Users.UserID,
-                newID:=newId
-            )
+                title_Ar := NameAr,
+                title_En := NameEn,
+                start_Time := startTime,
+                end_Time := endTime,
+                start_Time_Ramadan := startRamadan,
+                end_Time_Ramadan := endRamadan,
+                addedUser := SessionManager.GetInstance.Users.UserID,
+                newID := newId
+                )
         End Using
 
         LBLPOP_ModalPopupExtender.Show()
@@ -75,5 +77,6 @@ Partial Public Class AddShift
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/Shift/ManageShift.aspx")
     End Sub
-
 End Class
+
+

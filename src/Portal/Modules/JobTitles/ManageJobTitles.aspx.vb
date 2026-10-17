@@ -1,7 +1,9 @@
-﻿Public Class ManageJobTitles
+﻿Imports Prosto_ERP_ClassLibrary
+
+Public Class ManageJobTitles
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -21,7 +23,7 @@
     ' Fill Filters
     '========================
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim brands = db.Select_Brands_All.Where(Function(x) x.IsDeleted = False).OrderBy(Function(x) x.ID).ToList()
 
             ddlBrandFilter.Items.Clear()
@@ -33,11 +35,11 @@
         End Using
     End Sub
 
-    Private Sub FillBranches(ByVal brandId As Integer)
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+    Private Sub FillBranches(brandId As Integer)
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim branches = db.Select_Branches_All.
-                Where(Function(x) x.IsDeleted = False AndAlso x.BrandID = brandId).
-                OrderByDescending(Function(x) x.ID).ToList()
+                    Where(Function(x) x.IsDeleted = False AndAlso x.BrandID = brandId).
+                    OrderByDescending(Function(x) x.ID).ToList()
 
             ddlBranchFilter.Items.Clear()
             ddlBranchFilter.Items.Add(New ListItem("-- الكل --", "0"))
@@ -48,11 +50,11 @@
         End Using
     End Sub
 
-    Private Sub FillDepartments(ByVal branchId As Integer)
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+    Private Sub FillDepartments(branchId As Integer)
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim depts = db.Select_Departments_All.
-                Where(Function(x) x.IsDeleted = False AndAlso x.BranchID = branchId).
-                OrderByDescending(Function(x) x.ID).ToList()
+                    Where(Function(x) x.IsDeleted = False AndAlso x.BranchID = branchId).
+                    OrderByDescending(Function(x) x.ID).ToList()
 
             ddlDepartmentFilter.Items.Clear()
             ddlDepartmentFilter.Items.Add(New ListItem("-- الكل --", "0"))
@@ -77,7 +79,7 @@
     End Sub
 
     Protected Sub ddlBrandFilter_SelectedIndexChanged(sender As Object, e As EventArgs)
-        Dim brandId As Integer = 0
+        Dim brandId = 0
         Integer.TryParse(ddlBrandFilter.SelectedValue, brandId)
 
         ddlDepartmentFilter.Items.Clear()
@@ -95,7 +97,7 @@
     End Sub
 
     Protected Sub ddlBranchFilter_SelectedIndexChanged(sender As Object, e As EventArgs)
-        Dim branchId As Integer = 0
+        Dim branchId = 0
         Integer.TryParse(ddlBranchFilter.SelectedValue, branchId)
 
         If branchId > 0 Then
@@ -122,12 +124,12 @@
     ' Data
     '========================
     Protected Sub FillData()
-        Dim brandId As Integer = 0, branchId As Integer = 0, deptId As Integer = 0
+        Dim brandId = 0, branchId = 0, deptId = 0
         Integer.TryParse(ddlBrandFilter.SelectedValue, brandId)
         Integer.TryParse(ddlBranchFilter.SelectedValue, branchId)
         Integer.TryParse(ddlDepartmentFilter.SelectedValue, deptId)
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_JobTitles_All().AsQueryable()
 
             ' Filter by IDs returned from SP (BrandID / BranchID / DepartmentID)
@@ -154,20 +156,20 @@
     ' Commands
     '========================
     Private Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs) Handles lstData.ItemCommand
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Try
                 Select Case e.CommandName
 
                     Case "QRCode"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         Response.Redirect("/modules/QRCode/PrintQRCode.aspx?Type=jobtitles&ID=" & ID.ToString())
 
                     Case "Edit"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         Response.Redirect("/modules/jobtitles/EditJobTitles.aspx?ID=" & ID.ToString())
 
                     Case "DeleteItem"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         db.Update_JobTitles_IsDelete_ByID(ID, True)
                         FillData()
 
@@ -187,5 +189,6 @@
     Protected Sub btnAddNewItem_Click(sender As Object, e As EventArgs)
         Response.Redirect("/modules/jobtitles/AddJobTitles.aspx")
     End Sub
-
 End Class
+
+

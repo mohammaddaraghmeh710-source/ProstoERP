@@ -9,10 +9,15 @@
                     lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'الكل']],
                     dom: '<"table-toolbar"lf>t<"table-pagination flex-wrap"ip>',
                     language: {
-                        lengthMenu: 'إظهار _MENU_', search: 'بحث:', searchPlaceholder: 'ابحث في الجدول...',
-                        info: 'عرض _START_ إلى _END_ من أصل _TOTAL_', infoFiltered: '(من _MAX_ سجل)',
-                        infoEmpty: 'لا توجد سجلات', emptyTable: 'لا توجد سجلات مطابقة.', zeroRecords: 'لا توجد نتائج مطابقة.',
-                        paginate: { first: 'الأول', last: 'الأخير', next: 'التالي', previous: 'السابق' }
+                        lengthMenu: 'إظهار _MENU_',
+                        search: 'بحث:',
+                        searchPlaceholder: 'ابحث في الجدول...',
+                        info: 'عرض _START_ إلى _END_ من أصل _TOTAL_',
+                        infoFiltered: '(من _MAX_ سجل)',
+                        infoEmpty: 'لا توجد سجلات',
+                        emptyTable: 'لا توجد سجلات مطابقة.',
+                        zeroRecords: 'لا توجد نتائج مطابقة.',
+                        paginate: {first: 'الأول', last: 'الأخير', next: 'التالي', previous: 'السابق'}
                     }
                 });
             });

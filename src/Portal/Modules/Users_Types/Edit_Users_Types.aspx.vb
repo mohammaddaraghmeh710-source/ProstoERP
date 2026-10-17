@@ -1,7 +1,6 @@
-Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Globalization
-Imports System.Linq
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Edit_Users_Types
     Inherits UsersTypesPageBase
@@ -21,7 +20,7 @@ Public Class Edit_Users_Types
         Dim id As Integer = ItemID
         If Not IsPostBack Then
             Try
-                Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+                Using db As New Prosto_ERP_DataClassesDataContext()
                     Dim row = db.Select_Users_Types_ByID(id).FirstOrDefault()
                     If row Is Nothing OrElse row.IsDeleted.GetValueOrDefault() Then
                         Response.Redirect("Manage_Users_Types.aspx?missing=1")
@@ -29,7 +28,10 @@ Public Class Edit_Users_Types
                     End If
                     txtNameAR.Text = If(row.Title_Ar, "")
                     txtNameEn.Text = If(row.Title_En, "")
-                    txtOrder.Text = If(row.Item_Order.HasValue, row.Item_Order.GetValueOrDefault().ToString(CultureInfo.InvariantCulture), "")
+                    txtOrder.Text =
+                        If _
+                            (row.Item_Order.HasValue,
+                             row.Item_Order.GetValueOrDefault().ToString(CultureInfo.InvariantCulture), "")
                     chkIsActive.Checked = row.IsActive.GetValueOrDefault()
                 End Using
             Catch ex As SqlException
@@ -44,7 +46,7 @@ Public Class Edit_Users_Types
         Dim order As Integer?
         If Not ReadTypeValues(txtNameAR, txtNameEn, txtOrder, litMessage, order) Then Return
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+            Using db As New Prosto_ERP_DataClassesDataContext()
                 db.Connection.Open()
                 Using transaction = db.Connection.BeginTransaction(IsolationLevel.Serializable)
                     db.Transaction = transaction
@@ -66,3 +68,5 @@ Public Class Edit_Users_Types
         Response.Redirect("Manage_Users_Types.aspx?updated=1")
     End Sub
 End Class
+
+

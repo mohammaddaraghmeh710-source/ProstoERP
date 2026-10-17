@@ -1,73 +1,95 @@
-﻿#If _MyType <> "Empty" Then
+﻿Imports System.ComponentModel.Design
+Imports System.Diagnostics.CodeAnalysis
+Imports Microsoft.VisualBasic.ApplicationServices
+Imports Microsoft.VisualBasic.Devices
+Imports Microsoft.VisualBasic.Logging
+
+#If _MyType <> "Empty" Then
 
 Namespace My
     ''' <summary>
-    ''' Module used to define the properties that are available in the My Namespace for Web projects.
+    '''     Module used to define the properties that are available in the My Namespace for Web projects.
     ''' </summary>
     ''' <remarks></remarks>
-    <Global.Microsoft.VisualBasic.HideModuleName()> _
+    <HideModuleName>
     Module MyWebExtension
-        Private s_Computer As New ThreadSafeObjectProvider(Of Global.Microsoft.VisualBasic.Devices.ServerComputer)
-        Private s_User As New ThreadSafeObjectProvider(Of Global.Microsoft.VisualBasic.ApplicationServices.WebUser)
-        Private s_Log As New ThreadSafeObjectProvider(Of Global.Microsoft.VisualBasic.Logging.AspLog)
+        Private ReadOnly s_Computer As New ThreadSafeObjectProvider(Of ServerComputer)
+        Private ReadOnly s_User As New ThreadSafeObjectProvider(Of WebUser)
+        Private ReadOnly s_Log As New ThreadSafeObjectProvider(Of AspLog)
+
         ''' <summary>
-        ''' Returns information about the host computer.
+        '''     Returns information about the host computer.
         ''' </summary>
-        <Global.System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")> _
-        Friend ReadOnly Property Computer() As Global.Microsoft.VisualBasic.Devices.ServerComputer
+        <
+            SuppressMessage _
+                ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")>
+        Friend ReadOnly Property Computer As ServerComputer
             Get
                 Return s_Computer.GetInstance()
             End Get
         End Property
+
         ''' <summary>
-        ''' Returns information for the current Web user.
+        '''     Returns information for the current Web user.
         ''' </summary>
-        <Global.System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")> _
-        Friend ReadOnly Property User() As Global.Microsoft.VisualBasic.ApplicationServices.WebUser
+        <
+            SuppressMessage _
+                ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")>
+        Friend ReadOnly Property User As WebUser
             Get
                 Return s_User.GetInstance()
             End Get
         End Property
+
         ''' <summary>
-        ''' Returns Request object.
+        '''     Returns Request object.
         ''' </summary>
-        <Global.System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")> _
-        <Global.System.ComponentModel.Design.HelpKeyword("My.Request")> _
-        Friend ReadOnly Property Request() As Global.System.Web.HttpRequest
-            <Global.System.Diagnostics.DebuggerHidden()> _
+        <
+            SuppressMessage _
+                ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")> _
+        <HelpKeyword("My.Request")>
+        Friend ReadOnly Property Request As HttpRequest
+            <DebuggerHidden>
             Get
-                Dim CurrentContext As Global.System.Web.HttpContext = Global.System.Web.HttpContext.Current
+                Dim CurrentContext As HttpContext = HttpContext.Current
                 If CurrentContext IsNot Nothing Then
                     Return CurrentContext.Request
                 End If
                 Return Nothing
             End Get
         End Property
+
         ''' <summary>
-        ''' Returns Response object.
+        '''     Returns Response object.
         ''' </summary>
-        <Global.System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")> _
-         <Global.System.ComponentModel.Design.HelpKeyword("My.Response")> _
-         Friend ReadOnly Property Response() As Global.System.Web.HttpResponse
-            <Global.System.Diagnostics.DebuggerHidden()> _
+        <
+            SuppressMessage _
+                ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")> _
+        <HelpKeyword("My.Response")>
+        Friend ReadOnly Property Response As HttpResponse
+            <DebuggerHidden>
             Get
-                Dim CurrentContext As Global.System.Web.HttpContext = Global.System.Web.HttpContext.Current
+                Dim CurrentContext As HttpContext = HttpContext.Current
                 If CurrentContext IsNot Nothing Then
                     Return CurrentContext.Response
                 End If
                 Return Nothing
             End Get
         End Property
+
         ''' <summary>
-        ''' Returns the Asp log object.
+        '''     Returns the Asp log object.
         ''' </summary>
-        <Global.System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")> _
-        Friend ReadOnly Property Log() As Global.Microsoft.VisualBasic.Logging.AspLog
+        <
+            SuppressMessage _
+                ("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")>
+        Friend ReadOnly Property Log As AspLog
             Get
                 Return s_Log.GetInstance()
             End Get
         End Property
-     End Module
+    End Module
 End Namespace
 
 #End If
+

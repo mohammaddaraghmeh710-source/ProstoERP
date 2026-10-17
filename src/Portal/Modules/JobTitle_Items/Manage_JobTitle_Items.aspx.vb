@@ -1,9 +1,9 @@
-﻿Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class Manage_JobTitle_Items
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -27,9 +27,8 @@ Public Class Manage_JobTitle_Items
 #Region "Fill Dropdowns"
 
 
-
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Brands_All().Where(Function(x) x.IsDeleted = 0).ToList()
             ddlBrand.DataSource = data
             ddlBrand.DataTextField = "Title_Ar"
@@ -40,9 +39,12 @@ Public Class Manage_JobTitle_Items
     End Sub
 
     Private Sub InitEmptyOrgDrops()
-        ddlBranch.Items.Clear() : ddlBranch.Items.Insert(0, New ListItem("الكل", ""))
-        ddlDepartment.Items.Clear() : ddlDepartment.Items.Insert(0, New ListItem("الكل", ""))
-        ddlJobTitleAdvanced.Items.Clear() : ddlJobTitleAdvanced.Items.Insert(0, New ListItem("الكل", ""))
+        ddlBranch.Items.Clear()
+        ddlBranch.Items.Insert(0, New ListItem("الكل", ""))
+        ddlDepartment.Items.Clear()
+        ddlDepartment.Items.Insert(0, New ListItem("الكل", ""))
+        ddlJobTitleAdvanced.Items.Clear()
+        ddlJobTitleAdvanced.Items.Insert(0, New ListItem("الكل", ""))
     End Sub
 
     Private Sub FillBranches(Optional brandId As Integer? = Nothing)
@@ -51,7 +53,7 @@ Public Class Manage_JobTitle_Items
 
         If Not brandId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Branches_ByBrandID(brandId.Value).Where(Function(x) x.IsDeleted = 0).ToList()
             ddlBranch.DataSource = data
             ddlBranch.DataTextField = "Title_Ar"
@@ -67,7 +69,7 @@ Public Class Manage_JobTitle_Items
 
         If Not branchId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Departments_ByBranchID(branchId.Value).Where(Function(x) x.IsDeleted = 0).ToList()
             ddlDepartment.DataSource = data
             ddlDepartment.DataTextField = "Title_Ar"
@@ -83,7 +85,7 @@ Public Class Manage_JobTitle_Items
 
         If Not deptId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_JobTitles_ByDepartmentID(deptId.Value).Where(Function(x) x.IsDeleted = 0).ToList()
             ddlJobTitleAdvanced.DataSource = data
             ddlJobTitleAdvanced.DataTextField = "Title_Ar"
@@ -94,7 +96,7 @@ Public Class Manage_JobTitle_Items
     End Sub
 
     Private Sub FillSuppliers()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Suppliers_All().Where(Function(x) x.IsDeleted = 0).ToList()
             ddlSupplier.DataSource = data
             ddlSupplier.DataTextField = "Title_Ar"
@@ -105,7 +107,7 @@ Public Class Manage_JobTitle_Items
     End Sub
 
     Private Sub FillMaintenanceCompanies()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Maintenance_Companies_All().Where(Function(x) x.IsDeleted = 0).ToList()
             ddlMaintenanceCompany.DataSource = data
             ddlMaintenanceCompany.DataTextField = "Title_Ar"
@@ -116,7 +118,7 @@ Public Class Manage_JobTitle_Items
     End Sub
 
     Private Sub FillItemTypes()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_JobTitle_Items_Types_All().Where(Function(x) x.IsDeleted = 0).ToList()
 
             ddlItemTypeBasic.DataSource = data
@@ -209,8 +211,7 @@ Public Class Manage_JobTitle_Items
         If Integer.TryParse(ddlItemTypeAdvanced.SelectedValue, tmp) Then itemTypeAdvId = tmp
 
 
-
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_JobTitle_Items_Search(
                 brandId,
                 branchId,
@@ -221,12 +222,11 @@ Public Class Manage_JobTitle_Items
                 If(itemTypeAdvId.HasValue, itemTypeAdvId, itemTypeId),
                 toolNumber,
                 toolName
-            ).ToList()
+                ).ToList()
 
             lstData.DataSource = data
             lstData.DataBind()
         End Using
-
     End Sub
 
 #End Region
@@ -265,21 +265,20 @@ Public Class Manage_JobTitle_Items
     End Sub
 
 
-
 #End Region
 
 #Region "ListView Commands"
 
     Protected Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs)
         If e.CommandName = "Edit" Then
-            Dim id As Integer = CInt(e.CommandArgument)
+            Dim id = CInt(e.CommandArgument)
             Response.Redirect("/Modules/JobTitle_Items/Edit_JobTitle_Items.aspx?ID=" & id)
         ElseIf e.CommandName = "PrintQrCode" Then
-            Dim id As Integer = CInt(e.CommandArgument)
+            Dim id = CInt(e.CommandArgument)
             Response.Redirect("/modules/QRCode/PrintQRCode.aspx?Type=jobitem&ID=" + id.ToString())
         ElseIf e.CommandName = "DeleteItem" Then
-            Dim id As Integer = CInt(e.CommandArgument)
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Dim id = CInt(e.CommandArgument)
+            Using db As New Prosto_ERP_DataClassesDataContext
                 db.Update_JobTitle_Items_IsDeleted_ByID(id, 1, SessionManager.GetInstance.Users.UserID)
             End Using
             BindData()
@@ -288,5 +287,6 @@ Public Class Manage_JobTitle_Items
     End Sub
 
 #End Region
-
 End Class
+
+

@@ -1,18 +1,16 @@
 ﻿
-
 Imports System.DirectoryServices
 
 Public Class ActiveDirectoryChecker
-
-    Public Shared Function CheckDomainUser(ByVal username As String, ByVal password As String) As Boolean
-        Dim isValid As Boolean = False
+    Public Shared Function CheckDomainUser(username As String, password As String) As Boolean
+        Dim isValid = False
 
         Dim ADPath As String = ConfigurationManager.ConnectionStrings("ADconnectionString").ConnectionString
-        Dim entry As DirectoryEntry = New DirectoryEntry(ADPath, username, password)
+        Dim entry = New DirectoryEntry(ADPath, username, password)
 
         Try
             Dim obj As Object = entry.NativeObject
-            Dim search As DirectorySearcher = New DirectorySearcher(entry)
+            Dim search = New DirectorySearcher(entry)
 
             search.Filter = "(&(objectClass=user)(SAMAccountName=" & username & "))"
 
@@ -28,5 +26,6 @@ Public Class ActiveDirectoryChecker
 
         Return isValid
     End Function
-
 End Class
+
+

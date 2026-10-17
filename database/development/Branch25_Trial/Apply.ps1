@@ -3,7 +3,8 @@ $cfg = [xml](Get-Content (Join-Path $PSScriptRoot '../../../src/Portal/Web.confi
 $cn = New-Object System.Data.SqlClient.SqlConnection($cfg.configuration.connectionStrings.add.connectionString)
 $cn.Open()
 $tx = $cn.BeginTransaction([System.Data.IsolationLevel]::Serializable)
-try {
+try
+{
     $cmd = $cn.CreateCommand()
     $cmd.Transaction = $tx
     $cmd.CommandText = @'
@@ -50,9 +51,19 @@ IF EXISTS (SELECT Shif_ID FROM dbo.UsersMembers WHERE Branch_ID=25 AND ISNULL(Is
     [void]$cmd.ExecuteNonQuery()
     $tx.Commit()
     Write-Output "Committed. Previous values saved: $backup"
-} catch {
-    try { $tx.Rollback() } catch { }
+}
+catch
+{
+    try
+    {
+        $tx.Rollback()
+    }
+    catch
+    {
+    }
     throw
-} finally {
+}
+finally
+{
     $cn.Close()
 }

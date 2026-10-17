@@ -1,4 +1,5 @@
 ﻿<%@ Master Language="VB" AutoEventWireup="false" CodeBehind="Site.master.vb" Inherits="CRM.Site" %>
+<%@ Import Namespace="CRM" %>
 
 
 <html
@@ -527,24 +528,24 @@ data-template="horizontal-menu-template">
     <ul class="menu-inner">
       <li class="menu-item"><a href="javascript:void(0)" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-broadcast"></i><div>التعاميم</div></a><ul class="menu-sub">
         <li class="menu-item"><a class="menu-link" href="/Modules/Circulars/Index.aspx"><div>تعاميم</div></a></li>
-        <% If CRM.SessionManager.GetInstance.Users.UserType = 1 Then %>
+        <% If SessionManager.GetInstance.Users.UserType = 1 Then%>
         <li class="menu-item"><a class="menu-link" href="/Modules/Circulars/Index.aspx?admin=1"><div>إدارة التعاميم</div></a></li>
-        <% End If %>
+        <% End If%>
       </ul></li>
       <li class="menu-item"><a href="javascript:void(0)" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-file"></i><div>الصفحات المعلوماتية</div></a><ul class="menu-sub" id="informationPagesMenu">
         <asp:Literal ID="litInformationPageLinks" runat="server" EnableViewState="false" />
-        <% If CRM.SessionManager.GetInstance.Users.UserType = 1 Then %>
+        <% If SessionManager.GetInstance.Users.UserType = 1 Then%>
         <li class="menu-item"><a class="menu-link" href="/Modules/Information_Pages/Manage.aspx"><div>إدارة الصفحات</div></a></li>
         <li class="menu-item"><a class="menu-link" href="/Modules/Information_Pages/Logs.aspx"><div>سجل العمليات والزيارات</div></a></li>
-        <% End If %>
+        <% End If%>
       </ul></li>
       <li class="menu-item"><a href="/Modules/Correspondence/ManageCorrespondence.aspx" class="menu-link"><i class="menu-icon tf-icons bx bx-message-rounded-dots"></i><div>المراسلات</div><asp:UpdatePanel ID="upCorrespondenceCount" runat="server" UpdateMode="Conditional" RenderMode="Inline"><ContentTemplate><span class="badge rounded-pill bg-primary ms-2" data-correspondence-count aria-label="المحادثات غير المقروءة"><asp:Literal ID="litCorrespondenceCount" runat="server" Text="0" /></span><asp:Timer ID="tmCorrespondenceCount" runat="server" Interval="30000" OnTick="CorrespondenceCount_Tick" /></ContentTemplate></asp:UpdatePanel></a></li>
 <li class="menu-item"><a href="javascript:void(0)" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-message-square-detail"></i><div>الشكاوى والاقتراحات</div><asp:UpdatePanel ID="upFeedbackCount" runat="server" UpdateMode="Conditional" RenderMode="Inline"><ContentTemplate><span class="badge rounded-pill bg-primary ms-2" aria-label="الطلبات غير المقروءة"><asp:Literal ID="litFeedbackCount" runat="server" Text="0" /></span></ContentTemplate></asp:UpdatePanel></a><ul class="menu-sub">
 <li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback/ManageEmployeeFeedback.aspx"><div>متابعة الطلبات</div></a></li>
 <li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback/EmployeeFeedbackNotifications.aspx"><div>الإشعارات</div></a></li>
-<% If CRM.SessionManager.GetInstance.Users.UserType = 1 Then %><li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback/EmployeeFeedbackReports.aspx"><div>الإحصائيات والتقارير</div></a></li><li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback/EmployeeFeedbackLogs.aspx"><div>سجل المشاهدات والإجراءات</div></a></li><% End If %>
+<%         If SessionManager.GetInstance.Users.UserType = 1 Then%><li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback/EmployeeFeedbackReports.aspx"><div>الإحصائيات والتقارير</div></a></li><li class="menu-item"><a class="menu-link" href="/Modules/Employee_Feedback/EmployeeFeedbackLogs.aspx"><div>سجل المشاهدات والإجراءات</div></a></li><% End If%>
 </ul></li>
-<% If CRM.SessionManager.GetInstance.Users.UserType = 1 Then %>
+<%         If SessionManager.GetInstance.Users.UserType = 1 Then%>
 
 
       <!-- Dashboards -->
@@ -689,14 +690,14 @@ data-template="horizontal-menu-template">
       </li>
         
 
-      <% End If %>
-<% If CanUseCRM() Then %>
+      <% End If%>
+<%         If CanUseCRM() Then%>
 <li class="menu-item"><a href="javascript:void(0)" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-buildings"></i><div data-i18n="ادارة العملاء">ادارة العملاء</div></a><ul class="menu-sub"><li class="menu-item"><a class="menu-link" href="/Modules/CRM_Accounts/ManageCRMAccounts.aspx"><i class="menu-icon tf-icons bx bx-buildings"></i><div data-i18n="العملاء">العملاء</div></a></li>
 <li class="menu-item"><a class="menu-link" href="/Modules/CRM_Contacts/ManageCRMContacts.aspx"><i class="menu-icon tf-icons bx bx-user"></i><div data-i18n="جهات الاتصال">جهات الاتصال</div></a></li>
 <li class="menu-item"><a class="menu-link" href="/Modules/CRM_Activity_Logs/ManageCRMActivityLogs.aspx"><i class="menu-icon tf-icons bx bx-history"></i><div data-i18n="سجل النشاطات">سجل النشاطات</div></a></li>
 </ul></li>
-<% End If %>
-<% If CRM.SessionManager.GetInstance.Users.UserType = 1 Then %>
+<% End If%>
+<%         If SessionManager.GetInstance.Users.UserType = 1 Then%>
 <!-- Work Guide Management -->
       <li class="menu-item">
         <a href="javascript:void(0)" class="menu-link menu-toggle">
@@ -1098,7 +1099,7 @@ data-template="horizontal-menu-template">
         </a>
       </li>
 
-    <% End If %>
+    <% End If%>
 </ul>
   </div>
 </aside>

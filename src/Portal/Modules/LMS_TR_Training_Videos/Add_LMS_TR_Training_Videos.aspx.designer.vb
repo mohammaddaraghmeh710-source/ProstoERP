@@ -219,4 +219,16 @@ Partial Public Class Add_LMS_TR_Training_Videos
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents lblMsg As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''Master property.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated property.
+    '''</remarks>
+    Public Shadows ReadOnly Property Master() As CRM.Site
+        Get
+            Return CType(MyBase.Master, CRM.Site)
+        End Get
+    End Property
 End Class

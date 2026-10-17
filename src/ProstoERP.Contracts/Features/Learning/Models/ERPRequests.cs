@@ -3,7 +3,6 @@ namespace Prosto_ERP_API.Controllers
     // Simple model for POST body
 
 
-
     public class GetNewsByIdModel
     {
         public int PID { get; set; }
@@ -45,7 +44,7 @@ namespace Prosto_ERP_API.Controllers
     {
         public int UserID { get; set; }
         public int VideoID { get; set; }
-        public int CompletionPercent { get; set; }  // 0..100
+        public int CompletionPercent { get; set; } // 0..100
     }
 
     public class UpdateVideoProgressIsCompletedModel
@@ -78,8 +77,6 @@ namespace Prosto_ERP_API.Controllers
     {
         public int UserID { get; set; }
         public int LevelID { get; set; }
-        public int CompletionPercent { get; set; }   // 0 .. 100
+        public int CompletionPercent { get; set; } // 0 .. 100
     }
-
-
 }

@@ -48,26 +48,26 @@
                                     </LayoutTemplate>
                                     <ItemTemplate>
                                         <tr>
-                                              <td data-title="العلامة التجارية"><%# Eval("BrandTitle_Ar") %></td>
-                                            <td data-title="اسم الفرع بالعربية"><%#Eval("Title_Ar")%></td>
-                                            <td data-title="اسم الفرع بالانجليزية"><%#Eval("Title_En")%></td>
-                                            <td data-title="تاريخ الإنشاء"><%#Eval("AddedDate")%></td>
+                                              <td data-title="العلامة التجارية"><%# Eval("BrandTitle_Ar")%></td>
+                                            <td data-title="اسم الفرع بالعربية"><%# Eval("Title_Ar")%></td>
+                                            <td data-title="اسم الفرع بالانجليزية"><%# Eval("Title_En")%></td>
+                                            <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate")%></td>
                                            <%-- <td data-title="تفعيل">
                                                 <%# If(Eval("IsActive"), "مفعل", "غير مفعل") %>
                                             </td>--%>
                                              <td data-title="QRCode">
-                                                    <asp:LinkButton CssClass="btn btn-icon btn-label-success" ID="lnkQRCode" CommandName="QRCode" CommandArgument='<%#Eval("ID") %>' runat="server" ToolTip="طباعة QRCode">    <i class="bx bx-qr"></i> </asp:LinkButton>
+                                                    <asp:LinkButton CssClass="btn btn-icon btn-label-success" ID="lnkQRCode" CommandName="QRCode" CommandArgument='<%# Eval("ID")%>' runat="server" ToolTip="طباعة QRCode">    <i class="bx bx-qr"></i> </asp:LinkButton>
                                                 </td>
                                             <td data-title="تعديل">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-secondary" ID="btnEdit"
-                                                    CommandName="Edit" CommandArgument='<%#Eval("ID") %>' runat="server" ToolTip="تعديل">
+                                                    CommandName="Edit" CommandArgument='<%# Eval("ID")%>' runat="server" ToolTip="تعديل">
                                                     <i class="bx bx-edit-alt"></i>
                                                 </asp:LinkButton>
                                             </td>
                                             <td data-title="حذف">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-danger" ID="btnDelete"
     CommandName="DeleteItem"
-    CommandArgument='<%#Eval("ID") %>'
+    CommandArgument='<%# Eval("ID")%>'
     runat="server"
     ToolTip="حذف"
     CausesValidation="false"

@@ -98,7 +98,8 @@ def generate():
                     if join not in joins:
                         joins.append(join)
                     expressions.append(f"{alias}.[Title_{column.rsplit('_', 1)[1]}] AS [{column}]")
-                elif table in ("Departments", "JobTitles") and re.match(r"(?:Department|Branch|Brand)Title_(?:Ar|En)$", column):
+                elif table in ("Departments", "JobTitles") and re.match(r"(?:Department|Branch|Brand)Title_(?:Ar|En)$",
+                                                                        column):
                     if table == "JobTitles":
                         needed = ["JOIN dbo.Departments d ON d.ID=t.DepartmentID",
                                   "JOIN dbo.Branches b ON b.ID=d.BranchID",
@@ -130,7 +131,9 @@ def generate():
                 if suffix == "ByUserName_Password":
                     where.append("ISNULL(t.IsActive,1)=1")
                     # Ciphertext comparisons must be case-sensitive, even on a CI database.
-                    where = [x.replace("t.[Password]=@Password", "t.[Password] COLLATE Latin1_General_100_BIN2=@Password") for x in where]
+                    where = [
+                        x.replace("t.[Password]=@Password", "t.[Password] COLLATE Latin1_General_100_BIN2=@Password")
+                        for x in where]
                 body = ["SELECT " + ", ".join(expressions) + f" FROM dbo.[{table}] t " + " ".join(joins)
                         + (" WHERE " + " AND ".join(where) if where else "") + ";"]
         elif operation == "Insert":

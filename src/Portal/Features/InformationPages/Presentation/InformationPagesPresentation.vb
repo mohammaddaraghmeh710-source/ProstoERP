@@ -4,7 +4,9 @@ Public NotInheritable Class InformationPagesPresentation
     Public Shared Function LocalDate(value As Object, Optional input As Boolean = False) As String
         If value Is Nothing OrElse IsDBNull(value) Then Return If(input, "", "—")
         Dim utc = DateTime.SpecifyKind(CDate(value), DateTimeKind.Utc)
-        Return TimeZoneInfo.ConvertTimeFromUtc(utc, TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")).ToString(If(input, "yyyy-MM-ddTHH:mm", "yyyy/MM/dd HH:mm"), CultureInfo.InvariantCulture)
+        Return _
+            TimeZoneInfo.ConvertTimeFromUtc(utc, TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")).ToString(
+                If(input, "yyyy-MM-ddTHH:mm", "yyyy/MM/dd HH:mm"), CultureInfo.InvariantCulture)
     End Function
 
     Public Shared Function StatusText(value As Object) As String
@@ -30,3 +32,5 @@ Public NotInheritable Class InformationPagesPresentation
         End Select
     End Function
 End Class
+
+

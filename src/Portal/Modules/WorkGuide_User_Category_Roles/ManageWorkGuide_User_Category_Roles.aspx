@@ -71,29 +71,29 @@
 
                             <ItemTemplate>
                                 <tr>
-                                    <td data-title="العميل"><%#: Eval("User_FullName_Ar") %></td>
-                                    <td data-title="العلامة التجارية"><%# Eval("Brand_Title_Ar") %></td>
-                                    <td data-title="الدور / الصلاحية"><%# Eval("Role_Title_Ar") %></td>
+                                    <td data-title="العميل"><%#: Eval("User_FullName_Ar")%></td>
+                                    <td data-title="العلامة التجارية"><%# Eval("Brand_Title_Ar")%></td>
+                                    <td data-title="الدور / الصلاحية"><%# Eval("Role_Title_Ar")%></td>
 
                                     <td data-title="عدد التصنيفات">
                                         <span class="badge bg-label-primary">
-                                            <%# Eval("Categories_Count") %> تصنيفات
+                                            <%# Eval("Categories_Count")%> تصنيفات
                                         </span>
                                     </td>
 
                                     <td data-title="الحالة">
-                                        <%# If(Convert.ToBoolean(Eval("IsActive")), "فعال", "غير فعال") %>
+                                        <%# If(Convert.ToBoolean(Eval("IsActive")), "فعال", "غير فعال")%>
                                     </td>
 
                                     <td data-title="تاريخ آخر إضافة">
-                                        <%# Eval("AddedDate") %>
+                                        <%# Eval("AddedDate")%>
                                     </td>
 
                                     <td data-title="تعديل">
                                         <asp:LinkButton CssClass="btn btn-icon btn-label-secondary"
                                             ID="btnEdit"
                                             CommandName="Edit"
-                                            CommandArgument='<%# Eval("User_ID") & "|" & Eval("Brand_ID") & "|" & Eval("Role_ID") %>'
+                                            CommandArgument='<%# Eval("User_ID") & "|" & Eval("Brand_ID") & "|" & Eval("Role_ID")%>'
                                             runat="server"
                                             CausesValidation="false"
                                             ToolTip="تعديل">
@@ -105,7 +105,7 @@
                                         <asp:LinkButton CssClass="btn btn-icon btn-label-danger"
                                             ID="btnDelete"
                                             CommandName="DeleteGroup"
-                                            CommandArgument='<%# Eval("User_ID") & "|" & Eval("Brand_ID") & "|" & Eval("Role_ID") %>'
+                                            CommandArgument='<%# Eval("User_ID") & "|" & Eval("Brand_ID") & "|" & Eval("Role_ID")%>'
                                             runat="server"
                                             CausesValidation="false"
                                             ToolTip="حذف"

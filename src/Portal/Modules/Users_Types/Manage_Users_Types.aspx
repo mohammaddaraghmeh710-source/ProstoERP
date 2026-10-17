@@ -35,17 +35,17 @@
                                 <LayoutTemplate><asp:PlaceHolder ID="ItemPlaceHolder" runat="server" /></LayoutTemplate>
                                 <ItemTemplate>
                                     <tr>
-                                        <td data-title="الرقم"><%#: Eval("ID") %></td>
-                                        <td data-title="الاسم بالعربية"><%#: Eval("Title_Ar") %></td>
-                                        <td data-title="الاسم بالإنجليزية"><%#: Eval("Title_En") %></td>
-                                        <td data-title="الترتيب"><%#: Eval("Item_Order") %></td>
-                                        <td data-title="الحالة"><%#: If(IsActiveValue(Eval("IsActive")), "فعال", "موقوف") %></td>
-                                        <td data-title="تاريخ الإنشاء"><%#: Eval("AddedDate", "{0:dd/MM/yyyy HH:mm}") %></td>
+                                        <td data-title="الرقم"><%#: Eval("ID")%></td>
+                                        <td data-title="الاسم بالعربية"><%#: Eval("Title_Ar")%></td>
+                                        <td data-title="الاسم بالإنجليزية"><%#: Eval("Title_En")%></td>
+                                        <td data-title="الترتيب"><%#: Eval("Item_Order")%></td>
+                                        <td data-title="الحالة"><%#: If(IsActiveValue(Eval("IsActive")), "فعال", "موقوف")%></td>
+                                        <td data-title="تاريخ الإنشاء"><%#: Eval("AddedDate", "{0:dd/MM/yyyy HH:mm}")%></td>
                                         <td data-title="الإجراءات">
-                                            <asp:HyperLink runat="server" CssClass="btn btn-sm btn-label-secondary" Text="تعديل" NavigateUrl='<%# "Edit_Users_Types.aspx?ID=" & Eval("ID") %>' />
-                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-warning" CommandName="Deactivate" CommandArgument='<%# Eval("ID") %>' Visible='<%# IsActiveValue(Eval("IsActive")) %>' Text="إيقاف" CausesValidation="false" />
-                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-success" CommandName="Activate" CommandArgument='<%# Eval("ID") %>' Visible='<%# Not IsActiveValue(Eval("IsActive")) %>' Text="تفعيل" CausesValidation="false" />
-                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-danger" CommandName="DeleteItem" CommandArgument='<%# Eval("ID") %>' Text="حذف" CausesValidation="false" OnClientClick="return confirm('هل تريد حذف هذا النوع؟');" />
+                                            <asp:HyperLink runat="server" CssClass="btn btn-sm btn-label-secondary" Text="تعديل" NavigateUrl='<%# "Edit_Users_Types.aspx?ID=" & Eval("ID")%>' />
+                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-warning" CommandName="Deactivate" CommandArgument='<%# Eval("ID")%>' Visible='<%# IsActiveValue(Eval("IsActive"))%>' Text="إيقاف" CausesValidation="false" />
+                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-success" CommandName="Activate" CommandArgument='<%# Eval("ID")%>' Visible='<%# Not IsActiveValue(Eval("IsActive"))%>' Text="تفعيل" CausesValidation="false" />
+                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-danger" CommandName="DeleteItem" CommandArgument='<%# Eval("ID")%>' Text="حذف" CausesValidation="false" OnClientClick="return confirm('هل تريد حذف هذا النوع؟');" />
                                         </td>
                                     </tr>
                                 </ItemTemplate>

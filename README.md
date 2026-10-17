@@ -91,8 +91,8 @@ bash scripts/run_aspire.sh
 ```
 
 Click Stop in Rider or press Ctrl+C in the terminal to shut down Aspire and its
-web servers. The existing SQL container stays running for DBeaver. Do not run
-**Local ERP** and **ERP Aspire** simultaneously. Use `--no-browser` with the shell
+web servers. The existing SQL container stays running for DBeaver. Do not run **Local ERP** and **ERP Aspire**
+simultaneously. Use `--no-browser` with the shell
 launcher when you do not want a browser window.
 
 The AppHost reads the existing local API `Web.config`; it does not replace the
@@ -126,8 +126,8 @@ bridge uses the existing Roslyn compiler for Web Forms VB markup on macOS.
 ### Database coverage and limits
 
 The repository has 342 mapped routine signatures but no original core database
-DDL or stored-procedure bodies. `database/development/001_Core.sql` is a
-**new, limited development baseline**, generated from those contracts. It provides
+DDL or stored-procedure bodies. `database/development/001_Core.sql` is a **new, limited development baseline**,
+generated from those contracts. It provides
 10 core tables and 69 CRUD procedures for users/types, brands, branches,
 departments, job titles, shifts, genders, nationalities and news. The exact list is
 in `database/development/supported-procedures.txt`; regenerate it with
@@ -178,12 +178,20 @@ Copy these example files before building or running, then supply your local conf
 - `src/ProstoERP.Api/Web.config.example` to `src/ProstoERP.Api/Web.config`
 - `src/ProstoERP.Infrastructure/app.config.example` to `src/ProstoERP.Infrastructure/app.config`
 
-Set database connections, integration credentials, PasswordReset.HashKey, URLs, and storage paths for your environment. Local configurations, build outputs, downloaded packages, and the BioTime integration test containing local database credentials are excluded from Git.
+Set database connections, integration credentials, PasswordReset.HashKey, URLs, and storage paths for your environment.
+Local configurations, build outputs, downloaded packages, and the BioTime integration test containing local database
+credentials are excluded from Git.
 
-Database scripts and test tools are in `database/migrations/`. Review each module's README before running them against a database.
+Database scripts and test tools are in `database/migrations/`. Review each module's README before running them against a
+database.
 
 ## Additional local templates
 
-Some source, test, and documentation files also contained local credentials. Their originals remain on the original workstation and are ignored; sanitized `.example` versions are published instead. On a fresh clone, copy each `*.example` file to the same path with the `.example` suffix removed and replace the placeholders with your environment values before building. This includes `AuthenticationAttribute.cs` and `My Project/Settings.Designer.vb`. Do not commit the restored local files.
+Some source, test, and documentation files also contained local credentials. Their originals remain on the original
+workstation and are ignored; sanitized `.example` versions are published instead. On a fresh clone, copy each
+`*.example` file to the same path with the `.example` suffix removed and replace the placeholders with your environment
+values before building. This includes `AuthenticationAttribute.cs` and `My Project/Settings.Designer.vb`. Do not commit
+the restored local files.
 
-Runtime attachments under src/Portal/App_Data and src/Portal/FileManager, and the local employee allocation CSV, are excluded. Recreate storage folders with the permissions required by your deployment.
+Runtime attachments under src/Portal/App_Data and src/Portal/FileManager, and the local employee allocation CSV, are
+excluded. Recreate storage folders with the permissions required by your deployment.

@@ -1,12 +1,9 @@
-﻿Imports System
-Imports System.Linq
-Imports System.Collections.Generic
-Imports System.Web.UI
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class Brands_Dashboards
     Inherits PageBase
 
-    Private ReadOnly db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+    Private ReadOnly db As New Prosto_ERP_DataClassesDataContext()
 
     Private Class BrandCardDto
         Public Property BrandID As Integer
@@ -15,10 +12,9 @@ Public Class Brands_Dashboards
         Public Property BranchesCount As Integer
         Public Property BranchesUrl As String
         Public Property StatisticsUrl As String
-
     End Class
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         ' حماية الجلسة
         If SessionManager.GetInstance.Users Is Nothing Then
@@ -35,7 +31,7 @@ Public Class Brands_Dashboards
         ' حسب ما هو متوفر عندك في Users Session (عدّلها إذا اسم الحقل مختلف)
         Try
             Dim u = SessionManager.GetInstance.Users
-            Dim name As String = ""
+            Dim name = ""
 
             If u IsNot Nothing Then
                 ' جرّب تستخدم FullName/Name حسب مشروعك
@@ -57,9 +53,9 @@ Public Class Brands_Dashboards
     Private Sub BindBrands()
         ' 1) جلب العلامات
         Dim brands = (From b In db.Select_Brands_All()
-                      Where (b.IsDeleted = False OrElse b.IsDeleted Is Nothing) _
-                        AndAlso (b.IsActive = True OrElse b.IsActive Is Nothing)
-                      Select b).ToList()
+                Where (b.IsDeleted = False OrElse b.IsDeleted Is Nothing) _
+                      AndAlso (b.IsActive = True OrElse b.IsActive Is Nothing)
+                Select b).ToList()
 
         If brands Is Nothing OrElse brands.Count = 0 Then
             phNoBrands.Visible = True
@@ -85,29 +81,31 @@ Public Class Brands_Dashboards
             Dim logo As String = If(Not String.IsNullOrEmpty(br.Logo), br.Logo, "/assets/img/Prosto/Logo_Circle.png")
 
             ' 3) عدد الفروع: باستخدام نفس مصدر صفحة الفروع (Procedure موجود عندك)
-            Dim branchesCount As Integer = 0
+            Dim branchesCount = 0
             Try
                 branchesCount =
                     (From x In db.Select_Branches_ByBrandID(brandId)
-                     Where (x.IsDeleted = False OrElse x.IsDeleted Is Nothing) _
-                       AndAlso (x.IsActive = True OrElse x.IsActive Is Nothing)
-                     Select x.ID).Count()
+                        Where (x.IsDeleted = False OrElse x.IsDeleted Is Nothing) _
+                              AndAlso (x.IsActive = True OrElse x.IsActive Is Nothing)
+                        Select x.ID).Count()
             Catch
                 branchesCount = 0
             End Try
 
-            Dim statisticsUrl As String = String.Format("/modules/Brands_Dashboards/Brands_Statistics_Dashboard.aspx?BrandID={0}", brandId)
+            Dim statisticsUrl As String =
+                    String.Format("/modules/Brands_Dashboards/Brands_Statistics_Dashboard.aspx?BrandID={0}", brandId)
 
-            Dim branchesUrl As String = String.Format("/modules/Branches_Dashboards/Branches_Dashboards.aspx?BrandID={0}", brandId)
+            Dim branchesUrl As String =
+                    String.Format("/modules/Branches_Dashboards/Branches_Dashboards.aspx?BrandID={0}", brandId)
 
             cards.Add(New BrandCardDto With {
-                .BrandID = brandId,
-                .Title = title,
-                .Logo = logo,
-                .BranchesCount = branchesCount,
-                .BranchesUrl = branchesUrl,
-                .StatisticsUrl = statisticsUrl
-            })
+                         .BrandID = brandId,
+                         .Title = title,
+                         .Logo = logo,
+                         .BranchesCount = branchesCount,
+                         .BranchesUrl = branchesUrl,
+                         .StatisticsUrl = statisticsUrl
+                         })
         Next
 
         ' ترتيب جميل: الأكثر فروعاً أولاً
@@ -116,5 +114,6 @@ Public Class Brands_Dashboards
         rptBrands.DataSource = cards
         rptBrands.DataBind()
     End Sub
-
 End Class
+
+

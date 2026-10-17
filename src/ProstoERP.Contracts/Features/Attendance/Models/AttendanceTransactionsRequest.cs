@@ -19,10 +19,13 @@ namespace Prosto_ERP_API.Attendance
         {
             DateTime from, to;
             return !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password)
-                && !string.IsNullOrWhiteSpace(EmployeeCode) && EmployeeCode.Length <= 200
-                && DateTime.TryParseExact(FromDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out from)
-                && DateTime.TryParseExact(ToDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out to)
-                && from <= to && (Extra == null || Extra.Count == 0);
+                                                        && !string.IsNullOrWhiteSpace(EmployeeCode) &&
+                                                        EmployeeCode.Length <= 200
+                                                        && DateTime.TryParseExact(FromDate, "yyyy-MM-dd",
+                                                            CultureInfo.InvariantCulture, DateTimeStyles.None, out from)
+                                                        && DateTime.TryParseExact(ToDate, "yyyy-MM-dd",
+                                                            CultureInfo.InvariantCulture, DateTimeStyles.None, out to)
+                                                        && from <= to && (Extra == null || Extra.Count == 0);
         }
     }
 }

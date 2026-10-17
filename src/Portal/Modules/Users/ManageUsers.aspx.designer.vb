@@ -12,18 +12,15 @@ Option Explicit On
 
 
 Partial Public Class ManageUsers
+
+    '''<summary>
+    '''litDeviceOverview control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
     Protected WithEvents litDeviceOverview As Global.System.Web.UI.WebControls.Literal
-    Protected WithEvents chkPendingDevices As Global.System.Web.UI.WebControls.CheckBox
-    Protected WithEvents pnlDevices As Global.System.Web.UI.WebControls.Panel
-    Protected WithEvents litDeviceEmployee As Global.System.Web.UI.WebControls.Literal
-    Protected WithEvents pnlDeviceMessage As Global.System.Web.UI.WebControls.Panel
-    Protected WithEvents litDeviceMessage As Global.System.Web.UI.WebControls.Literal
-    Protected WithEvents litDeviceSummary As Global.System.Web.UI.WebControls.Literal
-    Protected WithEvents lstDeviceRequests As Global.System.Web.UI.WebControls.ListView
-    Protected WithEvents lstDevices As Global.System.Web.UI.WebControls.ListView
-    Protected WithEvents litDeviceHistory As Global.System.Web.UI.WebControls.Literal
-    Protected WithEvents txtDeviceComment As Global.System.Web.UI.WebControls.TextBox
-    Protected WithEvents btnResetDevices As Global.System.Web.UI.WebControls.LinkButton
 
     '''<summary>
     '''btnAddNewItem control.
@@ -33,6 +30,15 @@ Partial Public Class ManageUsers
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents btnAddNewItem As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''chkPendingDevices control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents chkPendingDevices As Global.System.Web.UI.WebControls.CheckBox
 
     '''<summary>
     '''ddlUserType control.
@@ -78,4 +84,106 @@ Partial Public Class ManageUsers
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents btnSearch As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''pnlDevices control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents pnlDevices As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''litDeviceEmployee control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents litDeviceEmployee As Global.System.Web.UI.WebControls.Literal
+
+    '''<summary>
+    '''pnlDeviceMessage control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents pnlDeviceMessage As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''litDeviceMessage control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents litDeviceMessage As Global.System.Web.UI.WebControls.Literal
+
+    '''<summary>
+    '''litDeviceSummary control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents litDeviceSummary As Global.System.Web.UI.WebControls.Literal
+
+    '''<summary>
+    '''lstDeviceRequests control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lstDeviceRequests As Global.System.Web.UI.WebControls.ListView
+
+    '''<summary>
+    '''lstDevices control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lstDevices As Global.System.Web.UI.WebControls.ListView
+
+    '''<summary>
+    '''litDeviceHistory control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents litDeviceHistory As Global.System.Web.UI.WebControls.Literal
+
+    '''<summary>
+    '''txtDeviceComment control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents txtDeviceComment As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''btnResetDevices control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents btnResetDevices As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Master property.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated property.
+    '''</remarks>
+    Public Shadows ReadOnly Property Master() As CRM.Site
+        Get
+            Return CType(MyBase.Master, CRM.Site)
+        End Get
+    End Property
 End Class

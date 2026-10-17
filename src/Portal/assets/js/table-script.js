@@ -5,7 +5,7 @@
         el.addEventListener('touchstart', function (e) {
             e.preventDefault();
             handler(e);
-        }, { passive: false });
+        }, {passive: false});
     }
 
     function initTableFeatures() {

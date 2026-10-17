@@ -7,7 +7,7 @@ namespace Prosto_ERP_API.Mobile
 {
     public sealed class NewsRequest
     {
-        [Range(1,int.MaxValue)] public int BrandID {get;set;}
-        [JsonExtensionData] public IDictionary<string,JToken> Extra {get;set;}
+        [Range(1, int.MaxValue)] public int BrandID { get; set; }
+        [JsonExtensionData] public IDictionary<string, JToken> Extra { get; set; }
     }
 }

@@ -60,30 +60,30 @@
 
                             <ItemTemplate>
                                 <tr>
-                                    <td data-title="العلامة التجارية"><%# Eval("Brand_Title_Ar") %></td>
-                                    <td data-title="التصنيف"><%# Eval("Category_Title_Ar") %></td>
-                                    <td data-title="العنوان بالعربية"><%# Eval("Title_Ar") %></td>
-                                    <td data-title="الحجم"><%# FormatFileSize(Eval("File_Size")) %></td>
+                                    <td data-title="العلامة التجارية"><%# Eval("Brand_Title_Ar")%></td>
+                                    <td data-title="التصنيف"><%# Eval("Category_Title_Ar")%></td>
+                                    <td data-title="العنوان بالعربية"><%# Eval("Title_Ar")%></td>
+                                    <td data-title="الحجم"><%# FormatFileSize(Eval("File_Size"))%></td>
 
                                     <td data-title="الإصدار">
                                         <asp:LinkButton ID="btnVersions"
                                             runat="server"
                                             CssClass="btn btn-sm btn-label-info"
                                             CommandName="Versions"
-                                            CommandArgument='<%# Eval("ID") %>'
+                                            CommandArgument='<%# Eval("ID")%>'
                                             CausesValidation="false">
-                                            <%# "V" & Eval("Version_No").ToString() %>
+                                            <%# "V" & Eval("Version_No").ToString()%>
                                         </asp:LinkButton>
                                     </td>
 
-                                    <td data-title="الحالة"><%# If(Convert.ToBoolean(Eval("IsActive")), "فعال", "غير فعال") %></td>
-                                    <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate") %></td>
+                                    <td data-title="الحالة"><%# If(Convert.ToBoolean(Eval("IsActive")), "فعال", "غير فعال")%></td>
+                                    <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate")%></td>
 
                                     <td data-title="تعديل">
                                         <asp:LinkButton CssClass="btn btn-icon btn-label-secondary"
                                             ID="btnEdit"
                                             CommandName="Edit"
-                                            CommandArgument='<%# Eval("ID") %>'
+                                            CommandArgument='<%# Eval("ID")%>'
                                             runat="server"
                                             CausesValidation="false"
                                             ToolTip="تعديل">
@@ -95,7 +95,7 @@
                                         <asp:LinkButton CssClass="btn btn-icon btn-label-danger"
                                             ID="btnDelete"
                                             CommandName="DeleteItem"
-                                            CommandArgument='<%# Eval("ID") %>'
+                                            CommandArgument='<%# Eval("ID")%>'
                                             runat="server"
                                             ToolTip="حذف"
                                             CausesValidation="false"
@@ -154,15 +154,15 @@
 
                         <ItemTemplate>
                             <tr>
-                                <td><%# "V" & Eval("Version_No").ToString() %></td>
-                                <td><%# Eval("AddedDate") %></td>
+                                <td><%# "V" & Eval("Version_No").ToString()%></td>
+                                <td><%# Eval("AddedDate")%></td>
                                
-                                <td><%# If(Eval("Change_Notes") Is Nothing, "-", Eval("Change_Notes")) %></td>
+                                <td><%# If(Eval("Change_Notes") Is Nothing, "-", Eval("Change_Notes"))%></td>
 
                                 <td>
                                     <a class="btn btn-sm btn-label-primary"
                                         target="_blank"
-                                        href='<%# "/Modules/WorkGuide_Documents/ViewWorkGuideFile.aspx?type=version&id=" & Eval("ID").ToString() %>'>
+                                        href='<%# "/Modules/WorkGuide_Documents/ViewWorkGuideFile.aspx?type=version&id=" & Eval("ID").ToString()%>'>
                                         مشاهدة الملف
                                     </a>
                                 </td>
@@ -172,7 +172,7 @@
                                         runat="server"
                                         CssClass="btn btn-sm btn-label-warning"
                                         CommandName="RestoreVersion"
-                                        CommandArgument='<%# Eval("ID") %>'
+                                        CommandArgument='<%# Eval("ID")%>'
                                         CausesValidation="false"
                                         OnClientClick="return confirm('هل أنت متأكد من استرجاع هذه النسخة؟ سيتم حفظ النسخة الحالية ضمن النسخ القديمة.');">
                                         استرجاع

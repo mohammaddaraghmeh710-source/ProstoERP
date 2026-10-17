@@ -20,16 +20,16 @@
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.Linq" />
-    <Compile Include="Features\Learning\TrainingCatalogService.cs" />
+    <Reference Include="System"/>
+    <Reference Include="System.Core"/>
+    <Reference Include="System.Data"/>
+    <Reference Include="System.Data.Linq"/>
+    <Compile Include="Features\Learning\TrainingCatalogService.cs"/>
     <ProjectReference Include="..\ProstoERP.Infrastructure\ProstoERP.Infrastructure.vbproj">
       <Project>{C33ABBC1-22E8-44BE-979A-D4795CC9DA62}</Project>
       <Name>ProstoERP.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\..\build\MonoFramework.props" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\build\MonoFramework.props"/>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>

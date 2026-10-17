@@ -1,13 +1,12 @@
-﻿Imports System.Linq
-Imports AjaxControlToolkit
-Imports System.Web.UI.HtmlControls
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Add_LMS_Training_Levels
     Inherits PageBase
 
     Private LevelImagePath As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -24,7 +23,7 @@ Public Class Add_LMS_Training_Levels
     End Sub
 
     Private Sub FillBrandsDDL()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim brands = db.Select_Brands_All().ToList()
             ddlBrand.DataSource = brands
             ddlBrand.DataTextField = "Title_Ar"
@@ -35,7 +34,7 @@ Public Class Add_LMS_Training_Levels
     End Sub
 
     Private Sub FillLevelTypesDDL()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim types = db.Select_TR_Level_Types_All().ToList()
             ddlLevelType.DataSource = types
             ddlLevelType.DataTextField = "Title_Ar"
@@ -46,7 +45,7 @@ Public Class Add_LMS_Training_Levels
     End Sub
 
     Private Sub FillUserTypes()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim ut = db.Select_User_Types_ForDDL().ToList()
             rptUserTypes.DataSource = ut
             rptUserTypes.DataBind()
@@ -96,10 +95,10 @@ Public Class Add_LMS_Training_Levels
                 Next
             End If
 
-            Dim newLevelId As Integer = 0
+            Dim newLevelId = 0
             Dim csvUserTypes As String = GetSelectedUserTypesCSV()
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 ' ✅ توقيع Insert أصبح: (BrandID, LevelTypeID, Level_Image, Title_Ar, Title_En, Summary_Ar, Summary_En, Notes_Ar, Notes_En, Item_Order, AddedUser)
                 Dim res = db.Insert_TR_Training_Levels(
@@ -114,9 +113,9 @@ Public Class Add_LMS_Training_Levels
                     If(String.IsNullOrWhiteSpace(txtNotesEn.Text), Nothing, txtNotesEn.Text.Trim()),
                     orderVal,
                     userId
-                )
+                    )
 
-                Dim row = res.Cast(Of Object)().FirstOrDefault()
+                Dim row = res.Cast (Of Object)().FirstOrDefault()
                 If row IsNot Nothing Then
                     Dim p = row.GetType().GetProperty("NewID")
                     If p IsNot Nothing Then
@@ -125,7 +124,9 @@ Public Class Add_LMS_Training_Levels
                 End If
 
                 If newLevelId = 0 Then
-                    Throw New Exception("لم يتم الحصول على رقم المستوى الجديد (NewID). راجع DBML mapping لــ Insert_TR_Training_Levels.")
+                    Throw _
+                        New Exception(
+                            "لم يتم الحصول على رقم المستوى الجديد (NewID). راجع DBML mapping لــ Insert_TR_Training_Levels.")
                 End If
 
                 db.Insert_TR_Level_UserTypes_Bulk(newLevelId, csvUserTypes, userId)
@@ -156,5 +157,6 @@ Public Class Add_LMS_Training_Levels
 
     Protected Sub LevelImageUploader_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
-
 End Class
+
+

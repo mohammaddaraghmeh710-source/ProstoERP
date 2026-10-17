@@ -44,12 +44,12 @@
 </div>
 <script>
 function informationAccess() {
-    document.getElementById('informationRoles').hidden = document.getElementById('<%= ddlAccess.ClientID %>').value !== 'roles';
+    document.getElementById('informationRoles').hidden = document.getElementById('<%=ddlAccess.ClientID%>').value !== 'roles';
 }
 function informationSchedule() {
-    var scheduled = document.getElementById('<%= ddlMode.ClientID %>').value === 'scheduled';
+    var scheduled = document.getElementById('<%=ddlMode.ClientID%>').value === 'scheduled';
     document.getElementById('informationSchedule').hidden = !scheduled;
-    ['<%= txtStart.ClientID %>', '<%= txtEnd.ClientID %>'].forEach(function(id) {
+    ['<%=txtStart.ClientID%>', '<%=txtEnd.ClientID%>'].forEach(function(id) {
         var field = document.getElementById(id); field.required = scheduled; field.disabled = !scheduled;
     });
 }
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
     informationAccess();
     informationSchedule();
     if (!window.CKEDITOR) return;
-    [['<%= txtDetailsAr.ClientID %>', 'rtl', 'ar'], ['<%= txtDetailsEn.ClientID %>', 'ltr', 'en']].forEach(function(item) {
+    [['<%=txtDetailsAr.ClientID%>', 'rtl', 'ar'], ['<%=txtDetailsEn.ClientID%>', 'ltr', 'en']].forEach(function(item) {
         CKEDITOR.replace(item[0], {language:item[2], contentsLangDirection:item[1], height:280,
             toolbar:[['Format','Bold','Italic','Underline','Strike','RemoveFormat'],['NumberedList','BulletedList','Blockquote'],['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],['Link','Unlink','Table','HorizontalRule'],['Undo','Redo','Maximize']],
             removePlugins:'elementspath', resize_enabled:false,

@@ -1,5 +1,5 @@
 ﻿Imports System.Data.SqlClient
-Imports System.Linq
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Add_HR_Vacations_Types
     Inherits HRTypePageBase
@@ -10,8 +10,11 @@ Public Class Add_HR_Vacations_Types
         Dim maxValue As Decimal
         If Not ReadValues(txtCoreID, txtNameAR, txtNameEn, txtMaxValue, False, litMessage, coreID, maxValue) Then Return
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
-                Dim result = db.Insert_HR_Vacations_Types(coreID, txtNameAR.Text, txtNameEn.Text, CInt(maxValue), SessionManager.GetInstance.Users.UserID, chkIsActive.Checked).FirstOrDefault()
+            Using db As New Prosto_ERP_DataClassesDataContext()
+                Dim result =
+                        db.Insert_HR_Vacations_Types(coreID, txtNameAR.Text, txtNameEn.Text, CInt(maxValue),
+                                                     SessionManager.GetInstance.Users.UserID, chkIsActive.Checked).
+                        FirstOrDefault()
                 If result Is Nothing Then
                     ShowMessage(litMessage, "تعذّر تأكيد إضافة العنصر.")
                     Return
@@ -24,3 +27,4 @@ Public Class Add_HR_Vacations_Types
         Response.Redirect("Manage_HR_Vacations_Types.aspx?added=1")
     End Sub
 End Class
+

@@ -3,16 +3,16 @@
 The classic Portal and API projects share package-location and Roslyn setup in
 `build/LegacyWeb.props` and `build/LegacyWeb.targets`.
 
-| File | Responsibility |
-| --- | --- |
-| `build/LegacyWeb.props` | Repository-local `packages` location and existing CodeDom package directory |
-| `build/LegacyWeb.targets` | Existing Roslyn tool path, configuration-registration setting, and package targets import |
-| `build/MonoFramework.props` | Mono Framework references and web targets when modern MSBuild loads the Framework projects on macOS |
-| `build/Portal.Content.props` | Portal's existing Content declarations and metadata |
-| `build/Api.Content.props` | API's existing Content declarations and metadata |
-| Each web project | Assembly references, package versions, source lists, framework, output paths, and Debug/Release compiler options |
-| Each `packages.config` | Existing NuGet dependency declarations |
-| Aspire AppHost project | Its separate .NET SDK, framework, and package references |
+| File                         | Responsibility                                                                                                   |
+|------------------------------|------------------------------------------------------------------------------------------------------------------|
+| `build/LegacyWeb.props`      | Repository-local `packages` location and existing CodeDom package directory                                      |
+| `build/LegacyWeb.targets`    | Existing Roslyn tool path, configuration-registration setting, and package targets import                        |
+| `build/MonoFramework.props`  | Mono Framework references and web targets when modern MSBuild loads the Framework projects on macOS              |
+| `build/Portal.Content.props` | Portal's existing Content declarations and metadata                                                              |
+| `build/Api.Content.props`    | API's existing Content declarations and metadata                                                                 |
+| Each web project             | Assembly references, package versions, source lists, framework, output paths, and Debug/Release compiler options |
+| Each `packages.config`       | Existing NuGet dependency declarations                                                                           |
+| Aspire AppHost project       | Its separate .NET SDK, framework, and package references                                                         |
 
 AppHost is registered as a native SDK project under `orchestration` and explicitly
 sets `IsAspireHost=true`. Its Debug/Release configurations omit solution `Build.0`

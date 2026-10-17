@@ -191,18 +191,18 @@
 
                                             <ItemTemplate>
     <tr>
-        <td data-title="الهيكل التنظيمي"><%# Eval("OrgStructure_Ar") %></td>
-        <td data-title="اسم الأداة"><%# Eval("Title_Ar") %></td>
-        <td data-title="رقم الأداة"><%# Eval("Tool_Number") %></td>
-        <td data-title="نوع الأداة"><%# Eval("ItemType_Title_Ar") %></td>
-        <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate") %></td>
+        <td data-title="الهيكل التنظيمي"><%# Eval("OrgStructure_Ar")%></td>
+        <td data-title="اسم الأداة"><%# Eval("Title_Ar")%></td>
+        <td data-title="رقم الأداة"><%# Eval("Tool_Number")%></td>
+        <td data-title="نوع الأداة"><%# Eval("ItemType_Title_Ar")%></td>
+        <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate")%></td>
 
         <!-- QR Code -->
         <td data-title="QR Code">
             <asp:LinkButton CssClass="btn btn-icon btn-label-success"
                 ID="lnkPrintQrCode"
                 CommandName="PrintQrCode"
-                CommandArgument='<%# Eval("ID") %>'
+                CommandArgument='<%# Eval("ID")%>'
                 runat="server"
                 ToolTip="عرض / طباعة QR Code">
                  <i class="bx bx-qr"></i>
@@ -216,7 +216,7 @@
             <asp:LinkButton CssClass="btn btn-icon btn-label-secondary"
                 ID="btnEdit"
                 CommandName="Edit"
-                CommandArgument='<%# Eval("ID") %>'
+                CommandArgument='<%# Eval("ID")%>'
                 runat="server"
                 ToolTip="تعديل">
                 <i class="bx bx-edit-alt"></i>
@@ -228,7 +228,7 @@
             <asp:LinkButton CssClass="btn btn-icon btn-label-danger"
                 ID="btnDelete"
                 CommandName="DeleteItem"
-                CommandArgument='<%# Eval("ID") %>'
+                CommandArgument='<%# Eval("ID")%>'
                 runat="server"
                 ToolTip="حذف"
                 CausesValidation="false"
@@ -274,8 +274,8 @@
  <script type="text/javascript">
      // ===================== Advanced Search Toggle =====================
      function toggleAdvancedSearchProsto() {
-         var pnl = document.getElementById('<%= pnlAdvancedSearch.ClientID %>');
-        var hf = document.getElementById('<%= hfAdvancedOpen.ClientID %>');
+         var pnl = document.getElementById('<%=pnlAdvancedSearch.ClientID%>');
+        var hf = document.getElementById('<%=hfAdvancedOpen.ClientID%>');
         if (!pnl || !hf) return;
 
         pnl.classList.toggle('d-none');
@@ -283,8 +283,8 @@
     }
 
     function applyAdvancedStateProsto() {
-        var pnl = document.getElementById('<%= pnlAdvancedSearch.ClientID %>');
-        var hf = document.getElementById('<%= hfAdvancedOpen.ClientID %>');
+        var pnl = document.getElementById('<%=pnlAdvancedSearch.ClientID%>');
+        var hf = document.getElementById('<%=hfAdvancedOpen.ClientID%>');
          if (!pnl || !hf) return;
 
          if (hf.value === "1") pnl.classList.remove('d-none');

@@ -3,11 +3,11 @@
 Generated declarations are compiled normally. Their folders and project metadata
 separate ownership without changing CLR types, SQL mappings, routes, or page URLs.
 
-| Generator input | Generated output | Location |
-| --- | --- | --- |
-| `Prosto_ERP_DataClasses.dbml` | `Prosto_ERP_DataClasses.designer.vb` | `src/ProstoERP.Infrastructure/Generated/LinqToSql` |
-| WebForms `.aspx`, `.ascx`, or `.Master` markup | Matching `.designer.vb` control declarations | Beside the markup under `src/Portal` |
-| `Application.myapp`, `Resources.resx`, `Settings.settings` | Matching `.Designer.vb` files | Each VB project's `My Project` directory |
+| Generator input                                            | Generated output                             | Location                                           |
+|------------------------------------------------------------|----------------------------------------------|----------------------------------------------------|
+| `Prosto_ERP_DataClasses.dbml`                              | `Prosto_ERP_DataClasses.designer.vb`         | `src/ProstoERP.Infrastructure/Generated/LinqToSql` |
+| WebForms `.aspx`, `.ascx`, or `.Master` markup             | Matching `.designer.vb` control declarations | Beside the markup under `src/Portal`               |
+| `Application.myapp`, `Resources.resx`, `Settings.settings` | Matching `.Designer.vb` files                | Each VB project's `My Project` directory           |
 
 The DBML layout stays beside its DBML input. `DependentUpon`, `Generator`, and
 `LastGenOutput` relationships are retained. Page designers remain adjacent to

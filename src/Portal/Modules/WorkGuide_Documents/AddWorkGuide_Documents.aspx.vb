@@ -1,13 +1,13 @@
 ﻿Imports System.IO
 Imports AjaxControlToolkit
-Imports System.Linq
-Public Class AddWorkGuide_Documents
+Imports Prosto_ERP_ClassLibrary
 
+Public Class AddWorkGuide_Documents
     Inherits PageBase
 
     Private PDF_File_Path As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -22,11 +22,10 @@ Public Class AddWorkGuide_Documents
             FillBrands()
             FillCategories()
         End If
-
     End Sub
 
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim brands = db.Select_Brands_All().ToList()
 
             ddlBrand.DataSource = brands
@@ -65,9 +64,9 @@ Public Class AddWorkGuide_Documents
             Return
         End If
 
-        Dim BrandID As Integer = CInt(ddlBrand.SelectedValue)
+        Dim BrandID = CInt(ddlBrand.SelectedValue)
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim categories = db.Select_Work_Guide_Categories_Tree_ByBrand(BrandID, Nothing).ToList()
 
             For Each item In categories
@@ -109,13 +108,13 @@ Public Class AddWorkGuide_Documents
             Return
         End If
 
-        Dim BrandID As Integer = CInt(ddlBrand.SelectedValue)
-        Dim CategoryID As Integer = CInt(ddlCategory.SelectedValue)
+        Dim BrandID = CInt(ddlBrand.SelectedValue)
+        Dim CategoryID = CInt(ddlCategory.SelectedValue)
 
         Dim OriginalFileName As String = Path.GetFileName(PDF_File_Path)
         Dim StoredFileName As String = Path.GetFileName(PDF_File_Path)
-        Dim FileExtension As String = ".pdf"
-        Dim MimeType As String = "application/pdf"
+        Dim FileExtension = ".pdf"
+        Dim MimeType = "application/pdf"
         Dim FileSize As Long? = Nothing
 
         Try
@@ -132,7 +131,7 @@ Public Class AddWorkGuide_Documents
             ItemOrder = CInt(txtItemOrder.Text)
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             db.Insert_Work_Guide_Document(
                 BrandID,
@@ -150,12 +149,11 @@ Public Class AddWorkGuide_Documents
                 Nothing,
                 ItemOrder,
                 SessionManager.GetInstance.Users.UserID
-            )
+                )
 
         End Using
 
         LBLPOP_ModalPopupExtender.Show()
-
     End Sub
 
     Protected Sub btnClosePopup_Click(sender As Object, e As EventArgs)
@@ -165,5 +163,5 @@ Public Class AddWorkGuide_Documents
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/WorkGuide_Documents/ManageWorkGuide_Documents.aspx")
     End Sub
-
 End Class
+

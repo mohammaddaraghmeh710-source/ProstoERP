@@ -1,9 +1,9 @@
-﻿Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class Manage_LMS_Training_Level_Types
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -17,7 +17,7 @@ Public Class Manage_LMS_Training_Level_Types
     End Sub
 
     Private Sub BindData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_TR_Level_Types_All().ToList()
             lstData.DataSource = data
             lstData.DataBind()
@@ -31,11 +31,11 @@ Public Class Manage_LMS_Training_Level_Types
         If ddlStatus.SelectedValue = "1" Then isActive = True
         If ddlStatus.SelectedValue = "0" Then isActive = False
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_TR_Level_Types_Filter(
                 If(String.IsNullOrWhiteSpace(kw), Nothing, kw),
                 If(isActive.HasValue, CType(isActive.Value, Boolean?), Nothing)
-            ).ToList()
+                ).ToList()
 
             lstData.DataSource = data
             lstData.DataBind()
@@ -57,7 +57,7 @@ Public Class Manage_LMS_Training_Level_Types
     End Sub
 
     Protected Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs)
-        Dim id As Integer = CInt(e.CommandArgument)
+        Dim id = CInt(e.CommandArgument)
 
         If e.CommandName = "Edit" Then
             Response.Redirect("/Modules/LMS_Training_Level_Types/Edit_LMS_Training_Level_Types.aspx?ID=" & id)
@@ -67,7 +67,7 @@ Public Class Manage_LMS_Training_Level_Types
         If e.CommandName = "DeleteItem" Then
             Dim userId = SessionManager.GetInstance.Users.UserID
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
                 ' نفس أسلوب صفحاتكم (Soft Delete)
                 db.Update_TR_Level_Types_IsDeleted_ByID(id, userId)
             End Using
@@ -80,5 +80,6 @@ Public Class Manage_LMS_Training_Level_Types
             End If
         End If
     End Sub
-
 End Class
+
+

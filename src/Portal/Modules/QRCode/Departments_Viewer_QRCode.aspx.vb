@@ -1,10 +1,9 @@
-﻿Imports System
-Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class Departments_Viewer_QRCode
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -13,7 +12,7 @@ Public Class Departments_Viewer_QRCode
 
         If Not IsPostBack Then
 
-            Dim deptId As Integer = 0
+            Dim deptId = 0
             If Not Integer.TryParse(Request.QueryString("Departmentid"), deptId) OrElse deptId <= 0 Then
                 ShowError("رقم القسم غير صحيح أو غير موجود في الرابط.")
                 Return
@@ -36,7 +35,6 @@ Public Class Departments_Viewer_QRCode
             LoadDepartmentInfo(deptId)
 
         End If
-
     End Sub
 
     Private Sub ShowError(msg As String)
@@ -46,7 +44,7 @@ Public Class Departments_Viewer_QRCode
 
     Private Sub LoadDepartmentInfo(deptId As Integer)
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 Dim dept = db.Select_Departments_ByID(deptId).FirstOrDefault()
                 If dept Is Nothing Then
@@ -55,11 +53,11 @@ Public Class Departments_Viewer_QRCode
                 End If
 
                 ' بيانات الفرع/العلامة
-                Dim branchTitle As String = "-"
-                Dim brandTitle As String = "-"
+                Dim branchTitle = "-"
+                Dim brandTitle = "-"
 
                 ' لو عندك Logo بالـ Brands مثل جدول Brands.Logo
-                Dim brandLogoUrl As String = "/assets/img/avatars/1.png" ' Default fallback
+                Dim brandLogoUrl = "/assets/img/avatars/1.png" ' Default fallback
 
                 If dept.BranchID.HasValue AndAlso dept.BranchID.Value > 0 Then
                     Dim br = db.Select_Branches_ByID(dept.BranchID.Value).FirstOrDefault()
@@ -117,7 +115,7 @@ Public Class Departments_Viewer_QRCode
 
     Private Sub BindChecklistTypes()
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 Dim types = db.Select_Checklist_Types_All().ToList()
                 types = types.Where(Function(t) (t.IsActive = True OrElse t.IsActive Is Nothing)).ToList()
@@ -143,14 +141,14 @@ Public Class Departments_Viewer_QRCode
     ' نفس الفنكشن اللي زودتني فيها
     Private Function GetCurrentShiftId() As Integer
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 Dim nowTime As TimeSpan = DateTime.Now.TimeOfDay
 
                 Dim shifts = (From s In db.Select_Shift_All()
-                              Where (s.IsDeleted = False OrElse s.IsDeleted Is Nothing) _
-                                AndAlso (s.IsActive = True OrElse s.IsActive Is Nothing)
-                              Select s).ToList()
+                        Where (s.IsDeleted = False OrElse s.IsDeleted Is Nothing) _
+                              AndAlso (s.IsActive = True OrElse s.IsActive Is Nothing)
+                        Select s).ToList()
 
                 For Each s In shifts
                     If Not s.Start_Time.HasValue OrElse Not s.End_Time.HasValue Then Continue For
@@ -174,5 +172,6 @@ Public Class Departments_Viewer_QRCode
 
         Return 0
     End Function
-
 End Class
+
+

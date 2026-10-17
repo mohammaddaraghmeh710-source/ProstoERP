@@ -1,9 +1,9 @@
-﻿Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class ManageMaintenance_Companies
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -17,7 +17,7 @@ Public Class ManageMaintenance_Companies
     End Sub
 
     Private Sub BindData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Maintenance_Companies_All().ToList()
             lstData.DataSource = data
             lstData.DataBind()
@@ -29,7 +29,7 @@ Public Class ManageMaintenance_Companies
     End Sub
 
     Protected Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs)
-        Dim id As Integer = CInt(e.CommandArgument)
+        Dim id = CInt(e.CommandArgument)
 
         If e.CommandName = "Edit" Then
             Response.Redirect("/Modules/Maintenance_Companies/EditMaintenance_Companies.aspx?ID=" & id)
@@ -39,12 +39,13 @@ Public Class ManageMaintenance_Companies
         If e.CommandName = "DeleteItem" Then
             Dim userId = SessionManager.GetInstance.Users.UserID
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
                 db.Update_Maintenance_Companies_IsDeleted_ByID(id, True, userId)
             End Using
 
             BindData()
         End If
     End Sub
-
 End Class
+
+

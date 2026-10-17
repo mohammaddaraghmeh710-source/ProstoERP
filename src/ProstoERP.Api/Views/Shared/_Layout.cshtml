@@ -1,39 +1,40 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width"/>
     <title>@ViewBag.Title</title>
-    <link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
-    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet"/>
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet"/>
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <nav class="navbar navbar-expand-md bg-dark fixed-top" data-bs-theme="dark">
-        <div class="container">
-            @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#apiNavigation" aria-controls="apiNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse" id="apiNavigation">
-                <ul class="navbar-nav">
-                    <li class="nav-item">@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li class="nav-item">@Html.ActionLink("API", "Index", "Help", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li class="nav-item">@Html.ActionLink("Swagger", "Index", "Swagger", new { area = "" }, new { @class = "nav-link" })</li>
-                </ul>
-            </div>
+<nav class="navbar navbar-expand-md bg-dark fixed-top" data-bs-theme="dark">
+    <div class="container">
+        @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#apiNavigation"
+                aria-controls="apiNavigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse" id="apiNavigation">
+            <ul class="navbar-nav">
+                <li class="nav-item">@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                <li class="nav-item">@Html.ActionLink("API", "Index", "Help", new { area = "" }, new { @class = "nav-link" })</li>
+                <li class="nav-item">@Html.ActionLink("Swagger", "Index", "Swagger", new { area = "" }, new { @class = "nav-link" })</li>
+            </ul>
         </div>
-    </nav>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
     </div>
+</nav>
+<div class="container body-content">
+    @RenderBody()
+    <hr/>
+    <footer>
+        <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+    </footer>
+</div>
 
-    <script src="@Url.Content("~/Scripts/jquery-3.7.1.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/bootstrap.bundle.min.js")"></script>
-    @RenderSection("scripts", required: false)
+<script src="@Url.Content("~/Scripts/jquery-3.7.1.min.js")"></script>
+<script src="@Url.Content("~/Scripts/bootstrap.bundle.min.js")"></script>
+@RenderSection("scripts", false)
 </body>
 </html>

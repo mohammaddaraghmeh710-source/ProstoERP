@@ -3,7 +3,7 @@ using System;
 namespace Prosto_ERP_API.Areas.HelpPage.ModelDescriptions
 {
     /// <summary>
-    /// Describes a type model.
+    ///     Describes a type model.
     /// </summary>
     public abstract class ModelDescription
     {

@@ -1,7 +1,5 @@
-﻿Imports System.IO
-Imports AjaxControlToolkit
-Imports System.Data
-Imports System.Linq
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class EditJobTitles
     Inherits PageBase
@@ -9,7 +7,7 @@ Public Class EditJobTitles
     Private WorkingMethodVideo_path As String = Nothing
     Private EvaluationMethodVideo_path As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -25,10 +23,10 @@ Public Class EditJobTitles
     End Sub
 
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Brands_All() _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlBrand.DataSource = data
             ddlBrand.DataTextField = "Title_Ar"
             ddlBrand.DataValueField = "ID"
@@ -48,7 +46,6 @@ Public Class EditJobTitles
         FillBranches(brandId)
         ddlDepartment.Items.Clear()
         ddlDepartment.Items.Insert(0, New ListItem("اختر القسم", ""))
-
     End Sub
 
 
@@ -58,10 +55,10 @@ Public Class EditJobTitles
 
         If Not brandId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Branches_ByBrandID(brandId.Value) _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlBranch.DataSource = data
             ddlBranch.DataTextField = "Title_Ar"
             ddlBranch.DataValueField = "ID"
@@ -80,16 +77,17 @@ Public Class EditJobTitles
 
         FillDepartments(branchId)
     End Sub
+
     Private Sub FillDepartments(Optional branchId As Integer? = Nothing)
         ddlDepartment.Items.Clear()
         ddlDepartment.Items.Insert(0, New ListItem("اختر القسم", ""))
 
         If Not branchId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Departments_ByBranchID(branchId.Value) _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlDepartment.DataSource = data
             ddlDepartment.DataTextField = "Title_Ar"
             ddlDepartment.DataValueField = "ID"
@@ -105,15 +103,13 @@ Public Class EditJobTitles
         Else
             deptId = Nothing
         End If
-
     End Sub
 
 
-
     Private Sub FillData()
-        Dim ID As Integer = CInt(Request.QueryString("ID"))
+        Dim ID = CInt(Request.QueryString("ID"))
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim item = db.Select_JobTitles_ByID(ID).FirstOrDefault()
 
             Dim DepartmentID = db.Select_JobTitles_ByID(ID).FirstOrDefault().DepartmentID
@@ -167,8 +163,8 @@ Public Class EditJobTitles
             Return
         End If
 
-        Dim ID As Integer = CInt(Request.QueryString("ID"))
-        Dim DepartmentID As Integer = CInt(ddlDepartment.SelectedValue)
+        Dim ID = CInt(Request.QueryString("ID"))
+        Dim DepartmentID = CInt(ddlDepartment.SelectedValue)
         Dim NameAr As String = txtTitleAr.Text
         Dim NameEn As String = txtTitleEn.Text
         Dim ChActive As Boolean = cbIsActive.Checked
@@ -195,7 +191,7 @@ Public Class EditJobTitles
             Next
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             ' التوقيع المفترض بعد التعديل:
             ' Update_JobTitles_ByID(
             '   @ID,
@@ -226,7 +222,7 @@ Public Class EditJobTitles
                 WorkingMethodVideo_path,
                 EvaluationMethodVideo_path,
                 EvaluationMethodVideo_path
-            )
+                )
         End Using
 
         LBLPOP_ModalPopupExtender.Show()
@@ -261,5 +257,6 @@ Public Class EditJobTitles
 
     Protected Sub EvaluationMethodVideo_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
-
 End Class
+
+

@@ -2,9 +2,9 @@
 Imports Newtonsoft.Json
 
 Public Class BasePage
-    Public Shared Function postData(ByVal params As Object, ByVal url As String) As String
+    Public Shared Function postData(params As Object, url As String) As String
         Try
-            Dim webClient As WebClient = New WebClient()
+            Dim webClient = New WebClient()
             webClient.Headers("content-type") = "application/json"
             Dim reqString = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(params, Formatting.Indented))
             Dim resByte As Byte() = webClient.UploadData(url, "post", reqString)
@@ -15,7 +15,6 @@ Public Class BasePage
             Return Nothing
         End Try
     End Function
-
-
-
 End Class
+
+

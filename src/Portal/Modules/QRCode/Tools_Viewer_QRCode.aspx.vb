@@ -1,5 +1,4 @@
-﻿Imports System
-Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class Tools_Viewer_QRCode
     Inherits PageBase
@@ -45,7 +44,7 @@ Public Class Tools_Viewer_QRCode
         Public Property OrgStructure_En As String
     End Class
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         ' (اختياري) لو بدك تكون الصفحة عامة من QR بدون Login خليها كما هي بدون فحص Session
         ' إذا بدك تمنع الوصول لغير المسجلين فعّل التالي:
@@ -55,7 +54,7 @@ Public Class Tools_Viewer_QRCode
 
         If Not IsPostBack Then
 
-            Dim id As Integer = 0
+            Dim id = 0
             If Not Integer.TryParse(Request.QueryString("JobTitle_ItemsID"), id) OrElse id <= 0 Then
                 ShowError("المعرف غير صحيح أو غير موجود.")
                 Return
@@ -73,7 +72,7 @@ Public Class Tools_Viewer_QRCode
 
     Private Sub BindChecklistTypes()
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 Dim types = db.Select_Checklist_Types_All().ToList()
 
@@ -100,10 +99,10 @@ Public Class Tools_Viewer_QRCode
 
     Private Sub LoadToolData_FromSP(jobTitleItemsId As Integer)
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
-                Dim sql As String = "EXEC dbo.Select_JobTitle_Items_FullDetails_ByID {0}"
-                Dim q = db.ExecuteQuery(Of ToolFullDetailsDTO)(sql, jobTitleItemsId).FirstOrDefault()
+                Dim sql = "EXEC dbo.Select_JobTitle_Items_FullDetails_ByID {0}"
+                Dim q = db.ExecuteQuery (Of ToolFullDetailsDTO)(sql, jobTitleItemsId).FirstOrDefault()
 
                 If q Is Nothing Then
                     ShowError("لم يتم العثور على بيانات لهذه الأداة.")
@@ -134,7 +133,9 @@ Public Class Tools_Viewer_QRCode
                 If Not String.IsNullOrWhiteSpace(SafeText(q.OrgStructure_Ar)) Then
                     litOrgLine.Text = SafeText(q.OrgStructure_Ar)
                 Else
-                    litOrgLine.Text = $"{SafeText(q.Brand_Title_Ar)} / {SafeText(q.Branch_Title_Ar)} / {SafeText(q.Department_Title_Ar)} / {SafeText(q.JobTitle_Title_Ar)}"
+                    litOrgLine.Text =
+                        $"{SafeText(q.Brand_Title_Ar)} / {SafeText(q.Branch_Title_Ar)} / { _
+                            SafeText(q.Department_Title_Ar)} / {SafeText(q.JobTitle_Title_Ar)}"
                 End If
 
                 ' Logo
@@ -155,12 +156,12 @@ Public Class Tools_Viewer_QRCode
 
 #Region "Helpers"
 
-    Private Function SafeText(ByVal v As Object) As String
+    Private Function SafeText(v As Object) As String
         If v Is Nothing Then Return ""
         Return Convert.ToString(v).Trim()
     End Function
 
-    Private Function NormalizeImageUrl(ByVal path As String) As String
+    Private Function NormalizeImageUrl(path As String) As String
         If String.IsNullOrWhiteSpace(path) Then Return ""
         If path.StartsWith("http", StringComparison.OrdinalIgnoreCase) Then Return path
         If path.StartsWith("/") Then Return path
@@ -173,5 +174,6 @@ Public Class Tools_Viewer_QRCode
     End Sub
 
 #End Region
-
 End Class
+
+

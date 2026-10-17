@@ -12,7 +12,14 @@ Option Explicit On
 
 
 Partial Public Class Edit_News
-    Protected WithEvents ddlBrand As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''lblError control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
     Protected WithEvents lblError As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
@@ -32,6 +39,15 @@ Partial Public Class Edit_News
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents hfImagePath As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
+    '''ddlBrand control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents ddlBrand As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''txtTitleAr control.
@@ -131,4 +147,16 @@ Partial Public Class Edit_News
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents btnSave As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''Master property.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated property.
+    '''</remarks>
+    Public Shadows ReadOnly Property Master() As CRM.Site
+        Get
+            Return CType(MyBase.Master, CRM.Site)
+        End Get
+    End Property
 End Class

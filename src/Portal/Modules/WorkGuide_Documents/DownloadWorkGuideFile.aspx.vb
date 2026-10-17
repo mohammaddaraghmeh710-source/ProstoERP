@@ -1,17 +1,14 @@
-﻿Imports System.Data
-Imports System.Data.SqlClient
+﻿Imports System.Data.SqlClient
 Imports System.IO
-Imports System.Linq
-Imports System.Text
-Imports System.Web
+Imports Prosto_ERP_ClassLibrary
 
 Public Class DownloadWorkGuideFile
     Inherits PageBase
 
     Protected Sub Page_Load(
-        ByVal sender As Object,
-        ByVal e As System.EventArgs
-    ) Handles Me.Load
+                            sender As Object,
+                            e As EventArgs
+                            ) Handles Me.Load
 
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx", False)
@@ -19,7 +16,7 @@ Public Class DownloadWorkGuideFile
             Return
         End If
 
-        Dim documentID As Integer = 0
+        Dim documentID = 0
 
         If String.IsNullOrWhiteSpace(Request.QueryString("id")) OrElse
            Not Integer.TryParse(Request.QueryString("id"), documentID) Then
@@ -31,21 +28,21 @@ Public Class DownloadWorkGuideFile
         Try
 
             Dim currentUserID As Integer =
-                SessionManager.GetInstance.Users.UserID
+                    SessionManager.GetInstance.Users.UserID
 
             Dim currentBrandID As Integer =
-                GetCurrentUserBrandID(currentUserID)
+                    GetCurrentUserBrandID(currentUserID)
 
             If currentBrandID = 0 Then
                 ShowAccessDenied()
                 Return
             End If
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 Dim doc =
-                    db.Select_Work_Guide_Document_ByID(documentID).
-                    FirstOrDefault()
+                        db.Select_Work_Guide_Document_ByID(documentID).
+                        FirstOrDefault()
 
                 If doc Is Nothing Then
                     ShowFileNotFound()
@@ -62,14 +59,14 @@ Public Class DownloadWorkGuideFile
                 If Not UserCanDownloadDocument(
                     currentUserID,
                     documentID
-                ) Then
+                    ) Then
 
                     ShowAccessDenied()
                     Return
                 End If
 
                 Dim filePath As String =
-                    Convert.ToString(doc.File_Path)
+                        Convert.ToString(doc.File_Path)
 
                 If String.IsNullOrWhiteSpace(filePath) Then
                     ShowFileNotFound()
@@ -77,7 +74,7 @@ Public Class DownloadWorkGuideFile
                 End If
 
                 Dim physicalPath As String =
-                    GetPhysicalFilePath(filePath)
+                        GetPhysicalFilePath(filePath)
 
                 If String.IsNullOrWhiteSpace(physicalPath) OrElse
                    Not File.Exists(physicalPath) Then
@@ -88,13 +85,13 @@ Public Class DownloadWorkGuideFile
 
                 'التأكد من أن الملف PDF
                 Dim fileExtension As String =
-                    Path.GetExtension(physicalPath)
+                        Path.GetExtension(physicalPath)
 
                 If Not String.Equals(
                     fileExtension,
                     ".pdf",
                     StringComparison.OrdinalIgnoreCase
-                ) Then
+                    ) Then
 
                     ShowFileNotFound()
                     Return
@@ -102,7 +99,7 @@ Public Class DownloadWorkGuideFile
 
                 'تجهيز اسم الملف عند التحميل
                 Dim downloadFileName As String =
-                    Convert.ToString(doc.Title_Ar)
+                        Convert.ToString(doc.Title_Ar)
 
                 If String.IsNullOrWhiteSpace(downloadFileName) Then
                     downloadFileName = "WorkGuide"
@@ -111,7 +108,7 @@ Public Class DownloadWorkGuideFile
                 If Not downloadFileName.EndsWith(
                     ".pdf",
                     StringComparison.OrdinalIgnoreCase
-                ) Then
+                    ) Then
 
                     downloadFileName &= ".pdf"
                 End If
@@ -120,7 +117,7 @@ Public Class DownloadWorkGuideFile
                     CleanFileName(downloadFileName)
 
                 Dim categoryID As Integer =
-                    Convert.ToInt32(doc.Category_ID)
+                        Convert.ToInt32(doc.Category_ID)
 
                 'تسجيل عملية التحميل
                 InsertDownloadActivityLog(
@@ -129,37 +126,36 @@ Public Class DownloadWorkGuideFile
                     categoryID,
                     documentID,
                     downloadFileName
-                )
+                    )
 
                 'إرسال الملف للمستخدم
                 SendFileToBrowser(
                     physicalPath,
                     downloadFileName
-                )
+                    )
 
             End Using
 
         Catch ex As Exception
 
-            System.Diagnostics.Trace.WriteLine(
+            Diagnostics.Trace.WriteLine(
                 "DownloadWorkGuideFile Error: " &
                 ex.ToString()
-            )
+                )
 
             ShowGeneralError()
 
         End Try
-
     End Sub
 
     Private Function GetCurrentUserBrandID(
-        ByVal userID As Integer
-    ) As Integer
+                                           userID As Integer
+                                           ) As Integer
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim user =
-                db.Select_UsersMembers_ByID(userID).FirstOrDefault()
+                    db.Select_UsersMembers_ByID(userID).FirstOrDefault()
 
             If user IsNot Nothing AndAlso
                user.Brand_ID IsNot Nothing Then
@@ -170,21 +166,20 @@ Public Class DownloadWorkGuideFile
         End Using
 
         Return 0
-
     End Function
 
     Private Function UserCanDownloadDocument(
-        ByVal userID As Integer,
-        ByVal documentID As Integer
-    ) As Boolean
+                                             userID As Integer,
+                                             documentID As Integer
+                                             ) As Boolean
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim result =
-                db.Check_Work_Guide_User_Document_Permission(
-                    userID,
-                    documentID
-                ).FirstOrDefault()
+                    db.Check_Work_Guide_User_Document_Permission(
+                        userID,
+                        documentID
+                        ).FirstOrDefault()
 
             If result Is Nothing Then
                 Return False
@@ -192,15 +187,14 @@ Public Class DownloadWorkGuideFile
 
             Return Convert.ToBoolean(
                 result.Can_Download_Document
-            )
+                )
 
         End Using
-
     End Function
 
     Private Function GetPhysicalFilePath(
-        ByVal filePath As String
-    ) As String
+                                         filePath As String
+                                         ) As String
 
         If String.IsNullOrWhiteSpace(filePath) Then
             Return Nothing
@@ -211,7 +205,7 @@ Public Class DownloadWorkGuideFile
         If filePath.StartsWith(
             "~",
             StringComparison.Ordinal
-        ) Then
+            ) Then
 
             Return Server.MapPath(filePath)
         End If
@@ -219,7 +213,7 @@ Public Class DownloadWorkGuideFile
         If filePath.StartsWith(
             "/",
             StringComparison.Ordinal
-        ) Then
+            ) Then
 
             Return Server.MapPath(filePath)
         End If
@@ -233,14 +227,13 @@ Public Class DownloadWorkGuideFile
 
         Return Server.MapPath(
             "~/" & filePath
-        )
-
+            )
     End Function
 
     Private Sub SendFileToBrowser(
-        ByVal physicalPath As String,
-        ByVal downloadFileName As String
-    )
+                                  physicalPath As String,
+                                  downloadFileName As String
+                                  )
 
         Dim fileInfo As New FileInfo(physicalPath)
 
@@ -254,69 +247,67 @@ Public Class DownloadWorkGuideFile
         Response.AddHeader(
             "X-Content-Type-Options",
             "nosniff"
-        )
+            )
 
         Response.AddHeader(
             "Content-Disposition",
             BuildContentDisposition(downloadFileName)
-        )
+            )
 
         Response.AddHeader(
             "Content-Length",
             fileInfo.Length.ToString()
-        )
+            )
 
         Response.Cache.SetCacheability(
             HttpCacheability.NoCache
-        )
+            )
 
         Response.Cache.SetNoStore()
 
         Response.Cache.SetExpires(
-            DateTime.UtcNow.AddYears(-1)
-        )
+            DateTime.UtcNow.AddYears(- 1)
+            )
 
         Response.AddHeader(
             "Pragma",
             "no-cache"
-        )
+            )
 
         Response.AddHeader(
             "Expires",
             "0"
-        )
+            )
 
         Response.TransmitFile(physicalPath)
         Response.Flush()
 
         HttpContext.Current.ApplicationInstance.
             CompleteRequest()
-
     End Sub
 
     Private Function BuildContentDisposition(
-        ByVal fileName As String
-    ) As String
+                                             fileName As String
+                                             ) As String
 
         Dim asciiFileName As String =
-            ConvertToSafeAsciiFileName(fileName)
+                ConvertToSafeAsciiFileName(fileName)
 
         Dim encodedFileName As String =
-            Uri.EscapeDataString(fileName)
+                Uri.EscapeDataString(fileName)
 
         Dim headerValue As String =
-            "attachment; filename=""" &
-            asciiFileName &
-            """; filename*=UTF-8''" &
-            encodedFileName
+                "attachment; filename=""" &
+                asciiFileName &
+                """; filename*=UTF-8''" &
+                encodedFileName
 
         Return headerValue
-
     End Function
 
     Private Function ConvertToSafeAsciiFileName(
-        ByVal fileName As String
-    ) As String
+                                                fileName As String
+                                                ) As String
 
         If String.IsNullOrWhiteSpace(fileName) Then
             Return "WorkGuide.pdf"
@@ -327,7 +318,7 @@ Public Class DownloadWorkGuideFile
         For Each character As Char In fileName
 
             Dim characterCode As Integer =
-                AscW(character)
+                    AscW(character)
 
             If characterCode >= 32 AndAlso
                characterCode <= 126 Then
@@ -340,10 +331,10 @@ Public Class DownloadWorkGuideFile
         Next
 
         Dim result As String =
-            builder.ToString()
+                builder.ToString()
 
         Dim normalizedResult As String =
-            result.Replace("_", "")
+                result.Replace("_", "")
 
         normalizedResult =
             normalizedResult.Replace(".", "")
@@ -355,25 +346,24 @@ Public Class DownloadWorkGuideFile
         End If
 
         Return result
-
     End Function
 
     Private Function CleanFileName(
-        ByVal fileName As String
-    ) As String
+                                   fileName As String
+                                   ) As String
 
         If String.IsNullOrWhiteSpace(fileName) Then
             Return "WorkGuide.pdf"
         End If
 
-        For Each invalidCharacter As Char In
+        For Each invalidCharacter As Char In _
             Path.GetInvalidFileNameChars()
 
             fileName =
                 fileName.Replace(
                     invalidCharacter,
                     "_"c
-                )
+                    )
 
         Next
 
@@ -381,13 +371,13 @@ Public Class DownloadWorkGuideFile
             fileName.Replace(
                 ControlChars.Cr,
                 ""
-            )
+                )
 
         fileName =
             fileName.Replace(
                 ControlChars.Lf,
                 ""
-            )
+                )
 
         fileName = fileName.Trim()
 
@@ -396,29 +386,28 @@ Public Class DownloadWorkGuideFile
         End If
 
         Return fileName
-
     End Function
 
     Private Sub InsertDownloadActivityLog(
-        ByVal userID As Integer,
-        ByVal brandID As Integer,
-        ByVal categoryID As Integer,
-        ByVal documentID As Integer,
-        ByVal downloadFileName As String
-    )
+                                          userID As Integer,
+                                          brandID As Integer,
+                                          categoryID As Integer,
+                                          documentID As Integer,
+                                          downloadFileName As String
+                                          )
 
         Try
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
-                Dim sqlConnection As SqlConnection =
-                    DirectCast(
-                        db.Connection,
-                        SqlConnection
-                    )
+                Dim sqlConnection =
+                        DirectCast(
+                            db.Connection,
+                            SqlConnection
+                            )
 
                 Dim shouldCloseConnection As Boolean =
-                    sqlConnection.State <> ConnectionState.Open
+                        sqlConnection.State <> ConnectionState.Open
 
                 If shouldCloseConnection Then
                     sqlConnection.Open()
@@ -429,7 +418,7 @@ Public Class DownloadWorkGuideFile
                     Using command As New SqlCommand(
                         "dbo.Insert_Work_Guide_Activity_Logs",
                         sqlConnection
-                    )
+                        )
 
                         command.CommandType =
                             CommandType.StoredProcedure
@@ -437,34 +426,34 @@ Public Class DownloadWorkGuideFile
                         command.Parameters.Add(
                             "@User_ID",
                             SqlDbType.Int
-                        ).Value = userID
+                            ).Value = userID
 
                         command.Parameters.Add(
                             "@Brand_ID",
                             SqlDbType.Int
-                        ).Value = brandID
+                            ).Value = brandID
 
                         command.Parameters.Add(
                             "@Category_ID",
                             SqlDbType.Int
-                        ).Value = categoryID
+                            ).Value = categoryID
 
                         command.Parameters.Add(
                             "@Document_ID",
                             SqlDbType.Int
-                        ).Value = documentID
+                            ).Value = documentID
 
                         command.Parameters.Add(
                             "@Action_Type",
                             SqlDbType.NVarChar,
                             100
-                        ).Value = "2"
+                            ).Value = "2"
 
                         command.Parameters.Add(
                             "@Action_Details",
                             SqlDbType.NVarChar,
-                            -1
-                        ).Value =
+                            - 1
+                            ).Value =
                             "تم تحميل الملف: " &
                             downloadFileName
 
@@ -472,14 +461,14 @@ Public Class DownloadWorkGuideFile
                             "@IPAddress",
                             SqlDbType.NVarChar,
                             100
-                        ).Value =
+                            ).Value =
                             GetClientIPAddress()
 
                         command.Parameters.Add(
                             "@UserAgent",
                             SqlDbType.NVarChar,
-                            -1
-                        ).Value =
+                            - 1
+                            ).Value =
                             GetSafeUserAgent()
 
                         command.ExecuteNonQuery()
@@ -502,32 +491,31 @@ Public Class DownloadWorkGuideFile
         Catch ex As Exception
 
             'فشل تسجيل الـLog لا يمنع تحميل الملف
-            System.Diagnostics.Trace.WriteLine(
+            Diagnostics.Trace.WriteLine(
                 "InsertDownloadActivityLog Error: " &
                 ex.ToString()
-            )
+                )
 
         End Try
-
     End Sub
 
     Private Function GetClientIPAddress() As String
 
         Dim forwardedFor As String =
-            Convert.ToString(
-                Request.ServerVariables(
-                    "HTTP_X_FORWARDED_FOR"
-                )
-            )
+                Convert.ToString(
+                    Request.ServerVariables(
+                        "HTTP_X_FORWARDED_FOR"
+                        )
+                    )
 
-        Dim ipAddress As String = ""
+        Dim ipAddress = ""
 
         If Not String.IsNullOrWhiteSpace(
             forwardedFor
-        ) Then
+            ) Then
 
             Dim forwardedAddresses() As String =
-                forwardedFor.Split(","c)
+                    forwardedFor.Split(","c)
 
             If forwardedAddresses.Length > 0 Then
                 ipAddress =
@@ -540,8 +528,8 @@ Public Class DownloadWorkGuideFile
                 Convert.ToString(
                     Request.ServerVariables(
                         "REMOTE_ADDR"
+                        )
                     )
-                )
 
         End If
 
@@ -555,15 +543,14 @@ Public Class DownloadWorkGuideFile
         End If
 
         Return ipAddress
-
     End Function
 
     Private Function GetSafeUserAgent() As String
 
         Dim userAgent As String =
-            Convert.ToString(
-                Request.UserAgent
-            )
+                Convert.ToString(
+                    Request.UserAgent
+                    )
 
         If String.IsNullOrWhiteSpace(userAgent) Then
             Return ""
@@ -575,7 +562,6 @@ Public Class DownloadWorkGuideFile
         End If
 
         Return userAgent
-
     End Function
 
     Private Sub ShowAccessDenied()
@@ -588,11 +574,10 @@ Public Class DownloadWorkGuideFile
 
         Response.Write(
             "لا تملك صلاحية تحميل هذا الملف."
-        )
+            )
 
         HttpContext.Current.ApplicationInstance.
             CompleteRequest()
-
     End Sub
 
     Private Sub ShowFileNotFound()
@@ -605,11 +590,10 @@ Public Class DownloadWorkGuideFile
 
         Response.Write(
             "الملف غير موجود أو تم نقله من المسار المحدد."
-        )
+            )
 
         HttpContext.Current.ApplicationInstance.
             CompleteRequest()
-
     End Sub
 
     Private Sub ShowGeneralError()
@@ -622,11 +606,10 @@ Public Class DownloadWorkGuideFile
 
         Response.Write(
             "حدث خطأ أثناء تحميل الملف."
-        )
+            )
 
         HttpContext.Current.ApplicationInstance.
             CompleteRequest()
-
     End Sub
-
 End Class
+

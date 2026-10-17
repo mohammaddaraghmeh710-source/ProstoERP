@@ -1,6 +1,4 @@
-﻿Imports System
-Imports System.Collections.Generic
-Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class LMS_TR_Level_Types
     Inherits PageBase
@@ -23,7 +21,7 @@ Public Class LMS_TR_Level_Types
         Public Property LevelsUrl As String
     End Class
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If Not IsPostBack Then
             BindData()
         End If
@@ -31,8 +29,8 @@ Public Class LMS_TR_Level_Types
 
     Private Sub BindData()
 
-        Dim userId As Integer = 0
-        Dim userTypeId As Integer = 0
+        Dim userId = 0
+        Dim userTypeId = 0
 
         Try
             userId = SessionManager.GetInstance.Users.UserID
@@ -44,7 +42,7 @@ Public Class LMS_TR_Level_Types
 
         Dim cards As New List(Of LevelTypeCardVM)()
 
-        Using ctx As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+        Using ctx As New Prosto_ERP_DataClassesDataContext()
 
             ' 1) جلب أنواع التدريب
             Dim types = ctx.Select_TR_Level_Types_All().ToList()
@@ -62,21 +60,24 @@ Public Class LMS_TR_Level_Types
                                           ResolveUrl(img))
 
                 ' 2) جلب مستويات هذا النوع (مع الإحصائيات) حسب المستخدم ونوعه
-                Dim rows = ctx.Select_TR_Training_Levels_WithStats_ByUserType_And_LevelType(userId, userTypeId, typeId).ToList()
+                Dim rows =
+                        ctx.Select_TR_Training_Levels_WithStats_ByUserType_And_LevelType(userId, userTypeId, typeId).
+                        ToList()
 
                 Dim levelsCount As Integer = rows.Count
 
-                Dim videosSum As Integer = 0
-                Dim durationSumSeconds As Integer = 0
-                Dim completionSum As Integer = 0
+                Dim videosSum = 0
+                Dim durationSumSeconds = 0
+                Dim completionSum = 0
 
-                Dim firstLevelId As Integer = 0
+                Dim firstLevelId = 0
 
                 If levelsCount > 0 Then
                     ' أول مستوى حسب Item_Order ثم ID
-                    Dim first = rows.OrderBy(Function(r) If(r.Item_Order Is Nothing, Integer.MaxValue, CInt(r.Item_Order))) _
-                                    .ThenBy(Function(r) CInt(r.ID)) _
-                                    .FirstOrDefault()
+                    Dim first =
+                            rows.OrderBy(Function(r) If(r.Item_Order Is Nothing, Integer.MaxValue, CInt(r.Item_Order))) _
+                            .ThenBy(Function(r) CInt(r.ID)) _
+                            .FirstOrDefault()
 
                     If first IsNot Nothing Then
                         firstLevelId = SafeInt(first.ID)
@@ -91,9 +92,9 @@ Public Class LMS_TR_Level_Types
                     Next
                 End If
 
-                Dim avgCompletion As Integer = 0
+                Dim avgCompletion = 0
                 If levelsCount > 0 Then
-                    avgCompletion = CInt(Math.Round(completionSum / CDbl(levelsCount), MidpointRounding.AwayFromZero))
+                    avgCompletion = CInt(Math.Round(completionSum/CDbl(levelsCount), MidpointRounding.AwayFromZero))
                     If avgCompletion < 0 Then avgCompletion = 0
                     If avgCompletion > 100 Then avgCompletion = 100
                 End If
@@ -104,19 +105,19 @@ Public Class LMS_TR_Level_Types
                                                   userId, typeId)
 
                 Dim vm As New LevelTypeCardVM() With {
-                    .LevelTypeID = typeId,
-                    .TitleAr = titleAr,
-                    .NotesAr = If(String.IsNullOrWhiteSpace(notesAr), " ", notesAr),
-                    .ImageUrl = imgUrl,
-                    .LevelsCount = levelsCount,
-                    .VideosCount = videosSum,
-                    .TotalDurationSeconds = durationSumSeconds,
-                    .TotalDurationHHMMSS = durHHMMSS,
-                    .CompletionPercentAvg = avgCompletion,
-                    .HasLevels = (levelsCount > 0 AndAlso firstLevelId > 0),
-                    .FirstLevelID = firstLevelId,
-                    .LevelsUrl = url
-                }
+                        .LevelTypeID = typeId,
+                        .TitleAr = titleAr,
+                        .NotesAr = If(String.IsNullOrWhiteSpace(notesAr), " ", notesAr),
+                        .ImageUrl = imgUrl,
+                        .LevelsCount = levelsCount,
+                        .VideosCount = videosSum,
+                        .TotalDurationSeconds = durationSumSeconds,
+                        .TotalDurationHHMMSS = durHHMMSS,
+                        .CompletionPercentAvg = avgCompletion,
+                        .HasLevels = (levelsCount > 0 AndAlso firstLevelId > 0),
+                        .FirstLevelID = firstLevelId,
+                        .LevelsUrl = url
+                        }
 
                 cards.Add(vm)
             Next
@@ -144,7 +145,7 @@ Public Class LMS_TR_Level_Types
 
     Private Function SafeInt(obj As Object) As Integer
         If obj Is Nothing Then Return 0
-        Dim v As Integer = 0
+        Dim v = 0
         Integer.TryParse(Convert.ToString(obj), v)
         Return v
     End Function
@@ -155,11 +156,12 @@ Public Class LMS_TR_Level_Types
         Dim ts As TimeSpan = TimeSpan.FromSeconds(totalSeconds)
 
         ' نعرض بالساعات الكاملة حتى لو أكثر من 24 ساعة
-        Dim totalHours As Integer = CInt(Math.Floor(ts.TotalHours))
+        Dim totalHours = CInt(Math.Floor(ts.TotalHours))
         Dim mm As Integer = ts.Minutes
         Dim ss As Integer = ts.Seconds
 
         Return totalHours.ToString("00") & ":" & mm.ToString("00") & ":" & ss.ToString("00")
     End Function
-
 End Class
+
+

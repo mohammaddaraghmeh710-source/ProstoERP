@@ -1,15 +1,15 @@
-﻿Imports System
-Imports System.Linq
+﻿Imports Echo.Encrptor
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Login
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If Not IsPostBack Then
             SessionManager.GetInstance.Users = Nothing
             CustomerPortalData.Current = Nothing
             Session.Remove("LogIn")
-            If Request.QueryString("kind")="customer" Then ddlAccountKind.SelectedValue="customer"
+            If Request.QueryString("kind") = "customer" Then ddlAccountKind.SelectedValue = "customer"
             HideAlerts()
         End If
     End Sub
@@ -36,12 +36,12 @@ Public Class Login
     End Sub
 
     Private Function GetCurrentShiftId() As Integer
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim nowTime As TimeSpan = DateTime.Now.TimeOfDay
             Dim shifts = (From s In db.Select_Shift_All()
-                          Where (s.IsDeleted = False OrElse s.IsDeleted Is Nothing) _
-                            AndAlso (s.IsActive = True OrElse s.IsActive Is Nothing)
-                          Select s).ToList()
+                    Where (s.IsDeleted = False OrElse s.IsDeleted Is Nothing) _
+                          AndAlso (s.IsActive = True OrElse s.IsActive Is Nothing)
+                    Select s).ToList()
 
             For Each s In shifts
                 If Not s.Start_Time.HasValue OrElse Not s.End_Time.HasValue Then Continue For
@@ -72,18 +72,25 @@ Public Class Login
                 Return
             End If
 
-            If ddlAccountKind.SelectedValue="customer" Then
-                Dim identity=CustomerPortalData.Login(txtUserName.Text.Trim(),txtPassword.Text)
+            If ddlAccountKind.SelectedValue = "customer" Then
+                Dim identity = CustomerPortalData.Login(txtUserName.Text.Trim(), txtPassword.Text)
                 If identity Is Nothing Then
-                    ShowError("اسم المستخدم أو كلمة المرور غير صحيحة، أو الحساب غير متاح.") : Return
+                    ShowError("اسم المستخدم أو كلمة المرور غير صحيحة، أو الحساب غير متاح.")
+                    Return
                 End If
-                Session.Clear() : SessionManager.GetInstance.Users=Nothing : CustomerPortalData.Current=identity
-                Response.Redirect("~/CustomerPortal/Guide.aspx",False) : Context.ApplicationInstance.CompleteRequest() : Return
+                Session.Clear()
+                SessionManager.GetInstance.Users = Nothing
+                CustomerPortalData.Current = identity
+                Response.Redirect("~/CustomerPortal/Guide.aspx", False)
+                Context.ApplicationInstance.CompleteRequest()
+                Return
             End If
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
-                Dim encryptor As New Echo.Encrptor.TripleDesEncryptor()
+            Using db As New Prosto_ERP_DataClassesDataContext
+                Dim encryptor As New TripleDesEncryptor()
                 Dim encryptedPassword As String = encryptor.Encrypt(txtPassword.Text)
-                Dim loginRow = db.Select_UsersMembers_ByUserName_Password(txtUserName.Text.Trim(), encryptedPassword).FirstOrDefault()
+                Dim loginRow =
+                        db.Select_UsersMembers_ByUserName_Password(txtUserName.Text.Trim(), encryptedPassword).
+                        FirstOrDefault()
 
                 If loginRow Is Nothing Then
                     ShowError("اسم المستخدم أو كلمة المرور غير صحيحة.")
@@ -92,10 +99,11 @@ Public Class Login
 
                 Dim user As UserEntity = GetUsersByUsername(txtUserName.Text.Trim())
                 user.Password = encryptedPassword
-                If user.UserType=7 Then
-                    ShowError("هذا الحساب غير متاح. يرجى التواصل مع مدير النظام لإنشاء حساب عميل.") : Return
+                If user.UserType = 7 Then
+                    ShowError("هذا الحساب غير متاح. يرجى التواصل مع مدير النظام لإنشاء حساب عميل.")
+                    Return
                 End If
-                CustomerPortalData.Current=Nothing
+                CustomerPortalData.Current = Nothing
                 Session("LogIn") = loginRow.ID
                 SessionManager.GetInstance.Users = user
 
@@ -113,13 +121,17 @@ Public Class Login
                     Case 2, 3
                         Dim shiftID As Integer = GetCurrentShiftId()
                         Dim branchID As Integer = loginRow.Branch_ID
-                        Dim url As String = "~/Modules/Branch_Shift_Manager/Branch_Shift_Manager_Dashboard.aspx?BranchID=" & branchID.ToString() & "&ShiftID=" & shiftID.ToString()
+                        Dim url As String =
+                                "~/Modules/Branch_Shift_Manager/Branch_Shift_Manager_Dashboard.aspx?BranchID=" &
+                                branchID.ToString() & "&ShiftID=" & shiftID.ToString()
                         Response.Redirect(url, False)
                         Context.ApplicationInstance.CompleteRequest()
                         Return
 
                     Case 4
-                        Response.Redirect("/Modules/LMS/LMS_Dashboard.aspx?EmployeeID=" & SessionManager.GetInstance.Users.UserID.ToString(), False)
+                        Response.Redirect(
+                            "/Modules/LMS/LMS_Dashboard.aspx?EmployeeID=" &
+                            SessionManager.GetInstance.Users.UserID.ToString(), False)
                         Context.ApplicationInstance.CompleteRequest()
                         Return
 
@@ -131,7 +143,8 @@ Public Class Login
                     Case 6
                         Dim shiftID As Integer = GetCurrentShiftId()
                         Dim departmentID As Integer = loginRow.Department_ID
-                        Dim url As String = "~/Modules/Departments_Dashboards/Department_Dashboard.aspx?DepartmentID=" & departmentID.ToString() & "&ShiftID=" & shiftID.ToString()
+                        Dim url As String = "~/Modules/Departments_Dashboards/Department_Dashboard.aspx?DepartmentID=" &
+                                            departmentID.ToString() & "&ShiftID=" & shiftID.ToString()
                         Response.Redirect(url, False)
                         Context.ApplicationInstance.CompleteRequest()
                         Return
@@ -151,12 +164,13 @@ Public Class Login
         ShowInfo("سيتم تفعيل هذه الخدمة قريباً.")
     End Sub
 
-    Protected Function GetUsersByUsername(ByVal username As String) As UserEntity
+    Protected Function GetUsersByUsername(username As String) As UserEntity
         Dim user As New UserEntity()
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             If db.Select_UsersMembers_ByUserName(username).Any() Then
-                For Each userobj As Prosto_ERP_ClassLibrary.Select_UsersMembers_ByUserNameResult In db.Select_UsersMembers_ByUserName(username)
+                For Each userobj As Select_UsersMembers_ByUserNameResult In _
+                    db.Select_UsersMembers_ByUserName(username)
                     user.UserID = userobj.ID
                     user.Username = userobj.UserName
                     user.Email = userobj.Email
@@ -175,3 +189,5 @@ Public Class Login
         Return user
     End Function
 End Class
+
+

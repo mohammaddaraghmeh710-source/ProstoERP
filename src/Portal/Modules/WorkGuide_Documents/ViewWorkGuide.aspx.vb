@@ -1,7 +1,5 @@
-﻿Imports System.Linq
-Imports System.Xml.Linq
-Imports System.Data
-Imports System.Data.SqlClient
+﻿Imports System.Data.SqlClient
+Imports Prosto_ERP_ClassLibrary
 
 Public Class ViewWorkGuide
     Inherits PageBase
@@ -18,7 +16,7 @@ Public Class ViewWorkGuide
     Private CurrentUserID As Integer
     Private CurrentBrandID As Integer
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -34,27 +32,28 @@ Public Class ViewWorkGuide
             FillCategories()
             FillRequestCategories()
             BindRequests()
-            If Request.QueryString("requested") = "1" Then AccessMessage(litAccessMessage, "تم إرسال طلبك للمراجعة. تابع حالته هنا.", True)
+            If Request.QueryString("requested") = "1" Then _
+                AccessMessage(litAccessMessage, "تم إرسال طلبك للمراجعة. تابع حالته هنا.", True)
             FillDocuments()
         End If
-
     End Sub
 
     Private Function GetCurrentUserBrandID() As Integer
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim user = db.Select_UsersMembers_ByID(CurrentUserID).
-                FirstOrDefault()
+                    FirstOrDefault()
 
-            If user IsNot Nothing AndAlso user.Brand_ID IsNot Nothing AndAlso user.IsActive.GetValueOrDefault() AndAlso Not user.IsDeleted.GetValueOrDefault() Then
+            If _
+                user IsNot Nothing AndAlso user.Brand_ID IsNot Nothing AndAlso user.IsActive.GetValueOrDefault() AndAlso
+                Not user.IsDeleted.GetValueOrDefault() Then
                 Return CInt(user.Brand_ID)
             End If
 
         End Using
 
         Return 0
-
     End Function
 
     Private Sub FillCategories()
@@ -66,12 +65,12 @@ Public Class ViewWorkGuide
             Return
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim categories = db.Select_Work_Guide_View_Authorized_Categories(
                 CurrentUserID,
                 CurrentBrandID
-            ).ToList()
+                ).ToList()
 
             For Each item In categories
                 Dim optionItem As New ListItem(item.Tree_Title_Ar, item.ID.ToString())
@@ -82,7 +81,6 @@ Public Class ViewWorkGuide
             Next
 
         End Using
-
     End Sub
 
     Private Sub FillRequestCategories()
@@ -95,7 +93,10 @@ Public Class ViewWorkGuide
                 item.Attributes("data-parent") = Convert.ToString(row("Parent_ID"))
                 item.Attributes("data-name") = Convert.ToString(row("Title_Ar"))
                 item.Attributes("data-path") = Convert.ToString(row("Full_Path_Ar"))
-                item.Attributes("data-state") = If(Convert.ToBoolean(row("Can_View_Document")), "متاح لك", If(row.IsNull("Pending_Request_ID"), "يمكن طلبه", "طلب معلّق"))
+                item.Attributes("data-state") =
+                    If _
+                        (Convert.ToBoolean(row("Can_View_Document")), "متاح لك",
+                         If(row.IsNull("Pending_Request_ID"), "يمكن طلبه", "طلب معلّق"))
                 lstRequestCategories.Items.Add(item)
             Next
         Catch ex As SqlException
@@ -104,11 +105,21 @@ Public Class ViewWorkGuide
     End Sub
 
     Private Sub FillDocuments()
-        Dim selected = ddlCategory.Items.Cast(Of ListItem)().Where(Function(i) i.Selected).Select(Function(i) Integer.Parse(i.Value)).Distinct().ToList()
-        Dim categories As New XElement("items", selected.Select(Function(id) New XElement("item", New XAttribute("id", id))))
+        Dim selected =
+                ddlCategory.Items.Cast (Of ListItem)().Where(Function(i) i.Selected).Select(
+                    Function(i) Integer.Parse(i.Value)).Distinct().ToList()
+        Dim _
+            categories As _
+                New XElement("items", selected.Select(Function(id) New XElement("item", New XAttribute("id", id))))
         Dim documents As New DataTable()
         If CurrentBrandID > 0 Then
-            documents = WorkGuideAccess.Query("dbo.Select_Work_Guide_View_Documents_Multi", WorkGuideAccess.Parameter("@User_ID", SqlDbType.Int, CurrentUserID), WorkGuideAccess.Parameter("@Brand_ID", SqlDbType.Int, CurrentBrandID), WorkGuideAccess.Parameter("@Category_IDs", SqlDbType.Xml, categories.ToString()), WorkGuideAccess.Parameter("@Search_Text", SqlDbType.NVarChar, txtSearch.Text.Trim(), 500))
+            documents = WorkGuideAccess.Query("dbo.Select_Work_Guide_View_Documents_Multi",
+                                              WorkGuideAccess.Parameter("@User_ID", SqlDbType.Int, CurrentUserID),
+                                              WorkGuideAccess.Parameter("@Brand_ID", SqlDbType.Int, CurrentBrandID),
+                                              WorkGuideAccess.Parameter("@Category_IDs", SqlDbType.Xml,
+                                                                        categories.ToString()),
+                                              WorkGuideAccess.Parameter("@Search_Text", SqlDbType.NVarChar,
+                                                                        txtSearch.Text.Trim(), 500))
         End If
         lstDocuments.DataSource = documents
         lstDocuments.DataBind()
@@ -135,12 +146,11 @@ Public Class ViewWorkGuide
 
         If size < 1024 Then
             Return size.ToString("N0") & " B"
-        ElseIf size < 1024 * 1024 Then
-            Return (size / 1024).ToString("N2") & " KB"
+        ElseIf size < 1024*1024 Then
+            Return (size/1024).ToString("N2") & " KB"
         Else
-            Return (size / 1024 / 1024).ToString("N2") & " MB"
+            Return (size/1024/1024).ToString("N2") & " MB"
         End If
-
     End Function
 
     Public Function FormatDate(value As Object) As String
@@ -150,17 +160,20 @@ Public Class ViewWorkGuide
         End If
 
         Return Convert.ToDateTime(value).ToString("dd/MM/yyyy")
-
     End Function
 
     Private Sub AccessMessage(target As Literal, text As String, Optional success As Boolean = False)
-        target.Text = "<div role='alert' class='alert alert-" & If(success, "success", "danger") & "'>" & Server.HtmlEncode(text) & "</div>"
+        target.Text = "<div role='alert' class='alert alert-" & If(success, "success", "danger") & "'>" &
+                      Server.HtmlEncode(text) & "</div>"
     End Sub
 
     Private Sub BindRequests()
         If Not pnlRequestArea.Visible Then Return
         Try
-            Dim data = WorkGuideAccess.Query("dbo.Select_Work_Guide_My_Access_Requests", WorkGuideAccess.Parameter("@Actor_ID", SqlDbType.Int, CurrentUserID), WorkGuideAccess.Parameter("@Status", SqlDbType.Char, ddlRequestStatus.SelectedValue, 1))
+            Dim data = WorkGuideAccess.Query("dbo.Select_Work_Guide_My_Access_Requests",
+                                             WorkGuideAccess.Parameter("@Actor_ID", SqlDbType.Int, CurrentUserID),
+                                             WorkGuideAccess.Parameter("@Status", SqlDbType.Char,
+                                                                       ddlRequestStatus.SelectedValue, 1))
             lstRequests.DataSource = data
             lstRequests.DataBind()
         Catch ex As SqlException
@@ -170,7 +183,9 @@ Public Class ViewWorkGuide
 
     Protected Sub btnSubmitAccessRequest_Click(sender As Object, e As EventArgs)
         litRequestMessage.Text = ""
-        Dim selected = lstRequestCategories.Items.Cast(Of ListItem)().Where(Function(item) item.Selected AndAlso item.Enabled).Select(Function(item) Integer.Parse(item.Value)).ToList()
+        Dim selected =
+                lstRequestCategories.Items.Cast (Of ListItem)().Where(Function(item) item.Selected AndAlso item.Enabled) _
+                .Select(Function(item) Integer.Parse(item.Value)).ToList()
         Dim reason = txtRequestReason.Text.Trim()
         If selected.Count = 0 OrElse selected.Count > 200 OrElse reason.Length = 0 OrElse reason.Length > 1000 Then
             AccessMessage(litRequestMessage, "حدد من تصنيف واحد إلى 200 تصنيف واكتب سبب الطلب بحد أقصى 1000 حرف.")
@@ -189,7 +204,8 @@ Public Class ViewWorkGuide
     End Sub
 
     Private Sub ReopenRequestModal()
-        ClientScript.RegisterStartupScript(Me.GetType(), "request-modal", "window.addEventListener('load', openRequestAccessModal);", True)
+        ClientScript.RegisterStartupScript(Me.GetType(), "request-modal",
+                                           "window.addEventListener('load', openRequestAccessModal);", True)
     End Sub
 
     Protected Sub btnRefreshRequests_Click(sender As Object, e As EventArgs)
@@ -205,5 +221,6 @@ Public Class ViewWorkGuide
 
         BindRequests()
     End Sub
-
 End Class
+
+

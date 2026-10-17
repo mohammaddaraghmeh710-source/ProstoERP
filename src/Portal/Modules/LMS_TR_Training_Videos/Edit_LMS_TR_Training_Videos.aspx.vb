@@ -1,5 +1,5 @@
-﻿Imports System.Linq
-Imports AjaxControlToolkit
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Edit_LMS_TR_Training_Videos
     Inherits PageBase
@@ -8,7 +8,7 @@ Public Class Edit_LMS_TR_Training_Videos
     Private VideoAR_path As String = Nothing
     Private VideoEn_path As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -34,7 +34,7 @@ Public Class Edit_LMS_TR_Training_Videos
     End Sub
 
     Private Sub FillBrandsDDL()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim brands = db.Select_Brands_ForDDL().ToList()
             ddlBrand.DataSource = brands
             ddlBrand.DataTextField = "Title_Ar"
@@ -45,7 +45,7 @@ Public Class Edit_LMS_TR_Training_Videos
     End Sub
 
     Private Sub FillLevelsDDL(brandId As Integer)
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim lv = db.Select_TR_Training_Levels_ForDDL_ByBrandID(brandId).ToList()
             ddlLevel.DataSource = lv
             ddlLevel.DataTextField = "Title_Ar"
@@ -56,7 +56,7 @@ Public Class Edit_LMS_TR_Training_Videos
     End Sub
 
     Protected Sub ddlBrand_SelectedIndexChanged(sender As Object, e As EventArgs)
-        Dim brandId As Integer = 0
+        Dim brandId = 0
         If Not String.IsNullOrWhiteSpace(ddlBrand.SelectedValue) Then
             brandId = Convert.ToInt32(ddlBrand.SelectedValue)
         End If
@@ -65,7 +65,7 @@ Public Class Edit_LMS_TR_Training_Videos
     End Sub
 
     Private Sub FillData(id As Integer)
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim row = db.Select_TR_Training_Videos_ByID(id).FirstOrDefault()
             If row Is Nothing Then
                 Response.Redirect("/Modules/LMS_TR_Training_Videos/Manage_LMS_TR_Training_Videos.aspx")
@@ -74,7 +74,7 @@ Public Class Edit_LMS_TR_Training_Videos
 
             ' نحتاج نعرف Brand من مستوى الفيديو
             Dim levelRow = db.Select_TR_Training_Levels_ByID(row.LevelID).FirstOrDefault()
-            Dim brandId As Integer = 0
+            Dim brandId = 0
             If levelRow IsNot Nothing AndAlso levelRow.BrandID IsNot Nothing Then
                 brandId = Convert.ToInt32(levelRow.BrandID)
             End If
@@ -97,8 +97,9 @@ Public Class Edit_LMS_TR_Training_Videos
 
             hfVideoImagePath.Value = If(row.Video_Image, "")
             If Not String.IsNullOrWhiteSpace(hfVideoImagePath.Value) Then
-                litCurrentImage.Text = "<div class='mt-2'><small class='text-muted'>الصورة الحالية:</small><div><a target='_blank' href='" &
-                                       hfVideoImagePath.Value & "'>" & hfVideoImagePath.Value & "</a></div></div>"
+                litCurrentImage.Text =
+                    "<div class='mt-2'><small class='text-muted'>الصورة الحالية:</small><div><a target='_blank' href='" &
+                    hfVideoImagePath.Value & "'>" & hfVideoImagePath.Value & "</a></div></div>"
             Else
                 litCurrentImage.Text = ""
             End If
@@ -164,7 +165,7 @@ Public Class Edit_LMS_TR_Training_Videos
                 Next
             End If
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
                 db.Update_TR_Training_Videos_ByID(
                     id,
                     levelId,
@@ -179,7 +180,7 @@ Public Class Edit_LMS_TR_Training_Videos
                     durationVal,
                     cbIsActive.Checked,
                     userId
-                )
+                    )
             End Using
 
             LBLPOP_ModalPopupExtender.Show()
@@ -229,5 +230,6 @@ Public Class Edit_LMS_TR_Training_Videos
 
     Protected Sub VideoEn_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
-
 End Class
+
+

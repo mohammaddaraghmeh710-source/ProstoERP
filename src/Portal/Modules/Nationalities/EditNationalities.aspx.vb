@@ -1,4 +1,4 @@
-﻿Imports System.Web.UI.HtmlControls
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class EditNationalities
     Inherits PageBase
@@ -9,7 +9,7 @@ Public Class EditNationalities
         End Get
     End Property
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -23,7 +23,7 @@ Public Class EditNationalities
     End Sub
 
     Private Sub FillData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim item = db.Select_Nationalities_ByID(NationalityID).FirstOrDefault()
             If item Is Nothing Then Exit Sub
 
@@ -45,7 +45,7 @@ Public Class EditNationalities
         Dim isActive As Boolean = cbIsActive.Checked
         Dim userId = SessionManager.GetInstance.Users.UserID
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             db.Update_Nationalities_ByID(NationalityID, titleAr, titleEn, userId, isActive)
         End Using
 
@@ -59,5 +59,6 @@ Public Class EditNationalities
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/Nationalities/ManageNationalities.aspx")
     End Sub
-
 End Class
+
+

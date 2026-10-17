@@ -1,8 +1,6 @@
-Imports System.Data
 Imports System.IO
-Imports ClosedXML.Excel
-Imports System.Collections.Generic
 Imports System.Web.Script.Serialization
+Imports ClosedXML.Excel
 
 Public NotInheritable Class WorkGuideLogExport
     Private Sub New()
@@ -11,7 +9,7 @@ Public NotInheritable Class WorkGuideLogExport
     Public Shared Function FilterRows(data As DataTable, selectedIDsJson As String) As DataTable
         Dim ids As Integer()
         Try
-            ids = New JavaScriptSerializer().Deserialize(Of Integer())(selectedIDsJson)
+            ids = New JavaScriptSerializer().Deserialize (Of Integer())(selectedIDsJson)
             If ids Is Nothing Then Throw New InvalidOperationException("Invalid export selection.")
         Catch ex As ArgumentException
             Throw New InvalidOperationException("Invalid export selection.", ex)
@@ -26,31 +24,39 @@ Public NotInheritable Class WorkGuideLogExport
     End Function
 
     Public Shared Function CreateWorkbook(data As DataTable) As Byte()
-        If data.Rows.Count > 1048575 Then Throw New InvalidOperationException("النتائج تتجاوز سعة ورقة Excel. حدّد فترة زمنية أقصر ثم أعد التصدير.")
+        If data.Rows.Count > 1048575 Then _
+            Throw New InvalidOperationException("النتائج تتجاوز سعة ورقة Excel. حدّد فترة زمنية أقصر ثم أعد التصدير.")
         Using workbook As New XLWorkbook()
             Dim sheet = workbook.Worksheets.Add("المشاهدة والتحميل")
             sheet.RightToLeft = True
-            Dim headers = {"رقم السجل", "التاريخ والوقت", "رقم المستخدم", "المستخدم", "العلامة التجارية", "التصنيف", "الوثيقة", "النشاط", "التفاصيل", "عنوان IP"}
+            Dim headers =
+                    {"رقم السجل", "التاريخ والوقت", "رقم المستخدم", "المستخدم", "العلامة التجارية", "التصنيف", "الوثيقة",
+                     "النشاط", "التفاصيل", "عنوان IP"}
             For column = 0 To headers.Length - 1
-                sheet.Cell(1, column + 1).SetValue(Of String)(headers(column))
+                sheet.Cell(1, column + 1).SetValue (Of String)(headers(column))
             Next
-            Dim fields = {"ID", "AddedDate", "User_ID", "User_Name", "Brand_Name", "Category_Name", "Document_Name", "Action_Type", "Action_Details", "IPAddress"}
+            Dim fields =
+                    {"ID", "AddedDate", "User_ID", "User_Name", "Brand_Name", "Category_Name", "Document_Name",
+                     "Action_Type", "Action_Details", "IPAddress"}
             For index = 0 To data.Rows.Count - 1
                 Dim row = data.Rows(index)
                 For column = 0 To fields.Length - 1
                     Dim cell = sheet.Cell(index + 2, column + 1)
                     If row.IsNull(fields(column)) Then Continue For
                     If column = 0 OrElse column = 2 Then
-                        cell.SetValue(Of Integer)(Convert.ToInt32(row(fields(column))))
+                        cell.SetValue (Of Integer)(Convert.ToInt32(row(fields(column))))
                     ElseIf column = 1 Then
-                        cell.SetValue(Of DateTime)(Convert.ToDateTime(row(fields(column))))
+                        cell.SetValue (Of DateTime)(Convert.ToDateTime(row(fields(column))))
                         cell.Style.DateFormat.Format = "dd/mm/yyyy hh:mm:ss"
                     Else
                         Dim value = Convert.ToString(row(fields(column)))
                         If column = 7 Then value = If(value = "1", "مشاهدة وثيقة", "تحميل وثيقة")
-                        If value.Length > 32767 Then Throw New InvalidOperationException("أحد نصوص السجل يتجاوز سعة خلية Excel. حدّد نتائج أخرى للتصدير.")
+                        If value.Length > 32767 Then _
+                            Throw _
+                                New InvalidOperationException(
+                                    "أحد نصوص السجل يتجاوز سعة خلية Excel. حدّد نتائج أخرى للتصدير.")
                         ' Explicit text preserves names/IPs and does not turn leading =,+,-,@ into formulas.
-                        cell.SetValue(Of String)(value)
+                        cell.SetValue (Of String)(value)
                         cell.DataType = XLCellValues.Text
                     End If
                 Next
@@ -81,3 +87,5 @@ Public NotInheritable Class WorkGuideLogExport
         End Using
     End Function
 End Class
+
+

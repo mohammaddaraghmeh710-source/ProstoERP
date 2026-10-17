@@ -1,7 +1,6 @@
 ﻿Imports System.Runtime.CompilerServices
-Imports System.Runtime.InteropServices
+Imports CRM
 'Imports Microsoft.AspNet.Identity
-Imports Microsoft.VisualBasic
 
 Public Module Uploader
     'Dim _passwordHasher As PasswordHasher
@@ -11,21 +10,20 @@ Public Module Uploader
     'End Sub
     Public Const BlogFilePath = "/FileManager/"
 
-    Public ReadOnly Property BlogUrl() As String
+    Public ReadOnly Property BlogUrl As String
         Get
             Return HttpContext.Current.Request.Url.Authority
         End Get
-
     End Property
 
-    Public ReadOnly Property BlogUserPrefixUrl() As String
+    Public ReadOnly Property BlogUserPrefixUrl As String
         Get
             Return BlogUrl + "/FileManager/"
         End Get
     End Property
 
 
-    <Extension()>
+    <Extension>
     Public Function GetBlogStatusString(status As Integer?) As String
         Try
             If status.HasValue Then
@@ -36,7 +34,8 @@ Public Module Uploader
             Return String.Empty
         End Try
     End Function
-    <Extension()>
+
+    <Extension>
     Public Function GetBlogStatusString(status As Integer) As String
         Try
 
@@ -59,62 +58,52 @@ End Module
 
 
 Public Class FileAttribute
-    Property Type() As String
-    Property FileByte() As Byte()
-    Property NameFile() As String
-
+    Property Type As String
+    Property FileByte As Byte()
+    Property NameFile As String
 End Class
 
 Public Class FileEnglishAttribute
-    Property Type() As String
-    Property FileByte() As Byte()
-    Property NameFile() As String
-
+    Property Type As String
+    Property FileByte As Byte()
+    Property NameFile As String
 End Class
 
 
 Public Class InspectionMethodVideoAttribute
-    Property Type() As String
-    Property FileByte() As Byte()
-    Property NameFile() As String
-
+    Property Type As String
+    Property FileByte As Byte()
+    Property NameFile As String
 End Class
-
-
 
 
 Public Class Power_Generation_Materials
-    Property MaterialsID() As Int32
-    Property MaterialName() As String
-    Property Model() As String
-    Property Unit() As String
-    Property Quantity() As Int32
-
+    Property MaterialsID As Int32
+    Property MaterialName As String
+    Property Model As String
+    Property Unit As String
+    Property Quantity As Int32
 End Class
 
 Public Class IntegratedSystems_Materials
-    Property MaterialsID() As Int32
-    Property MaterialName() As String
-    Property Model() As String
-    Property Unit() As String
-    Property Quantity() As Int32
-    Property Price() As Double
-
+    Property MaterialsID As Int32
+    Property MaterialName As String
+    Property Model As String
+    Property Unit As String
+    Property Quantity As Int32
+    Property Price As Double
 End Class
-
 
 
 Public Class ManufacturingEquation_Items
-    Property RefID() As Int32
-    Property Identification_Number() As String
-    Property Item_Description() As String
-    Property Model() As String
-    Property Description() As String
-    Property Unit() As String
-    Property Quantity() As Int32
-
+    Property RefID As Int32
+    Property Identification_Number As String
+    Property Item_Description As String
+    Property Model As String
+    Property Description As String
+    Property Unit As String
+    Property Quantity As Int32
 End Class
-
 
 
 Public Enum BlogStatus
@@ -125,8 +114,6 @@ Public Enum BlogStatus
 End Enum
 
 
-
-
 Public Class Uplod
     Public Sub New()
         Id2 = Guid.NewGuid().ToString()
@@ -134,20 +121,18 @@ Public Class Uplod
     End Sub
 
     Dim _state As StateUplod
-    Public Property Id2() As String
-    Public Property Pid2() As Integer
+    Public Property Id2 As String
+    Public Property Pid2 As Integer
 
-    Public Property FileName() As String
-    Public Property filePath() As String
-
-
+    Public Property FileName As String
+    Public Property filePath As String
 
 
     Public Property State As StateUplod
         Get
             Return _state
         End Get
-        Set(value As StateUplod)
+        Set
             If value = StateUplod.Added Then
                 _state = StateUplod.Added
             ElseIf value = StateUplod.Modified Then
@@ -168,8 +153,6 @@ Public Class Uplod
             Else
                 _state = value
             End If
-
-
         End Set
     End Property
 
@@ -182,8 +165,8 @@ Public Class Uplod
             Return State <> StateUplod.Deleted And State <> StateUplod.Removed
         End Get
     End Property
-
 End Class
+
 Public Enum StateUplod
     Unchanged = 0
     Added = 1
@@ -191,10 +174,13 @@ Public Enum StateUplod
     Deleted = 3
     Removed = 4
 End Enum
+
 Public Class AttacmentFile
-    Property Name() As String
-    Property Type() As String
-    Property FileByte() As Byte()
-    Property FillPath() As String
+    Property Name As String
+    Property Type As String
+    Property FileByte As Byte()
+    Property FillPath As String
 End Class
+
+
 

@@ -1,7 +1,7 @@
 using System.Net.Sockets;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-sealed class LocalSqlHealthCheck : IHealthCheck
+internal sealed class LocalSqlHealthCheck : IHealthCheck
 {
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
         CancellationToken cancellationToken = default)

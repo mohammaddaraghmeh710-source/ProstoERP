@@ -101,27 +101,27 @@
 
                                     <ItemTemplate>
                                         <tr>
-                                            <td data-title="العلامة التجارية"><%# Eval("BrandTitle_Ar") %></td>
-                                            <td data-title="المستوى"><%# Eval("LevelTitle_Ar") %></td>
+                                            <td data-title="العلامة التجارية"><%# Eval("BrandTitle_Ar")%></td>
+                                            <td data-title="المستوى"><%# Eval("LevelTitle_Ar")%></td>
 
-                                            <td data-title="اسم الفيديو (AR)"><%# Eval("Title_Ar") %></td>
-                                            <td data-title="اسم الفيديو (EN)"><%# Eval("Title_En") %></td>
+                                            <td data-title="اسم الفيديو (AR)"><%# Eval("Title_Ar")%></td>
+                                            <td data-title="اسم الفيديو (EN)"><%# Eval("Title_En")%></td>
 
                                             <td data-title="المدة">
-                                                <%# If(Eval("DurationSeconds") Is Nothing, "-", Eval("DurationSeconds") & " ث") %>
+                                                <%# If(Eval("DurationSeconds") Is Nothing, "-", Eval("DurationSeconds") & " ث")%>
                                             </td>
 
                                             <td data-title="الحالة">
-                                                <%# If(Convert.ToBoolean(Eval("IsActive")), "نشط", "غير نشط") %>
+                                                <%# If(Convert.ToBoolean(Eval("IsActive")), "نشط", "غير نشط")%>
                                             </td>
 
                                             <td data-title="تاريخ الإنشاء">
-                                                <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("AddedDate")) %>
+                                                <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("AddedDate"))%>
                                             </td>
 
                                             <td data-title="تعديل">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-secondary"
-                                                    ID="btnEdit" CommandName="Edit" CommandArgument='<%# Eval("ID") %>'
+                                                    ID="btnEdit" CommandName="Edit" CommandArgument='<%# Eval("ID")%>'
                                                     runat="server" ToolTip="تعديل \ مشاهدة">
                                                     <i class="bx bx-edit-alt"></i>
                                                 </asp:LinkButton>
@@ -130,7 +130,7 @@
                                             <td data-title="حذف">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-danger" ID="btnDelete"
                                                     CommandName="DeleteItem"
-                                                    CommandArgument='<%# Eval("ID") %>'
+                                                    CommandArgument='<%# Eval("ID")%>'
                                                     runat="server"
                                                     ToolTip="حذف"
                                                     CausesValidation="false"

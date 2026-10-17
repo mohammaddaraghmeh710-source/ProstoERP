@@ -26,14 +26,14 @@
         </asp:Panel>
         <table id="ERPTable" data-enhanced="1" data-wg-datatable="true" class="ERP_ProstoTBL card-list-table table table-bordered dt-responsive nowrap"><thead><tr><th>التاريخ</th><th>المستخدم</th><th>العلامة التجارية</th><th>التصنيف</th><th>الوثيقة</th><th>النشاط</th><th data-orderable="false">التفاصيل</th></tr></thead><tbody>
             <asp:ListView ID="lstLogs" runat="server"><LayoutTemplate><asp:PlaceHolder ID="itemPlaceholder" runat="server" /></LayoutTemplate>
-                <ItemTemplate><tr data-log-id='<%#: Eval("ID") %>'>
-                    <td data-title="التاريخ" data-order='<%#: Eval("AddedDate", "{0:yyyyMMddHHmmss}") %>'><%#: Eval("AddedDate", "{0:dd/MM/yyyy HH:mm:ss}") %></td>
-                    <td data-title="المستخدم"><%#: Eval("User_Name") %> <small class="text-muted">#<%#: Eval("User_ID") %></small></td>
-                    <td data-title="العلامة التجارية"><%#: Eval("Brand_Name") %></td>
-                    <td data-title="التصنيف"><%#: Eval("Category_Name") %></td>
-                    <td data-title="الوثيقة"><%#: Eval("Document_Name") %></td>
-                    <td data-title="النشاط"><%#: ActionText(Eval("Action_Type")) %></td>
-                    <td data-title="التفاصيل"><details><summary>عرض التفاصيل</summary><div class="wg-log-details"><%#: Eval("Action_Details") %></div><div class="small mt-2">عنوان IP: <bdi><%#: Eval("IPAddress") %></bdi></div><div class="small">رقم السجل: <%#: Eval("ID") %></div></details></td>
+                <ItemTemplate><tr data-log-id='<%#: Eval("ID")%>'>
+                    <td data-title="التاريخ" data-order='<%#: Eval("AddedDate", "{0:yyyyMMddHHmmss}")%>'><%#: Eval("AddedDate", "{0:dd/MM/yyyy HH:mm:ss}")%></td>
+                    <td data-title="المستخدم"><%#: Eval("User_Name")%> <small class="text-muted">#<%#: Eval("User_ID")%></small></td>
+                    <td data-title="العلامة التجارية"><%#: Eval("Brand_Name")%></td>
+                    <td data-title="التصنيف"><%#: Eval("Category_Name")%></td>
+                    <td data-title="الوثيقة"><%#: Eval("Document_Name")%></td>
+                    <td data-title="النشاط"><%#: ActionText(Eval("Action_Type"))%></td>
+                    <td data-title="التفاصيل"><details><summary>عرض التفاصيل</summary><div class="wg-log-details"><%#: Eval("Action_Details")%></div><div class="small mt-2">عنوان IP: <bdi><%#: Eval("IPAddress")%></bdi></div><div class="small">رقم السجل: <%#: Eval("ID")%></div></details></td>
                 </tr></ItemTemplate>
             </asp:ListView>
         </tbody></table>

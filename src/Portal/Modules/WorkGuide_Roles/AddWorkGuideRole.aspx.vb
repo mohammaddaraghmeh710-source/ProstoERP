@@ -1,9 +1,9 @@
-﻿Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class AddWorkGuideRole
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -18,7 +18,7 @@ Public Class AddWorkGuideRole
             Return
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim result = db.Insert_Work_Guide_Role(
                 txtTitleAr.Text.Trim(),
@@ -27,9 +27,9 @@ Public Class AddWorkGuideRole
                 txtDescriptionAr.Text.Trim(),
                 txtDescriptionEn.Text.Trim(),
                 SessionManager.GetInstance.Users.UserID
-            ).FirstOrDefault()
+                ).FirstOrDefault()
 
-            Dim RoleID As Integer = 0
+            Dim RoleID = 0
 
             If result IsNot Nothing Then
                 RoleID = Convert.ToInt32(result.ID)
@@ -43,7 +43,7 @@ Public Class AddWorkGuideRole
                     chkPrintDocument.Checked,
                     chkDownloadDocument.Checked,
                     SessionManager.GetInstance.Users.UserID
-                )
+                    )
             End If
 
         End Using
@@ -54,5 +54,5 @@ Public Class AddWorkGuideRole
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/WorkGuide_Roles/ManageWorkGuideRoles.aspx")
     End Sub
-
 End Class
+

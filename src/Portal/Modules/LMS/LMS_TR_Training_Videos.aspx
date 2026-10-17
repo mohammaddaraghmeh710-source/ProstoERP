@@ -366,52 +366,52 @@
                                 <ItemTemplate>
 
                                     <div class="col-12 video-item"
-                                        data-videoid="<%# Eval("VideoID") %>"
-                                        data-statusid="<%# Eval("Status") %>"
-                                        data-src="<%# Eval("SecureUrl") %>"
-                                        data-title="<%# Eval("VideoTitle_Ar") %>"
-                                        data-summary="<%# Eval("Summary_Ar") %>"
-                                        data-duration="<%# Eval("DurationSeconds") %>"
-                                        data-start="<%# Eval("StartDateText") %>"
-                                        data-end="<%# Eval("EndDateText") %>"
-                                        data-lastpos="<%# Eval("LastPositionSeconds") %>"
-                                        data-percent="<%# Eval("CompletionPercent") %>">
+                                        data-videoid="<%# Eval("VideoID")%>"
+                                        data-statusid="<%# Eval("Status")%>"
+                                        data-src="<%# Eval("SecureUrl")%>"
+                                        data-title="<%# Eval("VideoTitle_Ar")%>"
+                                        data-summary="<%# Eval("Summary_Ar")%>"
+                                        data-duration="<%# Eval("DurationSeconds")%>"
+                                        data-start="<%# Eval("StartDateText")%>"
+                                        data-end="<%# Eval("EndDateText")%>"
+                                        data-lastpos="<%# Eval("LastPositionSeconds")%>"
+                                        data-percent="<%# Eval("CompletionPercent")%>">
 
                                         <div class="video-card">
                                             <div class="video-card-inner">
 
                                                 <div class="d-flex justify-content-between align-items-start gap-2">
                                                     <div style="flex: 1;">
-                                                        <h6 class="video-title mb-1"><%# Eval("CardTitle") %></h6>
-                                                        <div class="video-subtitle text-truncate-2"><%# Eval("Summary_Ar") %></div>
+                                                        <h6 class="video-title mb-1"><%# Eval("CardTitle")%></h6>
+                                                        <div class="video-subtitle text-truncate-2"><%# Eval("Summary_Ar")%></div>
                                                     </div>
 
-                                                    <span class='status-badge <%# Eval("StatusCss") %>'>
-                                                        <i class='bx <%# Eval("StatusIcon") %>'></i><%# Eval("StatusText") %>
+                                                    <span class='status-badge <%# Eval("StatusCss")%>'>
+                                                        <i class='bx <%# Eval("StatusIcon")%>'></i><%# Eval("StatusText")%>
                                                     </span>
                                                 </div>
 
                                                 <div class="meta-row">
-                                                    <span class="mini"><i class="bx bx-time-five"></i><%# Eval("DurationText") %></span>
-                                                    <span class="mini"><i class="bx bx-percentage"></i><%# Eval("CompletionPercent") %>%</span>
+                                                    <span class="mini"><i class="bx bx-time-five"></i><%# Eval("DurationText")%></span>
+                                                    <span class="mini"><i class="bx bx-percentage"></i><%# Eval("CompletionPercent")%>%</span>
                                                 </div>
 
-                                                <div class="watch-progress-wrap" data-watch="<%# Eval("CompletionPercent") %>">
+                                                <div class="watch-progress-wrap" data-watch="<%# Eval("CompletionPercent")%>">
                                                     <div class="watch-progress">
-                                                        <span style='width: <%# Eval("CompletionPercent") %>%'></span>
+                                                        <span style='width: <%# Eval("CompletionPercent")%>%'></span>
                                                     </div>
                                                 </div>
 
                                                 <div class="d-flex justify-content-end mt-2">
-                                                    <asp:PlaceHolder ID="phWatch" runat="server" Visible='<%# Eval("CanWatch") %>'>
+                                                    <asp:PlaceHolder ID="phWatch" runat="server" Visible='<%# Eval("CanWatch")%>'>
                                                         <button type="button"
-                                                            class='btn btn-sm <%# Eval("ActionBtnCss") %>'
+                                                            class='btn btn-sm <%# Eval("ActionBtnCss")%>'
                                                             onclick="selectVideoFromCard(this)">
-                                                            <%# Eval("ActionText") %>
+                                                            <%# Eval("ActionText")%>
                                                         </button>
                                                     </asp:PlaceHolder>
 
-                                                    <asp:PlaceHolder ID="phLocked" runat="server" Visible='<%# Not CBool(Eval("CanWatch")) %>'>
+                                                    <asp:PlaceHolder ID="phLocked" runat="server" Visible='<%# Not CBool(Eval("CanWatch"))%>'>
                                                         <button type="button" class="btn btn-sm btn-soft btn-disabled" disabled>غير متاح</button>
                                                     </asp:PlaceHolder>
                                                 </div>
@@ -599,7 +599,7 @@
 
             maxAllowedSeconds = parseInt(lastPos || 0, 10) || 0;
 
-            var hf = document.getElementById('<%= hfCurrentVideoId.ClientID %>');
+            var hf = document.getElementById('<%=hfCurrentVideoId.ClientID%>');
             if (hf) hf.value = currentVideoId;
         }
 
@@ -839,7 +839,7 @@
 
         // ===== Start First Video Modal =====
         function openStartFirstVideoModal() {
-            var title = document.getElementById('<%= hfFirstVideoTitle.ClientID %>').value || "-";
+            var title = document.getElementById('<%=hfFirstVideoTitle.ClientID%>').value || "-";
             document.getElementById('firstVideoNameText').innerText = title;
 
             var modalEl = document.getElementById('startFirstVideoModal');
@@ -860,7 +860,7 @@
             var modalEl = document.getElementById('videoCompletedModal');
             try { if (window.bootstrap) bootstrap.Modal.getOrCreateInstance(modalEl).hide(); } catch (e) { }
 
-            var levelId = parseInt(document.getElementById('<%= hfLevelId.ClientID %>').value || '0', 10) || 0;
+            var levelId = parseInt(document.getElementById('<%=hfLevelId.ClientID%>').value || '0', 10) || 0;
 
             callPageMethod_Complete(levelId, currentVideoId, function () {
                 // Refresh page using JavaScript

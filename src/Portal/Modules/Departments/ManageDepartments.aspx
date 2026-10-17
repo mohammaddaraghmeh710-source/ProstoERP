@@ -167,15 +167,15 @@
 
                                     <ItemTemplate>
                                         <tr>
-                                            <td data-title="العلامة التجارية"><%# Eval("BrandTitle_Ar") %></td>
-                                            <td data-title="الفرع"><%# Eval("BranchTitle_Ar") %></td>
-                                            <td data-title="اسم القسم بالعربية"><%# Eval("Title_Ar") %></td>
-                                            <td data-title="اسم القسم بالانجليزية"><%# Eval("Title_En") %></td>
-                                            <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate") %></td>
+                                            <td data-title="العلامة التجارية"><%# Eval("BrandTitle_Ar")%></td>
+                                            <td data-title="الفرع"><%# Eval("BranchTitle_Ar")%></td>
+                                            <td data-title="اسم القسم بالعربية"><%# Eval("Title_Ar")%></td>
+                                            <td data-title="اسم القسم بالانجليزية"><%# Eval("Title_En")%></td>
+                                            <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate")%></td>
 
                                             <td data-title="QRCode">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-success" ID="lnkQRCode"
-                                                    CommandName="QRCode" CommandArgument='<%# Eval("ID") %>'
+                                                    CommandName="QRCode" CommandArgument='<%# Eval("ID")%>'
                                                     runat="server" ToolTip="طباعة QRCode">
                                                     <i class="bx bx-qr"></i>
                                                 </asp:LinkButton>
@@ -184,7 +184,7 @@
                                             <td data-title="رابط صفحة القسم">
                                                 <a href="javascript:void(0);"
                                                    class="btn btn-icon btn-label-info"
-                                                   onclick="return showDepartmentLinkPopup('<%# Eval("ID") %>');"
+                                                   onclick="return showDepartmentLinkPopup('<%# Eval("ID")%>');"
                                                    title="عرض رابط صفحة القسم">
                                                     <i class="bx bx-link"></i>
                                                 </a>
@@ -192,7 +192,7 @@
 
                                             <td data-title="تعديل">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-secondary" ID="btnEdit"
-                                                    CommandName="Edit" CommandArgument='<%# Eval("ID") %>'
+                                                    CommandName="Edit" CommandArgument='<%# Eval("ID")%>'
                                                     runat="server" ToolTip="تعديل">
                                                     <i class="bx bx-edit-alt"></i>
                                                 </asp:LinkButton>
@@ -201,7 +201,7 @@
                                         <td data-title="حذف">
                                                <asp:LinkButton CssClass="btn btn-icon btn-label-danger" ID="btnDelete"
     CommandName="DeleteItem"
-    CommandArgument='<%# Eval("ID") %>'
+    CommandArgument='<%# Eval("ID")%>'
     runat="server"
     ToolTip="حذف"
     CausesValidation="false"

@@ -1,7 +1,6 @@
 ﻿Imports System.IO
 Imports AjaxControlToolkit
-Imports System.Linq
-Imports System.Collections.Generic
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Add_JobTitle_Items
     Inherits PageBase
@@ -12,7 +11,7 @@ Public Class Add_JobTitle_Items
     Private Const SK_EV As String = "JTItems_EvalVideoTemp"
 
     '================= Draft Model =================
-    <Serializable()>
+    <Serializable>
     Private Class DraftJobTitleItem
         Public Property TempId As String
         Public Property JobTitleId As Integer
@@ -50,7 +49,7 @@ Public Class Add_JobTitle_Items
     End Class
 
     '================= Page Load =================
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then Response.Redirect("/login.aspx")
         If SessionManager.GetInstance.Users.UserType <> 1 Then Response.Redirect("/Default.aspx")
 
@@ -117,7 +116,7 @@ Public Class Add_JobTitle_Items
 
     '================= الهيكل التنظيمي =================
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Brands_All().Where(Function(x) x.IsDeleted = 0).ToList()
             ddlBrand.DataSource = data
             ddlBrand.DataTextField = "Title_Ar"
@@ -133,7 +132,7 @@ Public Class Add_JobTitle_Items
 
         If Not brandId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Branches_ByBrandID(brandId.Value).Where(Function(x) x.IsDeleted = 0).ToList()
             ddlBranch.DataSource = data
             ddlBranch.DataTextField = "Title_Ar"
@@ -149,7 +148,7 @@ Public Class Add_JobTitle_Items
 
         If Not branchId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Departments_ByBranchID(branchId.Value).Where(Function(x) x.IsDeleted = 0).ToList()
             ddlDepartment.DataSource = data
             ddlDepartment.DataTextField = "Title_Ar"
@@ -165,8 +164,9 @@ Public Class Add_JobTitle_Items
 
         If Not departmentId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
-            Dim data = db.Select_JobTitles_ByDepartmentID(departmentId.Value).Where(Function(x) x.IsDeleted = 0).ToList()
+        Using db As New Prosto_ERP_DataClassesDataContext
+            Dim data =
+                    db.Select_JobTitles_ByDepartmentID(departmentId.Value).Where(Function(x) x.IsDeleted = 0).ToList()
             ddlJobTitle.DataSource = data
             ddlJobTitle.DataTextField = "Title_Ar"
             ddlJobTitle.DataValueField = "ID"
@@ -204,7 +204,7 @@ Public Class Add_JobTitle_Items
 
     '================= قوائم الشركات والأنواع =================
     Private Sub FillSuppliers()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Suppliers_All().ToList()
             ddlSupplier.DataSource = data
             ddlSupplier.DataTextField = "Title_Ar"
@@ -215,7 +215,7 @@ Public Class Add_JobTitle_Items
     End Sub
 
     Private Sub FillMaintenanceCompanies()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Maintenance_Companies_All().ToList()
             ddlMaintenanceCompany.DataSource = data
             ddlMaintenanceCompany.DataTextField = "Title_Ar"
@@ -226,7 +226,7 @@ Public Class Add_JobTitle_Items
     End Sub
 
     Private Sub FillItemTypes()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_JobTitle_Items_Types_All().ToList()
             ddlItemType.DataSource = data
             ddlItemType.DataTextField = "Title_Ar"
@@ -254,17 +254,17 @@ Public Class Add_JobTitle_Items
         Dim jobTitleId = CInt(ddlJobTitle.SelectedValue)
 
         Dim draft As New DraftJobTitleItem With {
-            .TempId = Guid.NewGuid().ToString("N"),
-            .JobTitleId = jobTitleId,
-            .ToolNumber = txtToolNumber.Text.Trim(),
-            .ItemTypeId = SafeInt(ddlItemType.SelectedValue),
-            .SupplierId = SafeInt(ddlSupplier.SelectedValue),
-            .MaintenanceId = SafeInt(ddlMaintenanceCompany.SelectedValue),
-            .TitleAr = txtTitleAr.Text.Trim(),
-            .TitleEn = txtTitleEn.Text.Trim(),
-            .PoliciesAr = txtPolicies_Ar.Text,
-            .PoliciesEn = txtPolicies_En.Text
-        }
+                .TempId = Guid.NewGuid().ToString("N"),
+                .JobTitleId = jobTitleId,
+                .ToolNumber = txtToolNumber.Text.Trim(),
+                .ItemTypeId = SafeInt(ddlItemType.SelectedValue),
+                .SupplierId = SafeInt(ddlSupplier.SelectedValue),
+                .MaintenanceId = SafeInt(ddlMaintenanceCompany.SelectedValue),
+                .TitleAr = txtTitleAr.Text.Trim(),
+                .TitleEn = txtTitleEn.Text.Trim(),
+                .PoliciesAr = txtPolicies_Ar.Text,
+                .PoliciesEn = txtPolicies_En.Text
+                }
 
         ' نصوص للعرض (من الدروب داون)
         draft.ItemTypeText = ddlItemType.SelectedItem.Text
@@ -280,7 +280,8 @@ Public Class Add_JobTitle_Items
 
         ' أمان: لا تسمح بإضافة عناصر على JobTitle مختلف إذا كان لديك Draft سابق
         If list.Count > 0 AndAlso list(0).JobTitleId <> jobTitleId Then
-            lblMsg.Text = "لا يمكن إضافة أدوات لمحطة تعريفية مختلف أثناء وجود أدوات في القائمة. قم بتفريغ القائمة أولاً."
+            lblMsg.Text =
+                "لا يمكن إضافة أدوات لمحطة تعريفية مختلف أثناء وجود أدوات في القائمة. قم بتفريغ القائمة أولاً."
             Exit Sub
         End If
 
@@ -369,7 +370,7 @@ Public Class Add_JobTitle_Items
             Exit Sub
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             For Each it In list
                 db.Insert_JobTitle_Items(
                     jobTitleId,
@@ -386,7 +387,7 @@ Public Class Add_JobTitle_Items
                     it.EvaluationMethodVideoPath,
                     it.EvaluationMethodVideoPath,
                     SessionManager.GetInstance.Users.UserID
-                )
+                    )
             Next
         End Using
 
@@ -422,31 +423,32 @@ Public Class Add_JobTitle_Items
             Exit Sub
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
 
             For Each it In list
 
-                Dim JobTitles = db.Select_JobTitles_All.Where(Function(x) x.Title_Ar = ddlJobTitle.SelectedItem.ToString())
+                Dim JobTitles =
+                        db.Select_JobTitles_All.Where(Function(x) x.Title_Ar = ddlJobTitle.SelectedItem.ToString())
                 For Each jobTit In JobTitles
 
 
                     db.Insert_JobTitle_Items(
-                    jobTit.ID,
-                    it.TitleAr,
-                    it.TitleEn,
-                    it.ToolNumber,
-                    it.SupplierId,
-                    it.MaintenanceId,
-                    it.ItemTypeId,
-                    it.PoliciesAr,
-                    it.PoliciesEn,
-                    it.WorkingMethodVideoPath,
-                    it.WorkingMethodVideoPath,
-                    it.EvaluationMethodVideoPath,
-                    it.EvaluationMethodVideoPath,
-                    SessionManager.GetInstance.Users.UserID
-                )
+                        jobTit.ID,
+                        it.TitleAr,
+                        it.TitleEn,
+                        it.ToolNumber,
+                        it.SupplierId,
+                        it.MaintenanceId,
+                        it.ItemTypeId,
+                        it.PoliciesAr,
+                        it.PoliciesEn,
+                        it.WorkingMethodVideoPath,
+                        it.WorkingMethodVideoPath,
+                        it.EvaluationMethodVideoPath,
+                        it.EvaluationMethodVideoPath,
+                        SessionManager.GetInstance.Users.UserID
+                        )
 
                 Next
 
@@ -508,6 +510,6 @@ Public Class Add_JobTitle_Items
 
     Protected Sub EvaluationMethodVideo_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
-
-
 End Class
+
+

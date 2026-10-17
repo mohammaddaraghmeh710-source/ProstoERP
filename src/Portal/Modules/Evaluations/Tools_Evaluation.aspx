@@ -2,7 +2,6 @@
     CodeBehind="Tools_Evaluation.aspx.vb" Inherits="CRM.Tools_Evaluation" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc11" %>
-<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolkit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
@@ -357,20 +356,20 @@
                                                         <div class="d-flex align-items-center gap-2">
                                                             <input class="form-check-input mt-0"
                                                                 type="checkbox"
-                                                                name='chk_<%# Eval("ID") %>' />
+                                                                name='chk_<%# Eval("ID")%>' />
 
-                                                            <span class="fw-semibold"><%# Eval("Title_Ar") %></span>
+                                                            <span class="fw-semibold"><%# Eval("Title_Ar")%></span>
 
                                                             <button type="button"
                                                                 class="btn btn-sm btn-text-secondary p-0 ms-1"
-                                                                onclick="showInfo('<%# JsString(Eval("Title_Ar")) %>',
-                                                                                  '<%# JsString(Eval("Brief_Ar")) %>')">
+                                                                onclick="showInfo('<%# JsString(Eval("Title_Ar"))%>',
+                                                                                  '<%# JsString(Eval("Brief_Ar"))%>')">
                                                                 <i class="bx bx-info-circle fs-5"></i>
                                                             </button>
                                                         </div>
 
-                                                        <span class='<%# GetChecklistCss(Eval("CheckList_CategoryID")) %>'>
-                                                            <%# Eval("CategoryTitle_Ar") %>
+                                                        <span class='<%# GetChecklistCss(Eval("CheckList_CategoryID"))%>'>
+                                                            <%# Eval("CategoryTitle_Ar")%>
                                                         </span>
 
                                                     </label>
@@ -761,7 +760,7 @@
         // ✅ تشغيل الفيديو بعد فتح Popup (ModalPopupExtender)
         function playToolVideoFromHidden() {
             try {
-                var hf = document.getElementById('<%= hfVideoUrl.ClientID %>');
+                var hf = document.getElementById('<%=hfVideoUrl.ClientID%>');
                 var url = hf ? hf.value : '';
                 if (!url) return;
 

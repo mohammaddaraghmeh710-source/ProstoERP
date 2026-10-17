@@ -88,26 +88,26 @@
                                     <ItemTemplate>
                                         <tr>
                                             <td data-title="العنوان">
-                                                <div class="fw-bold"><%# Eval("Title_AR") %></div>
-                                                <small class="text-muted"><%# Eval("Title_En") %></small>
+                                                <div class="fw-bold"><%# Eval("Title_AR")%></div>
+                                                <small class="text-muted"><%# Eval("Title_En")%></small>
                                             </td>
 
-                                            <td data-title="العلامة التجارية"><%#: If(Convert.IsDBNull(Eval("BrandName")), "غير محددة", Eval("BrandName")) %></td>
+                                            <td data-title="العلامة التجارية"><%#: If(Convert.IsDBNull(Eval("BrandName")), "غير محددة", Eval("BrandName"))%></td>
                                             <td data-title="التاريخ">
-                                                <%# If(Eval("Date") Is Nothing, String.Format("{0:dd/MM/yyyy HH:mm}", Eval("AddedDate")), String.Format("{0:dd/MM/yyyy HH:mm}", Eval("Date"))) %>
+                                                <%# If(Eval("Date") Is Nothing, String.Format("{0:dd/MM/yyyy HH:mm}", Eval("AddedDate")), String.Format("{0:dd/MM/yyyy HH:mm}", Eval("Date")))%>
                                             </td>
 
                                             <td data-title="الحالة">
-                                                <%# If(Convert.ToBoolean(Eval("IsActive")), "نشط", "غير نشط") %>
+                                                <%# If(Convert.ToBoolean(Eval("IsActive")), "نشط", "غير نشط")%>
                                             </td>
 
                                             <td data-title="الترتيب">
-                                                <%# If(Eval("Item_Order") Is Nothing, "-", Eval("Item_Order")) %>
+                                                <%# If(Eval("Item_Order") Is Nothing, "-", Eval("Item_Order"))%>
                                             </td>
 
                                             <td data-title="تعديل">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-secondary"
-                                                    ID="btnEdit" CommandName="Edit" CommandArgument='<%# Eval("PID") %>'
+                                                    ID="btnEdit" CommandName="Edit" CommandArgument='<%# Eval("PID")%>'
                                                     runat="server" ToolTip="تعديل \ مشاهدة">
                                                     <i class="bx bx-edit-alt"></i>
                                                 </asp:LinkButton>
@@ -116,7 +116,7 @@
                                             <td data-title="حذف">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-danger" ID="btnDelete"
                                                     CommandName="DeleteItem"
-                                                    CommandArgument='<%# Eval("PID") %>'
+                                                    CommandArgument='<%# Eval("PID")%>'
                                                     runat="server"
                                                     ToolTip="حذف"
                                                     CausesValidation="false"

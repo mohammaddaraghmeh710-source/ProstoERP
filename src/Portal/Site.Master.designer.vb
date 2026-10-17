@@ -12,7 +12,6 @@ Option Explicit On
 
 
 Partial Public Class Site
-    Protected WithEvents litInformationPageLinks As Global.System.Web.UI.WebControls.Literal
 
     '''<summary>
     '''Head1 control.
@@ -141,6 +140,60 @@ Partial Public Class Site
     Protected WithEvents divmenu As Global.System.Web.UI.HtmlControls.HtmlGenericControl
 
     '''<summary>
+    '''litInformationPageLinks control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents litInformationPageLinks As Global.System.Web.UI.WebControls.Literal
+
+    '''<summary>
+    '''upCorrespondenceCount control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents upCorrespondenceCount As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
+    '''litCorrespondenceCount control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents litCorrespondenceCount As Global.System.Web.UI.WebControls.Literal
+
+    '''<summary>
+    '''tmCorrespondenceCount control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents tmCorrespondenceCount As Global.System.Web.UI.Timer
+
+    '''<summary>
+    '''upFeedbackCount control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents upFeedbackCount As Global.System.Web.UI.UpdatePanel
+
+    '''<summary>
+    '''litFeedbackCount control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents litFeedbackCount As Global.System.Web.UI.WebControls.Literal
+
+    '''<summary>
     '''ContentPlaceHolder1 control.
     '''</summary>
     '''<remarks>
@@ -148,9 +201,4 @@ Partial Public Class Site
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents ContentPlaceHolder1 As Global.System.Web.UI.WebControls.ContentPlaceHolder
-    Protected WithEvents upCorrespondenceCount As Global.System.Web.UI.UpdatePanel
-    Protected WithEvents litCorrespondenceCount As Global.System.Web.UI.WebControls.Literal
-    Protected WithEvents tmCorrespondenceCount As Global.System.Web.UI.Timer
-    Protected WithEvents litFeedbackCount As Global.System.Web.UI.WebControls.Literal
-    Protected WithEvents upFeedbackCount As Global.System.Web.UI.UpdatePanel
 End Class

@@ -267,8 +267,8 @@
                         <ItemTemplate>
                             <button type="button"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                onclick="selectEvalTypeForDept('<%# Eval("ID") %>');">
-                                <span><%# Eval("Title_Ar") %></span>
+                                onclick="selectEvalTypeForDept('<%# Eval("ID")%>');">
+                                <span><%# Eval("Title_Ar")%></span>
                                 <i class="bx bx-chevron-left"></i>
                             </button>
                         </ItemTemplate>
@@ -322,8 +322,8 @@
         // ✅ بعد اختيار النوع: توجيه لصفحة تقييم القسم/المحطات
         function selectEvalTypeForDept(typeId) {
 
-            var deptHf = document.getElementById('<%= hidDepartmentID.ClientID %>');
-            var shiftHf = document.getElementById('<%= hidShiftID.ClientID %>');
+            var deptHf = document.getElementById('<%=hidDepartmentID.ClientID%>');
+            var shiftHf = document.getElementById('<%=hidShiftID.ClientID%>');
 
             var deptId = deptHf ? deptHf.value : '';
             var shiftId = shiftHf ? shiftHf.value : '';

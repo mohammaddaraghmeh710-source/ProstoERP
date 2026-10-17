@@ -9,7 +9,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <script type="text/javascript">
         function togglePoliciesDept() {
-            var pnl = document.getElementById('<%= pnlPolicies.ClientID %>');
+            var pnl = document.getElementById('<%=pnlPolicies.ClientID%>');
             if (pnl) {
                 if (pnl.style.display === "none" || pnl.style.display === "") {
                     pnl.style.display = "block";

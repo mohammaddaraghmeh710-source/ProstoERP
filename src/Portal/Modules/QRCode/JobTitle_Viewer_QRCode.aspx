@@ -269,8 +269,8 @@
                         <ItemTemplate>
                             <button type="button"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                onclick="selectEvalTypeForJobTitle('<%# Eval("ID") %>');">
-                                <span><%# Eval("Title_Ar") %></span>
+                                onclick="selectEvalTypeForJobTitle('<%# Eval("ID")%>');">
+                                <span><%# Eval("Title_Ar")%></span>
                                 <i class="bx bx-chevron-left"></i>
                             </button>
                         </ItemTemplate>
@@ -320,9 +320,9 @@
         // ✅ توجيه بعد اختيار نوع التقييم
         function selectEvalTypeForJobTitle(typeId) {
 
-            var jtHf = document.getElementById('<%= hidJobTitleID.ClientID %>');
-            var shHf = document.getElementById('<%= hidShiftID.ClientID %>');
-            var dpHf = document.getElementById('<%= hidDepartmentID.ClientID %>');
+            var jtHf = document.getElementById('<%=hidJobTitleID.ClientID%>');
+            var shHf = document.getElementById('<%=hidShiftID.ClientID%>');
+            var dpHf = document.getElementById('<%=hidDepartmentID.ClientID%>');
 
             var jobTitleId = jtHf ? jtHf.value : '';
             var shiftId = shHf ? shHf.value : '';

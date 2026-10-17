@@ -1,9 +1,9 @@
-﻿Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class Manage_LMS_TR_Training_Videos
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -19,7 +19,7 @@ Public Class Manage_LMS_TR_Training_Videos
     End Sub
 
     Private Sub FillBrandsDDL()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim brands = db.Select_Brands_ForDDL().ToList()
             ddlBrand.DataSource = brands
             ddlBrand.DataTextField = "Title_Ar"
@@ -31,7 +31,7 @@ Public Class Manage_LMS_TR_Training_Videos
     End Sub
 
     Private Sub FillLevelsDDL(brandId As Nullable(Of Integer))
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim bid As Integer = If(brandId.HasValue, brandId.Value, 0)
             Dim lv = db.Select_TR_Training_Levels_ForDDL_ByBrandID(bid).ToList()
 
@@ -57,7 +57,7 @@ Public Class Manage_LMS_TR_Training_Videos
     End Sub
 
     Private Sub BindData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_TR_Training_Videos_All().ToList()
             lstData.DataSource = data
             lstData.DataBind()
@@ -81,13 +81,13 @@ Public Class Manage_LMS_TR_Training_Videos
         If ddlStatus.SelectedValue = "1" Then isActive = True
         If ddlStatus.SelectedValue = "0" Then isActive = False
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_TR_Training_Videos_Filter(
                 brandId,
                 levelId,
                 If(String.IsNullOrWhiteSpace(kw), Nothing, kw),
                 If(isActive.HasValue, CType(isActive.Value, Boolean?), Nothing)
-            ).ToList()
+                ).ToList()
 
             lstData.DataSource = data
             lstData.DataBind()
@@ -113,7 +113,7 @@ Public Class Manage_LMS_TR_Training_Videos
     End Sub
 
     Protected Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs)
-        Dim id As Integer = CInt(e.CommandArgument)
+        Dim id = CInt(e.CommandArgument)
 
         If e.CommandName = "Edit" Then
             Response.Redirect("/Modules/LMS_TR_Training_Videos/Edit_LMS_TR_Training_Videos.aspx?ID=" & id)
@@ -123,12 +123,13 @@ Public Class Manage_LMS_TR_Training_Videos
         If e.CommandName = "DeleteItem" Then
             Dim userId = SessionManager.GetInstance.Users.UserID
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
                 db.Update_TR_Training_Videos_IsDeleted_ByID(id, True, userId)
             End Using
 
             BindData_Filter()
         End If
     End Sub
-
 End Class
+
+

@@ -1,7 +1,5 @@
-﻿Imports System.IO
-Imports AjaxControlToolkit
-Imports System.Data
-Imports System.Linq
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class AddJobTitles
     Inherits PageBase
@@ -9,7 +7,7 @@ Public Class AddJobTitles
     Private WorkingMethodVideo_path As String = Nothing
     Private EvaluationMethodVideo_path As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -23,11 +21,12 @@ Public Class AddJobTitles
 
         End If
     End Sub
+
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Brands_All() _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlBrand.DataSource = data
             ddlBrand.DataTextField = "Title_Ar"
             ddlBrand.DataValueField = "ID"
@@ -47,7 +46,6 @@ Public Class AddJobTitles
         FillBranches(brandId)
         ddlDepartment.Items.Clear()
         ddlDepartment.Items.Insert(0, New ListItem("اختر القسم", ""))
-
     End Sub
 
 
@@ -57,10 +55,10 @@ Public Class AddJobTitles
 
         If Not brandId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Branches_ByBrandID(brandId.Value) _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlBranch.DataSource = data
             ddlBranch.DataTextField = "Title_Ar"
             ddlBranch.DataValueField = "ID"
@@ -79,16 +77,17 @@ Public Class AddJobTitles
 
         FillDepartments(branchId)
     End Sub
+
     Private Sub FillDepartments(Optional branchId As Integer? = Nothing)
         ddlDepartment.Items.Clear()
         ddlDepartment.Items.Insert(0, New ListItem("اختر القسم", ""))
 
         If Not branchId.HasValue Then Exit Sub
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim data = db.Select_Departments_ByBranchID(branchId.Value) _
-                     .Where(Function(x) x.IsDeleted = 0) _
-                     .ToList()
+                    .Where(Function(x) x.IsDeleted = 0) _
+                    .ToList()
             ddlDepartment.DataSource = data
             ddlDepartment.DataTextField = "Title_Ar"
             ddlDepartment.DataValueField = "ID"
@@ -104,9 +103,7 @@ Public Class AddJobTitles
         Else
             deptId = Nothing
         End If
-
     End Sub
-
 
 
     'Private Sub FillDepartments()
@@ -123,7 +120,7 @@ Public Class AddJobTitles
     Protected Sub btnSave_Click(sender As Object, e As EventArgs)
         If Not Page.IsValid Then Exit Sub
 
-        Dim deptId As Integer = 0
+        Dim deptId = 0
         Integer.TryParse(ddlDepartment.SelectedValue, deptId)
 
         Dim nameAr As String = txtTitleAr.Text.Trim()
@@ -148,7 +145,7 @@ Public Class AddJobTitles
             Next
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             db.Insert_JobTitles(
                 deptId,
                 nameAr,
@@ -160,7 +157,7 @@ Public Class AddJobTitles
                 WorkingMethodVideo_path,
                 EvaluationMethodVideo_path,
                 EvaluationMethodVideo_path
-            )
+                )
         End Using
 
         LBLPOP_ModalPopupExtender.Show()
@@ -197,7 +194,7 @@ Public Class AddJobTitles
     Protected Sub btnSaveforAllDepartments_Click(sender As Object, e As EventArgs)
         If Not Page.IsValid Then Exit Sub
 
-        Dim deptId As Integer = 0
+        Dim deptId = 0
         Integer.TryParse(ddlDepartment.SelectedValue, deptId)
 
         Dim nameAr As String = txtTitleAr.Text.Trim()
@@ -221,21 +218,22 @@ Public Class AddJobTitles
                 Exit For
             Next
         End If
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
-            Dim Departments = db.Select_Departments_All.Where(Function(x) x.Title_Ar = ddlDepartment.SelectedItem.ToString())
+        Using db As New Prosto_ERP_DataClassesDataContext
+            Dim Departments =
+                    db.Select_Departments_All.Where(Function(x) x.Title_Ar = ddlDepartment.SelectedItem.ToString())
             For Each dep In Departments
                 db.Insert_JobTitles(
-               dep.ID,
-               nameAr,
-               nameEn,
-               SessionManager.GetInstance.Users.UserID, Date.Now, Nothing, Nothing, 0, 1, 0,
-               policiesAr,
-               policiesEn,
-               WorkingMethodVideo_path,
-               WorkingMethodVideo_path,
-               EvaluationMethodVideo_path,
-               EvaluationMethodVideo_path
-           )
+                    dep.ID,
+                    nameAr,
+                    nameEn,
+                    SessionManager.GetInstance.Users.UserID, Date.Now, Nothing, Nothing, 0, 1, 0,
+                    policiesAr,
+                    policiesEn,
+                    WorkingMethodVideo_path,
+                    WorkingMethodVideo_path,
+                    EvaluationMethodVideo_path,
+                    EvaluationMethodVideo_path
+                    )
             Next
 
 
@@ -244,3 +242,5 @@ Public Class AddJobTitles
         LBLPOP_ModalPopupExtender.Show()
     End Sub
 End Class
+
+

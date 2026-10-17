@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="..\..\build\LegacyWeb.props" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+  <Import Project="..\..\build\LegacyWeb.props"/>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -17,17 +17,17 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MyType>Custom</MyType>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
-    <IISExpressUseClassicPipelineMode />
+    <IISExpressSSLPort/>
+    <IISExpressAnonymousAuthentication/>
+    <IISExpressWindowsAuthentication/>
+    <IISExpressUseClassicPipelineMode/>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <Use64BitIISExpress />
-    <UseGlobalApplicationHostFile />
-    <TargetFrameworkProfile />
+    <Use64BitIISExpress/>
+    <UseGlobalApplicationHostFile/>
+    <TargetFrameworkProfile/>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,7 +68,7 @@
       <HintPath>$(ProstoPackagesRoot)DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.CSharp"/>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>$(ProstoPackagesRoot)Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
@@ -90,78 +90,99 @@
     <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>$(ProstoPackagesRoot)RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data.Linq" />
-    <Reference Include="System.DirectoryServices" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Web.DynamicData" />
-    <Reference Include="System.Web.ApplicationServices" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.EnterpriseServices" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="WindowsBase" />
+    <Reference Include="System"/>
+    <Reference Include="System.Data"/>
+    <Reference Include="System.Data.DataSetExtensions"/>
+    <Reference Include="System.Data.Linq"/>
+    <Reference Include="System.DirectoryServices"/>
+    <Reference Include="System.Drawing"/>
+    <Reference Include="System.Net.Http"/>
+    <Reference Include="System.Web.DynamicData"/>
+    <Reference Include="System.Web.ApplicationServices"/>
+    <Reference Include="System.ComponentModel.DataAnnotations"/>
+    <Reference Include="System.Web"/>
+    <Reference Include="System.Web.Extensions"/>
+    <Reference Include="System.Xml"/>
+    <Reference Include="System.Configuration"/>
+    <Reference Include="System.Web.Services"/>
+    <Reference Include="System.EnterpriseServices"/>
+    <Reference Include="System.Xml.Linq"/>
+    <Reference Include="WindowsBase"/>
   </ItemGroup>
   <ItemGroup>
-    <Import Include="Microsoft.VisualBasic" />
-    <Import Include="System" />
-    <Import Include="System.Collections" />
-    <Import Include="System.Collections.Generic" />
-    <Import Include="System.Data" />
-    <Import Include="System.Linq" />
-    <Import Include="System.Xml.Linq" />
-    <Import Include="System.Diagnostics" />
-    <Import Include="System.Collections.Specialized" />
-    <Import Include="System.Configuration" />
-    <Import Include="System.Text" />
-    <Import Include="System.Text.RegularExpressions" />
-    <Import Include="System.Web" />
-    <Import Include="System.Web.Caching" />
-    <Import Include="System.Web.SessionState" />
-    <Import Include="System.Web.Security" />
-    <Import Include="System.Web.Profile" />
-    <Import Include="System.Web.UI" />
-    <Import Include="System.Web.UI.WebControls" />
-    <Import Include="System.Web.UI.WebControls.WebParts" />
-    <Import Include="System.Web.UI.HtmlControls" />
+    <Import Include="Microsoft.VisualBasic"/>
+    <Import Include="System"/>
+    <Import Include="System.Collections"/>
+    <Import Include="System.Collections.Generic"/>
+    <Import Include="System.Data"/>
+    <Import Include="System.Linq"/>
+    <Import Include="System.Xml.Linq"/>
+    <Import Include="System.Diagnostics"/>
+    <Import Include="System.Collections.Specialized"/>
+    <Import Include="System.Configuration"/>
+    <Import Include="System.Text"/>
+    <Import Include="System.Text.RegularExpressions"/>
+    <Import Include="System.Web"/>
+    <Import Include="System.Web.Caching"/>
+    <Import Include="System.Web.SessionState"/>
+    <Import Include="System.Web.Security"/>
+    <Import Include="System.Web.Profile"/>
+    <Import Include="System.Web.UI"/>
+    <Import Include="System.Web.UI.WebControls"/>
+    <Import Include="System.Web.UI.WebControls.WebParts"/>
+    <Import Include="System.Web.UI.HtmlControls"/>
   </ItemGroup>
-  <Import Project="..\..\build\Portal.Content.props" />
+  <Import Project="..\..\build\Portal.Content.props"/>
 
   <ItemGroup>
-    <Compile Include="Features\Feedback\Presentation\FeedbackPresentation.vb" />
-    <Compile Include="Features\CRM\Presentation\CRMPresentation.vb" />
-    <Compile Include="Features\InformationPages\Presentation\InformationPagesPresentation.vb" />
-    <Compile Include="Features\Circulars\Presentation\CircularsPresentation.vb" />
-    <Compile Include="Features\Correspondence\Presentation\CorrespondencePresentation.vb" />
-    <Compile Include="Features\Attendance\Presentation\AttendancePresentation.vb" />
-    <Compile Include="Features\CustomerPortal\Presentation\CustomerPortalPresentation.vb" />
-    <Compile Include="Features\WorkGuide\Presentation\WorkGuidePresentation.vb" />
-    <Compile Include="Features\Feedback\Storage\EmployeeFeedbackAttachments.vb" />
-    <Compile Include="Features\Correspondence\Storage\CorrespondenceAttachments.vb" />
-    <Compile Include="Features\Circulars\Storage\CircularsDocuments.vb" />
-    <Compile Include="Features\News\Presentation\NewsPresentation.vb" />
-    <Compile Include="Features\Circulars\Web\CircularsPage.vb" />
-    <Compile Include="Features\CustomerPortal\Web\CustomerPortalPage.vb" />
-    <Compile Include="Features\CRM\Models\CRMDefinitions.vb" />
-    <Compile Include="Features\Feedback\Models\FeedbackConfigurationModels.vb" />
-    <Compile Include="Shared\Configuration\AppSettings.vb" />
-    <Compile Include="Shared\Utilities\BasePage.vb" />
-    <Compile Include="Shared\Utilities\ListToDataTableConverter.vb" />
-    <Compile Include="Features\Contracts\Models\SupportContract1.vb" />
-    <Compile Include="Features\EmployeeAccess\Directory\ActiveDirectoryChecker.vb" />
-    <Compile Include="Features\EmployeeAccess\Directory\ActiveDirectorySearcher.vb" />
-    <Compile Include="Features\EmployeeAccess\Directory\Models\ADuserData.vb" />
-    <Compile Include="Shared\Utilities\BusinessClass.vb" />
-    <Compile Include="Shared\Security\EncryptDecrypt.vb" />
-    <Compile Include="Features\EmployeeAccess\Security\RememberMeToken.vb" />
-    <Compile Include="Features\EmployeeAccess\Security\EmployeeSessionResetGuard.vb" />
+    <Compile Include="Features\Feedback\Presentation\FeedbackPresentation.vb"/>
+    <Compile Include="Features\CRM\Presentation\CRMPresentation.vb"/>
+    <Compile Include="Features\InformationPages\Presentation\InformationPagesPresentation.vb"/>
+    <Compile Include="Features\Circulars\Presentation\CircularsPresentation.vb"/>
+    <Compile Include="Features\Correspondence\Presentation\CorrespondencePresentation.vb"/>
+    <Compile Include="Features\Attendance\Presentation\AttendancePresentation.vb"/>
+    <Compile Include="Features\CustomerPortal\Presentation\CustomerPortalPresentation.vb"/>
+    <Compile Include="Features\WorkGuide\Presentation\WorkGuidePresentation.vb"/>
+    <Compile Include="Features\Feedback\Storage\EmployeeFeedbackAttachments.vb"/>
+    <Compile Include="Features\Correspondence\Storage\CorrespondenceAttachments.vb"/>
+    <Compile Include="Features\Circulars\Storage\CircularsDocuments.vb"/>
+    <Compile Include="Features\News\Presentation\NewsPresentation.vb"/>
+    <Compile Include="Features\Circulars\Web\CircularsPage.vb"/>
+    <Compile Include="Features\CustomerPortal\Web\CustomerPortalPage.vb"/>
+    <Compile Include="Features\CRM\Models\CRMDefinitions.vb"/>
+    <Compile Include="Features\Feedback\Models\FeedbackConfigurationModels.vb"/>
+    <Compile Include="Modules\Circulars\Index.aspx.designer.vb">
+      <DependentUpon>Index.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\CRM_Accounts\ManageCRMAccounts.aspx.designer.vb">
+      <DependentUpon>ManageCRMAccounts.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\CRM_Account_Types\ManageCRMAccountTypes.aspx.designer.vb">
+      <DependentUpon>ManageCRMAccountTypes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\CRM_Activity_Logs\ManageCRMActivityLogs.aspx.designer.vb">
+      <DependentUpon>ManageCRMActivityLogs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\CRM_Contacts\ManageCRMContacts.aspx.designer.vb">
+      <DependentUpon>ManageCRMContacts.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\CRM_Contract_Types\ManageCRMContractTypes.aspx.designer.vb">
+      <DependentUpon>ManageCRMContractTypes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\CRM_Payment_Methods\ManageCRMPaymentMethods.aspx.designer.vb">
+      <DependentUpon>ManageCRMPaymentMethods.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Shared\Configuration\AppSettings.vb"/>
+    <Compile Include="Shared\Utilities\BasePage.vb"/>
+    <Compile Include="Shared\Utilities\ListToDataTableConverter.vb"/>
+    <Compile Include="Features\Contracts\Models\SupportContract1.vb"/>
+    <Compile Include="Features\EmployeeAccess\Directory\ActiveDirectoryChecker.vb"/>
+    <Compile Include="Features\EmployeeAccess\Directory\ActiveDirectorySearcher.vb"/>
+    <Compile Include="Features\EmployeeAccess\Directory\Models\ADuserData.vb"/>
+    <Compile Include="Shared\Utilities\BusinessClass.vb"/>
+    <Compile Include="Shared\Security\EncryptDecrypt.vb"/>
+    <Compile Include="Features\EmployeeAccess\Security\RememberMeToken.vb"/>
+    <Compile Include="Features\EmployeeAccess\Security\EmployeeSessionResetGuard.vb"/>
     <Compile Include="ForgotPassword.aspx.vb">
       <DependentUpon>ForgotPassword.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -171,9 +192,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ForgotPassword.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Features\News\Data\NewsData.vb" />
-    <Compile Include="Features\EmployeeAccess\Security\SessionManager.vb" />
-    <Compile Include="Features\EmployeeAccess\Models\UserEntity.vb" />
+    <Compile Include="Features\News\Data\NewsData.vb"/>
+    <Compile Include="Features\EmployeeAccess\Security\SessionManager.vb"/>
+    <Compile Include="Features\EmployeeAccess\Models\UserEntity.vb"/>
     <Compile Include="Login.aspx.designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -978,7 +999,7 @@
       <DependentUpon>ManageWorkGuide_User_Category_Roles.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb"/>
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
@@ -1065,7 +1086,7 @@
       <DependentUpon>WorkSchedule1.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="Shared\Storage\Uploader.vb" />
+    <Compile Include="Shared\Storage\Uploader.vb"/>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -1093,28 +1114,28 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ckeditor\images\" />
-    <Folder Include="ckeditor\plugins\a11yhelp\lang\" />
-    <Folder Include="ckeditor\plugins\adobeair\" />
-    <Folder Include="ckeditor\plugins\ajax\" />
-    <Folder Include="ckeditor\plugins\autogrow\" />
-    <Folder Include="ckeditor\plugins\iframedialog\" />
-    <Folder Include="ckeditor\plugins\pastetext\dialogs\" />
-    <Folder Include="ckeditor\plugins\placeholder\dialogs\" />
-    <Folder Include="ckeditor\plugins\placeholder\lang\" />
-    <Folder Include="ckeditor\plugins\specialchar\lang\" />
-    <Folder Include="ckeditor\plugins\styles\styles\" />
-    <Folder Include="ckeditor\plugins\tableresize\" />
-    <Folder Include="ckeditor\plugins\uicolor\dialogs\" />
-    <Folder Include="ckeditor\plugins\uicolor\lang\" />
-    <Folder Include="ckeditor\plugins\uicolor\yui\assets\" />
-    <Folder Include="ckeditor\plugins\xml\" />
-    <Folder Include="ckeditor\skins\kama\images\" />
-    <Folder Include="ckeditor\skins\office2003\images\" />
-    <Folder Include="ckeditor\skins\v2\images\" />
-    <Folder Include="ckeditor\themes\default\" />
-    <Folder Include="FileManager\" />
-    <Folder Include="Modules\Reports\" />
+    <Folder Include="ckeditor\images\"/>
+    <Folder Include="ckeditor\plugins\a11yhelp\lang\"/>
+    <Folder Include="ckeditor\plugins\adobeair\"/>
+    <Folder Include="ckeditor\plugins\ajax\"/>
+    <Folder Include="ckeditor\plugins\autogrow\"/>
+    <Folder Include="ckeditor\plugins\iframedialog\"/>
+    <Folder Include="ckeditor\plugins\pastetext\dialogs\"/>
+    <Folder Include="ckeditor\plugins\placeholder\dialogs\"/>
+    <Folder Include="ckeditor\plugins\placeholder\lang\"/>
+    <Folder Include="ckeditor\plugins\specialchar\lang\"/>
+    <Folder Include="ckeditor\plugins\styles\styles\"/>
+    <Folder Include="ckeditor\plugins\tableresize\"/>
+    <Folder Include="ckeditor\plugins\uicolor\dialogs\"/>
+    <Folder Include="ckeditor\plugins\uicolor\lang\"/>
+    <Folder Include="ckeditor\plugins\uicolor\yui\assets\"/>
+    <Folder Include="ckeditor\plugins\xml\"/>
+    <Folder Include="ckeditor\skins\kama\images\"/>
+    <Folder Include="ckeditor\skins\office2003\images\"/>
+    <Folder Include="ckeditor\skins\v2\images\"/>
+    <Folder Include="ckeditor\themes\default\"/>
+    <Folder Include="FileManager\"/>
+    <Folder Include="Modules\Reports\"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ProstoERP.Infrastructure\ProstoERP.Infrastructure.vbproj">
@@ -1138,10 +1159,10 @@
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
-  <Import Project="..\..\build\MonoFramework.props" />
-  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
-  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Import Project="..\..\build\MonoFramework.props"/>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets"/>
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''"/>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false"/>
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
@@ -1159,7 +1180,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
@@ -1259,7 +1280,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Features\WorkGuide\Data\WorkGuideAccess.vb" />
+    <Compile Include="Features\WorkGuide\Data\WorkGuideAccess.vb"/>
     <Compile Include="Modules\WorkGuide_Access_Requests\ManageWorkGuideAccessRequests.aspx.vb">
       <DependentUpon>ManageWorkGuideAccessRequests.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1291,11 +1312,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Features\WorkGuide\Exports\WorkGuideLogExport.vb" />
+    <Compile Include="Features\WorkGuide\Exports\WorkGuideLogExport.vb"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Features\Attendance\Data\AttendanceData.vb" />
+    <Compile Include="Features\Attendance\Data\AttendanceData.vb"/>
     <Compile Include="Modules\Employees\AttendanceHistory.aspx.vb">
       <DependentUpon>AttendanceHistory.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1314,8 +1335,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ManageAttendanceIntegration.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Features\CRM\Data\CRMData.vb" />
-    <Compile Include="Features\CRM\Configuration\CRMModel.vb" />
+    <Compile Include="Features\CRM\Data\CRMData.vb"/>
+    <Compile Include="Features\CRM\Configuration\CRMModel.vb"/>
     <Compile Include="Features\CRM\Web\CRMModulePage.vb">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -1385,11 +1406,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Transactions" />
+    <Reference Include="System.Transactions"/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Features\Correspondence\Data\CorrespondenceData.vb" />
-    <Reference Include="System.IO.Compression" />
+    <Compile Include="Features\Correspondence\Data\CorrespondenceData.vb"/>
+    <Reference Include="System.IO.Compression"/>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Modules\Correspondence\ManageCorrespondence.aspx.vb">
@@ -1567,7 +1588,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ViewSuggestionEmployeeFeedback.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Features\Feedback\Data\EmployeeFeedbackData.vb" />
+    <Compile Include="Features\Feedback\Data\EmployeeFeedbackData.vb"/>
     <Compile Include="Features\Feedback\Web\EmployeeFeedbackPage.vb">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -1627,13 +1648,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>View.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Features\InformationPages\Data\InformationPagesData.vb" />
+    <Compile Include="Features\InformationPages\Data\InformationPagesData.vb"/>
     <Compile Include="Features\InformationPages\Web\InformationPagesPage.vb">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Features\Feedback\Configuration\EmployeeFeedbackConfig.vb" />
+    <Compile Include="Features\Feedback\Configuration\EmployeeFeedbackConfig.vb"/>
     <Compile Include="Modules\Employee_Feedback_Permissions\ManageEmployeeFeedbackPermissions.aspx.vb">
       <DependentUpon>ManageEmployeeFeedbackPermissions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1654,7 +1675,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Features\Feedback\Data\EmployeeFeedbackCatalog.vb" />
+    <Compile Include="Features\Feedback\Data\EmployeeFeedbackCatalog.vb"/>
     <Compile Include="Modules\Employee_Feedback_Types\ManageEmployeeFeedbackTypes.aspx.vb">
       <DependentUpon>ManageEmployeeFeedbackTypes.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1693,7 +1714,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Features\Circulars\Data\CircularsData.vb" />
+    <Compile Include="Features\Circulars\Data\CircularsData.vb"/>
     <Compile Include="Modules\Circulars\Index.aspx.vb">
       <DependentUpon>Index.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1762,7 +1783,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CustomerAccess.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Features\CustomerPortal\Data\CustomerPortalData.vb" />
+    <Compile Include="Features\CustomerPortal\Data\CustomerPortalData.vb"/>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomerPortal\FeedbackDetail.aspx.vb">
@@ -1786,5 +1807,5 @@
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\..\build\LegacyWeb.targets" />
+  <Import Project="..\..\build\LegacyWeb.targets"/>
 </Project>

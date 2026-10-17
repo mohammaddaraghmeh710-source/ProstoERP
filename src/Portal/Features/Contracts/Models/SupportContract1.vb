@@ -17,3 +17,5 @@
     Public Property FrienldyName As String
     Public Property Sequence As Integer
 End Class
+
+

@@ -13,7 +13,7 @@
  <div class="table-responsive"><table id="ERPTable" class="ERP_ProstoTBL card-list-table table table-bordered dt-responsive nowrap">
  <thead><tr><th>وقت الحركة</th><th>الحركة</th><th>طريقة التحقق</th><th>الجهاز</th><th>المنطقة</th><th>المصدر</th></tr></thead><tbody>
  <asp:Repeater ID="rptAttendance" runat="server"><ItemTemplate><tr>
- <td data-title="وقت الحركة"><%#: Eval("PunchTime") %></td><td data-title="الحركة"><%#: Eval("PunchState") %></td><td data-title="طريقة التحقق"><%#: Eval("VerifyType") %></td><td data-title="الجهاز"><%#: Eval("Terminal") %></td><td data-title="المنطقة"><%#: Eval("Area") %></td><td data-title="المصدر"><%#: Eval("Source") %></td>
+ <td data-title="وقت الحركة"><%#: Eval("PunchTime")%></td><td data-title="الحركة"><%#: Eval("PunchState")%></td><td data-title="طريقة التحقق"><%#: Eval("VerifyType")%></td><td data-title="الجهاز"><%#: Eval("Terminal")%></td><td data-title="المنطقة"><%#: Eval("Area")%></td><td data-title="المصدر"><%#: Eval("Source")%></td>
  </tr></ItemTemplate></asp:Repeater></tbody></table></div>
  <asp:Label ID="lblEmpty" runat="server" CssClass="d-block text-center text-muted py-3" Text="لا توجد حركات دوام خلال الفترة المحددة." Visible="false" />
  </div></div></div>

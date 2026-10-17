@@ -10,38 +10,75 @@ using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Prosto_ERP_ClassLibrary;
 
 namespace Prosto_ERP_API.Attendance
 {
     public sealed class BioTimeAttendanceService
     {
-        const string TransactionsPath = "/iclock/api/transactions/";
-        readonly Uri BaseUri;
-        // Reuse connections; do not share cookies, credentials or authorization headers.
-        static readonly HttpClient SharedClient = new HttpClient(new HttpClientHandler
-            { AllowAutoRedirect = false, UseCookies = false, UseProxy = false })
-            { Timeout = TimeSpan.FromSeconds(30), MaxResponseContentBufferSize = 8 * 1024 * 1024 };
-        readonly HttpClient client;
-        public BioTimeAttendanceService() : this(SharedClient) { }
-        public BioTimeAttendanceService(HttpClient client) : this(client, "http://127.0.0.1:8089/") { }
-        public BioTimeAttendanceService(string baseUrl) : this(SharedClient, baseUrl) { }
-        public BioTimeAttendanceService(HttpClient client, string baseUrl) { this.client = client; BaseUri = new Uri(Prosto_ERP_ClassLibrary.AttendanceIntegration.NormalizeUrl(baseUrl, true)); }
+        private const string TransactionsPath = "/iclock/api/transactions/";
 
-        public BioTimeAttendanceService WithBaseUrl(string baseUrl) { return new BioTimeAttendanceService(client, baseUrl); }
-        public async Task<JArray> GetTransactionsAsync(AttendanceTransactionsRequest input, CancellationToken cancellationToken)
+        // Reuse connections; do not share cookies, credentials or authorization headers.
+        private static readonly HttpClient SharedClient = new HttpClient(new HttpClientHandler
+                { AllowAutoRedirect = false, UseCookies = false, UseProxy = false })
+            { Timeout = TimeSpan.FromSeconds(30), MaxResponseContentBufferSize = 8 * 1024 * 1024 };
+
+        private readonly Uri BaseUri;
+
+        private readonly HttpClient client;
+
+        public BioTimeAttendanceService() : this(SharedClient)
         {
-            if (input == null || !input.IsValid()) throw Error(HttpStatusCode.BadRequest, "VALIDATION_ERROR", "Invalid request fields or date range.");
+        }
+
+        public BioTimeAttendanceService(HttpClient client) : this(client, "http://127.0.0.1:8089/")
+        {
+        }
+
+        public BioTimeAttendanceService(string baseUrl) : this(SharedClient, baseUrl)
+        {
+        }
+
+        public BioTimeAttendanceService(HttpClient client, string baseUrl)
+        {
+            this.client = client;
+            BaseUri = new Uri(AttendanceIntegration.NormalizeUrl(baseUrl, true));
+        }
+
+        public BioTimeAttendanceService WithBaseUrl(string baseUrl)
+        {
+            return new BioTimeAttendanceService(client, baseUrl);
+        }
+
+        public async Task<JArray> GetTransactionsAsync(AttendanceTransactionsRequest input,
+            CancellationToken cancellationToken)
+        {
+            if (input == null || !input.IsValid())
+                throw Error(HttpStatusCode.BadRequest, "VALIDATION_ERROR", "Invalid request fields or date range.");
             using (var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
             {
                 deadline.CancelAfter(TimeSpan.FromMinutes(2));
-                try { return await RetrieveAsync(input, deadline.Token).ConfigureAwait(false); }
-                catch (OperationCanceledException) { throw Error(HttpStatusCode.GatewayTimeout, "BIOTIME_TIMEOUT", "BioTime request timed out or was cancelled."); }
-                catch (HttpRequestException) { throw Error(HttpStatusCode.ServiceUnavailable, "BIOTIME_UNAVAILABLE", "BioTime is unavailable."); }
-                catch (JsonException) { throw InvalidResponse(); }
+                try
+                {
+                    return await RetrieveAsync(input, deadline.Token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    throw Error(HttpStatusCode.GatewayTimeout, "BIOTIME_TIMEOUT",
+                        "BioTime request timed out or was cancelled.");
+                }
+                catch (HttpRequestException)
+                {
+                    throw Error(HttpStatusCode.ServiceUnavailable, "BIOTIME_UNAVAILABLE", "BioTime is unavailable.");
+                }
+                catch (JsonException)
+                {
+                    throw InvalidResponse();
+                }
             }
         }
 
-        async Task<JArray> RetrieveAsync(AttendanceTransactionsRequest input, CancellationToken ct)
+        private async Task<JArray> RetrieveAsync(AttendanceTransactionsRequest input, CancellationToken ct)
         {
             var token = await AuthenticateAsync(input, ct).ConfigureAwait(false);
             var query = HttpUtility.ParseQueryString(string.Empty);
@@ -53,8 +90,8 @@ namespace Prosto_ERP_API.Attendance
             var pages = new HashSet<string>(StringComparer.Ordinal);
             var ids = new HashSet<string>(StringComparer.Ordinal);
             var result = new JArray();
-            bool retried = false;
-            for (int page = 0; page < 10000; page++)
+            var retried = false;
+            for (var page = 0; page < 10000; page++)
             {
                 if (!urls.Add(uri.AbsoluteUri)) throw PaginationError();
                 JObject payload;
@@ -65,10 +102,16 @@ namespace Prosto_ERP_API.Attendance
                         retried = true;
                         token = await AuthenticateAsync(input, ct).ConfigureAwait(false);
                         using (var retry = await TransactionsAsync(uri, token, ct).ConfigureAwait(false))
+                        {
                             payload = await ReadAsync(retry).ConfigureAwait(false);
+                        }
                     }
-                    else payload = await ReadAsync(response).ConfigureAwait(false);
+                    else
+                    {
+                        payload = await ReadAsync(response).ConfigureAwait(false);
+                    }
                 }
+
                 var records = payload["data"] as JArray;
                 if (records == null) throw InvalidResponse();
                 var code = payload["code"];
@@ -86,11 +129,13 @@ namespace Prosto_ERP_API.Attendance
                     if (result.Count >= 1000000) throw PaginationError();
                     result.Add(transaction);
                 }
+
                 var next = payload["next"];
                 if (next == null || next.Type == JTokenType.Null) return result;
                 if (next.Type != JTokenType.String || string.IsNullOrWhiteSpace((string)next)) throw PaginationError();
                 uri = NextUri(uri, (string)next, input);
             }
+
             throw PaginationError();
         }
 
@@ -98,17 +143,23 @@ namespace Prosto_ERP_API.Attendance
         {
             Uri candidate;
             if (!Uri.TryCreate(current, next, out candidate) || candidate.Scheme != BaseUri.Scheme
-                || candidate.Host != BaseUri.Host || candidate.Port != BaseUri.Port
-                || candidate.AbsolutePath != TransactionsPath || candidate.UserInfo.Length != 0 || candidate.Fragment.Length != 0)
+                                                             || candidate.Host != BaseUri.Host ||
+                                                             candidate.Port != BaseUri.Port
+                                                             || candidate.AbsolutePath != TransactionsPath ||
+                                                             candidate.UserInfo.Length != 0 ||
+                                                             candidate.Fragment.Length != 0)
                 throw PaginationError();
             var query = HttpUtility.ParseQueryString(candidate.Query);
-            foreach (string key in query.AllKeys)
+            foreach (var key in query.AllKeys)
             {
-                if (key != "emp_code" && key != "start_time" && key != "end_time" && key != "page" && key != "page_size") throw PaginationError();
+                if (key != "emp_code" && key != "start_time" && key != "end_time" && key != "page" &&
+                    key != "page_size") throw PaginationError();
                 if (query.GetValues(key).Length != 1) throw PaginationError();
                 int value;
-                if ((key == "page" || key == "page_size") && (!int.TryParse(query[key], out value) || value < 1 || value > 100000)) throw PaginationError();
+                if ((key == "page" || key == "page_size") &&
+                    (!int.TryParse(query[key], out value) || value < 1 || value > 100000)) throw PaginationError();
             }
+
             // Enforce the original filters even if BioTime's next URL omits or changes them.
             query["emp_code"] = input.EmployeeCode;
             query["start_time"] = input.FromDate + " 00:00:00";
@@ -116,15 +167,20 @@ namespace Prosto_ERP_API.Attendance
             return new UriBuilder(BaseUri) { Path = TransactionsPath, Query = query.ToString() }.Uri;
         }
 
-        async Task<string> AuthenticateAsync(AttendanceTransactionsRequest input, CancellationToken ct)
+        private async Task<string> AuthenticateAsync(AttendanceTransactionsRequest input, CancellationToken ct)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Post, new Uri(BaseUri, "jwt-api-token-auth/")))
             {
-                request.Content = new StringContent(JsonConvert.SerializeObject(new { username = input.Username, password = input.Password }), Encoding.UTF8, "application/json");
+                request.Content =
+                    new StringContent(
+                        JsonConvert.SerializeObject(new { username = input.Username, password = input.Password }),
+                        Encoding.UTF8, "application/json");
                 using (var response = await client.SendAsync(request, ct).ConfigureAwait(false))
                 {
-                    if (response.StatusCode == HttpStatusCode.BadRequest || response.StatusCode == HttpStatusCode.Unauthorized)
-                        throw Error(HttpStatusCode.Unauthorized, "BIOTIME_INVALID_CREDENTIALS", "BioTime credentials were rejected.");
+                    if (response.StatusCode == HttpStatusCode.BadRequest ||
+                        response.StatusCode == HttpStatusCode.Unauthorized)
+                        throw Error(HttpStatusCode.Unauthorized, "BIOTIME_INVALID_CREDENTIALS",
+                            "BioTime credentials were rejected.");
                     var payload = await ReadAsync(response).ConfigureAwait(false);
                     var token = payload["token"];
                     if (token == null || token.Type != JTokenType.String || string.IsNullOrWhiteSpace((string)token)
@@ -134,7 +190,7 @@ namespace Prosto_ERP_API.Attendance
             }
         }
 
-        async Task<HttpResponseMessage> TransactionsAsync(Uri uri, string token, CancellationToken ct)
+        private async Task<HttpResponseMessage> TransactionsAsync(Uri uri, string token, CancellationToken ct)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
             {
@@ -142,31 +198,55 @@ namespace Prosto_ERP_API.Attendance
                 return await client.SendAsync(request, ct).ConfigureAwait(false);
             }
         }
-        static async Task<JObject> ReadAsync(HttpResponseMessage response)
+
+        private static async Task<JObject> ReadAsync(HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode)
             {
-                if (response.StatusCode == HttpStatusCode.Unauthorized) throw Error(HttpStatusCode.Unauthorized, "BIOTIME_UNAUTHORIZED", "BioTime authorization failed.");
-                if (response.StatusCode == HttpStatusCode.Forbidden) throw Error(HttpStatusCode.Forbidden, "BIOTIME_FORBIDDEN", "BioTime access was denied.");
-                if (response.StatusCode == HttpStatusCode.NotFound) throw Error(HttpStatusCode.BadGateway, "BIOTIME_NOT_FOUND", "BioTime endpoint is unavailable.");
-                throw Error(HttpStatusCode.BadGateway, "BIOTIME_HTTP_ERROR", "BioTime returned an unsuccessful response.");
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    throw Error(HttpStatusCode.Unauthorized, "BIOTIME_UNAUTHORIZED", "BioTime authorization failed.");
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                    throw Error(HttpStatusCode.Forbidden, "BIOTIME_FORBIDDEN", "BioTime access was denied.");
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                    throw Error(HttpStatusCode.BadGateway, "BIOTIME_NOT_FOUND", "BioTime endpoint is unavailable.");
+                throw Error(HttpStatusCode.BadGateway, "BIOTIME_HTTP_ERROR",
+                    "BioTime returned an unsuccessful response.");
             }
+
             return JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
-        static void RemoveSecrets(JToken token)
+
+        private static void RemoveSecrets(JToken token)
         {
             var obj = token as JObject;
             if (obj != null)
                 foreach (var property in obj.Properties().ToList())
                 {
                     var name = property.Name.Replace("_", "").ToLowerInvariant();
-                    if (name == "username" || name == "password" || name == "token" || name == "jwt" || name == "authorization" || name == "accesstoken" || name == "refreshtoken") property.Remove();
+                    if (name == "username" || name == "password" || name == "token" || name == "jwt" ||
+                        name == "authorization" || name == "accesstoken" || name == "refreshtoken") property.Remove();
                     else RemoveSecrets(property.Value);
                 }
-            else if (token is JArray) foreach (var child in token.Children()) RemoveSecrets(child);
+            else if (token is JArray)
+                foreach (var child in token.Children())
+                    RemoveSecrets(child);
         }
-        static BioTimeException Error(HttpStatusCode status, string code, string message) { return new BioTimeException(status, code, message); }
-        static BioTimeException InvalidResponse() { return Error(HttpStatusCode.BadGateway, "BIOTIME_INVALID_RESPONSE", "BioTime returned an invalid response."); }
-        static BioTimeException PaginationError() { return Error(HttpStatusCode.BadGateway, "BIOTIME_PAGINATION_ERROR", "BioTime pagination could not be completed safely."); }
+
+        private static BioTimeException Error(HttpStatusCode status, string code, string message)
+        {
+            return new BioTimeException(status, code, message);
+        }
+
+        private static BioTimeException InvalidResponse()
+        {
+            return Error(HttpStatusCode.BadGateway, "BIOTIME_INVALID_RESPONSE",
+                "BioTime returned an invalid response.");
+        }
+
+        private static BioTimeException PaginationError()
+        {
+            return Error(HttpStatusCode.BadGateway, "BIOTIME_PAGINATION_ERROR",
+                "BioTime pagination could not be completed safely.");
+        }
     }
 }

@@ -1,9 +1,9 @@
-﻿Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class Manage_News
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -21,6 +21,7 @@ Public Class Manage_News
         lstData.DataSource = NewsData.Listing(SessionManager.GetInstance.Users.UserID)
         lstData.DataBind()
     End Sub
+
     Private Sub BindData_Filter()
         Dim active As Boolean? = Nothing
         If ddlStatus.SelectedValue = "1" Then active = True
@@ -28,9 +29,11 @@ Public Class Manage_News
         Dim brand As Integer? = Nothing
         Dim selected As Integer
         If Integer.TryParse(ddlBrand.SelectedValue, selected) AndAlso selected > 0 Then brand = selected
-        lstData.DataSource = NewsData.Listing(SessionManager.GetInstance.Users.UserID, txtKeyword.Text.Trim(), active, brand)
+        lstData.DataSource = NewsData.Listing(SessionManager.GetInstance.Users.UserID, txtKeyword.Text.Trim(), active,
+                                              brand)
         lstData.DataBind()
     End Sub
+
     Protected Sub btnAddNew_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/News/Add_News.aspx")
     End Sub
@@ -47,7 +50,7 @@ Public Class Manage_News
     End Sub
 
     Protected Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs)
-        Dim pid As Integer = CInt(e.CommandArgument)
+        Dim pid = CInt(e.CommandArgument)
 
         If e.CommandName = "Edit" Then
             Response.Redirect("/Modules/News/Edit_News.aspx?PID=" & pid)
@@ -57,11 +60,13 @@ Public Class Manage_News
         If e.CommandName = "DeleteItem" Then
             Dim userId = SessionManager.GetInstance.Users.UserID
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
                 db.Update_News_IsDeleted_ByID(pid, userId)
             End Using
 
-            If String.IsNullOrWhiteSpace(txtKeyword.Text) AndAlso ddlStatus.SelectedValue = "-1" AndAlso ddlBrand.SelectedValue = "0" Then
+            If _
+                String.IsNullOrWhiteSpace(txtKeyword.Text) AndAlso ddlStatus.SelectedValue = "-1" AndAlso
+                ddlBrand.SelectedValue = "0" Then
                 BindData()
             Else
                 BindData_Filter()
@@ -69,3 +74,5 @@ Public Class Manage_News
         End If
     End Sub
 End Class
+
+

@@ -28,17 +28,21 @@ Public NotInheritable Class CircularsPresentation
 
     Public Shared Function ErrorText(ex As Exception) As String
         If TypeOf ex Is ArgumentException Then Return ex.Message
-        Dim sql=TryCast(ex,SqlException)
+        Dim sql = TryCast(ex, SqlException)
         If sql IsNot Nothing Then
             Select Case sql.Number
-                Case 51800 : Return "تحقق من الحقول والصلاحية والمستهدفين. اختر فروعًا تابعة للعلامات المختارة، وقيمًا فعالة، وملف PDF لا يتجاوز 10MB."
+                Case 51800 _
+                    : Return _
+                        "تحقق من الحقول والصلاحية والمستهدفين. اختر فروعًا تابعة للعلامات المختارة، وقيمًا فعالة، وملف PDF لا يتجاوز 10MB."
                 Case 51801 : Return "لا تملك صلاحية تنفيذ هذه العملية."
                 Case 51803 : Return "تنزيل هذا الملف غير مسموح."
                 Case 51804 : Return "التعميم غير متاح أو انتهت صلاحيته."
                 Case 51809 : Return "تغير التعميم منذ فتح الصفحة. أعد تحميل الصفحة قبل الحفظ."
             End Select
         End If
-        System.Diagnostics.Trace.TraceError("Circular operation failed ({0}).",ex.GetType().Name)
+        Trace.TraceError("Circular operation failed ({0}).", ex.GetType().Name)
         Return "تعذر تنفيذ العملية. حاول مرة أخرى."
     End Function
 End Class
+
+

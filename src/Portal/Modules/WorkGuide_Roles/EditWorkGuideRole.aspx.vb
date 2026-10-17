@@ -1,9 +1,9 @@
-﻿Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class EditWorkGuideRole
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -18,9 +18,9 @@ Public Class EditWorkGuideRole
     End Sub
 
     Private Sub FillData()
-        Dim ID As Integer = CInt(Request.QueryString("ID"))
+        Dim ID = CInt(Request.QueryString("ID"))
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim item = db.Select_Work_Guide_Role_ByID(ID).FirstOrDefault()
 
@@ -50,9 +50,9 @@ Public Class EditWorkGuideRole
             Return
         End If
 
-        Dim ID As Integer = CInt(Request.QueryString("ID"))
+        Dim ID = CInt(Request.QueryString("ID"))
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             db.Update_Work_Guide_Role_ByID(
                 ID,
@@ -63,7 +63,7 @@ Public Class EditWorkGuideRole
                 txtDescriptionEn.Text.Trim(),
                 SessionManager.GetInstance.Users.UserID,
                 cbIsActive.Checked
-            )
+                )
 
             db.Upsert_Work_Guide_Role_Permissions(
                 ID,
@@ -72,7 +72,7 @@ Public Class EditWorkGuideRole
                 chkPrintDocument.Checked,
                 chkDownloadDocument.Checked,
                 SessionManager.GetInstance.Users.UserID
-            )
+                )
 
         End Using
 
@@ -82,5 +82,5 @@ Public Class EditWorkGuideRole
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/WorkGuide_Roles/ManageWorkGuideRoles.aspx")
     End Sub
-
 End Class
+

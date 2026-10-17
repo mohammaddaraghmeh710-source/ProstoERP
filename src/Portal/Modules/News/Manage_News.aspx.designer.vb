@@ -12,7 +12,6 @@ Option Explicit On
 
 
 Partial Public Class Manage_News
-    Protected WithEvents ddlBrand As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''btnAddNew control.
@@ -22,6 +21,15 @@ Partial Public Class Manage_News
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents btnAddNew As Global.System.Web.UI.WebControls.LinkButton
+
+    '''<summary>
+    '''ddlBrand control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents ddlBrand As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
     '''txtKeyword control.
@@ -67,4 +75,16 @@ Partial Public Class Manage_News
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents lstData As Global.System.Web.UI.WebControls.ListView
+
+    '''<summary>
+    '''Master property.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated property.
+    '''</remarks>
+    Public Shadows ReadOnly Property Master() As CRM.Site
+        Get
+            Return CType(MyBase.Master, CRM.Site)
+        End Get
+    End Property
 End Class

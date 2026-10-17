@@ -124,8 +124,36 @@ Build without invoking setup, database changes, or tests:
 msbuild ERP_Prosto.sln /t:Build /p:Configuration=Debug /m:1 /nr:false /p:UseSharedCompilation=false /verbosity:minimal /nologo
 ```
 
-Run **ERP Aspire (native)**, then browse `/swagger` on API port 3001. Export the
-running API's actual Swagger 2.0 contract with:
+Run **ERP Aspire (native)**, then browse `/swagger` on API port 3001. Swagger opens
+the **Mobile API** module by default. The module selector switches between the
+mobile-only document and **All APIs**. Mobile operations are grouped by feature.
+
+| View                       | URL                       |
+|----------------------------|---------------------------|
+| Mobile Swagger UI          | `/swagger?module=mobile`  |
+| All APIs Swagger UI        | `/swagger?module=all`     |
+| Mobile-only Swagger JSON   | `/swagger/docs/mobile-v1` |
+| Existing full Swagger JSON | `/swagger/docs/v1`        |
+
+Mobile classification follows the existing `Prosto_ERP_API.Mobile` controller
+namespace. This includes employee authentication/device access and content,
+employee feedback, circulars, correspondence, customer portal, and customer
+feedback. Legacy ERP, attendance, email integration, and sample endpoints stay
+in the full document. These are documentation modules; API routes and runtime
+versioning are unchanged. Biometric/password-reset integration credentials are
+identified as Basic authentication in the mobile documentation.
+
+The mobile document currently contains 46 paths and 51 operations across seven
+feature groups. The full document retains 66 paths and 74 operations. Both views
+and documents were checked locally, including the rendered module selector.
+
+Export the mobile-only contract with:
+
+```sh
+python3 scripts/export_api_contract.py --url http://127.0.0.1:3001/swagger/docs/mobile-v1 --output artifacts/contracts/prosto-erp-mobile-v1.openapi.json
+```
+
+Export the running API's full Swagger 2.0 contract with:
 
 ```sh
 python3 scripts/export_api_contract.py
@@ -168,4 +196,14 @@ Before a real deployment, resolve these existing environment dependencies:
 - A release artifact built with configuration for that environment, with Swagger
   exposure and authentication appropriate to the selected hosting configuration.
 
-No tests or test projects are added by this foundation work.
+## Validation completed
+
+The Mono Debug solution build passes, including the API's reference to Contracts;
+the Contracts Release build also passes. The 12 relocated request files match
+their original SHA-256 hashes. The existing password-reset partial controller
+retains its compatibility success helper.
+
+The local contract export contains 66 paths and 74 operations. A live empty login
+request returns HTTP 400 with `Success: false`, `INVALID_REQUEST`, and
+`Cache-Control: no-store, private`; Portal login returns HTTP 200. No environment
+was deployed. No tests or test projects are added by this foundation work.

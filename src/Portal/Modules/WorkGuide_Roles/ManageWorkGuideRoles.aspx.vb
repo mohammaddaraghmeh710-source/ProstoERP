@@ -1,7 +1,9 @@
-﻿Public Class ManageWorkGuideRoles
+﻿Imports Prosto_ERP_ClassLibrary
+
+Public Class ManageWorkGuideRoles
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -16,7 +18,7 @@
     End Sub
 
     Private Sub FillData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim Data = db.Select_Work_Guide_Roles_All().AsQueryable()
             Data = Data.OrderByDescending(Function(x) x.ID)
 
@@ -26,16 +28,16 @@
     End Sub
 
     Private Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs) Handles lstData.ItemCommand
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Try
                 Select Case e.CommandName
 
                     Case "Edit"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         Response.Redirect("/Modules/WorkGuide_Roles/EditWorkGuideRole.aspx?ID=" & ID.ToString())
 
                     Case "DeleteItem"
-                        Dim ID As Integer = CType(e.CommandArgument, Integer)
+                        Dim ID = CType(e.CommandArgument, Integer)
                         db.Update_Work_Guide_Role_IsDelete_ByID(ID, True, SessionManager.GetInstance.Users.UserID)
                         FillData()
 
@@ -49,5 +51,5 @@
     Protected Sub btnAddNewItem_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/WorkGuide_Roles/AddWorkGuideRole.aspx")
     End Sub
-
 End Class
+

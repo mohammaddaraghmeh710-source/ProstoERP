@@ -1,13 +1,14 @@
-﻿Imports System.Linq
-Imports AjaxControlToolkit
+﻿Imports System.Data.SqlClient
 Imports System.Globalization
+Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Add_News
     Inherits PageBase
 
     Private NewsImagePath As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If Not IsPostBack Then
             ClearFileSession()
             NewsData.FillBrands(ddlBrand, "اختر العلامة التجارية")
@@ -38,38 +39,41 @@ Public Class Add_News
         If Not String.IsNullOrWhiteSpace(txtDate.Text) Then
             Dim d As DateTime
             ' input type datetime-local => "yyyy-MM-ddTHH:mm"
-            If DateTime.TryParseExact(txtDate.Text.Trim(), "yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, d) Then
+            If _
+                DateTime.TryParseExact(txtDate.Text.Trim(), "yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture,
+                                       DateTimeStyles.None, d) Then
                 dateVal = d
             End If
         End If
 
         Try
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
-            Dim files = SaveFilesFromSession()
-            If files IsNot Nothing AndAlso files.Count > 0 Then
-                For Each f In files
-                    NewsImagePath = f.Key
-                    Exit For
-                Next
-            End If
+                Dim files = SaveFilesFromSession()
+                If files IsNot Nothing AndAlso files.Count > 0 Then
+                    For Each f In files
+                        NewsImagePath = f.Key
+                        Exit For
+                    Next
+                End If
 
-            NewsData.Save(userId, brand, Nothing,
-                If(String.IsNullOrWhiteSpace(txtTitleAr.Text), Nothing, txtTitleAr.Text.Trim()),
-                If(String.IsNullOrWhiteSpace(txtTitleEn.Text), Nothing, txtTitleEn.Text.Trim()),
-                If(String.IsNullOrWhiteSpace(txtBriefAr.Text), Nothing, txtBriefAr.Text.Trim()),
-                If(String.IsNullOrWhiteSpace(txtBriefEn.Text), Nothing, txtBriefEn.Text.Trim()),
-                If(String.IsNullOrWhiteSpace(txtDetails.Text), Nothing, txtDetails.Text.Trim()),
-                If(String.IsNullOrWhiteSpace(NewsImagePath), Nothing, NewsImagePath),
-                If(dateVal.HasValue, dateVal.Value, CType(Nothing, DateTime?)),
-                orderVal,
-                True
-            )
-        End Using
+                NewsData.Save(userId, brand, Nothing,
+                              If(String.IsNullOrWhiteSpace(txtTitleAr.Text), Nothing, txtTitleAr.Text.Trim()),
+                              If(String.IsNullOrWhiteSpace(txtTitleEn.Text), Nothing, txtTitleEn.Text.Trim()),
+                              If(String.IsNullOrWhiteSpace(txtBriefAr.Text), Nothing, txtBriefAr.Text.Trim()),
+                              If(String.IsNullOrWhiteSpace(txtBriefEn.Text), Nothing, txtBriefEn.Text.Trim()),
+                              If(String.IsNullOrWhiteSpace(txtDetails.Text), Nothing, txtDetails.Text.Trim()),
+                              If(String.IsNullOrWhiteSpace(NewsImagePath), Nothing, NewsImagePath),
+                              If(dateVal.HasValue, dateVal.Value, CType(Nothing, DateTime?)),
+                              orderVal,
+                              True
+                              )
+            End Using
 
-        Catch ex As System.Data.SqlClient.SqlException
+        Catch ex As SqlException
             lblError.Text = "تعذّر حفظ الخبر. تحقق من العلامة التجارية وصلاحية الحساب ثم حاول مجددًا."
-            lblError.Visible = True : Return
+            lblError.Visible = True
+            Return
         End Try
 
         Response.Redirect("/Modules/News/Manage_News.aspx?added=1")
@@ -85,3 +89,4 @@ Public Class Add_News
     Protected Sub NewsImageUploader_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
 End Class
+

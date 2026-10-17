@@ -1,5 +1,4 @@
-﻿Imports System.Data
-Imports System.Data.SqlClient
+﻿Imports System.Data.SqlClient
 Imports System.Globalization
 
 Public Class ManageWorkGuideActivityLogs
@@ -11,7 +10,10 @@ Public Class ManageWorkGuideActivityLogs
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If Not IsPostBack Then
             Try
-                ddlCategory.DataSource = WorkGuideAccess.Query("dbo.Select_Work_Guide_Log_Categories", WorkGuideAccess.Parameter("@Admin_ID", SqlDbType.Int, SessionManager.GetInstance.Users.UserID))
+                ddlCategory.DataSource = WorkGuideAccess.Query("dbo.Select_Work_Guide_Log_Categories",
+                                                               WorkGuideAccess.Parameter("@Admin_ID", SqlDbType.Int,
+                                                                                         SessionManager.GetInstance.
+                                                                                            Users.UserID))
                 ddlCategory.DataTextField = "Category_Name"
                 ddlCategory.DataValueField = "ID"
                 ddlCategory.DataBind()
@@ -27,7 +29,10 @@ Public Class ManageWorkGuideActivityLogs
         value = Nothing
         If String.IsNullOrWhiteSpace(input.Text) Then Return True
         Dim parsed As DateTime
-        If Not DateTime.TryParseExact(input.Text.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, parsed) Then Return False
+        If _
+            Not _
+            DateTime.TryParseExact(input.Text.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                                   parsed) Then Return False
         value = parsed.Date
         Return True
     End Function
@@ -49,15 +54,21 @@ Public Class ManageWorkGuideActivityLogs
 
     Private Function FetchLogs(fromDate As DateTime?, toDate As DateTime?, exportAll As Boolean) As DataTable
         Dim category As Integer? = Nothing
-        If ddlCategory.SelectedValue <> "0" AndAlso ddlCategory.SelectedValue <> "" Then category = Integer.Parse(ddlCategory.SelectedValue)
+        If ddlCategory.SelectedValue <> "0" AndAlso ddlCategory.SelectedValue <> "" Then _
+            category = Integer.Parse(ddlCategory.SelectedValue)
         Return WorkGuideAccess.Query("dbo.Select_Work_Guide_Activity_Logs_Admin",
-                WorkGuideAccess.Parameter("@Admin_ID", SqlDbType.Int, SessionManager.GetInstance.Users.UserID),
-                WorkGuideAccess.Parameter("@User_Name", SqlDbType.NVarChar, txtUser.Text.Trim(), 200),
-                WorkGuideAccess.Parameter("@Document_Name", SqlDbType.NVarChar, txtDocument.Text.Trim(), 200),
-                WorkGuideAccess.Parameter("@Date_From", SqlDbType.Date, fromDate), WorkGuideAccess.Parameter("@Date_To", SqlDbType.Date, toDate),
-                WorkGuideAccess.Parameter("@Category_ID", SqlDbType.Int, category),
-                WorkGuideAccess.Parameter("@PageNumber", SqlDbType.Int, 1), WorkGuideAccess.Parameter("@PageSize", SqlDbType.Int, PageSize),
-                WorkGuideAccess.Parameter("@Export_All", SqlDbType.Bit, exportAll))
+                                     WorkGuideAccess.Parameter("@Admin_ID", SqlDbType.Int,
+                                                               SessionManager.GetInstance.Users.UserID),
+                                     WorkGuideAccess.Parameter("@User_Name", SqlDbType.NVarChar, txtUser.Text.Trim(),
+                                                               200),
+                                     WorkGuideAccess.Parameter("@Document_Name", SqlDbType.NVarChar,
+                                                               txtDocument.Text.Trim(), 200),
+                                     WorkGuideAccess.Parameter("@Date_From", SqlDbType.Date, fromDate),
+                                     WorkGuideAccess.Parameter("@Date_To", SqlDbType.Date, toDate),
+                                     WorkGuideAccess.Parameter("@Category_ID", SqlDbType.Int, category),
+                                     WorkGuideAccess.Parameter("@PageNumber", SqlDbType.Int, 1),
+                                     WorkGuideAccess.Parameter("@PageSize", SqlDbType.Int, PageSize),
+                                     WorkGuideAccess.Parameter("@Export_All", SqlDbType.Bit, exportAll))
     End Function
 
     Private Sub BindLogs()
@@ -95,14 +106,17 @@ Public Class ManageWorkGuideActivityLogs
             ShowMessage(litMessage, WorkGuideAccess.ErrorText(ex))
             Return
         Catch ex As InvalidOperationException
-            System.Diagnostics.Trace.TraceError("Work guide Excel export: {0}", ex.ToString())
-            ShowMessage(litMessage, "تعذّر إنشاء الملف. قلّل عدد النتائج أو طول تفاصيلها باستخدام فلاتر البحث ثم أعد المحاولة.")
+            Diagnostics.Trace.TraceError("Work guide Excel export: {0}", ex.ToString())
+            ShowMessage(litMessage,
+                        "تعذّر إنشاء الملف. قلّل عدد النتائج أو طول تفاصيلها باستخدام فلاتر البحث ثم أعد المحاولة.")
             Return
         End Try
         Response.Clear()
         Response.BufferOutput = True
         Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        Response.AddHeader("Content-Disposition", "attachment; filename=work-guide-logs-" & DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture) & ".xlsx")
+        Response.AddHeader("Content-Disposition",
+                           "attachment; filename=work-guide-logs-" &
+                           DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture) & ".xlsx")
         Response.Cache.SetCacheability(HttpCacheability.NoCache)
         Response.Cache.SetNoStore()
         Response.BinaryWrite(bytes)
@@ -110,7 +124,7 @@ Public Class ManageWorkGuideActivityLogs
         Context.ApplicationInstance.CompleteRequest()
     End Sub
 
-    Protected Overrides Sub Render(writer As System.Web.UI.HtmlTextWriter)
+    Protected Overrides Sub Render(writer As HtmlTextWriter)
         ' CompleteRequest does not skip Page.Render; keep HTML out of the XLSX response.
         If Not ExportResponse Then MyBase.Render(writer)
     End Sub
@@ -131,6 +145,7 @@ Public Class ManageWorkGuideActivityLogs
     Protected Sub btnSearch_Click(sender As Object, e As EventArgs)
         BindLogs()
     End Sub
+
     Protected Sub btnReset_Click(sender As Object, e As EventArgs)
         txtUser.Text = ""
         txtDocument.Text = ""
@@ -140,3 +155,5 @@ Public Class ManageWorkGuideActivityLogs
         BindLogs()
     End Sub
 End Class
+
+

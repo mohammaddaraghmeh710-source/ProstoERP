@@ -66,7 +66,7 @@
                             <div class="col-md-3 d-flex align-items-end">
                                 <div class="form-check">
                                     <asp:CheckBox ID="chkIsActive" runat="server" CssClass="form-check-input" />
-                                    <label class="form-check-label" for="<%= chkIsActive.ClientID %>">نشط</label>
+                                    <label class="form-check-label" for="<%=chkIsActive.ClientID%>">نشط</label>
                                 </div>
                             </div>
 

@@ -1,12 +1,12 @@
-﻿Imports System.Linq
-Imports AjaxControlToolkit
-Imports System.Web.UI.HtmlControls
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Add_LMS_Training_Level_Types
     Inherits PageBase
 
     Private LevelImagePath As String = Nothing
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         ClearFileSession()
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -25,7 +25,7 @@ Public Class Add_LMS_Training_Level_Types
             If Integer.TryParse(txtOrder.Text.Trim(), o) Then orderVal = o
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
 
             Dim files = SaveFilesFromSession()
@@ -44,7 +44,7 @@ Public Class Add_LMS_Training_Level_Types
                 If(String.IsNullOrWhiteSpace(txtNotesEn.Text), Nothing, txtNotesEn.Text.Trim()),
                 orderVal,
                 userId
-            )
+                )
         End Using
 
         Response.Redirect("/Modules/LMS_Training_Level_Types/Manage_LMS_Training_Level_Types.aspx?added=1")
@@ -60,5 +60,6 @@ Public Class Add_LMS_Training_Level_Types
 
     Protected Sub LevelImageUploader_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
-
 End Class
+
+

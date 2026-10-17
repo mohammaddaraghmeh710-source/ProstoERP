@@ -475,58 +475,58 @@
                 <div class="row g-3" id="levelsGrid">
                     <asp:Repeater ID="rptLevels" runat="server">
                         <ItemTemplate>
-                            <div class='col-12 level-item'
-                                data-status='<%# GetStatusKeyById(Eval("LevelStatusID")) %>'
-                                data-title='<%# HtmlAttr(Eval("Title_Ar")) %>'>
+                            <div class="col-12 level-item"
+                                data-status='<%# GetStatusKeyById(Eval("LevelStatusID"))%>'
+                                data-title='<%# HtmlAttr(Eval("Title_Ar"))%>'>
 
                                 <div class="level-report-card">
                                     <div class="level-card-inner">
                                         <div class="level-report-header">
                                             <div class="level-info">
                                                 <h6 class="level-title">
-                                                    <%# "المستوى " & Eval("Item_Order") & ": " & Eval("Title_Ar") %>
+                                                    <%# "المستوى " & Eval("Item_Order") & ": " & Eval("Title_Ar")%>
                                                 </h6>
 
                                                 <div class="level-subtitle text-truncate-2">
-                                                    <%# Eval("Summary_Ar") %>
+                                                    <%# Eval("Summary_Ar")%>
                                                 </div>
 
                                                 <div class="mt-3 d-flex flex-wrap gap-2">
                                                     <span class="date-pill start">
-                                                        <i class="bx bx-calendar"></i>البداية: <%# FormatDate(Eval("StartDate")) %>
+                                                        <i class="bx bx-calendar"></i>البداية: <%# FormatDate(Eval("StartDate"))%>
                                                     </span>
                                                     <span class="date-pill end">
-                                                        <i class="bx bx-calendar-x"></i>النهاية: <%# FormatDate(Eval("EndDate")) %>
+                                                        <i class="bx bx-calendar-x"></i>النهاية: <%# FormatDate(Eval("EndDate"))%>
                                                     </span>
                                                 </div>
 
-                                                <%# GetLockedHintHtmlById(Eval("LevelStatusID")) %>
+                                                <%# GetLockedHintHtmlById(Eval("LevelStatusID"))%>
                                             </div>
 
                                             <div class="level-meta-row">
                                                 <div class="meta-block">
                                                     <div class="meta-label">عدد الفيديوهات</div>
-                                                    <div class="meta-value"><%# Eval("VideosCount") %></div>
+                                                    <div class="meta-value"><%# Eval("VideosCount")%></div>
                                                 </div>
 
                                                 <div class="meta-block">
                                                     <div class="meta-label">الساعات</div>
-                                                    <div class="meta-value"><%# FormatHours(Eval("TotalDurationHours")) %></div>
+                                                    <div class="meta-value"><%# FormatHours(Eval("TotalDurationHours"))%></div>
                                                 </div>
 
                                                 <div class="meta-block">
                                                     <div class="meta-label">الحالة</div>
                                                     <div class="meta-value">
-                                                        <span class='status-badge <%# GetStatusCssById(Eval("LevelStatusID")) %>'>
-                                                            <i class='<%# GetStatusIconById(Eval("LevelStatusID")) %>'></i>
-                                                            <%# GetStatusTitleSafe(Eval("StatusTitle_Ar")) %>
+                                                        <span class='status-badge <%# GetStatusCssById(Eval("LevelStatusID"))%>'>
+                                                            <i class='<%# GetStatusIconById(Eval("LevelStatusID"))%>'></i>
+                                                            <%# GetStatusTitleSafe(Eval("StatusTitle_Ar"))%>
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="watch-progress-wrap" data-watch='<%# SafePercent(Eval("CompletionPercent")) %>'>
+                                        <div class="watch-progress-wrap" data-watch='<%# SafePercent(Eval("CompletionPercent"))%>'>
                                             <div class="watch-progress-head">
                                                 <div class="label">نسبة المشاهدة</div>
                                                 <div class="percent">0%</div>
@@ -539,19 +539,19 @@
                                         <div class="footer-left">
                                             <a href="javascript:void(0);"
                                                 class="mini text-decoration-none level-notes-link"
-                                                data-notes='<%# HtmlAttr(Eval("Notes_Ar")) %>'
-                                                data-leveltitle='<%# HtmlAttr("المستوى " & Eval("Item_Order") & ": " & Eval("Title_Ar")) %>'>
+                                                data-notes='<%# HtmlAttr(Eval("Notes_Ar"))%>'
+                                                data-leveltitle='<%# HtmlAttr("المستوى " & Eval("Item_Order") & ": " & Eval("Title_Ar"))%>'>
                                                 <i class="bx bx-message-dots"></i>ملاحظات
                                             </a>
 
-                                            <span class="mini"><i class="bx bx-task"></i>عناصر: <%# Eval("VideosCount") %></span>
+                                            <span class="mini"><i class="bx bx-task"></i>عناصر: <%# Eval("VideosCount")%></span>
                                         </div>
 
                                         <div class="footer-actions">
                                             <asp:HyperLink ID="lnkAction" runat="server"
-                                                CssClass='<%# GetActionButtonCssById(Eval("LevelStatusID")) %>'
-                                                Text='<%# GetActionButtonTextById(Eval("LevelStatusID")) %>'
-                                                NavigateUrl='<%# GetLevelContentUrl(Eval("ID"), Eval("LevelStatusID")) %>' />
+                                                CssClass='<%# GetActionButtonCssById(Eval("LevelStatusID"))%>'
+                                                Text='<%# GetActionButtonTextById(Eval("LevelStatusID"))%>'
+                                                NavigateUrl='<%# GetLevelContentUrl(Eval("ID"), Eval("LevelStatusID"))%>' />
                                         </div>
                                     </div>
 
@@ -658,12 +658,12 @@
         function initTrainingCharts() {
             if (typeof ApexCharts === 'undefined') return;
 
-            var totalLevels = parseInt('<%= litTotalLevels.Text %>' || '0', 10) || 0;
-            var openLevels = parseInt('<%= litOpenLevels.Text %>' || '0', 10) || 0;
-            var doneLevels = parseInt('<%= litDoneLevels.Text %>' || '0', 10) || 0;
-            var lockedLevels = parseInt('<%= litLockedLevels.Text %>' || '0', 10) || 0;
+            var totalLevels = parseInt('<%=litTotalLevels.Text%>' || '0', 10) || 0;
+            var openLevels = parseInt('<%=litOpenLevels.Text%>' || '0', 10) || 0;
+            var doneLevels = parseInt('<%=litDoneLevels.Text%>' || '0', 10) || 0;
+            var lockedLevels = parseInt('<%=litLockedLevels.Text%>' || '0', 10) || 0;
 
-            var completionPercent = parseInt('<%= litCompletionPercent.Text %>' || '0', 10) || 0;
+            var completionPercent = parseInt('<%=litCompletionPercent.Text%>' || '0', 10) || 0;
             completionPercent = Math.max(0, Math.min(100, completionPercent));
 
             if (window.__overallChart) { try { window.__overallChart.destroy(); } catch (e) { } }

@@ -1,13 +1,12 @@
-﻿Imports System.Linq
-Imports AjaxControlToolkit
-Imports System.Web.UI.HtmlControls
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Edit_LMS_Training_Level_Types
     Inherits PageBase
 
     Private LevelImagePath As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -29,7 +28,7 @@ Public Class Edit_LMS_Training_Level_Types
     End Sub
 
     Private Sub FillData(id As Integer)
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             ' ✅ لازم يكون SP مربوط في DBML باسم Select_TR_Level_Types_ByID
             Dim row = db.Select_TR_Level_Types_ByID(id).FirstOrDefault()
 
@@ -48,8 +47,9 @@ Public Class Edit_LMS_Training_Level_Types
 
             hfLevelImagePath.Value = If(row.Image, "")
             If Not String.IsNullOrWhiteSpace(hfLevelImagePath.Value) Then
-                litCurrentImage.Text = "<div class='mt-2'><small class='text-muted'>الصورة الحالية:</small><div><a target='_blank' href='" &
-                                       hfLevelImagePath.Value & "'>" & hfLevelImagePath.Value & "</a></div></div>"
+                litCurrentImage.Text =
+                    "<div class='mt-2'><small class='text-muted'>الصورة الحالية:</small><div><a target='_blank' href='" &
+                    hfLevelImagePath.Value & "'>" & hfLevelImagePath.Value & "</a></div></div>"
             Else
                 litCurrentImage.Text = ""
             End If
@@ -67,7 +67,7 @@ Public Class Edit_LMS_Training_Level_Types
             If Integer.TryParse(txtOrder.Text.Trim(), o) Then orderVal = o
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             LevelImagePath = hfLevelImagePath.Value
 
@@ -89,7 +89,7 @@ Public Class Edit_LMS_Training_Level_Types
                 orderVal,
                 chkIsActive.Checked,
                 userId
-            )
+                )
         End Using
 
         Response.Redirect("/Modules/LMS_Training_Level_Types/Manage_LMS_Training_Level_Types.aspx")
@@ -105,3 +105,5 @@ Public Class Edit_LMS_Training_Level_Types
     Protected Sub LevelImageUploader_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
 End Class
+
+

@@ -2,7 +2,6 @@
     CodeBehind="JobTitles_Evaluation.aspx.vb" Inherits="CRM.JobTitles_Evaluation" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc11" %>
-<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolkit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
@@ -228,16 +227,16 @@
                         <ItemTemplate>
 
                             <div class="accordion-item mb-3">
-                                <h2 class="accordion-header" id='headingJob_<%# Eval("ID") %>'>
+                                <h2 class="accordion-header" id='headingJob_<%# Eval("ID")%>'>
                                     <button class="accordion-button collapsed fw-semibold"
                                         type="button"
                                         style="background-color: cadetblue; color: white;"
                                         data-bs-toggle="collapse"
-                                        data-bs-target='#collapseJob_<%# Eval("ID") %>'
+                                        data-bs-target='#collapseJob_<%# Eval("ID")%>'
                                         aria-expanded="false"
-                                        aria-controls='collapseJob_<%# Eval("ID") %>'>
+                                        aria-controls='collapseJob_<%# Eval("ID")%>'>
 
-                                        <span class="me-1"><%# Eval("Title_Ar") %></span>
+                                        <span class="me-1"><%# Eval("Title_Ar")%></span>
 
                                         <asp:PlaceHolder ID="phEvaluated" runat="server" Visible="false">
                                             <span class="badge bg-label-success badge-evaluated-today ms-2">
@@ -248,16 +247,16 @@
                                     </button>
                                 </h2>
 
-                                <div id='collapseJob_<%# Eval("ID") %>' class="accordion-collapse collapse"
-                                    aria-labelledby='headingJob_<%# Eval("ID") %>' data-bs-parent="#JobTitlesAccordion">
+                                <div id='collapseJob_<%# Eval("ID")%>' class="accordion-collapse collapse"
+                                    aria-labelledby='headingJob_<%# Eval("ID")%>' data-bs-parent="#JobTitlesAccordion">
                                     <div class="accordion-body">
 
                                         <!-- نطاق التقييم (مخفي) -->
                                         <div class="mb-3" style="display: none">
                                             <label class="form-label fw-semibold">نطاق التقييم</label>
                                             <select class="form-select"
-                                                name='scope_<%# Eval("ID") %>'
-                                                onchange='toggleEmployees(<%# Eval("ID") %>)'>
+                                                name='scope_<%# Eval("ID")%>'
+                                                onchange='toggleEmployees(<%# Eval("ID")%>)'>
                                                 <option value="all" selected="selected">جميع موظفي هذا المحطة التعريفية</option>
                                                 <option value="one">موظف محدد</option>
                                             </select>
@@ -266,7 +265,7 @@
                                             </small>
                                         </div>
 
-                                        <div class="mb-3 d-none" id='employeeRow_<%# Eval("ID") %>'>
+                                        <div class="mb-3 d-none" id='employeeRow_<%# Eval("ID")%>'>
                                             <label class="form-label fw-semibold">اسم الموظف</label>
                                             <asp:DropDownList ID="ddlEmployees" runat="server"
                                                 CssClass="form-select">
@@ -301,7 +300,7 @@
                                                                     runat="server"
                                                                     CssClass="dropdown-item"
                                                                     CommandName="ShowJobPolicies"
-                                                                    CommandArgument='<%# Eval("ID") %>'>
+                                                                    CommandArgument='<%# Eval("ID")%>'>
                                                                     سياسات المحطة التعريفية
                                                                 </asp:LinkButton>
                                                             </li>
@@ -311,7 +310,7 @@
                                                                     runat="server"
                                                                     CssClass="dropdown-item"
                                                                     CommandName="ShowJobWorking"
-                                                                    CommandArgument='<%# Eval("ID") %>'>
+                                                                    CommandArgument='<%# Eval("ID")%>'>
                                                                     طريقة العمل
                                                                 </asp:LinkButton>
                                                             </li>
@@ -321,7 +320,7 @@
                                                                     runat="server"
                                                                     CssClass="dropdown-item"
                                                                     CommandName="ShowJobEvaluation"
-                                                                    CommandArgument='<%# Eval("ID") %>'>
+                                                                    CommandArgument='<%# Eval("ID")%>'>
                                                                     طريقة التقييم
                                                                 </asp:LinkButton>
                                                             </li>
@@ -332,7 +331,7 @@
                                                     <!-- 🔹 زر إضافة عنصر تقييم جديد -->
                                                     <button type="button"
                                                         class="btn btn-outline-primary btn-sm d-flex align-items-center"
-                                                        onclick="onAddChecklistClicked(<%# Eval("ID") %>)">
+                                                        onclick="onAddChecklistClicked(<%# Eval("ID")%>)">
                                                         <i class="bx bx-plus-circle ms-1"></i>
                                                         <span class="d-none d-md-inline">إضافة عنصر تقييم جديد</span>
                                                     </button>
@@ -358,22 +357,22 @@
                                                                 <div class="d-flex align-items-center gap-2">
                                                                     <input class="form-check-input mt-0"
                                                                         type="checkbox"
-                                                                        name='chk_<%# Eval("ID") %>' />
+                                                                        name='chk_<%# Eval("ID")%>' />
 
                                                                     <span class="fw-semibold">
-                                                                        <%# Eval("Title_Ar") %>
+                                                                        <%# Eval("Title_Ar")%>
                                                                     </span>
 
                                                                     <button type="button"
                                                                         class="btn btn-sm btn-text-secondary p-0 ms-1"
-                                                                        onclick="showInfo('<%# JsString(Eval("Title_Ar")) %>',
-                                                                                          '<%# JsString(Eval("Brief_Ar")) %>')">
+                                                                        onclick="showInfo('<%# JsString(Eval("Title_Ar"))%>',
+                                                                                          '<%# JsString(Eval("Brief_Ar"))%>')">
                                                                         <i class="bx bx-info-circle fs-5"></i>
                                                                     </button>
                                                                 </div>
 
-                                                                <span class='<%# GetChecklistCss(Eval("CheckList_CategoryID")) %>'>
-                                                                    <%# Eval("CategoryTitle_Ar") %>
+                                                                <span class='<%# GetChecklistCss(Eval("CheckList_CategoryID"))%>'>
+                                                                    <%# Eval("CategoryTitle_Ar")%>
                                                                 </span>
 
                                                             </label>
@@ -384,13 +383,13 @@
                                         </div>
 
                                         <!-- Modal إضافة عناصر جديدة -->
-                                        <div class="modal fade" id='newChecklistModal_<%# Eval("ID") %>' tabindex="-1" aria-hidden="true">
+                                        <div class="modal fade" id='newChecklistModal_<%# Eval("ID")%>' tabindex="-1" aria-hidden="true">
                                             <div class="modal-dialog modal-lg modal-dialog-centered">
                                                 <div class="modal-content">
 
                                                     <div class="modal-header">
                                                         <h5 class="modal-title fw-bold">
-                                                            إضافة عناصر تقييم جديدة - <%# Eval("Title_Ar") %>
+                                                            إضافة عناصر تقييم جديدة - <%# Eval("Title_Ar")%>
                                                         </h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
                                                     </div>
@@ -400,13 +399,13 @@
                                                             يمكن إضافة تقييم أو أكثر للمهمة.
                                                         </p>
 
-                                                        <div id='newChecklistBody_<%# Eval("ID") %>' class="d-flex flex-column gap-2">
+                                                        <div id='newChecklistBody_<%# Eval("ID")%>' class="d-flex flex-column gap-2">
                                                         </div>
 
                                                         <div class="d-flex justify-content-between align-items-center mt-3">
                                                             <button type="button"
                                                                 class="btn btn-outline-secondary btn-sm"
-                                                                onclick="addNewChecklistRow(<%# Eval("ID") %>)">
+                                                                onclick="addNewChecklistRow(<%# Eval("ID")%>)">
                                                                 <i class="bx bx-plus ms-1"></i>
                                                                 إضافة صف جديد
                                                             </button>
@@ -415,8 +414,8 @@
                                                                 runat="server"
                                                                 CssClass="btn btn-outline-success btn-sm"
                                                                 CommandName="SaveChecklist"
-                                                                CommandArgument='<%# Eval("ID") %>'
-                                                                OnClientClick='<%# "return onSaveChecklistClick(" & Eval("ID") & ");" %>'>
+                                                                CommandArgument='<%# Eval("ID")%>'
+                                                                OnClientClick='<%# "return onSaveChecklistClick(" & Eval("ID") & ");"%>'>
                                                                 <i class="bx bx-save ms-1"></i>
                                                                 حفظ عناصر التقييم
                                                             </asp:LinkButton>
@@ -468,14 +467,14 @@
 
                                         <div class="text-end">
                                             <div class="d-flex justify-content-between align-items-center mt-3">
-                                                <span id='evalErr_<%# Eval("ID") %>' class="text-danger small" style="text-align: right"></span>
+                                                <span id='evalErr_<%# Eval("ID")%>' class="text-danger small" style="text-align: right"></span>
 
                                                 <asp:LinkButton ID="btnSaveEval"
                                                     runat="server"
                                                     CssClass="btn btn-primary"
                                                     CommandName="SaveEvaluation"
-                                                    CommandArgument='<%# Eval("ID") %>'
-                                                    OnClientClick='<%# "return onSaveEvalClick(" & Eval("ID") & ");" %>'>
+                                                    CommandArgument='<%# Eval("ID")%>'
+                                                    OnClientClick='<%# "return onSaveEvalClick(" & Eval("ID") & ");"%>'>
                                                     <i class="bx bx-check-circle ms-1"></i>
                                                     إضافة التقييم
                                                 </asp:LinkButton>

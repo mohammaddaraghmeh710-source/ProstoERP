@@ -1,18 +1,18 @@
-﻿Imports System
-Imports System.Web.Services
+﻿Imports System.Web.Services
+Imports Prosto_ERP_ClassLibrary
 
 Public Class QRCode_Reader
-        Inherits PageBase
+    Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
             Return
         End If
     End Sub
 
-    <WebMethod()>
-    Public Shared Function ResolveCrmQr(ByVal tokenStr As String) As Object
+    <WebMethod>
+    Public Shared Function ResolveCrmQr(tokenStr As String) As Object
         Try
             ' ✅ تحقق من الـ GUID
             Dim token As Guid
@@ -25,7 +25,7 @@ Public Class QRCode_Reader
             ' إذا تحتاج صلاحيات هنا: الأفضل تعمل HttpHandler/ASMX أو PageMethod مع Session enabled.
             ' حالياً سنكتفي بأن الصفحة نفسها تتطلب Login من Page_Load.
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 Dim row = db.QR_GetByToken(token).FirstOrDefault()
                 Dim ShiftId As Integer = GetCurrentShiftId()
@@ -34,12 +34,13 @@ Public Class QRCode_Reader
                     Return New With {.ok = False, .msg = "QR غير معتمد داخل النظام"}
                 End If
 
-                Dim url As String = ""
+                Dim url = ""
                 Select Case (row.EntityType & "").ToLower()
                     Case "brands"
                         url = "/modules/Branches_Dashboards/Branches_Dashboards.aspx?BrandID=" & row.EntityID
                     Case "branches"
-                        url = "/Modules/Branch_Shift_Manager/Branch_Shift_Manager_Dashboard.aspx?BranchID=" & row.EntityID.ToString() + "&ShiftID=" + ShiftId.ToString()
+                        url = "/Modules/Branch_Shift_Manager/Branch_Shift_Manager_Dashboard.aspx?BranchID=" &
+                              row.EntityID.ToString() + "&ShiftID=" + ShiftId.ToString()
                     Case "departments"
                         url = "/Modules/QRCode/Departments_Viewer_QRCode.aspx?Departmentid=" & row.EntityID.ToString()
                     Case "jobtitles"
@@ -60,16 +61,17 @@ Public Class QRCode_Reader
             Return New With {.ok = False, .msg = "حدث خطأ أثناء معالجة QR"}
         End Try
     End Function
+
     Private Shared Function GetCurrentShiftId() As Integer
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
 
             Dim nowTime As TimeSpan = DateTime.Now.TimeOfDay
 
             Dim shifts = (From s In db.Select_Shift_All()
-                          Where (s.IsDeleted = False OrElse s.IsDeleted Is Nothing) _
-                            AndAlso (s.IsActive = True OrElse s.IsActive Is Nothing)
-                          Select s).ToList()
+                    Where (s.IsDeleted = False OrElse s.IsDeleted Is Nothing) _
+                          AndAlso (s.IsActive = True OrElse s.IsActive Is Nothing)
+                    Select s).ToList()
 
             For Each s In shifts
                 If Not s.Start_Time.HasValue OrElse Not s.End_Time.HasValue Then
@@ -108,4 +110,6 @@ Public Class QRCode_Reader
         'End If
     End Sub
 End Class
+
+
 

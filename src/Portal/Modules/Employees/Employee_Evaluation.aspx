@@ -1,5 +1,4 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Site.Master" CodeBehind="Employee_Evaluation.aspx.vb" Inherits="CRM.Employee_Evaluation" %>
-<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolkit" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
         /* ===== نفس ستايل صفحة تقييم القسم (الكاشير) ===== */
@@ -166,18 +165,18 @@
                                     <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                         <input class="form-check-input mt-0"
                                             type="checkbox"
-                                            name='chkEmp_<%# Eval("ID") %>' />
+                                            name='chkEmp_<%# Eval("ID")%>' />
 
                                         <!-- العنوان فقط -->
                                         <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                             <span class="eval-title text-truncate" style="max-width: 520px;">
-                                                <%# Eval("Title_Ar") %>
+                                                <%# Eval("Title_Ar")%>
                                             </span>
 
                                             <!-- زر معلومات -->
                                             <button type="button"
                                                 class="eval-info-btn"
-                                                onclick="showInfo('<%# JsString(Eval("Title_Ar")) %>','<%# JsString(Eval("Brief_Ar")) %>')"
+                                                onclick="showInfo('<%# JsString(Eval("Title_Ar"))%>','<%# JsString(Eval("Brief_Ar"))%>')"
                                                 title="عرض الوصف">
                                                 <i class="bx bx-info-circle fs-5"></i>
                                             </button>
@@ -185,8 +184,8 @@
                                     </div>
 
                                     <!-- تصنيف ملون -->
-                                    <span class='<%# GetChecklistCss(Eval("CheckList_CategoryID")) %>'>
-                                        <%# Eval("CategoryTitle_Ar") %>
+                                    <span class='<%# GetChecklistCss(Eval("CheckList_CategoryID"))%>'>
+                                        <%# Eval("CategoryTitle_Ar")%>
                                     </span>
 
                                 </div>
@@ -357,7 +356,7 @@
             var notesBox = document.querySelector('textarea[id*="txtNotes"]');
             var notesVal = notesBox ? notesBox.value.trim() : "";
 
-            var err = document.getElementById('<%= evalErr.ClientID %>');
+            var err = document.getElementById('<%=evalErr.ClientID%>');
             if (err) err.innerHTML = "";
 
             if (!anyChecked && notesVal === "") {
@@ -460,7 +459,7 @@
 
             if (!hasAny) {
                 // لا نستخدم alert() حسب طلبك، نستخدم Toast تحذير بسيط
-                var err = document.getElementById('<%= evalErr.ClientID %>');
+                var err = document.getElementById('<%=evalErr.ClientID%>');
                 if (err) err.innerHTML = "يجب إضافة عنصر تقييم واحد على الأقل قبل الحفظ.";
                 return false;
             }

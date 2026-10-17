@@ -1,14 +1,14 @@
 ﻿Imports System.IO
 Imports AjaxControlToolkit
-Imports System.Linq
-Public Class EditWorkGuide_Documents
+Imports Prosto_ERP_ClassLibrary
 
+Public Class EditWorkGuide_Documents
     Inherits PageBase
 
     Private CurrentDocumentID As Integer
     Private PDF_File_Path As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -25,11 +25,10 @@ Public Class EditWorkGuide_Documents
             FillBrands()
             FillData()
         End If
-
     End Sub
 
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim brands = db.Select_Brands_All().ToList()
 
             ddlBrand.DataSource = brands
@@ -72,9 +71,9 @@ Public Class EditWorkGuide_Documents
             Return
         End If
 
-        Dim BrandID As Integer = CInt(ddlBrand.SelectedValue)
+        Dim BrandID = CInt(ddlBrand.SelectedValue)
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim categories = db.Select_Work_Guide_Categories_Tree_ByBrand(BrandID, Nothing).ToList()
 
             For Each item In categories
@@ -82,13 +81,15 @@ Public Class EditWorkGuide_Documents
             Next
         End Using
 
-        If selectedCategoryID.HasValue AndAlso ddlCategory.Items.FindByValue(selectedCategoryID.Value.ToString()) IsNot Nothing Then
+        If _
+            selectedCategoryID.HasValue AndAlso
+            ddlCategory.Items.FindByValue(selectedCategoryID.Value.ToString()) IsNot Nothing Then
             ddlCategory.SelectedValue = selectedCategoryID.Value.ToString()
         End If
     End Sub
 
     Private Sub FillData()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim item = db.Select_Work_Guide_Document_ByID(CurrentDocumentID).FirstOrDefault()
 
@@ -109,7 +110,9 @@ Public Class EditWorkGuide_Documents
                 cbIsActive.Checked = If(item.IsActive, True, False)
 
                 If Not String.IsNullOrWhiteSpace(item.File_Path) Then
-                    lnkCurrentFile.NavigateUrl = "/Modules/WorkGuide_Documents/ViewWorkGuideFile.aspx?type=document&id=" & CurrentDocumentID.ToString()
+                    lnkCurrentFile.NavigateUrl =
+                        "/Modules/WorkGuide_Documents/ViewWorkGuideFile.aspx?type=document&id=" &
+                        CurrentDocumentID.ToString()
                     lnkCurrentFile.Visible = True
                 Else
                     lnkCurrentFile.Visible = False
@@ -173,15 +176,15 @@ Public Class EditWorkGuide_Documents
 
         End If
 
-        Dim BrandID As Integer = CInt(ddlBrand.SelectedValue)
-        Dim CategoryID As Integer = CInt(ddlCategory.SelectedValue)
+        Dim BrandID = CInt(ddlBrand.SelectedValue)
+        Dim CategoryID = CInt(ddlCategory.SelectedValue)
 
         Dim ItemOrder As Integer? = Nothing
         If Not String.IsNullOrWhiteSpace(txtItemOrder.Text) Then
             ItemOrder = CInt(txtItemOrder.Text)
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
 
             Dim oldItem = db.Select_Work_Guide_Document_ByID(CurrentDocumentID).FirstOrDefault()
 
@@ -198,7 +201,7 @@ Public Class EditWorkGuide_Documents
                     oldItem.File_Hash,
                     "Old version before file replacement",
                     SessionManager.GetInstance.Users.UserID
-                )
+                    )
             End If
 
             db.Update_Work_Guide_Document_ByID(
@@ -219,16 +222,15 @@ Public Class EditWorkGuide_Documents
                 ItemOrder,
                 SessionManager.GetInstance.Users.UserID,
                 cbIsActive.Checked
-            )
+                )
 
         End Using
 
         Response.Redirect("/Modules/WorkGuide_Documents/ManageWorkGuide_Documents.aspx")
-
     End Sub
 
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/WorkGuide_Documents/ManageWorkGuide_Documents.aspx")
     End Sub
-
 End Class
+

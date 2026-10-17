@@ -1,6 +1,5 @@
 Imports System.Data.SqlClient
 Imports System.IO
-Imports System.Web
 
 Public NotInheritable Class CorrespondencePresentation
     Public Shared Function KindText(value As Object) As String
@@ -34,12 +33,18 @@ Public NotInheritable Class CorrespondencePresentation
     End Function
 
     Public Shared Function StatusCss(due As Object, closed As Object) As String
-        Return If(CorrespondenceData.StatusValue(due, closed) = CorrespondenceStatus.Active, "bg-label-success", "bg-label-danger")
+        Return _
+            If _
+                (CorrespondenceData.StatusValue(due, closed) = CorrespondenceStatus.Active, "bg-label-success",
+                 "bg-label-danger")
     End Function
 
     Public Shared Function DisplayDate(value As Object) As String
         If value Is Nothing OrElse IsDBNull(value) Then Return "—"
-        Return TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(CDate(value), DateTimeKind.Utc), TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")).ToString("yyyy/MM/dd HH:mm")
+        Return _
+            TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(CDate(value), DateTimeKind.Utc),
+                                            TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")).ToString(
+                                                "yyyy/MM/dd HH:mm")
     End Function
 
     Public Shared Function MessageHtml(value As Object) As String
@@ -63,19 +68,25 @@ Public NotInheritable Class CorrespondencePresentation
     End Function
 
     Public Shared Function ErrorText(ex As Exception) As String
-        System.Diagnostics.Trace.TraceError("Correspondence: {0}", ex)
+        Trace.TraceError("Correspondence: {0}", ex)
         Dim sql = TryCast(ex, SqlException)
         If sql IsNot Nothing AndAlso sql.Number = 51400 Then Return sql.Message
         If TypeOf ex Is ArgumentException Then Return ex.Message
         Return "تعذّر تنفيذ العملية. يرجى المحاولة مجددًا."
     End Function
 
-    Public Shared Sub FillCatalog(list As System.Web.UI.WebControls.DropDownList, actor As Integer, kind As String, Optional mode As Integer = 0, Optional task As Boolean = True)
+    Public Shared Sub FillCatalog(list As DropDownList, actor As Integer, kind As String,
+                                  Optional mode As Integer = 0, Optional task As Boolean = True)
         list.Items.Clear()
-        list.Items.Add(New System.Web.UI.WebControls.ListItem(If(mode = 1, "جميع الأولويات", "اختر من الخيارات الفعالة"), "0"))
-        For Each row As System.Data.DataRow In CorrespondenceData.Catalog(actor, kind, mode, task).Rows
-            list.Items.Add(New System.Web.UI.WebControls.ListItem(CStr(row("Title")) & If(CBool(row("IsActive")), "", " (موقوف)"), CStr(row("ID"))))
+        list.Items.Add(New ListItem(If(mode = 1, "جميع الأولويات", "اختر من الخيارات الفعالة"),
+                                    "0"))
+        For Each row As DataRow In CorrespondenceData.Catalog(actor, kind, mode, task).Rows
+            list.Items.Add(
+                New ListItem(CStr(row("Title")) & If(CBool(row("IsActive")), "", " (موقوف)"),
+                             CStr(row("ID"))))
         Next
         If mode = 0 AndAlso list.Items.Count = 1 Then list.Items(0).Text = "لا توجد خيارات فعالة؛ راجع مدير النظام"
     End Sub
 End Class
+
+

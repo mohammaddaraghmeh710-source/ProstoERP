@@ -1,17 +1,10 @@
-﻿Imports System
-Imports System.Linq
-Imports System.Collections.Generic
-Imports System.Web
-Imports System.Web.UI
-Imports System.Web.UI.WebControls
-Imports AjaxControlToolkit
-Imports System.Text
-Imports System.Web.Security
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class JobTitles_Evaluation
     Inherits PageBase
 
-    Private ReadOnly db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+    Private ReadOnly db As New Prosto_ERP_DataClassesDataContext()
 
     Protected DepartmentID As Integer
     Protected ShiftID As Integer
@@ -22,7 +15,7 @@ Public Class JobTitles_Evaluation
         Return HttpUtility.JavaScriptStringEncode(value.ToString())
     End Function
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -65,7 +58,7 @@ Public Class JobTitles_Evaluation
             If val Is Nothing Then Return String.Empty
             Return val
         End Get
-        Set(value As String)
+        Set
             ViewState("ChecklistSearch") = value
         End Set
     End Property
@@ -84,14 +77,14 @@ Public Class JobTitles_Evaluation
 
     Private Sub BindHeader()
         Dim info = (From d In db.Select_Departments_All
-                    Join b In db.Select_Branches_All On d.BranchID Equals b.ID
-                    Where d.ID = DepartmentID AndAlso (d.IsDeleted = False OrElse d.IsDeleted Is Nothing)
-                    Select New With {
-                        .BranchID = b.ID,
-                        .BranchName = b.Title_Ar,
-                        .DepartmentName = d.Title_Ar,
-                        .BrandID = b.BrandID
-                    }).FirstOrDefault()
+                Join b In db.Select_Branches_All On d.BranchID Equals b.ID
+                Where d.ID = DepartmentID AndAlso (d.IsDeleted = False OrElse d.IsDeleted Is Nothing)
+                Select New With {
+                .BranchID = b.ID,
+                .BranchName = b.Title_Ar,
+                .DepartmentName = d.Title_Ar,
+                .BrandID = b.BrandID
+                }).FirstOrDefault()
 
         If info IsNot Nothing Then
             BranchNameText.InnerText = info.BranchName
@@ -107,31 +100,31 @@ Public Class JobTitles_Evaluation
     Private Sub BindJobTitles(Optional searchTerm As String = Nothing)
         If Request.QueryString("JobTitleID") Is Nothing Then
             Dim baseQuery = From jt In db.Select_JobTitles_All
-                            Where jt.DepartmentID = DepartmentID _
-                    AndAlso (jt.IsDeleted = False OrElse jt.IsDeleted Is Nothing) _
-                    AndAlso (jt.IsActive = True OrElse jt.IsActive Is Nothing)
+                    Where jt.DepartmentID = DepartmentID _
+                          AndAlso (jt.IsDeleted = False OrElse jt.IsDeleted Is Nothing) _
+                          AndAlso (jt.IsActive = True OrElse jt.IsActive Is Nothing)
 
             If Not String.IsNullOrWhiteSpace(searchTerm) Then
                 Dim term = searchTerm.Trim()
 
                 ' فلترة المحطات التعريفية بحيث تحتوي على عنصر تقييم فيه نص البحث
                 Dim filteredQuery = From jt In baseQuery
-                                    Join c In db.Select_Checklist_All On jt.ID Equals c.JobTitle_ID
-                                    Where c.Shift_ID = ShiftID _
-                                  AndAlso (c.IsDeleted = False OrElse c.IsDeleted Is Nothing) _
-                                  AndAlso (c.IsActive = True OrElse c.IsActive Is Nothing) _
-                                  AndAlso (
-                                      (c.Title_Ar IsNot Nothing AndAlso c.Title_Ar.Contains(term)) _
-                                      OrElse (c.Brief_Ar IsNot Nothing AndAlso c.Brief_Ar.Contains(term))
+                        Join c In db.Select_Checklist_All On jt.ID Equals c.JobTitle_ID
+                        Where c.Shift_ID = ShiftID _
+                              AndAlso (c.IsDeleted = False OrElse c.IsDeleted Is Nothing) _
+                              AndAlso (c.IsActive = True OrElse c.IsActive Is Nothing) _
+                              AndAlso (
+                                  (c.Title_Ar IsNot Nothing AndAlso c.Title_Ar.Contains(term)) _
+                                  OrElse (c.Brief_Ar IsNot Nothing AndAlso c.Brief_Ar.Contains(term))
                                   )
-                                    Order By jt.Title_Ar
-                                    Select New With {
-                                    .ID = jt.ID,
-                                    .Title_Ar = jt.Title_Ar,
-                                    .Policies_Ar = jt.Policies_Ar,
-                                    .Working_Method_Ar = jt.Working_Method_Video_Ar,
-                                    .Evaluation_Method_Ar = jt.Evaluation_Method_Video_Ar
-                                }
+                        Order By jt.Title_Ar
+                        Select New With {
+                        .ID = jt.ID,
+                        .Title_Ar = jt.Title_Ar,
+                        .Policies_Ar = jt.Policies_Ar,
+                        .Working_Method_Ar = jt.Working_Method_Video_Ar,
+                        .Evaluation_Method_Ar = jt.Evaluation_Method_Video_Ar
+                        }
 
                 Dim jobTitles = filteredQuery.Distinct().ToList()
 
@@ -140,14 +133,14 @@ Public Class JobTitles_Evaluation
             Else
                 ' الحالة العادية بدون بحث
                 Dim jobTitles = (From jt In baseQuery
-                                 Order By jt.Title_Ar
-                                 Select New With {
-                                 .ID = jt.ID,
-                                 .Title_Ar = jt.Title_Ar,
-                                 .Policies_Ar = jt.Policies_Ar,
-                                 .Working_Method_Ar = jt.Working_Method_Video_Ar,
-                                 .Evaluation_Method_Ar = jt.Evaluation_Method_Video_Ar
-                             }).ToList()
+                        Order By jt.Title_Ar
+                        Select New With {
+                        .ID = jt.ID,
+                        .Title_Ar = jt.Title_Ar,
+                        .Policies_Ar = jt.Policies_Ar,
+                        .Working_Method_Ar = jt.Working_Method_Video_Ar,
+                        .Evaluation_Method_Ar = jt.Evaluation_Method_Video_Ar
+                        }).ToList()
 
                 rptJobTitles.DataSource = jobTitles
                 rptJobTitles.DataBind()
@@ -155,31 +148,31 @@ Public Class JobTitles_Evaluation
         Else
 
             Dim baseQuery = From jt In db.Select_JobTitles_All
-                            Where jt.DepartmentID = DepartmentID And jt.ID = CInt(Request.QueryString("JobTitleID")) _
-                              AndAlso (jt.IsDeleted = False OrElse jt.IsDeleted Is Nothing) _
-                              AndAlso (jt.IsActive = True OrElse jt.IsActive Is Nothing)
+                    Where jt.DepartmentID = DepartmentID And jt.ID = CInt(Request.QueryString("JobTitleID")) _
+                          AndAlso (jt.IsDeleted = False OrElse jt.IsDeleted Is Nothing) _
+                          AndAlso (jt.IsActive = True OrElse jt.IsActive Is Nothing)
 
             If Not String.IsNullOrWhiteSpace(searchTerm) Then
                 Dim term = searchTerm.Trim()
 
                 ' فلترة المحطات التعريفية بحيث تحتوي على عنصر تقييم فيه نص البحث
                 Dim filteredQuery = From jt In baseQuery
-                                    Join c In db.Select_Checklist_All On jt.ID Equals c.JobTitle_ID
-                                    Where c.Shift_ID = ShiftID _
-                                      AndAlso (c.IsDeleted = False OrElse c.IsDeleted Is Nothing) _
-                                      AndAlso (c.IsActive = True OrElse c.IsActive Is Nothing) _
-                                      AndAlso (
-                                          (c.Title_Ar IsNot Nothing AndAlso c.Title_Ar.Contains(term)) _
-                                          OrElse (c.Brief_Ar IsNot Nothing AndAlso c.Brief_Ar.Contains(term))
-                                      )
-                                    Order By jt.Title_Ar
-                                    Select New With {
-                                        .ID = jt.ID,
-                                        .Title_Ar = jt.Title_Ar,
-                                        .Policies_Ar = jt.Policies_Ar,
-                                        .Working_Method_Ar = jt.Working_Method_Video_Ar,
-                                        .Evaluation_Method_Ar = jt.Evaluation_Method_Video_Ar
-                                    }
+                        Join c In db.Select_Checklist_All On jt.ID Equals c.JobTitle_ID
+                        Where c.Shift_ID = ShiftID _
+                              AndAlso (c.IsDeleted = False OrElse c.IsDeleted Is Nothing) _
+                              AndAlso (c.IsActive = True OrElse c.IsActive Is Nothing) _
+                              AndAlso (
+                                  (c.Title_Ar IsNot Nothing AndAlso c.Title_Ar.Contains(term)) _
+                                  OrElse (c.Brief_Ar IsNot Nothing AndAlso c.Brief_Ar.Contains(term))
+                                  )
+                        Order By jt.Title_Ar
+                        Select New With {
+                        .ID = jt.ID,
+                        .Title_Ar = jt.Title_Ar,
+                        .Policies_Ar = jt.Policies_Ar,
+                        .Working_Method_Ar = jt.Working_Method_Video_Ar,
+                        .Evaluation_Method_Ar = jt.Evaluation_Method_Video_Ar
+                        }
 
                 Dim jobTitles = filteredQuery.Distinct().ToList()
 
@@ -188,20 +181,19 @@ Public Class JobTitles_Evaluation
             Else
                 ' الحالة العادية بدون بحث
                 Dim jobTitles = (From jt In baseQuery
-                                 Order By jt.Title_Ar
-                                 Select New With {
-                                     .ID = jt.ID,
-                                     .Title_Ar = jt.Title_Ar,
-                                     .Policies_Ar = jt.Policies_Ar,
-                                     .Working_Method_Ar = jt.Working_Method_Video_Ar,
-                                     .Evaluation_Method_Ar = jt.Evaluation_Method_Video_Ar
-                                 }).ToList()
+                        Order By jt.Title_Ar
+                        Select New With {
+                        .ID = jt.ID,
+                        .Title_Ar = jt.Title_Ar,
+                        .Policies_Ar = jt.Policies_Ar,
+                        .Working_Method_Ar = jt.Working_Method_Video_Ar,
+                        .Evaluation_Method_Ar = jt.Evaluation_Method_Video_Ar
+                        }).ToList()
 
                 rptJobTitles.DataSource = jobTitles
                 rptJobTitles.DataBind()
             End If
         End If
-
     End Sub
 
     Private Function IsJobTitleEvaluatedToday(jobTitleId As Integer) As Boolean
@@ -215,21 +207,22 @@ Public Class JobTitles_Evaluation
 
         Dim q = From ev In db.Select_Evaluations_All
                 Where ev.Evaluation_Type = 1 _
-                  AndAlso (Not brandId.HasValue OrElse ev.Brand_ID = brandId.Value) _
-                  AndAlso ev.Branch_ID = BranchID _
-                  AndAlso ev.Department_ID = DepartmentID _
-                  AndAlso ev.JobTitle_ID = jobTitleId _
-                  AndAlso ev.Shift_ID = ShiftID _
-                  AndAlso ev.AddedDate.HasValue _
-                  AndAlso ev.AddedDate.Value >= today _
-                  AndAlso ev.AddedDate.Value < tomorrow _
-                  AndAlso (ev.IsDeleted = False OrElse ev.IsDeleted Is Nothing)
+                      AndAlso (Not brandId.HasValue OrElse ev.Brand_ID = brandId.Value) _
+                      AndAlso ev.Branch_ID = BranchID _
+                      AndAlso ev.Department_ID = DepartmentID _
+                      AndAlso ev.JobTitle_ID = jobTitleId _
+                      AndAlso ev.Shift_ID = ShiftID _
+                      AndAlso ev.AddedDate.HasValue _
+                      AndAlso ev.AddedDate.Value >= today _
+                      AndAlso ev.AddedDate.Value < tomorrow _
+                      AndAlso (ev.IsDeleted = False OrElse ev.IsDeleted Is Nothing)
                 Select ev.ID
 
         Return q.Any()
     End Function
 
-    Protected Sub rptJobTitles_ItemDataBound(sender As Object, e As RepeaterItemEventArgs) Handles rptJobTitles.ItemDataBound
+    Protected Sub rptJobTitles_ItemDataBound(sender As Object, e As RepeaterItemEventArgs) _
+        Handles rptJobTitles.ItemDataBound
         If e.Item.ItemType <> ListItemType.Item AndAlso
            e.Item.ItemType <> ListItemType.AlternatingItem Then
             Return
@@ -237,9 +230,9 @@ Public Class JobTitles_Evaluation
 
         Dim jobId As Integer = Convert.ToInt32(DataBinder.Eval(e.Item.DataItem, "ID"))
 
-        Dim rptChecklist As Repeater = TryCast(e.Item.FindControl("rptChecklist"), Repeater)
-        Dim pnlNoChecklist As Panel = TryCast(e.Item.FindControl("pnlNoChecklist"), Panel)
-        Dim pnlChecklistWrapper As Panel = TryCast(e.Item.FindControl("pnlChecklistWrapper"), Panel)
+        Dim rptChecklist = TryCast(e.Item.FindControl("rptChecklist"), Repeater)
+        Dim pnlNoChecklist = TryCast(e.Item.FindControl("pnlNoChecklist"), Panel)
+        Dim pnlChecklistWrapper = TryCast(e.Item.FindControl("pnlChecklistWrapper"), Panel)
 
         Dim checklist As List(Of ChecklistItemDto) = GetChecklistItems(DepartmentID, jobId, ShiftID)
         Dim hasChecklist As Boolean = (checklist IsNot Nothing AndAlso checklist.Count > 0)
@@ -254,7 +247,7 @@ Public Class JobTitles_Evaluation
             pnlChecklistWrapper.Visible = hasChecklist
         End If
 
-        Dim ddlEmployees As DropDownList = TryCast(e.Item.FindControl("ddlEmployees"), DropDownList)
+        Dim ddlEmployees = TryCast(e.Item.FindControl("ddlEmployees"), DropDownList)
         If ddlEmployees IsNot Nothing Then
             Dim employees = GetEmployees(DepartmentID, jobId, ShiftID)
             ddlEmployees.DataSource = employees
@@ -264,13 +257,13 @@ Public Class JobTitles_Evaluation
             ddlEmployees.Items.Insert(0, New ListItem("يرجى اختيار الموظف", ""))
         End If
 
-        Dim txtEvalDate As TextBox = TryCast(e.Item.FindControl("txtEvaluationDate"), TextBox)
+        Dim txtEvalDate = TryCast(e.Item.FindControl("txtEvaluationDate"), TextBox)
         If txtEvalDate IsNot Nothing Then
             txtEvalDate.Text = DateTime.Now.ToString("MM/dd/yyyy")
         End If
 
         Dim isToday As Boolean = IsJobTitleEvaluatedToday(jobId)
-        Dim phEvaluated As PlaceHolder = TryCast(e.Item.FindControl("phEvaluated"), PlaceHolder)
+        Dim phEvaluated = TryCast(e.Item.FindControl("phEvaluated"), PlaceHolder)
         If phEvaluated IsNot Nothing Then
             phEvaluated.Visible = isToday
         End If
@@ -281,21 +274,21 @@ Public Class JobTitles_Evaluation
                                        shiftId As Integer) As List(Of ChecklistItemDto)
 
         Dim query = From c In db.Select_Checklist_All
-                    Join cat In db.Checklist_Categories_SelectAll On c.CheckList_CategoryID Equals cat.ID
-                    Where c.Type = CInt(Request.QueryString("Type")) AndAlso c.Department_ID = deptId _
+                Join cat In db.Checklist_Categories_SelectAll On c.CheckList_CategoryID Equals cat.ID
+                Where c.Type = CInt(Request.QueryString("Type")) AndAlso c.Department_ID = deptId _
                       AndAlso c.JobTitle_ID = jobTitleId _
                       AndAlso c.Shift_ID = shiftId _
                       AndAlso (c.IsDeleted = False OrElse c.IsDeleted Is Nothing) _
                       AndAlso (c.IsActive = True OrElse c.IsActive Is Nothing)
-                    Order By c.ID
-                    Select New ChecklistItemDto With {
-                        .ID = c.ID,
-                        .Title_Ar = c.Title_Ar,
-                        .Brief_Ar = c.Brief_Ar,
-                        .CheckList_CategoryID = c.CheckList_CategoryID,
-                        .CategoryTitle_Ar = cat.Title_Ar,
-                        .Weight = c.Weight
-                    }
+                Order By c.ID
+                Select New ChecklistItemDto With {
+                .ID = c.ID,
+                .Title_Ar = c.Title_Ar,
+                .Brief_Ar = c.Brief_Ar,
+                .CheckList_CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle_Ar = cat.Title_Ar,
+                .Weight = c.Weight
+                }
 
         Return query.ToList()
     End Function
@@ -305,22 +298,22 @@ Public Class JobTitles_Evaluation
                                   shiftId As Integer) As Object
 
         Dim query = From u In db.Select_UsersMembers_All
-                    Where u.Department_ID = deptId _
-                          AndAlso u.JobTitle_ID = jobTitleId _
-                          AndAlso u.Shif_ID = shiftId _
-                          AndAlso (u.IsDeleted = False OrElse u.IsDeleted Is Nothing) _
-                          AndAlso (u.IsActive = True OrElse u.IsActive Is Nothing)
-                    Order By u.FullName_Ar
-                    Select New With {
-                        .ID = u.ID,
-                        .FullName_Ar = u.FullName_Ar
-                    }
+                Where u.Department_ID = deptId _
+                      AndAlso u.JobTitle_ID = jobTitleId _
+                      AndAlso u.Shif_ID = shiftId _
+                      AndAlso (u.IsDeleted = False OrElse u.IsDeleted Is Nothing) _
+                      AndAlso (u.IsActive = True OrElse u.IsActive Is Nothing)
+                Order By u.FullName_Ar
+                Select New With {
+                .ID = u.ID,
+                .FullName_Ar = u.FullName_Ar
+                }
 
         Return query.ToList()
     End Function
 
     Protected Function GetChecklistCss(cat As Object) As String
-        Dim c As Integer = 0
+        Dim c = 0
         If cat IsNot Nothing AndAlso Integer.TryParse(cat.ToString(), c) Then
             Select Case c
                 Case 1 : Return "eval-tag eval-red"
@@ -356,7 +349,7 @@ Public Class JobTitles_Evaluation
             Exit Sub
         End If
 
-        For i As Integer = 0 To titlesAr.Length - 1
+        For i = 0 To titlesAr.Length - 1
             Dim titleAr As String = If(titlesAr(i), "").Trim()
             If String.IsNullOrEmpty(titleAr) Then
                 Continue For
@@ -369,12 +362,12 @@ Public Class JobTitles_Evaluation
 
             Dim briefAr As String = titleEn
 
-            Dim weightVal As Decimal = 0D
+            Dim weightVal = 0D
             If weights IsNot Nothing AndAlso i < weights.Length Then
                 Decimal.TryParse(weights(i), weightVal)
             End If
 
-            Dim catId As Integer = 0
+            Dim catId = 0
             If cats IsNot Nothing AndAlso i < cats.Length Then
                 Integer.TryParse(cats(i), catId)
             End If
@@ -390,51 +383,49 @@ Public Class JobTitles_Evaluation
                     Dim JobTitle_ID = jobTit.ID
 
 
+                    db.Insert_Checklist(Type, titleAr,
+                                        Nothing,
+                                        briefAr,
+                                        Nothing,
+                                        JobTitle_BrandID,
+                                        JobTitle_BranchID,
+                                        JobTitle_DepartmentID,
+                                        JobTitle_ID,
+                                        Nothing,
+                                        1,
+                                        catId,
+                                        weightVal,
+                                        SessionManager.GetInstance.Users.UserID)
+
 
                     db.Insert_Checklist(Type, titleAr,
-                                   Nothing,
-                                   briefAr,
-                                   Nothing,
-                                   JobTitle_BrandID,
-                                   JobTitle_BranchID,
-                                   JobTitle_DepartmentID,
-                                   JobTitle_ID,
-                                   Nothing,
-                                   1,
-                                   catId,
-                                   weightVal,
-                                   SessionManager.GetInstance.Users.UserID)
-
-
-                    db.Insert_Checklist(Type, titleAr,
-                                  Nothing,
-                                  briefAr,
-                                  Nothing,
-                                  JobTitle_BrandID,
-                                  JobTitle_BranchID,
-                                  JobTitle_DepartmentID,
-                                  JobTitle_ID,
-                                  Nothing,
-                                  2,
-                                  catId,
-                                  weightVal,
-                                  SessionManager.GetInstance.Users.UserID)
+                                        Nothing,
+                                        briefAr,
+                                        Nothing,
+                                        JobTitle_BrandID,
+                                        JobTitle_BranchID,
+                                        JobTitle_DepartmentID,
+                                        JobTitle_ID,
+                                        Nothing,
+                                        2,
+                                        catId,
+                                        weightVal,
+                                        SessionManager.GetInstance.Users.UserID)
 
                     db.Insert_Checklist(Type, titleAr,
-                                  Nothing,
-                                  briefAr,
-                                  Nothing,
-                                  JobTitle_BrandID,
-                                  JobTitle_BranchID,
-                                  JobTitle_DepartmentID,
-                                  JobTitle_ID,
-                                  Nothing,
-                                  3,
-                                  catId,
-                                  weightVal,
-                                  SessionManager.GetInstance.Users.UserID)
+                                        Nothing,
+                                        briefAr,
+                                        Nothing,
+                                        JobTitle_BrandID,
+                                        JobTitle_BranchID,
+                                        JobTitle_DepartmentID,
+                                        JobTitle_ID,
+                                        Nothing,
+                                        3,
+                                        catId,
+                                        weightVal,
+                                        SessionManager.GetInstance.Users.UserID)
                 Next
-
 
 
             Catch ex As Exception
@@ -461,7 +452,8 @@ Public Class JobTitles_Evaluation
         Next
     End Sub
 
-    Protected Sub rptJobTitles_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptJobTitles.ItemCommand
+    Protected Sub rptJobTitles_ItemCommand(source As Object, e As RepeaterCommandEventArgs) _
+        Handles rptJobTitles.ItemCommand
         Dim jobId As Integer = Convert.ToInt32(e.CommandArgument)
 
         Dim brandId As Integer? = Nothing
@@ -469,9 +461,9 @@ Public Class JobTitles_Evaluation
             brandId = CInt(ViewState("BrandID"))
         Else
             brandId = (From d In db.Select_Departments_All
-                       Join b In db.Select_Branches_All On d.BranchID Equals b.ID
-                       Where d.ID = DepartmentID
-                       Select CType(b.BrandID, Integer?)).FirstOrDefault()
+                Join b In db.Select_Branches_All On d.BranchID Equals b.ID
+                Where d.ID = DepartmentID
+                Select CType(b.BrandID, Integer?)).FirstOrDefault()
             ViewState("BrandID") = brandId
         End If
 
@@ -481,8 +473,8 @@ Public Class JobTitles_Evaluation
         ' ===== 1) سياسات المحطة التعريفية =====
         If e.CommandName = "ShowJobPolicies" Then
             Dim jt = (From j In db.Select_JobTitles_All
-                      Where j.ID = jobId
-                      Select j).FirstOrDefault()
+                    Where j.ID = jobId
+                    Select j).FirstOrDefault()
 
             If jt IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(jt.Policies_Ar) Then
                 'Dim encoded As String = Server.HtmlEncode(jt.Policies_Ar)
@@ -492,19 +484,21 @@ Public Class JobTitles_Evaluation
                 litJobPolicies.Text = "<p class='mb-0 text-muted'>لم يتم تعريف سياسات لهذا المحطة التعريفية بعد.</p>"
             End If
 
-            ScriptManager.RegisterStartupScript(Me, Me.GetType(), "showJobPoliciesModal", "showJobPoliciesModal();", True)
+            ScriptManager.RegisterStartupScript(Me, Me.GetType(), "showJobPoliciesModal", "showJobPoliciesModal();",
+                                                True)
             Return
         End If
 
         ' ===== 2) فيديو طريقة العمل للمسمى الوظيفي =====
         If e.CommandName = "ShowJobWorking" Then
             Dim jt = (From j In db.Select_JobTitles_All
-                      Where j.ID = jobId
-                      Select j).FirstOrDefault()
+                    Where j.ID = jobId
+                    Select j).FirstOrDefault()
 
             If jt Is Nothing OrElse String.IsNullOrWhiteSpace(jt.Working_Method_Video_Ar) Then
                 ScriptManager.RegisterStartupScript(Me, Me.GetType(), "noJobWorkingVideo",
-                                                    "alert('لم يتم تعريف فيديو طريقة العمل لهذا المحطة التعريفية.');", True)
+                                                    "alert('لم يتم تعريف فيديو طريقة العمل لهذا المحطة التعريفية.');",
+                                                    True)
                 Return
             End If
 
@@ -517,11 +511,12 @@ Public Class JobTitles_Evaluation
         ' ===== 3) فيديو طريقة التقييم للمسمى الوظيفي =====
         If e.CommandName = "ShowJobEvaluation" Then
             Dim jt = (From j In db.Select_JobTitles_ByID(jobId)
-                      Select j).FirstOrDefault()
+                    Select j).FirstOrDefault()
 
             If jt Is Nothing OrElse String.IsNullOrWhiteSpace(jt.Evaluation_Method_Video_Ar) Then
                 ScriptManager.RegisterStartupScript(Me, Me.GetType(), "noJobEvaluationVideo",
-                                                    "alert('لم يتم تعريف فيديو طريقة التقييم لهذا المحطة التعريفية.');", True)
+                                                    "alert('لم يتم تعريف فيديو طريقة التقييم لهذا المحطة التعريفية.');",
+                                                    True)
                 Return
             End If
 
@@ -541,25 +536,27 @@ Public Class JobTitles_Evaluation
 
         Dim scopeValue As String = Request.Form("scope_" & jobId)
 
-        Dim employeeKnown As Boolean = False
+        Dim employeeKnown = False
         Dim employeeIdsStr As String = Nothing
 
-        Dim ddlEmployees As DropDownList = TryCast(e.Item.FindControl("ddlEmployees"), DropDownList)
+        Dim ddlEmployees = TryCast(e.Item.FindControl("ddlEmployees"), DropDownList)
 
-        If scopeValue = "one" AndAlso ddlEmployees IsNot Nothing AndAlso Not String.IsNullOrEmpty(ddlEmployees.SelectedValue) Then
+        If _
+            scopeValue = "one" AndAlso ddlEmployees IsNot Nothing AndAlso
+            Not String.IsNullOrEmpty(ddlEmployees.SelectedValue) Then
             employeeKnown = True
             employeeIdsStr = ddlEmployees.SelectedValue.Trim()
         Else
             Dim employeesQuery = From u In db.Select_UsersMembers_All
-                                 Where (Not brandId.HasValue OrElse u.Brand_ID = brandId.Value) _
-                                       AndAlso (BranchID = 0 OrElse u.Branch_ID = BranchID) _
-                                       AndAlso u.Department_ID = DepartmentID _
-                                       AndAlso u.JobTitle_ID = jobId _
-                                       AndAlso u.Shif_ID = ShiftID _
-                                       AndAlso u.Type = 4 _
-                                       AndAlso (u.IsDeleted = False OrElse u.IsDeleted Is Nothing) _
-                                       AndAlso (u.IsActive = True OrElse u.IsActive Is Nothing)
-                                 Select u.ID
+                    Where (Not brandId.HasValue OrElse u.Brand_ID = brandId.Value) _
+                          AndAlso (BranchID = 0 OrElse u.Branch_ID = BranchID) _
+                          AndAlso u.Department_ID = DepartmentID _
+                          AndAlso u.JobTitle_ID = jobId _
+                          AndAlso u.Shif_ID = ShiftID _
+                          AndAlso u.Type = 4 _
+                          AndAlso (u.IsDeleted = False OrElse u.IsDeleted Is Nothing) _
+                          AndAlso (u.IsActive = True OrElse u.IsActive Is Nothing)
+                    Select u.ID
 
             Dim allIds = employeesQuery.ToList()
             If allIds.Count > 0 Then
@@ -567,22 +564,22 @@ Public Class JobTitles_Evaluation
             End If
         End If
 
-        Dim txtNotes As TextBox = TryCast(e.Item.FindControl("txtNotes"), TextBox)
+        Dim txtNotes = TryCast(e.Item.FindControl("txtNotes"), TextBox)
         Dim notes As String = If(txtNotes IsNot Nothing, txtNotes.Text, Nothing)
 
-        Dim txtEvalDate As TextBox = TryCast(e.Item.FindControl("txtEvaluationDate"), TextBox)
+        Dim txtEvalDate = TryCast(e.Item.FindControl("txtEvaluationDate"), TextBox)
         Dim evalDate As DateTime = DateTime.Now
         If txtEvalDate IsNot Nothing Then
             DateTime.TryParse(txtEvalDate.Text, evalDate)
         End If
 
         Dim allChecklistIds = (From c In db.Select_Checklist_All
-                               Where c.Type = CInt(Request.QueryString("Type")) AndAlso c.Department_ID = DepartmentID _
-                                     AndAlso c.JobTitle_ID = jobId _
-                                     AndAlso c.Shift_ID = ShiftID _
-                                     AndAlso (c.IsDeleted = False OrElse c.IsDeleted Is Nothing) _
-                                     AndAlso (c.IsActive = True OrElse c.IsActive Is Nothing)
-                               Select c.ID).ToList()
+                Where c.Type = CInt(Request.QueryString("Type")) AndAlso c.Department_ID = DepartmentID _
+                      AndAlso c.JobTitle_ID = jobId _
+                      AndAlso c.Shift_ID = ShiftID _
+                      AndAlso (c.IsDeleted = False OrElse c.IsDeleted Is Nothing) _
+                      AndAlso (c.IsActive = True OrElse c.IsActive Is Nothing)
+                Select c.ID).ToList()
 
         Dim selectedChecklistIds As New List(Of Integer)()
         For Each cid In allChecklistIds
@@ -615,26 +612,26 @@ Public Class JobTitles_Evaluation
 
         Dim filesDict = SaveFilesFromSession()
 
-        Dim newEvalId As Integer = 0
+        Dim newEvalId = 0
 
-        Using ctx As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
-            Const JOBTITLE_EVAL_TYPE As Integer = 1
+        Using ctx As New Prosto_ERP_DataClassesDataContext
+            Const JOBTITLE_EVAL_TYPE = 1
 
             Dim result = ctx.Insert_Evaluations(
-                evaluation_Type:=JOBTITLE_EVAL_TYPE,
-                brand_ID:=brandId,
-                branch_ID:=BranchID,
-                department_ID:=DepartmentID,
-                jobTitle_ID:=jobId,
-                jobTitle_Items_ID:=Nothing,
-                shift_ID:=ShiftID,
-                employee_is_known:=employeeKnown,
-                employee_ID:=employeeIdsStr,
-                checklist_IDs:=checklistIdsStr,
-                weight:=totalWeight,
-                notes:=notes,
-                addedUser:=SessionManager.GetInstance.Users.UserID
-            )
+                evaluation_Type := JOBTITLE_EVAL_TYPE,
+                brand_ID := brandId,
+                branch_ID := BranchID,
+                department_ID := DepartmentID,
+                jobTitle_ID := jobId,
+                jobTitle_Items_ID := Nothing,
+                shift_ID := ShiftID,
+                employee_is_known := employeeKnown,
+                employee_ID := employeeIdsStr,
+                checklist_IDs := checklistIdsStr,
+                weight := totalWeight,
+                notes := notes,
+                addedUser := SessionManager.GetInstance.Users.UserID
+                )
 
             For Each r In result
                 If r IsNot Nothing AndAlso r.NewID IsNot Nothing Then
@@ -656,7 +653,9 @@ Public Class JobTitles_Evaluation
     End Sub
 
     Protected Sub btnClosePopup_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/Branch_Shift_Manager/Branch_Shift_Manager_Dashboard.aspx?BranchID=" + BranchID.ToString() + "&ShiftID=" + Request.QueryString("ShiftID").ToString())
+        Response.Redirect(
+            "/Modules/Branch_Shift_Manager/Branch_Shift_Manager_Dashboard.aspx?BranchID=" + BranchID.ToString() +
+            "&ShiftID=" + Request.QueryString("ShiftID").ToString())
         'LBLPOP_ModalPopupExtender.Hide()
     End Sub
 
@@ -693,6 +692,6 @@ Public Class JobTitles_Evaluation
 
         Return HttpServerUtility.UrlTokenEncode(protectedBytes)
     End Function
-
-
 End Class
+
+

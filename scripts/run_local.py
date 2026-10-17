@@ -47,7 +47,8 @@ def main():
             with (LOCAL / (name + ".log")).open("a") as log:
                 process = subprocess.Popen(["xsp4", "--nonstop", "--address=127.0.0.1", "--port=" + str(port),
                                             "--applications=/:" + str(ROOT / project)], cwd=ROOT / project,
-                                           stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+                                           stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
+                                           start_new_session=True)
             pids[name] = process.pid
             state.write_text(json.dumps(pids))
             time.sleep(1)

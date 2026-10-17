@@ -135,37 +135,37 @@
                     <ItemTemplate>
                         <div class="col-12 col-md-6 col-xl-4">
                             <div class="card lt-card">
-                                <img class="lt-img" style="height: auto !important" src="<%# Eval("ImageUrl") %>" alt="<%# Eval("TitleAr") %>" />
+                                <img class="lt-img" style="height: auto !important" src="<%# Eval("ImageUrl")%>" alt="<%# Eval("TitleAr")%>" />
 
                                 <div class="card-body">
-                                    <h5 class="fw-bold mb-1"><%# Eval("TitleAr") %></h5>
+                                    <h5 class="fw-bold mb-1"><%# Eval("TitleAr")%></h5>
 
-                                    <p class="text-muted text-truncate-2 mb-0"><%# Eval("NotesAr") %></p>
+                                    <p class="text-muted text-truncate-2 mb-0"><%# Eval("NotesAr")%></p>
 
                                     <div class="lt-meta">
-                                        <span class="lt-pill"><%# Eval("LevelsCount") %> مستويات</span>
-                                        <span class="lt-pill"><%# Eval("VideosCount") %> فيديو</span>
-                                        <span class="lt-pill"><%# Eval("TotalDurationHHMMSS") %> ساعة</span>
+                                        <span class="lt-pill"><%# Eval("LevelsCount")%> مستويات</span>
+                                        <span class="lt-pill"><%# Eval("VideosCount")%> فيديو</span>
+                                        <span class="lt-pill"><%# Eval("TotalDurationHHMMSS")%> ساعة</span>
                                     </div>
 
                                     <div class="lt-progress-wrap">
                                         <div class="lt-progress-top">
                                             <span>نسبة الإنجاز</span>
-                                            <span><%# Eval("CompletionPercentAvg") %>%</span>
+                                            <span><%# Eval("CompletionPercentAvg")%>%</span>
                                         </div>
                                         <div class="progress">
                                             <div class="progress-bar"
-                                                style='width: <%# Eval("CompletionPercentAvg") %>%'
+                                                style='width: <%# Eval("CompletionPercentAvg")%>%'
                                                 role="progressbar"
-                                                aria-valuenow="<%# Eval("CompletionPercentAvg") %>"
+                                                aria-valuenow="<%# Eval("CompletionPercentAvg")%>"
                                                 aria-valuemin="0"
                                                 aria-valuemax="100"></div>
                                         </div>
                                     </div>
 
                                     <div class="mt-3">
-                                        <a class="btn btn-primary btn-soft w-100 <%# If(CBool(Eval("HasLevels")), "", "disabled") %>"
-                                            href="<%# Eval("LevelsUrl") %>">مشاهدة المستويات</a>
+                                        <a class="btn btn-primary btn-soft w-100 <%# If(CBool(Eval("HasLevels")), "", "disabled")%>"
+                                            href="<%# Eval("LevelsUrl")%>">مشاهدة المستويات</a>
                                     </div>
                                 </div>
                             </div>
@@ -193,15 +193,15 @@
                     <asp:Repeater ID="rptNews" runat="server" OnItemCommand="rptNews_ItemCommand">
                         <ItemTemplate>
                             <div class="lt-news-item">
-                                <img class="lt-news-thumb" src="<%# Eval("ImageUrl") %>" alt="news" />
+                                <img class="lt-news-thumb" src="<%# Eval("ImageUrl")%>" alt="news" />
 
                                 <div class="flex-grow-1">
-                                    <p class="lt-news-title"><%# Eval("TitleAr") %></p>
+                                    <p class="lt-news-title"><%# Eval("TitleAr")%></p>
 
-                                    <p class="lt-news-brief text-truncate-2"><%# Eval("BriefAr") %></p>
+                                    <p class="lt-news-brief text-truncate-2"><%# Eval("BriefAr")%></p>
 
                                     <div class="lt-news-meta">
-                                        <span class="lt-news-date"><%# Eval("DisplayDate") %></span>
+                                        <span class="lt-news-date"><%# Eval("DisplayDate")%></span>
 <%--                                        <span class="lt-news-pill">خبر</span>--%>
 
                                         <!-- زر تفاصيل يفتح Modal -->
@@ -209,7 +209,7 @@
                                             runat="server"
                                             CssClass="btn btn-primary btn-soft btn-sm ms-auto"
                                             CommandName="NewsDetails"
-                                            CommandArgument='<%# Eval("PID") %>'
+                                            CommandArgument='<%# Eval("PID")%>'
                                             CausesValidation="false">
                                             عرض التفاصيل
                                         </asp:LinkButton>

@@ -1,8 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Preserve the existing compiler package and local Web.config ownership. -->
-  <PropertyGroup>
-    <RoslynRegisterInConfig>false</RoslynRegisterInConfig>
-    <RoslynToolPath>$(ProstoPackagesRoot)$(ProstoCodeDomPackage)\tools\Roslyn-4.1.0</RoslynToolPath>
-  </PropertyGroup>
-  <Import Project="$(ProstoPackagesRoot)$(ProstoCodeDomPackage)\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets" />
+    <!-- Preserve the existing compiler package and local Web.config ownership. -->
+    <PropertyGroup>
+        <RoslynRegisterInConfig>false</RoslynRegisterInConfig>
+        <RoslynToolPath>$(ProstoPackagesRoot)$(ProstoCodeDomPackage)\tools\Roslyn-4.1.0</RoslynToolPath>
+    </PropertyGroup>
+    <Import Project="$(ProstoPackagesRoot)$(ProstoCodeDomPackage)\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets"/>
 </Project>

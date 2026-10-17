@@ -49,7 +49,8 @@ def main():
     (LOCAL / "verified-dashboard.html").write_text(body)
     assert "Brands_Dashboards.aspx" in final_url, "Login did not redirect to the dashboard"
     assert "علامة تجريبية" in unescape(body), "Seeded development brand did not render"
-    print("PASS: login form, wrong-password rejection, administrator authentication, session cookie, dashboard and database-backed brand.")
+    print(
+        "PASS: login form, wrong-password rejection, administrator authentication, session cookie, dashboard and database-backed brand.")
     with browser.open("http://127.0.0.1:3001/", timeout=60) as response:
         assert response.status == 200
     try:
@@ -63,7 +64,8 @@ def main():
     print("PASS: API startup, attribute routing and input validation.")
     login = {"Username": credentials["admin_username"], "Password": credentials["admin_password"],
              "AppVersion": "local-verification", "Device": {"DeviceID": "prosto-local-verification",
-             "Platform": "Android", "Model": "Local development test", "OSVersion": "local"}}
+                                                            "Platform": "Android", "Model": "Local development test",
+                                                            "OSVersion": "local"}}
     with browser.open(Request("http://127.0.0.1:3001/api/Users/Login", data=json.dumps(login).encode(),
                               headers={"Content-Type": "application/json"}), timeout=60) as response:
         payload = json.load(response)

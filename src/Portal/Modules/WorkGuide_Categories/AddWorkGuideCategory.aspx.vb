@@ -1,9 +1,9 @@
-﻿Imports System.Linq
+﻿Imports Prosto_ERP_ClassLibrary
 
 Public Class AddWorkGuideCategory
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -19,7 +19,7 @@ Public Class AddWorkGuideCategory
     End Sub
 
     Private Sub FillBrands()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim brands = db.Select_Brands_All().ToList()
 
             ddlBrand.DataSource = brands
@@ -58,9 +58,9 @@ Public Class AddWorkGuideCategory
             Return
         End If
 
-        Dim BrandID As Integer = CInt(ddlBrand.SelectedValue)
+        Dim BrandID = CInt(ddlBrand.SelectedValue)
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim categories = db.Select_Work_Guide_Categories_Tree_ByBrand(BrandID, Nothing).ToList()
 
             For Each item In categories
@@ -78,7 +78,7 @@ Public Class AddWorkGuideCategory
             Return
         End If
 
-        Dim BrandID As Integer = CInt(ddlBrand.SelectedValue)
+        Dim BrandID = CInt(ddlBrand.SelectedValue)
 
         Dim ParentID As Integer? = Nothing
         If ddlParentCategory.SelectedValue IsNot Nothing AndAlso ddlParentCategory.SelectedValue <> "0" Then
@@ -90,7 +90,7 @@ Public Class AddWorkGuideCategory
             ItemOrder = CInt(txtItemOrder.Text)
         End If
 
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             db.Insert_Work_Guide_Category(
                 BrandID,
                 ParentID,
@@ -100,7 +100,7 @@ Public Class AddWorkGuideCategory
                 txtDescriptionEn.Text.Trim(),
                 ItemOrder,
                 SessionManager.GetInstance.Users.UserID
-            )
+                )
         End Using
 
         Response.Redirect("/Modules/WorkGuide_Categories/ManageWorkGuideCategories.aspx")
@@ -109,5 +109,5 @@ Public Class AddWorkGuideCategory
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
         Response.Redirect("/Modules/WorkGuide_Categories/ManageWorkGuideCategories.aspx")
     End Sub
-
 End Class
+

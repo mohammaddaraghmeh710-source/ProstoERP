@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
+﻿using System.Web.Http;
+using Prosto_ERP_API.Serialization;
 
 namespace Prosto_ERP_API
 {
@@ -10,15 +8,15 @@ namespace Prosto_ERP_API
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
-            config.MessageHandlers.Add(new Serialization.OmitEmptyJsonValuesHandler());
+            config.MessageHandlers.Add(new OmitEmptyJsonValuesHandler());
 
             // Web API routes
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
+                "DefaultApi",
+                "api/{controller}/{id}",
+                new { id = RouteParameter.Optional }
             );
             SwaggerConfig.Register(config);
         }

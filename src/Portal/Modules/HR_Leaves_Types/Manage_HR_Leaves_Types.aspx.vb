@@ -1,5 +1,5 @@
 ﻿Imports System.Data.SqlClient
-Imports System.Linq
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Manage_HR_Leaves_Types
     Inherits HRTypePageBase
@@ -18,8 +18,11 @@ Public Class Manage_HR_Leaves_Types
         If ddlStatus.SelectedValue = "1" Then active = True
         If ddlStatus.SelectedValue = "0" Then active = False
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
-                Dim rows = db.Select_HR_Leaves_Types_Filter(If(String.IsNullOrWhiteSpace(txtKeyword.Text), Nothing, txtKeyword.Text.Trim()), active).ToList()
+            Using db As New Prosto_ERP_DataClassesDataContext()
+                Dim rows =
+                        db.Select_HR_Leaves_Types_Filter(
+                            If(String.IsNullOrWhiteSpace(txtKeyword.Text), Nothing, txtKeyword.Text.Trim()), active).
+                        ToList()
                 lstData.DataSource = rows
                 lstData.DataBind()
                 lblEmpty.Visible = rows.Count = 0
@@ -42,25 +45,31 @@ Public Class Manage_HR_Leaves_Types
     End Sub
 
     Protected Sub lstData_ItemCommand(sender As Object, e As ListViewCommandEventArgs)
-        If e.CommandName <> "Activate" AndAlso e.CommandName <> "Deactivate" AndAlso e.CommandName <> "DeleteItem" Then Return
+        If e.CommandName <> "Activate" AndAlso e.CommandName <> "Deactivate" AndAlso e.CommandName <> "DeleteItem" Then _
+            Return
         Dim id As Integer
         If Not Integer.TryParse(Convert.ToString(e.CommandArgument), id) OrElse id <= 0 Then
             ShowMessage(litMessage, "رقم العنصر غير صالح.")
             Return
         End If
         Try
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
-                Dim affected As Integer = 0
+            Using db As New Prosto_ERP_DataClassesDataContext()
+                Dim affected = 0
                 Dim userID = SessionManager.GetInstance.Users.UserID
                 If e.CommandName = "DeleteItem" Then
                     Dim result = db.Update_HR_Leaves_Types_IsDeleted_ByID(id, userID).FirstOrDefault()
                     If result IsNot Nothing Then affected = result.AffectedRows
                 Else
-                    Dim result = db.Update_HR_Leaves_Types_IsActive_ByID(id, e.CommandName = "Activate", userID).FirstOrDefault()
+                    Dim result =
+                            db.Update_HR_Leaves_Types_IsActive_ByID(id, e.CommandName = "Activate", userID).
+                            FirstOrDefault()
                     If result IsNot Nothing Then affected = result.AffectedRows
                 End If
                 If affected = 1 Then
-                    ShowMessage(litMessage, If(e.CommandName = "DeleteItem", "تم حذف العنصر.", If(e.CommandName = "Activate", "تم تفعيل العنصر.", "تم إيقاف العنصر.")), True)
+                    ShowMessage(litMessage,
+                                If _
+                                   (e.CommandName = "DeleteItem", "تم حذف العنصر.",
+                                    If(e.CommandName = "Activate", "تم تفعيل العنصر.", "تم إيقاف العنصر.")), True)
                 Else
                     ShowMessage(litMessage, "العنصر غير موجود أو تم حذفه.")
                 End If
@@ -72,3 +81,4 @@ Public Class Manage_HR_Leaves_Types
         BindData()
     End Sub
 End Class
+

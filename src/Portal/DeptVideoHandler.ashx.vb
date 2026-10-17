@@ -1,15 +1,10 @@
 ﻿
-
-Imports System
-Imports System.Web
 Imports System.IO
-Imports System.Text
-Imports System.Web.Security
 
 Public Class DeptVideoHandler
     Implements IHttpHandler
 
-    Public Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
+    Public Sub ProcessRequest(context As HttpContext) Implements IHttpHandler.ProcessRequest
         Dim token As String = context.Request.QueryString("t")
 
         If String.IsNullOrEmpty(token) Then
@@ -64,9 +59,11 @@ Public Class DeptVideoHandler
         context.Response.End()
     End Sub
 
-    Public ReadOnly Property IsReusable() As Boolean Implements IHttpHandler.IsReusable
+    Public ReadOnly Property IsReusable As Boolean Implements IHttpHandler.IsReusable
         Get
             Return False
         End Get
     End Property
 End Class
+
+

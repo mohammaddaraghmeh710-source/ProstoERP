@@ -1,13 +1,13 @@
-﻿Imports System
-Imports System.Drawing
+﻿Imports System.Drawing
 Imports System.Drawing.Imaging
 Imports System.IO
+Imports Prosto_ERP_ClassLibrary
 Imports QRCoder
 
 Public Class PrintQRCode1
     Inherits PageBase
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
             Return
@@ -38,14 +38,14 @@ Public Class PrintQRCode1
             imgQR.ImageUrl = GenerateQrDataUrl(qrText)
 
             litInfo.Text =
-                    "النوع: <b>" & Server.HtmlEncode(typeStr) & "</b>" &
-                    " | ID: <b>" & entityId.ToString() & "</b><br/>" &
-                    "Token: <span style='direction:ltr;display:inline-block;'>" & tokenGuid.ToString() & "</span>"
+                "النوع: <b>" & Server.HtmlEncode(typeStr) & "</b>" &
+                " | ID: <b>" & entityId.ToString() & "</b><br/>" &
+                "Token: <span style='direction:ltr;display:inline-block;'>" & tokenGuid.ToString() & "</span>"
         End If
     End Sub
 
-    Private Function GetOrCreateToken(ByVal entityType As String, ByVal entityId As Integer) As Guid
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+    Private Function GetOrCreateToken(entityType As String, entityId As Integer) As Guid
+        Using db As New Prosto_ERP_DataClassesDataContext
             ' هذا يفترض أنك أضفت SP (QR_GetOrCreate) إلى LINQ DataContext
             Dim res = db.QR_GetOrCreate(entityType, entityId).FirstOrDefault()
 
@@ -57,7 +57,7 @@ Public Class PrintQRCode1
         End Using
     End Function
 
-    Private Function GenerateQrDataUrl(ByVal content As String) As String
+    Private Function GenerateQrDataUrl(content As String) As String
         Using generator As New QRCodeGenerator()
             Using data = generator.CreateQrCode(content, QRCodeGenerator.ECCLevel.Q)
                 Using qr As New QRCode(data)
@@ -81,5 +81,5 @@ Public Class PrintQRCode1
             Response.Redirect("/Default.aspx")
         End If
     End Sub
-
 End Class
+

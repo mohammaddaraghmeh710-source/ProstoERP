@@ -1,10 +1,5 @@
-﻿Imports System
-Imports System.Linq
-Imports System.Collections.Generic
-Imports System.Globalization
+﻿Imports System.Globalization
 Imports System.Web.Script.Serialization
-Imports System.Web.UI
-Imports System.Web.UI.WebControls
 Imports Prosto_ERP_ClassLibrary
 
 Public Class Brands_Statistics_Dashboard
@@ -24,7 +19,7 @@ Public Class Brands_Statistics_Dashboard
             End If
             Return 0
         End Get
-        Set(value As Integer)
+        Set
             ViewState("HistoryPageIndex") = value
         End Set
     End Property
@@ -66,9 +61,9 @@ Public Class Brands_Statistics_Dashboard
     End Class
 
     ' كاش لتقييمات العلامة التجارية
-    Private _brandEvaluations As List(Of Prosto_ERP_ClassLibrary.Select_Evaluations_ByBrandIDResult)
+    Private _brandEvaluations As List(Of Select_Evaluations_ByBrandIDResult)
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         ' حماية الجلسة
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
@@ -108,7 +103,7 @@ Public Class Brands_Statistics_Dashboard
     ' تحميل جميع التقييمات الخاصة بهذه العلامة التجارية
     Private Sub LoadBrandEvaluations()
         If BrandID <= 0 Then
-            _brandEvaluations = New List(Of Prosto_ERP_ClassLibrary.Select_Evaluations_ByBrandIDResult)()
+            _brandEvaluations = New List(Of Select_Evaluations_ByBrandIDResult)()
             Return
         End If
 
@@ -120,9 +115,9 @@ Public Class Brands_Statistics_Dashboard
 
         ' ===================== 1) جلب الفروع =====================
         Dim branches = (From b In db.Select_Branches_ByBrandID(BrandID)
-                        Where (b.IsDeleted = False OrElse b.IsDeleted Is Nothing) _
-                           AndAlso (b.IsActive = True OrElse b.IsActive Is Nothing)
-                        Select b).ToList()
+                Where (b.IsDeleted = False OrElse b.IsDeleted Is Nothing) _
+                      AndAlso (b.IsActive = True OrElse b.IsActive Is Nothing)
+                Select b).ToList()
 
         If branches Is Nothing OrElse branches.Count = 0 Then
             litBrandScore.Text = "0"
@@ -139,15 +134,15 @@ Public Class Brands_Statistics_Dashboard
 
         ' ===================== 2) جميع التقييمات للفروع الحالية (من Select_Evaluations_All) =====================
         Dim evaluations = (From ev In db.Select_Evaluations_All()
-                           Where (ev.IsDeleted = False OrElse ev.IsDeleted Is Nothing) _
-                              AndAlso branchIds.Contains(ev.Branch_ID) _
-                              AndAlso (ev.Brand_ID = BrandID OrElse Not ev.Brand_ID.HasValue)
-                           Select ev).ToList()
+                Where (ev.IsDeleted = False OrElse ev.IsDeleted Is Nothing) _
+                      AndAlso branchIds.Contains(ev.Branch_ID) _
+                      AndAlso (ev.Brand_ID = BrandID OrElse Not ev.Brand_ID.HasValue)
+                Select ev).ToList()
 
         ' ===================== 3) حساب تقييم كل فرع =====================
         Dim miniList As New List(Of BranchMiniDto)()
         Dim colorKeys() As String = {"success", "warning", "danger", "primary", "info"}
-        Dim colorIndex As Integer = 0
+        Dim colorIndex = 0
 
         For Each br In branches
             Dim branchId As Integer = br.ID
@@ -175,11 +170,11 @@ Public Class Brands_Statistics_Dashboard
         rptBranches.DataBind()
 
         ' ===================== 4) تقييم العلامة التجارية =====================
-        Dim brandScore As Decimal = 0D
+        Dim brandScore = 0D
 
         If miniList.Count > 0 Then
             Dim sumScores As Decimal = miniList.Sum(Function(x) x.Score)
-            Dim avgScore As Decimal = sumScores / miniList.Count
+            Dim avgScore As Decimal = sumScores/miniList.Count
             brandScore = Math.Round(avgScore, 2)
         End If
 
@@ -187,12 +182,15 @@ Public Class Brands_Statistics_Dashboard
         litBrandScoreText.Text = String.Format("تقييم العلامة التجارية: {0:0.##}%", brandScore)
 
         ' ===================== 5) عدد المهام والشكاوي للعلامة التجارية =====================
-        Dim brandEvals = If(_brandEvaluations, New List(Of Prosto_ERP_ClassLibrary.Select_Evaluations_ByBrandIDResult)())
+        Dim brandEvals =
+                If(_brandEvaluations, New List(Of Select_Evaluations_ByBrandIDResult)())
 
         ' Evaluation_Type للمهام = 1
         ' Evaluation_Type للشكاوي = 2
-        Dim tasksCount As Integer = brandEvals.Where(Function(ev) ev.Evaluation_Type.HasValue AndAlso ev.Evaluation_Type.Value = 1).Count()
-        Dim complaintsCount As Integer = brandEvals.Where(Function(ev) ev.Evaluation_Type.HasValue AndAlso ev.Evaluation_Type.Value = 2).Count()
+        Dim tasksCount As Integer =
+                brandEvals.Where(Function(ev) ev.Evaluation_Type.HasValue AndAlso ev.Evaluation_Type.Value = 1).Count()
+        Dim complaintsCount As Integer =
+                brandEvals.Where(Function(ev) ev.Evaluation_Type.HasValue AndAlso ev.Evaluation_Type.Value = 2).Count()
 
         litBrandTasksCount.Text = tasksCount.ToString("N0", CultureInfo.InvariantCulture)
         litBrandComplaintsCount.Text = complaintsCount.ToString("N0", CultureInfo.InvariantCulture)
@@ -201,11 +199,11 @@ Public Class Brands_Statistics_Dashboard
         Dim categoriesResult As New List(Of CategoryResult)()
 
         Dim catsData = db.Brand_Evaluation_Checklist_ByCategory().
-                       Where(Function(r) r.Brand_ID = BrandID).
-                       ToList()
+                Where(Function(r) r.Brand_ID = BrandID).
+                ToList()
 
         For Each row In catsData
-            Dim name As String = "غير مصنف"
+            Dim name = "غير مصنف"
 
             If row.Category_Title_Ar IsNot Nothing AndAlso row.Category_Title_Ar.Trim() <> "" Then
                 name = row.Category_Title_Ar
@@ -213,15 +211,15 @@ Public Class Brands_Statistics_Dashboard
                 name = row.Category_Title_En
             End If
 
-            Dim cnt As Integer = 0
+            Dim cnt = 0
             If row.Evaluation_Items_Count.HasValue Then
                 cnt = CInt(row.Evaluation_Items_Count.Value)
             End If
 
             categoriesResult.Add(New CategoryResult With {
-                .Name = name,
-                .Count = cnt
-            })
+                                    .Name = name,
+                                    .Count = cnt
+                                    })
         Next
 
         litCategoriesData.Text = serializer.Serialize(categoriesResult)
@@ -247,8 +245,8 @@ Public Class Brands_Statistics_Dashboard
                 End If
             End Function)
 
-        Dim maxScore As Decimal = evaluationCount * 100D
-        Dim score As Decimal = ((maxScore - totalWeight) / maxScore) * 100D
+        Dim maxScore As Decimal = evaluationCount*100D
+        Dim score As Decimal = ((maxScore - totalWeight)/maxScore)*100D
 
         If score < 0D Then score = 0D
         If score > 100D Then score = 100D
@@ -259,8 +257,8 @@ Public Class Brands_Statistics_Dashboard
     ' ============== تعبئة فلاتر سجل المخالفات للعلامة التجارية ==============
     Private Sub BindHistoryFilters()
         Dim evals = _brandEvaluations.
-            Where(Function(ev) ev.Evaluation_Type = 1 AndAlso Not String.IsNullOrWhiteSpace(ev.Checklist_IDs)).
-            ToList()
+                Where(Function(ev) ev.Evaluation_Type = 1 AndAlso Not String.IsNullOrWhiteSpace(ev.Checklist_IDs)).
+                ToList()
 
         ddlChecklistCategoryFilter.Items.Clear()
         ddlChecklistFilter.Items.Clear()
@@ -279,12 +277,13 @@ Public Class Brands_Statistics_Dashboard
         End If
 
         ' فروع من نفس التقييمات
-        Dim branchIds = evals.Where(Function(e) e.Branch_ID.HasValue).Select(Function(e) e.Branch_ID.Value).Distinct().ToList()
+        Dim branchIds =
+                evals.Where(Function(e) e.Branch_ID.HasValue).Select(Function(e) e.Branch_ID.Value).Distinct().ToList()
         If branchIds.Count > 0 Then
             Dim branches = (From b In db.Select_Branches_All()
-                            Where branchIds.Contains(b.ID)
-                            Order By b.Title_Ar
-                            Select b.ID, b.Title_Ar).ToList()
+                    Where branchIds.Contains(b.ID)
+                    Order By b.Title_Ar
+                    Select b.ID, b.Title_Ar).ToList()
 
             For Each b In branches
                 ddlBranchFilter.Items.Add(New ListItem(b.Title_Ar, b.ID.ToString()))
@@ -292,12 +291,14 @@ Public Class Brands_Statistics_Dashboard
         End If
 
         ' أقسام
-        Dim deptIds = evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().ToList()
+        Dim deptIds =
+                evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().
+                ToList()
         If deptIds.Count > 0 Then
             Dim depts = (From d In db.Select_Departments_All()
-                         Where deptIds.Contains(d.ID)
-                         Order By d.Title_Ar
-                         Select d.ID, d.Title_Ar).ToList()
+                    Where deptIds.Contains(d.ID)
+                    Order By d.Title_Ar
+                    Select d.ID, d.Title_Ar).ToList()
 
             For Each d In depts
                 ddlDepartmentFilter.Items.Add(New ListItem(d.Title_Ar, d.ID.ToString()))
@@ -305,12 +306,14 @@ Public Class Brands_Statistics_Dashboard
         End If
 
         ' مسميات وظيفية
-        Dim jobIds = evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().ToList()
+        Dim jobIds =
+                evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().
+                ToList()
         If jobIds.Count > 0 Then
             Dim jobs = (From j In db.Select_JobTitles_All()
-                        Where jobIds.Contains(j.ID)
-                        Order By j.Title_Ar
-                        Select j.ID, j.Title_Ar).ToList()
+                    Where jobIds.Contains(j.ID)
+                    Order By j.Title_Ar
+                    Select j.ID, j.Title_Ar).ToList()
 
             For Each j In jobs
                 ddlJobTitleFilter.Items.Add(New ListItem(j.Title_Ar, j.ID.ToString()))
@@ -335,14 +338,14 @@ Public Class Brands_Statistics_Dashboard
         End If
 
         Dim allChecklists = (From c In db.Select_Checklist_All()
-                             Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
-                             Where allChecklistIds.Contains(c.ID)
-                             Select New With {
-                                 .ID = c.ID,
-                                 .Title_Ar = c.Title_Ar,
-                                 .CategoryID = c.CheckList_CategoryID,
-                                 .CategoryTitle = cat.Title_Ar
-                             }).ToList()
+                Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
+                Where allChecklistIds.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title_Ar = c.Title_Ar,
+                .CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar
+                }).ToList()
 
         ' تصنيفات بدون تكرار
         Dim usedCategoryIds As New HashSet(Of Integer)()
@@ -368,7 +371,7 @@ Public Class Brands_Statistics_Dashboard
 
             ddlChecklistCategoryFilter.Items.Add(
                 New ListItem(text, catId.ToString())
-            )
+                )
         Next
 
         ' عناصر Checklist نفسها بدون تكرار
@@ -379,7 +382,7 @@ Public Class Brands_Statistics_Dashboard
                 usedChecklistIds.Add(c.ID)
                 ddlChecklistFilter.Items.Add(
                     New ListItem(c.Title_Ar, c.ID.ToString())
-                )
+                    )
             End If
         Next
     End Sub
@@ -387,8 +390,8 @@ Public Class Brands_Statistics_Dashboard
     ' ============== سجل المخالفات للعلامة التجارية (مع Paging + بحث عام ومتقدم) ==============
     Private Sub BindViolationsHistory()
         Dim evals = _brandEvaluations.
-            Where(Function(ev) ev.Evaluation_Type = 1).
-            ToList()
+                Where(Function(ev) ev.Evaluation_Type = 1).
+                ToList()
 
         ' -------- 1) فلتر الحالة (بحث عام) --------
         Dim statusFilter As String = ddlStatusFilter.SelectedValue
@@ -426,15 +429,17 @@ Public Class Brands_Statistics_Dashboard
         End If
 
         If fromDate.HasValue Then
-            evals = evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date >= fromDate.Value).ToList()
+            evals =
+                evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date >= fromDate.Value).ToList()
         End If
 
         If toDate.HasValue Then
-            evals = evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date <= toDate.Value).ToList()
+            evals =
+                evals.Where(Function(ev) ev.AddedDate.HasValue AndAlso ev.AddedDate.Value.Date <= toDate.Value).ToList()
         End If
 
         ' -------- 3) بحث متقدم (فرع/قسم/مسمى/Checklist) --------
-        Dim useAdvanced As Boolean = False
+        Dim useAdvanced = False
 
         Dim selectedBranchId As Integer? = Nothing
         Dim selectedDeptId As Integer? = Nothing
@@ -480,33 +485,40 @@ Public Class Brands_Statistics_Dashboard
         End If
 
         ' -------- 4) قواميس الأقسام / المسميات / الشفت / البراند / الفروع --------
-        Dim deptIds = evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().ToList()
-        Dim jobIds = evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().ToList()
-        Dim shiftIds = evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
-        Dim brandIds = evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
-        Dim branchIds = evals.Where(Function(e) e.Branch_ID.HasValue).Select(Function(e) e.Branch_ID.Value).Distinct().ToList()
+        Dim deptIds =
+                evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().
+                ToList()
+        Dim jobIds =
+                evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().
+                ToList()
+        Dim shiftIds =
+                evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
+        Dim brandIds =
+                evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
+        Dim branchIds =
+                evals.Where(Function(e) e.Branch_ID.HasValue).Select(Function(e) e.Branch_ID.Value).Distinct().ToList()
 
         Dim deptDict = (From d In db.Select_Departments_All()
-                        Where deptIds.Contains(d.ID)
-                        Select d.ID, d.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where deptIds.Contains(d.ID)
+                Select d.ID, d.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim jobDict = (From j In db.Select_JobTitles_All()
-                       Where jobIds.Contains(j.ID)
-                       Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where jobIds.Contains(j.ID)
+                Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim shiftsDict = (From s In db.Select_Shift_All()
-                          Where shiftIds.Contains(s.ID)
-                          Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where shiftIds.Contains(s.ID)
+                Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim brandsDict = (From b In db.Select_Brands_All()
-                          Where brandIds.Contains(b.ID)
-                          Select b.ID, b.Title_Ar, b.Logo).ToList()
+                Where brandIds.Contains(b.ID)
+                Select b.ID, b.Title_Ar, b.Logo).ToList()
 
         Dim branchesDict = (From b In db.Select_Branches_All()
-                            Where branchIds.Contains(b.ID)
-                            Select b.ID, b.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where branchIds.Contains(b.ID)
+                Select b.ID, b.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
-        Dim brandLogoDefault As String = "/assets/img/Prosto/Logo_Circle.png"
+        Dim brandLogoDefault = "/assets/img/Prosto/Logo_Circle.png"
 
         Dim brandLogoDict As New Dictionary(Of Integer, String)
         For Each b In brandsDict
@@ -532,14 +544,14 @@ Public Class Brands_Statistics_Dashboard
         Next
 
         Dim allChecklists = (From c In db.Select_Checklist_All()
-                             Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
-                             Where allChecklistIds.Contains(c.ID)
-                             Select New With {
-                                 .ID = c.ID,
-                                 .Title_Ar = c.Title_Ar,
-                                 .CategoryID = c.CheckList_CategoryID,
-                                 .CategoryTitle = cat.Title_Ar
-                             }).ToList()
+                Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
+                Where allChecklistIds.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title_Ar = c.Title_Ar,
+                .CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar
+                }).ToList()
 
         Dim checklistDict = allChecklists.ToDictionary(Function(x) x.ID)
 
@@ -568,11 +580,11 @@ Public Class Brands_Statistics_Dashboard
                 End If
             End If
 
-            Dim deptName As String = ""
-            Dim jobName As String = ""
-            Dim shiftName As String = ""
+            Dim deptName = ""
+            Dim jobName = ""
+            Dim shiftName = ""
             Dim brandLogo As String = brandLogoDefault
-            Dim branchName As String = ""
+            Dim branchName = ""
 
             If ev.Department_ID.HasValue AndAlso deptDict.ContainsKey(ev.Department_ID.Value) Then
                 deptName = deptDict(ev.Department_ID.Value)
@@ -595,8 +607,8 @@ Public Class Brands_Statistics_Dashboard
             End If
 
             Dim viols As New List(Of ViolationDto)()
-            Dim hasMatchedChecklist As Boolean = False
-            Dim hasMatchedCategory As Boolean = False
+            Dim hasMatchedChecklist = False
+            Dim hasMatchedCategory = False
 
             If ev.Checklist_IDs IsNot Nothing Then
                 Dim parts = ev.Checklist_IDs.Split(","c)
@@ -623,7 +635,7 @@ Public Class Brands_Statistics_Dashboard
                             hasMatchedChecklist = True
                         End If
 
-                        Dim css As String = "badge-chip badge-primary-soft"
+                        Dim css = "badge-chip badge-primary-soft"
                         Select Case c.CategoryID
                             Case 1
                                 css = "badge-chip badge-danger-soft"
@@ -634,14 +646,14 @@ Public Class Brands_Statistics_Dashboard
                         End Select
 
                         viols.Add(New ViolationDto With {
-                            .Title = c.Title_Ar,
-                            .CssClass = css
-                        })
+                                     .Title = c.Title_Ar,
+                                     .CssClass = css
+                                     })
                     End If
                 Next
             End If
 
-            Dim passFilter As Boolean = True
+            Dim passFilter = True
 
             If useAdvanced AndAlso selectedCatId.HasValue AndAlso Not hasMatchedCategory Then
                 passFilter = False
@@ -662,18 +674,18 @@ Public Class Brands_Statistics_Dashboard
                                          "status-badge status-open")
 
             result.Add(New EvaluationTaskDto With {
-                .EvaluationID = ev.ID,
-                .DepartmentName = deptName,
-                .JobTitleName = jobName,
-                .ShiftName = shiftName,
-                .BrandLogoUrl = brandLogo,
-                .EvalDate = ev.AddedDate,
-                .Notes = ev.Notes,
-                .Violations = viols,
-                .StatusText = statusText,
-                .StatusCss = statusCss,
-                .BranchName = branchName
-            })
+                          .EvaluationID = ev.ID,
+                          .DepartmentName = deptName,
+                          .JobTitleName = jobName,
+                          .ShiftName = shiftName,
+                          .BrandLogoUrl = brandLogo,
+                          .EvalDate = ev.AddedDate,
+                          .Notes = ev.Notes,
+                          .Violations = viols,
+                          .StatusText = statusText,
+                          .StatusCss = statusCss,
+                          .BranchName = branchName
+                          })
         Next
 
         result = result.OrderByDescending(Function(x) x.EvalDate).ToList()
@@ -692,13 +704,13 @@ Public Class Brands_Statistics_Dashboard
             Exit Sub
         End If
 
-        Dim totalPages As Integer = CInt(Math.Ceiling(totalCount / CDbl(HistoryPageSize)))
+        Dim totalPages = CInt(Math.Ceiling(totalCount/CDbl(HistoryPageSize)))
         If HistoryPageIndex >= totalPages Then
             HistoryPageIndex = Math.Max(totalPages - 1, 0)
         End If
 
         Dim pageIndex As Integer = HistoryPageIndex
-        Dim paged = result.Skip(pageIndex * HistoryPageSize).Take(HistoryPageSize).ToList()
+        Dim paged = result.Skip(pageIndex*HistoryPageSize).Take(HistoryPageSize).ToList()
 
         rptViolationsHistory.DataSource = paged
         rptViolationsHistory.DataBind()
@@ -715,35 +727,42 @@ Public Class Brands_Statistics_Dashboard
     Private Sub BindComplaints()
         Dim evals = _brandEvaluations.Where(
             Function(ev) ev.Evaluation_Type = 2 AndAlso (ev.IsSolved = False OrElse ev.IsSolved Is Nothing)
-        ).ToList()
+            ).ToList()
 
-        Dim deptIds = evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().ToList()
-        Dim jobIds = evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().ToList()
-        Dim shiftIds = evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
-        Dim brandIds = evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
-        Dim branchIds = evals.Where(Function(e) e.Branch_ID.HasValue).Select(Function(e) e.Branch_ID.Value).Distinct().ToList()
+        Dim deptIds =
+                evals.Where(Function(e) e.Department_ID.HasValue).Select(Function(e) e.Department_ID.Value).Distinct().
+                ToList()
+        Dim jobIds =
+                evals.Where(Function(e) e.JobTitle_ID.HasValue).Select(Function(e) e.JobTitle_ID.Value).Distinct().
+                ToList()
+        Dim shiftIds =
+                evals.Where(Function(e) e.Shift_ID.HasValue).Select(Function(e) e.Shift_ID.Value).Distinct().ToList()
+        Dim brandIds =
+                evals.Where(Function(e) e.Brand_ID.HasValue).Select(Function(e) e.Brand_ID.Value).Distinct().ToList()
+        Dim branchIds =
+                evals.Where(Function(e) e.Branch_ID.HasValue).Select(Function(e) e.Branch_ID.Value).Distinct().ToList()
 
         Dim deptDict = (From d In db.Select_Departments_All()
-                        Where deptIds.Contains(d.ID)
-                        Select d.ID, d.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where deptIds.Contains(d.ID)
+                Select d.ID, d.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim jobDict = (From j In db.Select_JobTitles_All()
-                       Where jobIds.Contains(j.ID)
-                       Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where jobIds.Contains(j.ID)
+                Select j.ID, j.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim shiftsDict = (From s In db.Select_Shift_All()
-                          Where shiftIds.Contains(s.ID)
-                          Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where shiftIds.Contains(s.ID)
+                Select s.ID, s.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
         Dim brandsDict = (From b In db.Select_Brands_All()
-                          Where brandIds.Contains(b.ID)
-                          Select b.ID, b.Title_Ar, b.Logo).ToList()
+                Where brandIds.Contains(b.ID)
+                Select b.ID, b.Title_Ar, b.Logo).ToList()
 
         Dim branchesDict = (From b In db.Select_Branches_All()
-                            Where branchIds.Contains(b.ID)
-                            Select b.ID, b.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
+                Where branchIds.Contains(b.ID)
+                Select b.ID, b.Title_Ar).ToDictionary(Function(x) x.ID, Function(x) x.Title_Ar)
 
-        Dim brandLogoDefault As String = "/assets/img/Prosto/Logo_Circle.png"
+        Dim brandLogoDefault = "/assets/img/Prosto/Logo_Circle.png"
 
         Dim brandLogoDict As New Dictionary(Of Integer, String)
         For Each b In brandsDict
@@ -768,25 +787,25 @@ Public Class Brands_Statistics_Dashboard
         Next
 
         Dim allChecklists = (From c In db.Select_Checklist_All()
-                             Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
-                             Where allChecklistIds.Contains(c.ID)
-                             Select New With {
-                                 .ID = c.ID,
-                                 .Title_Ar = c.Title_Ar,
-                                 .CategoryID = c.CheckList_CategoryID,
-                                 .CategoryTitle = cat.Title_Ar
-                             }).ToList()
+                Join cat In db.Checklist_Categories_SelectAll() On c.CheckList_CategoryID Equals cat.ID
+                Where allChecklistIds.Contains(c.ID)
+                Select New With {
+                .ID = c.ID,
+                .Title_Ar = c.Title_Ar,
+                .CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle = cat.Title_Ar
+                }).ToList()
 
         Dim checklistDict = allChecklists.ToDictionary(Function(x) x.ID)
 
         Dim complaints As New List(Of EvaluationTaskDto)()
 
         For Each ev In evals
-            Dim deptName As String = ""
-            Dim jobName As String = ""
-            Dim shiftName As String = ""
+            Dim deptName = ""
+            Dim jobName = ""
+            Dim shiftName = ""
             Dim brandLogo As String = brandLogoDefault
-            Dim branchName As String = ""
+            Dim branchName = ""
 
             If ev.Department_ID.HasValue AndAlso deptDict.ContainsKey(ev.Department_ID.Value) Then
                 deptName = deptDict(ev.Department_ID.Value)
@@ -816,7 +835,7 @@ Public Class Brands_Statistics_Dashboard
                     Dim id As Integer
                     If Integer.TryParse(p.Trim(), id) AndAlso checklistDict.ContainsKey(id) Then
                         Dim c = checklistDict(id)
-                        Dim css As String = "badge-chip badge-primary-soft"
+                        Dim css = "badge-chip badge-primary-soft"
                         Select Case c.CategoryID
                             Case 1
                                 css = "badge-chip badge-danger-soft"
@@ -827,24 +846,24 @@ Public Class Brands_Statistics_Dashboard
                         End Select
 
                         viols.Add(New ViolationDto With {
-                            .Title = c.Title_Ar,
-                            .CssClass = css
-                        })
+                                     .Title = c.Title_Ar,
+                                     .CssClass = css
+                                     })
                     End If
                 Next
             End If
 
             complaints.Add(New EvaluationTaskDto With {
-                .EvaluationID = ev.ID,
-                .DepartmentName = deptName,
-                .JobTitleName = jobName,
-                .ShiftName = shiftName,
-                .BrandLogoUrl = brandLogo,
-                .EvalDate = ev.AddedDate,
-                .Notes = ev.Notes,
-                .Violations = viols,
-                .BranchName = branchName
-            })
+                              .EvaluationID = ev.ID,
+                              .DepartmentName = deptName,
+                              .JobTitleName = jobName,
+                              .ShiftName = shiftName,
+                              .BrandLogoUrl = brandLogo,
+                              .EvalDate = ev.AddedDate,
+                              .Notes = ev.Notes,
+                              .Violations = viols,
+                              .BranchName = branchName
+                              })
         Next
 
         pnlNoComplaints.Visible = (complaints.Count = 0)
@@ -854,14 +873,16 @@ Public Class Brands_Statistics_Dashboard
     End Sub
 
     ' ============== Attachments ==============
-    Protected Sub rptComplaints_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptComplaints.ItemCommand
+    Protected Sub rptComplaints_ItemCommand(source As Object, e As RepeaterCommandEventArgs) _
+        Handles rptComplaints.ItemCommand
         If e.CommandName = "ShowAttachments" Then
             Dim evalId As Integer = Convert.ToInt32(e.CommandArgument)
             BindAttachments(evalId)
         End If
     End Sub
 
-    Protected Sub rptViolationsHistory_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptViolationsHistory.ItemCommand
+    Protected Sub rptViolationsHistory_ItemCommand(source As Object, e As RepeaterCommandEventArgs) _
+        Handles rptViolationsHistory.ItemCommand
         If e.CommandName = "ShowAttachments" Then
             Dim evalId As Integer = Convert.ToInt32(e.CommandArgument)
             BindAttachments(evalId)
@@ -870,14 +891,14 @@ Public Class Brands_Statistics_Dashboard
 
     Private Sub BindAttachments(evaluationId As Integer)
         Dim atts = (From a In db.Select_Evaluations_Attachments_ByEvaluation_ID(evaluationId)
-                    Select New With {
-                        .Title = a.Title,
-                        .FilePath = a.File_Path
-                    }).ToList()
+                Select New With {
+                .Title = a.Title,
+                .FilePath = a.File_Path
+                }).ToList()
 
         If atts Is Nothing OrElse atts.Count = 0 Then
-            Dim scriptNoAtt As String =
-                "alert('لا يوجد مرفقات لهذا التقييم');"
+            Dim scriptNoAtt =
+                    "alert('لا يوجد مرفقات لهذا التقييم');"
             ScriptManager.RegisterStartupScript(Me, Me.GetType(), "noAttAlert", scriptNoAtt, True)
             Return
         End If
@@ -886,9 +907,9 @@ Public Class Brands_Statistics_Dashboard
         rptAttachmentsCarousel.DataBind()
 
         Dim script As String =
-            "setTimeout(function(){" &
-            "var m = new bootstrap.Modal(document.getElementById('attachmentsModal')); m.show();" &
-            "}, 200);"
+                "setTimeout(function(){" &
+                "var m = new bootstrap.Modal(document.getElementById('attachmentsModal')); m.show();" &
+                "}, 200);"
 
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "showAttachmentsModal", script, True)
     End Sub
@@ -913,5 +934,6 @@ Public Class Brands_Statistics_Dashboard
 
         BindViolationsHistory()
     End Sub
-
 End Class
+
+

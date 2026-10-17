@@ -374,28 +374,28 @@
                                                 <div class="d-flex align-items-center justify-content-between mb-1">
                                                     <div class="me-2">
                                                         <div class="fw-semibold small">
-                                                            <%# Eval("BranchName") %> – <%# Eval("DepartmentName") %> – <%# Eval("JobTitleName") %>
+                                                            <%# Eval("BranchName")%> – <%# Eval("DepartmentName")%> – <%# Eval("JobTitleName")%>
                                                         </div>
                                                         <div class="text-muted note-meta-small">
                                                             <i class="bx bx-time-five ms-1"></i>
-                                                            <%# Eval("ShiftName") %>
+                                                            <%# Eval("ShiftName")%>
                                                             <span class="mx-1">•</span>
                                                             <i class="bx bx-calendar ms-1"></i>
-                                                            <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate")) %>
+                                                            <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate"))%>
                                                         </div>
                                                     </div>
-                                                    <span class='<%# Eval("StatusCss") %>'>
-                                                        <%# Eval("StatusText") %>
+                                                    <span class='<%# Eval("StatusCss")%>'>
+                                                        <%# Eval("StatusText")%>
                                                     </span>
                                                 </div>
 
                                                 <!-- Chips لعناصر الـ Checklist -->
                                                 <div class="d-flex flex-wrap violation-badges mt-2">
                                                     <asp:Repeater ID="rptHistoryChips" runat="server"
-                                                        DataSource='<%# Eval("Violations") %>'>
+                                                        DataSource='<%# Eval("Violations")%>'>
                                                         <ItemTemplate>
-                                                            <span class='<%# Eval("CssClass") %>'>
-                                                                <%# Eval("Title") %>
+                                                            <span class='<%# Eval("CssClass")%>'>
+                                                                <%# Eval("Title")%>
                                                             </span>
                                                         </ItemTemplate>
                                                     </asp:Repeater>
@@ -405,7 +405,7 @@
                                                 <div class="mt-2">
                                                     <span class="fw-semibold d-block mb-1 small">ملاحظات المفتش:</span>
                                                     <p class="mb-1 small">
-                                                        <%# If(String.IsNullOrWhiteSpace(Eval("Notes")), "لا يوجد ملاحظات", Eval("Notes")) %>
+                                                        <%# If(String.IsNullOrWhiteSpace(Eval("Notes")), "لا يوجد ملاحظات", Eval("Notes"))%>
                                                     </p>
                                                 </div>
 
@@ -415,7 +415,7 @@
                                                         CssClass="btn btn-sm btn-outline-secondary"
                                                         Text="المرفقات"
                                                         CommandName="ShowAttachments"
-                                                        CommandArgument='<%# Eval("EvaluationID") %>' />
+                                                        CommandArgument='<%# Eval("EvaluationID")%>' />
                                                 </div>
                                             </div>
                                         </div>
@@ -465,32 +465,32 @@
                                             <button class="accordion-button px-0 py-0 bg-transparent shadow-0 flex-grow-1 collapsed"
                                                 type="button"
                                                 data-bs-toggle="collapse"
-                                                data-bs-target='<%# "#collapseComplaint_" & Eval("EvaluationID") %>'
+                                                data-bs-target='<%# "#collapseComplaint_" & Eval("EvaluationID")%>'
                                                 aria-expanded="false"
-                                                aria-controls='<%# "collapseComplaint_" & Eval("EvaluationID") %>'>
+                                                aria-controls='<%# "collapseComplaint_" & Eval("EvaluationID")%>'>
                                                 <div class="w-100">
                                                     <div class="d-flex align-items-center gap-2 mb-2">
-                                                        <img src='<%# Eval("BrandLogoUrl") %>' alt="Brand" class="brand-logo ms-1" />
+                                                        <img src='<%# Eval("BrandLogoUrl")%>' alt="Brand" class="brand-logo ms-1" />
                                                         <div>
                                                             <div class="task-title">
-                                                                <%# Eval("BranchName") %> – <%# Eval("DepartmentName") %> – <%# Eval("JobTitleName") %>
+                                                                <%# Eval("BranchName")%> – <%# Eval("DepartmentName")%> – <%# Eval("JobTitleName")%>
                                                             </div>
                                                             <div class="task-sub">
                                                                 <i class="bx bx-time-five ms-1"></i>
-                                                                <%# Eval("ShiftName") %>
+                                                                <%# Eval("ShiftName")%>
                                                                 <span class="mx-1">•</span>
                                                                 <i class="bx bx-calendar ms-1"></i>
-                                                                <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate")) %>
+                                                                <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate"))%>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div class="d-flex flex-wrap violation-badges mb-2">
                                                         <asp:Repeater ID="rptViolationChipsComplaint" runat="server"
-                                                            DataSource='<%# Eval("Violations") %>'>
+                                                            DataSource='<%# Eval("Violations")%>'>
                                                             <ItemTemplate>
-                                                                <span class='<%# Eval("CssClass") %>'>
-                                                                    <%# Eval("Title") %>
+                                                                <span class='<%# Eval("CssClass")%>'>
+                                                                    <%# Eval("Title")%>
                                                                 </span>
                                                             </ItemTemplate>
                                                         </asp:Repeater>
@@ -499,13 +499,13 @@
                                             </button>
                                         </div>
 
-                                        <div id='<%# "collapseComplaint_" & Eval("EvaluationID") %>'
+                                        <div id='<%# "collapseComplaint_" & Eval("EvaluationID")%>'
                                             class="accordion-collapse collapse"
                                             data-bs-parent="#accordionComplaints">
                                             <div class="accordion-body pt-2">
                                                 <div class="mb-3">
                                                     <span class="fw-semibold d-block mb-1">تفاصيل الشكوى / الملاحظات:</span>
-                                                    <p class="mb-0"><%# Eval("Notes") %></p>
+                                                    <p class="mb-0"><%# Eval("Notes")%></p>
                                                 </div>
 
                                                 <div>
@@ -513,7 +513,7 @@
                                                         CssClass="btn btn-sm btn-outline-secondary"
                                                         Text="المرفقات"
                                                         CommandName="ShowAttachments"
-                                                        CommandArgument='<%# Eval("EvaluationID") %>' />
+                                                        CommandArgument='<%# Eval("EvaluationID")%>' />
                                                 </div>
                                             </div>
                                         </div>
@@ -558,7 +558,7 @@
                                     <li class="d-flex mb-4 pb-2">
                                         <!-- الأيقونة -->
                                         <div class="avatar avatar-sm flex-shrink-0 me-3">
-                                            <span class='avatar-initial rounded-circle bg-label-<%# Eval("ColorKey") %>'>
+                                            <span class='avatar-initial rounded-circle bg-label-<%# Eval("ColorKey")%>'>
                                                 <i class="bx bx-store"></i>
                                             </span>
                                         </div>
@@ -567,18 +567,18 @@
                                         <div class="d-flex flex-column w-100">
                                             <div class="d-flex justify-content-between mb-1">
                                                 <!-- اسم الفرع -->
-                                                <span><%# Eval("Name") %></span>
+                                                <span><%# Eval("Name")%></span>
                                                 <!-- نسبة التقييم -->
                                                 <span class="text-muted">
-                                                    <%# Eval("ScoreStr") %>%
+                                                    <%# Eval("ScoreStr")%>%
                                                 </span>
                                             </div>
 
                                             <div class="progress" style="height: 6px">
-                                                <div class='progress-bar bg-<%# Eval("ColorKey") %>'
-                                                    style='<%# "width:" & Eval("ScoreStr") & "%;" %>'
+                                                <div class='progress-bar bg-<%# Eval("ColorKey")%>'
+                                                    style='<%# "width:" & Eval("ScoreStr") & "%;"%>'
                                                     role="progressbar"
-                                                    aria-valuenow='<%# Eval("ScoreStr") %>'
+                                                    aria-valuenow='<%# Eval("ScoreStr")%>'
                                                     aria-valuemin="0"
                                                     aria-valuemax="100">
                                                 </div>
@@ -689,11 +689,11 @@
                                 <div class="carousel-inner">
                                     <asp:Repeater ID="rptAttachmentsCarousel" runat="server">
                                         <ItemTemplate>
-                                            <div class='carousel-item <%# IIf(Container.ItemIndex = 0, "active", "") %>'>
-                                                <img src='<%# Eval("FilePath") %>' class="attachment-img d-block w-100" alt='<%# Eval("Title") %>' />
+                                            <div class='carousel-item <%# IIf(Container.ItemIndex = 0, "active", "")%>'>
+                                                <img src='<%# Eval("FilePath")%>' class="attachment-img d-block w-100" alt='<%# Eval("Title")%>' />
                                                 <div class="carousel-caption d-none d-md-block">
                                                     <small class="bg-dark px-2 py-1 rounded-2">
-                                                        <%# Eval("Title") %>
+                                                        <%# Eval("Title")%>
                                                     </small>
                                                 </div>
                                             </div>
@@ -769,8 +769,8 @@
             }
 
             // ====== قراءة بيانات الـ Charts من الـ Literals ======
-            var brandScore = parseFloat('<%= litBrandScore.Text %>') || 0.0;
-            var categoriesJson = '<%= litCategoriesData.Text %>';
+            var brandScore = parseFloat('<%=litBrandScore.Text%>') || 0.0;
+            var categoriesJson = '<%=litCategoriesData.Text%>';
             var categories = [];
 
             try {

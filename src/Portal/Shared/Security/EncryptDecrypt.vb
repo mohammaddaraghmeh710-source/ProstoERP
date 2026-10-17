@@ -1,18 +1,21 @@
-﻿Imports System.Security.Cryptography
-Imports System.IO
+﻿Imports System.IO
+Imports System.Security.Cryptography
 
 Public NotInheritable Class EncryptDecrypt
     Private Sub New()
     End Sub
+
     Private Const SEncryptionKey As String = "Echo1234"
 
     Private Shared _key As Byte() = {}
-    Private Shared ReadOnly Iv As Byte() = {&H12, &H34, &H56, &H78, &H90, &HAB, _
-        &HCD, &HEF}
+
+    Private Shared ReadOnly Iv As Byte() = {&H12, &H34, &H56, &H78, &H90, &HAB,
+                                            &HCD, &HEF}
+
     Public Shared Function Decrypt(stringToDecrypt As String) As String
 
         stringToDecrypt = stringToDecrypt.Replace(" ", "+")
-        Dim inputByteArray As Byte() = New Byte(stringToDecrypt.Length) {}
+        Dim inputByteArray = New Byte(stringToDecrypt.Length) {}
         Try
             _key = Encoding.UTF8.GetBytes(SEncryptionKey)
             Dim des As New DESCryptoServiceProvider()
@@ -50,3 +53,4 @@ Public NotInheritable Class EncryptDecrypt
         End Try
     End Function
 End Class
+

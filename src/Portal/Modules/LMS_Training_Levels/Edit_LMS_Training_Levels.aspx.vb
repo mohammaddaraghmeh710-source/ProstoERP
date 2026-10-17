@@ -1,13 +1,12 @@
-﻿Imports System.Linq
-Imports AjaxControlToolkit
-Imports System.Web.UI.HtmlControls
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Edit_LMS_Training_Levels
     Inherits PageBase
 
     Private LevelImagePath As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -35,7 +34,7 @@ Public Class Edit_LMS_Training_Levels
     End Sub
 
     Private Sub FillBrandsDDL()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim brands = db.Select_Brands_All().ToList()
             ddlBrand.DataSource = brands
             ddlBrand.DataTextField = "Title_Ar"
@@ -47,7 +46,7 @@ Public Class Edit_LMS_Training_Levels
     End Sub
 
     Private Sub FillLevelTypesDDL()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim types = db.Select_TR_Level_Types_All().ToList()
             ddlLevelType.DataSource = types
             ddlLevelType.DataTextField = "Title_Ar"
@@ -59,7 +58,7 @@ Public Class Edit_LMS_Training_Levels
     End Sub
 
     Private Sub FillUserTypes()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim ut = db.Select_User_Types_ForDDL().ToList()
             rptUserTypes.DataSource = ut
             rptUserTypes.DataBind()
@@ -67,7 +66,7 @@ Public Class Edit_LMS_Training_Levels
     End Sub
 
     Private Sub FillData(id As Integer)
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim row = db.Select_TR_Training_Levels_ByID(id).FirstOrDefault()
             If row Is Nothing Then
                 Response.Redirect("/Modules/LMS_Training_Levels/Manage_LMS_Training_Levels.aspx")
@@ -88,8 +87,9 @@ Public Class Edit_LMS_Training_Levels
 
             hfLevelImagePath.Value = If(row.Level_Image, "")
             If Not String.IsNullOrWhiteSpace(hfLevelImagePath.Value) Then
-                litCurrentImage.Text = "<div class='mt-2'><small class='text-muted'>الصورة الحالية:</small><div><a target='_blank' href='" &
-                                       hfLevelImagePath.Value & "'>" & hfLevelImagePath.Value & "</a></div></div>"
+                litCurrentImage.Text =
+                    "<div class='mt-2'><small class='text-muted'>الصورة الحالية:</small><div><a target='_blank' href='" &
+                    hfLevelImagePath.Value & "'>" & hfLevelImagePath.Value & "</a></div></div>"
             Else
                 litCurrentImage.Text = ""
             End If
@@ -99,9 +99,9 @@ Public Class Edit_LMS_Training_Levels
     End Sub
 
     Private Sub FillSelectedUserTypes(levelId As Integer)
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim selected = db.Select_TR_Level_UserTypes_ByLevelID(levelId).
-                        Select(Function(x) x.UserType).ToList()
+                    Select(Function(x) x.UserType).ToList()
 
             For Each it As RepeaterItem In rptUserTypes.Items
                 Dim cb = TryCast(it.FindControl("chkUT"), CheckBox)
@@ -163,7 +163,7 @@ Public Class Edit_LMS_Training_Levels
 
             Dim csvUserTypes As String = GetSelectedUserTypesCSV()
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 ' ✅ توقيع Update أصبح: (ID, BrandID, LevelTypeID, Level_Image, Title_Ar, Title_En, Summary_Ar, Summary_En, Notes_Ar, Notes_En, Item_Order, IsActive, ModifyUser)
                 db.Update_TR_Training_Levels_ByID(
@@ -180,7 +180,7 @@ Public Class Edit_LMS_Training_Levels
                     orderVal,
                     cbIsActive.Checked,
                     userId
-                )
+                    )
 
                 db.Sync_TR_Level_UserTypes(id, csvUserTypes, userId)
             End Using
@@ -210,5 +210,6 @@ Public Class Edit_LMS_Training_Levels
 
     Protected Sub LevelImageUploader_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
-
 End Class
+
+

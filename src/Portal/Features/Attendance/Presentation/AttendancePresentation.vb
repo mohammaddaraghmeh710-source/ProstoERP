@@ -2,11 +2,13 @@ Imports System.Globalization
 
 Public NotInheritable Class AttendancePresentation
     Public Shared Function Today() As String
-        Return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+        Return _
+            TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")) _
+                .ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
     End Function
 
     Public Shared Function ErrorText(ex As Exception) As String
-        System.Diagnostics.Trace.TraceWarning("Portal attendance failed ({0}).", ex.GetType().Name)
+        Trace.TraceWarning("Portal attendance failed ({0}).", ex.GetType().Name)
         If TypeOf ex Is AttendanceDisplayException Then Return ex.Message
         Return "تعذّر تحميل بيانات الدوام. يرجى المحاولة لاحقًا أو مراجعة مدير النظام."
     End Function
@@ -23,3 +25,5 @@ Public NotInheritable Class AttendancePresentation
         End Select
     End Function
 End Class
+
+

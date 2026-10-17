@@ -16,34 +16,37 @@ Public Class RememberMeToken
     Public Sub New()
     End Sub
 
-    Public Property UserId() As Integer
+    Public Property UserId As Integer
         Get
             Return m_UserId
         End Get
-        Set(value As Integer)
+        Set
             m_UserId = value
         End Set
     End Property
+
     Private m_UserId As Integer
 
-    Public Property UserName() As String
+    Public Property UserName As String
         Get
             Return m_UserName
         End Get
-        Set(value As String)
+        Set
             m_UserName = value
         End Set
     End Property
+
     Private m_UserName As String
 
-    Public Property CreateDate() As DateTime
+    Public Property CreateDate As DateTime
         Get
             Return m_CreateDate
         End Get
-        Set(value As DateTime)
+        Set
             m_CreateDate = value
         End Set
     End Property
+
     Private m_CreateDate As DateTime
 
     Public Function IsValid() As Boolean
@@ -65,12 +68,12 @@ Public Class RememberMeTokenProvider
                 Return Nothing
             End If
 
-            Dim token As RememberMeToken = JsonConvert.DeserializeObject(Of RememberMeToken)(tokenString)
+            Dim token = JsonConvert.DeserializeObject (Of RememberMeToken)(tokenString)
             Return token
         Catch
             Return Nothing
         End Try
     End Function
-
-
 End Class
+
+

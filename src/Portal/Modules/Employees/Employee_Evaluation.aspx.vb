@@ -1,16 +1,11 @@
-﻿Imports System
-Imports System.Linq
-Imports System.Collections.Generic
-Imports System.Web
-Imports System.Text
-Imports System.IO
-Imports System.Globalization
+﻿Imports System.Globalization
 Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Employee_Evaluation
     Inherits PageBase
 
-    Private ReadOnly db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
+    Private ReadOnly db As New Prosto_ERP_DataClassesDataContext()
 
     Protected EmployeeID As Integer
     Protected BrandID As Integer?
@@ -25,7 +20,7 @@ Public Class Employee_Evaluation
         Return HttpUtility.JavaScriptStringEncode(value.ToString())
     End Function
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -55,8 +50,8 @@ Public Class Employee_Evaluation
 
     Private Sub BindEmployeeHeader()
         Dim emp = (From u In db.Select_UsersMembers_All
-                   Where u.ID = EmployeeID AndAlso (u.IsDeleted = False OrElse u.IsDeleted Is Nothing)
-                   Select u).FirstOrDefault()
+                Where u.ID = EmployeeID AndAlso (u.IsDeleted = False OrElse u.IsDeleted Is Nothing)
+                Select u).FirstOrDefault()
 
         If emp Is Nothing Then
             EmployeeNameText.InnerText = "غير معروف"
@@ -75,8 +70,8 @@ Public Class Employee_Evaluation
 
         If BranchID.HasValue Then
             Dim br = (From b In db.Select_Branches_All
-                      Where b.ID = BranchID.Value
-                      Select b.Title_Ar).FirstOrDefault()
+                    Where b.ID = BranchID.Value
+                    Select b.Title_Ar).FirstOrDefault()
             BranchNameText.InnerText = If(br, "")
         End If
 
@@ -95,16 +90,16 @@ Public Class Employee_Evaluation
         Dim q = From c In db.Select_Checklist_Employee_All
                 Join cat In db.Checklist_Categories_SelectAll On c.CheckList_CategoryID Equals cat.ID
                 Where (c.IsDeleted = False OrElse c.IsDeleted Is Nothing) _
-                  AndAlso (c.IsActive = True OrElse c.IsActive Is Nothing) _
-                  AndAlso (Not usersType.HasValue OrElse c.Users_TypesID = usersType.Value)
+                      AndAlso (c.IsActive = True OrElse c.IsActive Is Nothing) _
+                      AndAlso (Not usersType.HasValue OrElse c.Users_TypesID = usersType.Value)
                 Order By c.ID
                 Select New With {
-                    .ID = c.ID,
-                    .Title_Ar = c.Title_Ar,
-                    .Brief_Ar = c.Brief_Ar,
-                    .CheckList_CategoryID = c.CheckList_CategoryID,
-                    .CategoryTitle_Ar = cat.Title_Ar,
-                    .Weight = c.Weight
+                .ID = c.ID,
+                .Title_Ar = c.Title_Ar,
+                .Brief_Ar = c.Brief_Ar,
+                .CheckList_CategoryID = c.CheckList_CategoryID,
+                .CategoryTitle_Ar = cat.Title_Ar,
+                .Weight = c.Weight
                 }
 
         Dim list = q.ToList()
@@ -118,7 +113,7 @@ Public Class Employee_Evaluation
     End Sub
 
     Protected Function GetChecklistCss(cat As Object) As String
-        Dim c As Integer = 0
+        Dim c = 0
         If cat IsNot Nothing AndAlso Integer.TryParse(cat.ToString(), c) Then
             Select Case c
                 Case 1 : Return "eval-tag eval-red"
@@ -149,15 +144,19 @@ Public Class Employee_Evaluation
 
         If titlesAr Is Nothing OrElse titlesAr.Length = 0 Then Exit Sub
 
-        Dim usersType As Integer? = If(ViewState("UsersTypesID") IsNot Nothing, CType(ViewState("UsersTypesID"), Integer?), Nothing)
+        Dim usersType As Integer? =
+                If(ViewState("UsersTypesID") IsNot Nothing, CType(ViewState("UsersTypesID"), Integer?), Nothing)
 
         Dim brandId As Integer? = If(ViewState("BrandID") IsNot Nothing, CType(ViewState("BrandID"), Integer?), Nothing)
-        Dim branchId As Integer? = If(ViewState("BranchID") IsNot Nothing, CType(ViewState("BranchID"), Integer?), Nothing)
-        Dim deptId As Integer? = If(ViewState("DepartmentID") IsNot Nothing, CType(ViewState("DepartmentID"), Integer?), Nothing)
-        Dim jobTitleId As Integer? = If(ViewState("JobTitleID") IsNot Nothing, CType(ViewState("JobTitleID"), Integer?), Nothing)
+        Dim branchId As Integer? =
+                If(ViewState("BranchID") IsNot Nothing, CType(ViewState("BranchID"), Integer?), Nothing)
+        Dim deptId As Integer? =
+                If(ViewState("DepartmentID") IsNot Nothing, CType(ViewState("DepartmentID"), Integer?), Nothing)
+        Dim jobTitleId As Integer? =
+                If(ViewState("JobTitleID") IsNot Nothing, CType(ViewState("JobTitleID"), Integer?), Nothing)
         Dim shiftId As Integer? = If(ViewState("ShiftID") IsNot Nothing, CType(ViewState("ShiftID"), Integer?), Nothing)
 
-        For i As Integer = 0 To titlesAr.Length - 1
+        For i = 0 To titlesAr.Length - 1
             Dim titleAr As String = If(titlesAr(i), "").Trim()
             If String.IsNullOrWhiteSpace(titleAr) Then Continue For
 
@@ -169,26 +168,26 @@ Public Class Employee_Evaluation
                 Double.TryParse(weights(i), NumberStyles.Any, CultureInfo.InvariantCulture, weightVal)
             End If
 
-            Dim catId As Integer = 3
+            Dim catId = 3
             If cats IsNot Nothing AndAlso i < cats.Length Then Integer.TryParse(cats(i), catId)
 
             Try
                 db.Insert_Checklist_Employee(
-                    users_TypesID:=usersType,
-                    title_Ar:=titleAr,
-                    title_En:=Nothing,
-                    brief_Ar:=briefAr,
-                    brief_En:=Nothing,
-                    brand_ID:=brandId,
-                    branch_ID:=branchId,
-                    department_ID:=deptId,
-                    jobTitle_ID:=jobTitleId,
-                    jobTitle_Items_ID:=Nothing,
-                    shift_ID:=shiftId,
-                    checkList_CategoryID:=catId,
-                    weight:=weightVal,
-                    addedUser:=SessionManager.GetInstance.Users.UserID
-                )
+                    users_TypesID := usersType,
+                    title_Ar := titleAr,
+                    title_En := Nothing,
+                    brief_Ar := briefAr,
+                    brief_En := Nothing,
+                    brand_ID := brandId,
+                    branch_ID := branchId,
+                    department_ID := deptId,
+                    jobTitle_ID := jobTitleId,
+                    jobTitle_Items_ID := Nothing,
+                    shift_ID := shiftId,
+                    checkList_CategoryID := catId,
+                    weight := weightVal,
+                    addedUser := SessionManager.GetInstance.Users.UserID
+                    )
             Catch
             End Try
         Next
@@ -199,7 +198,8 @@ Public Class Employee_Evaluation
         BindChecklistEmployee()
 
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "closeModalToast",
-            "hidePageLoader(); try{bootstrap.Modal.getOrCreateInstance(document.getElementById('newChecklistModal')).hide();}catch(e){} showSavedToast();", True)
+                                            "hidePageLoader(); try{bootstrap.Modal.getOrCreateInstance(document.getElementById('newChecklistModal')).hide();}catch(e){} showSavedToast();",
+                                            True)
     End Sub
 
     ' =====================================================================
@@ -213,7 +213,7 @@ Public Class Employee_Evaluation
         For Each k As String In Request.Form.AllKeys
             If k IsNot Nothing AndAlso k.StartsWith("chkEmp_") Then
                 Dim idStr = k.Replace("chkEmp_", "")
-                Dim idVal As Integer = 0
+                Dim idVal = 0
                 If Integer.TryParse(idStr, idVal) Then selectedIds.Add(idVal)
             End If
         Next
@@ -228,11 +228,12 @@ Public Class Employee_Evaluation
         Dim notes As String = If(txtNotes IsNot Nothing, txtNotes.Text, Nothing)
 
         ' 2) استدعاء Insert_Evaluation_Employee واسترجاع NewEvaluationID
-        Dim newEvalId As Integer = 0
+        Dim newEvalId = 0
         Try
             ' LINQ to SQL عادةً يولّد SP بهذه الطريقة:
             ' Insert_Evaluation_Employee(EmployeeID, Checklist_IDs, Notes, AddedUser, ByRef NewEvaluationID)
-            db.Insert_Evaluation_Employee(EmployeeID, checklistCsv, notes, SessionManager.GetInstance.Users.UserID, newEvalId)
+            db.Insert_Evaluation_Employee(EmployeeID, checklistCsv, notes, SessionManager.GetInstance.Users.UserID,
+                                          newEvalId)
         Catch ex As Exception
             evalErr.InnerText = "خطأ أثناء حفظ التقييم: " & ex.Message
             ScriptManager.RegisterStartupScript(Me, Me.GetType(), "hideL2", "hidePageLoader();", True)
@@ -264,11 +265,11 @@ Public Class Employee_Evaluation
         BindChecklistEmployee()
 
         ScriptManager.RegisterStartupScript(Me, Me.GetType(), "doneToast",
-            "hidePageLoader(); showSavedToast();", True)
-
+                                            "hidePageLoader(); showSavedToast();", True)
 
 
         Response.Redirect("/modules/Employees/MyProfile.aspx?EmployeeID=" + Request.QueryString("employeeID").ToString())
     End Sub
-
 End Class
+
+

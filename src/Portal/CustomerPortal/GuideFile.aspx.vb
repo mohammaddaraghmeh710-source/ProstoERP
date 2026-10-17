@@ -1,8 +1,4 @@
-﻿Imports System.Data
-Imports System.Data.SqlClient
-Imports System.IO
-Imports System.Linq
-Imports System.Web
+﻿Imports System.IO
 
 Public Class CustomerGuideFile
     Inherits CustomerPortalPage
@@ -14,9 +10,9 @@ Public Class CustomerGuideFile
     Private DocumentInfo As WorkGuideDocumentInfo
 
     Protected Sub Page_Load(
-        ByVal sender As Object,
-        ByVal e As EventArgs
-    ) Handles Me.Load
+                            sender As Object,
+                            e As EventArgs
+                            ) Handles Me.Load
 
         If CustomerPortalData.Current Is Nothing Then
 
@@ -39,7 +35,7 @@ Public Class CustomerGuideFile
         If Not Integer.TryParse(
             Request.QueryString("id"),
             RequestedDocumentID
-        ) Then
+            ) Then
 
             SendStatusCode(400)
             Return
@@ -48,7 +44,7 @@ Public Class CustomerGuideFile
         DocumentInfo = GetDocumentInformation(
             RequestedDocumentID,
             RequestedType
-        )
+            )
 
         If DocumentInfo Is Nothing Then
             SendStatusCode(404)
@@ -59,7 +55,7 @@ Public Class CustomerGuideFile
         If Not UserCanViewDocument(
             CurrentUserID,
             DocumentInfo.DocumentID
-        ) Then
+            ) Then
 
             SendStatusCode(403)
             Return
@@ -74,7 +70,6 @@ Public Class CustomerGuideFile
             PrepareViewer()
 
         End If
-
     End Sub
 
     Private Function IsStreamRequest() As Boolean
@@ -83,11 +78,10 @@ Public Class CustomerGuideFile
             Request.QueryString("stream"),
             "1",
             StringComparison.OrdinalIgnoreCase
-        )
-
+            )
     End Function
 
-    Protected Overrides Sub Render(writer As System.Web.UI.HtmlTextWriter)
+    Protected Overrides Sub Render(writer As HtmlTextWriter)
         If IsStreamRequest() Then Return
         MyBase.Render(writer)
     End Sub
@@ -98,37 +92,39 @@ Public Class CustomerGuideFile
             Server.HtmlEncode(DocumentInfo.TitleAr)
 
         Dim streamUrl As String =
-            ResolveUrl(
-                "~/CustomerPortal/GuideFile.aspx" &
-                "?stream=1" &
-                "&type=" & HttpUtility.UrlEncode(RequestedType) &
-                "&id=" & RequestedDocumentID.ToString()
-            )
+                ResolveUrl(
+                    "~/CustomerPortal/GuideFile.aspx" &
+                    "?stream=1" &
+                    "&type=" & HttpUtility.UrlEncode(RequestedType) &
+                    "&id=" & RequestedDocumentID.ToString()
+                    )
 
         hfPdfStreamUrl.Value = streamUrl
 
         Dim currentUserName As String =
-            GetCurrentUserDisplayName()
+                GetCurrentUserDisplayName()
 
         hfWatermarkText.Value =
             currentUserName &
             " - " &
             DateTime.Now.ToString("dd/MM/yyyy HH:mm")
-
     End Sub
 
     Private Function UserCanViewDocument(userID As Integer, documentID As Integer) As Boolean
-        Dim rows=CustomerPortalData.Guide("file",0,documentID)
-        If rows.Rows.Count=0 Then Return False
-        AllowDocumentPrint=CBool(rows.Rows(0)("Can_Print_Document"))
+        Dim rows = CustomerPortalData.Guide("file", 0, documentID)
+        If rows.Rows.Count = 0 Then Return False
+        AllowDocumentPrint = CBool(rows.Rows(0)("Can_Print_Document"))
         Return True
     End Function
 
-    Private Function GetDocumentInformation(requestedID As Integer,requestedType As String) As WorkGuideDocumentInfo
-        Dim rows=CustomerPortalData.Guide("file",0,requestedID)
-        If rows.Rows.Count=0 Then Return Nothing
-        Dim row=rows.Rows(0)
-        Return New WorkGuideDocumentInfo With {.DocumentID=CInt(row("ID")),.BrandID=CInt(row("Brand_ID")),.CategoryID=CInt(row("Category_ID")),.TitleAr=CStr(row("Title_Ar")),.FilePath=Convert.ToString(row("File_Path"))}
+    Private Function GetDocumentInformation(requestedID As Integer, requestedType As String) As WorkGuideDocumentInfo
+        Dim rows = CustomerPortalData.Guide("file", 0, requestedID)
+        If rows.Rows.Count = 0 Then Return Nothing
+        Dim row = rows.Rows(0)
+        Return _
+            New WorkGuideDocumentInfo _
+                With {.DocumentID=CInt(row("ID")),.BrandID=CInt(row("Brand_ID")),.CategoryID=CInt(row("Category_ID")),
+                    .TitleAr=CStr(row("Title_Ar")),.FilePath=Convert.ToString(row("File_Path"))}
     End Function
 
     Private Sub StreamPdfFile()
@@ -139,7 +135,7 @@ Public Class CustomerGuideFile
         End If
 
         Dim physicalPath As String =
-            Server.MapPath(DocumentInfo.FilePath)
+                Server.MapPath(DocumentInfo.FilePath)
 
         If Not File.Exists(physicalPath) Then
             SendStatusCode(404)
@@ -147,13 +143,13 @@ Public Class CustomerGuideFile
         End If
 
         Dim extension As String =
-            Path.GetExtension(physicalPath)
+                Path.GetExtension(physicalPath)
 
         If Not String.Equals(
             extension,
             ".pdf",
             StringComparison.OrdinalIgnoreCase
-        ) Then
+            ) Then
 
             SendStatusCode(415)
             Return
@@ -170,42 +166,42 @@ Public Class CustomerGuideFile
             Response.AddHeader(
                 "Content-Disposition",
                 "inline"
-            )
+                )
 
             Response.AddHeader(
                 "X-Content-Type-Options",
                 "nosniff"
-            )
+                )
 
             Response.AddHeader(
                 "X-Frame-Options",
                 "SAMEORIGIN"
-            )
+                )
 
             Response.AddHeader(
                 "Content-Security-Policy",
                 "frame-ancestors 'self'"
-            )
+                )
 
             Response.Cache.SetCacheability(
                 HttpCacheability.NoCache
-            )
+                )
 
             Response.Cache.SetNoStore()
             Response.Cache.SetExpires(
-                DateTime.UtcNow.AddYears(-1)
-            )
+                DateTime.UtcNow.AddYears(- 1)
+                )
 
             Response.AddHeader("Pragma", "no-cache")
             Response.AddHeader("Expires", "0")
 
             Dim fileLength As Long =
-                New FileInfo(physicalPath).Length
+                    New FileInfo(physicalPath).Length
 
             Response.AddHeader(
                 "Content-Length",
                 fileLength.ToString()
-            )
+                )
 
             InsertViewActivityLog()
             Response.TransmitFile(physicalPath)
@@ -217,11 +213,10 @@ Public Class CustomerGuideFile
         Catch ex As HttpException
             'قد يحدث عند إغلاق المستخدم للصفحة أثناء التحميل.
         End Try
-
     End Sub
 
     Private Sub InsertViewActivityLog()
-        CustomerPortalData.LogFile(DocumentInfo.DocumentID,"view")
+        CustomerPortalData.LogFile(DocumentInfo.DocumentID, "view")
     End Sub
 
     Private Function GetCurrentUserDisplayName() As String
@@ -229,8 +224,8 @@ Public Class CustomerGuideFile
     End Function
 
     Private Sub SendStatusCode(
-        statusCode As Integer
-    )
+                               statusCode As Integer
+                               )
 
         Response.Clear()
         Response.StatusCode = statusCode
@@ -238,18 +233,16 @@ Public Class CustomerGuideFile
 
         HttpContext.Current.ApplicationInstance.
             CompleteRequest()
-
     End Sub
 
     Private Class WorkGuideDocumentInfo
-
         Public Property DocumentID As Integer
         Public Property BrandID As Integer?
         Public Property CategoryID As Integer?
         Public Property TitleAr As String
         Public Property FilePath As String
         Public Property OriginalFileName As String
-
     End Class
-
 End Class
+
+

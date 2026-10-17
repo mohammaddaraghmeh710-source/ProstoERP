@@ -2,6 +2,7 @@
     MasterPageFile="~/Site.Master"
     CodeBehind="Branch_Shift_Manager_Dashboard.aspx.vb"
     Inherits="CRM.Branch_Shift_Manager_Dashboard" %>
+<%@ Import Namespace="System.Globalization" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
@@ -540,19 +541,19 @@
                     <div class="card-body branch-activity-card">
                         <asp:Repeater ID="rptDepartments" runat="server">
                             <ItemTemplate>
-                                <div class='card mb-3 branch-activity-item <%# Eval("BgClass") %>'
-                                     data-score='<%# Convert.ToDecimal(Eval("Score")).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) %>'
-                                     onclick="openTypeModal('<%# Eval("DepartmentID") %>');"
+                                <div class='card mb-3 branch-activity-item <%# Eval("BgClass")%>'
+                                     data-score='<%# Convert.ToDecimal(Eval("Score")).ToString("0.##", CultureInfo.InvariantCulture)%>'
+                                     onclick="openTypeModal('<%# Eval("DepartmentID")%>');"
                                      style="padding: 10px;">
                                     <div class="d-flex justify-content-between align-items-center p-2">
-                                        <span class="branch-activity-label"><%# Eval("DepartmentName") %></span>
-                                        <span class="branch-activity-value"><%# String.Format("{0:0.0}%", Eval("Score")) %></span>
+                                        <span class="branch-activity-label"><%# Eval("DepartmentName")%></span>
+                                        <span class="branch-activity-value"><%# String.Format("{0:0.0}%", Eval("Score"))%></span>
                                     </div>
                                     <div class="branch-activity-bar">
                                         <div class="branch-activity-bar-fill"></div>
                                     </div>
                                     <div class="branch-activity-meta p-2">
-                                        الموظفون: <%# Eval("EmployeesCount") %>
+                                        الموظفون: <%# Eval("EmployeesCount")%>
                                     </div>
                                 </div>
                             </ItemTemplate>
@@ -603,26 +604,26 @@
                                             <button class="accordion-button px-0 py-0 bg-transparent shadow-0 flex-grow-1 collapsed"
                                                 type="button"
                                                 data-bs-toggle="collapse"
-                                                data-bs-target='<%# "#collapseViolation_" & Eval("EvaluationID") %>'
+                                                data-bs-target='<%# "#collapseViolation_" & Eval("EvaluationID")%>'
                                                 aria-expanded="false"
-                                                aria-controls='<%# "collapseViolation_" & Eval("EvaluationID") %>'>
+                                                aria-controls='<%# "collapseViolation_" & Eval("EvaluationID")%>'>
                                                 <div class="w-100">
                                                     <div class="d-flex align-items-center gap-2 mb-2">
-                                                        <img src='<%# Eval("BrandLogoUrl") %>' alt="Brand" class="brand-logo ms-1" />
+                                                        <img src='<%# Eval("BrandLogoUrl")%>' alt="Brand" class="brand-logo ms-1" />
                                                         <div>
-                                                            <div class="task-title"><%# Eval("JobTitleName") %></div>
+                                                            <div class="task-title"><%# Eval("JobTitleName")%></div>
                                                             <div class="task-sub">
-                                                                <i class="bx bx-time-five ms-1"></i> <%# Eval("ShiftName") %>
+                                                                <i class="bx bx-time-five ms-1"></i> <%# Eval("ShiftName")%>
                                                                 <span class="mx-1">•</span>
-                                                                <i class="bx bx-calendar ms-1"></i> <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate")) %>
+                                                                <i class="bx bx-calendar ms-1"></i> <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate"))%>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div class="d-flex flex-wrap violation-badges mb-2">
-                                                        <asp:Repeater ID="rptViolationChips" runat="server" DataSource='<%# Eval("Violations") %>'>
+                                                        <asp:Repeater ID="rptViolationChips" runat="server" DataSource='<%# Eval("Violations")%>'>
                                                             <ItemTemplate>
-                                                                <span class='<%# Eval("CssClass") %>'><%# Eval("Title") %></span>
+                                                                <span class='<%# Eval("CssClass")%>'><%# Eval("Title")%></span>
                                                             </ItemTemplate>
                                                         </asp:Repeater>
                                                     </div>
@@ -633,15 +634,15 @@
                                                 CssClass="btn btn-sm btn-outline-success ms-2"
                                                 Text="إغلاق"
                                                 CommandName="CloseOneViolation"
-                                                CommandArgument='<%# Eval("EvaluationID") %>'
+                                                CommandArgument='<%# Eval("EvaluationID")%>'
                                                 OnClientClick="showPageLoader();" />
                                         </div>
 
-                                        <div id='<%# "collapseViolation_" & Eval("EvaluationID") %>' class="accordion-collapse collapse" data-bs-parent="#accordionViolations">
+                                        <div id='<%# "collapseViolation_" & Eval("EvaluationID")%>' class="accordion-collapse collapse" data-bs-parent="#accordionViolations">
                                             <div class="accordion-body pt-2">
                                                 <div class="mb-3">
                                                     <span class="fw-semibold d-block mb-1">ملاحظات المفتش:</span>
-                                                    <p class="mb-0"><%# If(String.IsNullOrWhiteSpace(Eval("Notes")), "لا يوجد ملاحظات", Eval("Notes")) %></p>
+                                                    <p class="mb-0"><%# If(String.IsNullOrWhiteSpace(Eval("Notes")), "لا يوجد ملاحظات", Eval("Notes"))%></p>
                                                 </div>
 
                                                 <div>
@@ -649,7 +650,7 @@
                                                         CssClass="btn btn-sm btn-outline-secondary"
                                                         Text="المرفقات"
                                                         CommandName="ShowAttachments"
-                                                        CommandArgument='<%# Eval("EvaluationID") %>' />
+                                                        CommandArgument='<%# Eval("EvaluationID")%>' />
                                                 </div>
                                             </div>
                                         </div>
@@ -691,26 +692,26 @@
                                             <button class="accordion-button px-0 py-0 bg-transparent shadow-0 flex-grow-1 collapsed"
                                                 type="button"
                                                 data-bs-toggle="collapse"
-                                                data-bs-target='<%# "#collapseComplaint_" & Eval("EvaluationID") %>'
+                                                data-bs-target='<%# "#collapseComplaint_" & Eval("EvaluationID")%>'
                                                 aria-expanded="false"
-                                                aria-controls='<%# "collapseComplaint_" & Eval("EvaluationID") %>'>
+                                                aria-controls='<%# "collapseComplaint_" & Eval("EvaluationID")%>'>
                                                 <div class="w-100">
                                                     <div class="d-flex align-items-center gap-2 mb-2">
-                                                        <img src='<%# Eval("BrandLogoUrl") %>' alt="Brand" class="brand-logo ms-1" />
+                                                        <img src='<%# Eval("BrandLogoUrl")%>' alt="Brand" class="brand-logo ms-1" />
                                                         <div>
-                                                            <div class="task-title"><%# Eval("JobTitleName") %></div>
+                                                            <div class="task-title"><%# Eval("JobTitleName")%></div>
                                                             <div class="task-sub">
-                                                                <i class="bx bx-time-five ms-1"></i> <%# Eval("ShiftName") %>
+                                                                <i class="bx bx-time-five ms-1"></i> <%# Eval("ShiftName")%>
                                                                 <span class="mx-1">•</span>
-                                                                <i class="bx bx-calendar ms-1"></i> <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate")) %>
+                                                                <i class="bx bx-calendar ms-1"></i> <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("EvalDate"))%>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div class="d-flex flex-wrap violation-badges mb-2">
-                                                        <asp:Repeater ID="rptViolationChipsComplaint" runat="server" DataSource='<%# Eval("Violations") %>'>
+                                                        <asp:Repeater ID="rptViolationChipsComplaint" runat="server" DataSource='<%# Eval("Violations")%>'>
                                                             <ItemTemplate>
-                                                                <span class='<%# Eval("CssClass") %>'><%# Eval("Title") %></span>
+                                                                <span class='<%# Eval("CssClass")%>'><%# Eval("Title")%></span>
                                                             </ItemTemplate>
                                                         </asp:Repeater>
                                                     </div>
@@ -721,15 +722,15 @@
                                                 CssClass="btn btn-sm btn-outline-success ms-2"
                                                 Text="إغلاق"
                                                 CommandName="CloseOneComplaint"
-                                                CommandArgument='<%# Eval("EvaluationID") %>'
+                                                CommandArgument='<%# Eval("EvaluationID")%>'
                                                 OnClientClick="showPageLoader();" />
                                         </div>
 
-                                        <div id='<%# "collapseComplaint_" & Eval("EvaluationID") %>' class="accordion-collapse collapse" data-bs-parent="#accordionComplaints">
+                                        <div id='<%# "collapseComplaint_" & Eval("EvaluationID")%>' class="accordion-collapse collapse" data-bs-parent="#accordionComplaints">
                                             <div class="accordion-body pt-2">
                                                 <div class="mb-3">
                                                     <span class="fw-semibold d-block mb-1">تفاصيل الشكوى / الملاحظات:</span>
-                                                    <p class="mb-0"><%# Eval("Notes") %></p>
+                                                    <p class="mb-0"><%# Eval("Notes")%></p>
                                                 </div>
 
                                                 <div>
@@ -737,7 +738,7 @@
                                                         CssClass="btn btn-sm btn-outline-secondary"
                                                         Text="المرفقات"
                                                         CommandName="ShowAttachments"
-                                                        CommandArgument='<%# Eval("EvaluationID") %>' />
+                                                        CommandArgument='<%# Eval("EvaluationID")%>' />
                                                 </div>
                                             </div>
                                         </div>
@@ -777,8 +778,8 @@
                         <ItemTemplate>
                             <button type="button"
                                     class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                    onclick="selectEvalType('<%# Eval("ID") %>');">
-                                <span><%# Eval("Title_Ar") %></span>
+                                    onclick="selectEvalType('<%# Eval("ID")%>');">
+                                <span><%# Eval("Title_Ar")%></span>
                                 <i class="bx bx-chevron-left"></i>
                             </button>
                         </ItemTemplate>
@@ -811,10 +812,10 @@
                                 <div class="carousel-inner">
                                     <asp:Repeater ID="rptAttachmentsCarousel" runat="server">
                                         <ItemTemplate>
-                                            <div class='carousel-item <%# IIf(Container.ItemIndex = 0, "active", "") %>'>
-                                                <img src='<%# Eval("FilePath") %>' class="attachment-img d-block w-100" alt='<%# Eval("Title") %>' />
+                                            <div class='carousel-item <%# IIf(Container.ItemIndex = 0, "active", "")%>'>
+                                                <img src='<%# Eval("FilePath")%>' class="attachment-img d-block w-100" alt='<%# Eval("Title")%>' />
                                                 <div class="carousel-caption d-none d-md-block">
-                                                    <small class="bg-dark px-2 py-1 rounded-2"><%# Eval("Title") %></small>
+                                                    <small class="bg-dark px-2 py-1 rounded-2"><%# Eval("Title")%></small>
                                                 </div>
                                             </div>
                                         </ItemTemplate>
@@ -875,28 +876,28 @@
                             <asp:Repeater ID="rptEmployeesByDept" runat="server">
                                 <ItemTemplate>
                                     <div class="mb-3">
-                                        <h6 class="mb-2"><%# Eval("DepartmentName") %></h6>
+                                        <h6 class="mb-2"><%# Eval("DepartmentName")%></h6>
 
                                         <asp:Repeater ID="rptEmployeesInner" runat="server"
-                                            DataSource='<%# Eval("Employees") %>'
+                                            DataSource='<%# Eval("Employees")%>'
                                             OnItemCommand="rptEmployeesInner_ItemCommand">
                                             <ItemTemplate>
                                                 <div class="d-flex flex-wrap align-items-center justify-content-between branch-emp-row mb-2 p-2 rounded-3 bg-light">
                                                     <div>
-                                                        <div class="fw-semibold"><%# Eval("FullName") %></div>
-                                                        <div class="text-muted small"><%# Eval("JobTitleName") %></div>
+                                                        <div class="fw-semibold"><%# Eval("FullName")%></div>
+                                                        <div class="text-muted small"><%# Eval("JobTitleName")%></div>
                                                     </div>
                                                     <div class="d-flex gap-2 mt-2 mt-sm-0">
                                                         <asp:LinkButton ID="lnkViewProfile" runat="server"
                                                             CssClass="btn btn-sm btn-outline-primary"
                                                             CommandName="ViewProfile"
-                                                            CommandArgument='<%# Eval("ID") %>'
+                                                            CommandArgument='<%# Eval("ID")%>'
                                                             Text="ملف الموظف" />
 
                                                         <asp:LinkButton ID="lnkEditEmp" runat="server"
                                                             CssClass="btn btn-sm btn-outline-secondary"
                                                             CommandName="EditEmp"
-                                                            CommandArgument='<%# Eval("ID") %>'
+                                                            CommandArgument='<%# Eval("ID")%>'
                                                             Text="تعديل" />
                                                     </div>
                                                 </div>
@@ -1092,13 +1093,13 @@
         }
 
         function openWorkingMethodVideo() {
-            var hf = document.getElementById('<%= hidWorkingMethodUrl.ClientID %>');
+            var hf = document.getElementById('<%=hidWorkingMethodUrl.ClientID%>');
             if (!hf || !hf.value) { alert('لم يتم تعريف فيديو طريقة العمل لهذا الفرع.'); return; }
             openBranchVideoModal('طريقة العمل', hf.value);
         }
 
         function openEvaluationMethodVideo() {
-            var hf = document.getElementById('<%= hidEvaluationMethodUrl.ClientID %>');
+            var hf = document.getElementById('<%=hidEvaluationMethodUrl.ClientID%>');
             if (!hf || !hf.value) { alert('لم يتم تعريف فيديو طريقة التقييم لهذا الفرع.'); return; }
             openBranchVideoModal('طريقة التقييم', hf.value);
         }
@@ -1128,7 +1129,7 @@
 
         // ✅ فتح مودال أنواع التقييم وتخزين القسم
         function openTypeModal(deptId) {
-            var hfDept = document.getElementById('<%= hidSelectedDepartmentId.ClientID %>');
+            var hfDept = document.getElementById('<%=hidSelectedDepartmentId.ClientID%>');
             if (hfDept) hfDept.value = deptId;
 
             var modalEl = document.getElementById('evaluationTypeModal');
@@ -1139,7 +1140,7 @@
 
         // ✅ اختيار نوع التقييم ثم توجيه لنفس الصفحة مع Type
         function selectEvalType(typeId) {
-            var hfDept = document.getElementById('<%= hidSelectedDepartmentId.ClientID %>');
+            var hfDept = document.getElementById('<%=hidSelectedDepartmentId.ClientID%>');
             var deptId = hfDept ? hfDept.value : '';
 
             if (!deptId) {
@@ -1147,7 +1148,7 @@
                 return;
             }
 
-            var shiftId = '<%= If(ShiftID.HasValue, ShiftID.Value.ToString(), "") %>';
+            var shiftId = '<%=If(ShiftID.HasValue, ShiftID.Value.ToString(), "")%>';
 
             showLoader();
 

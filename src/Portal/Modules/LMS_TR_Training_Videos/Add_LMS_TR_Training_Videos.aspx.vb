@@ -1,5 +1,5 @@
-﻿Imports System.Linq
-Imports AjaxControlToolkit
+﻿Imports AjaxControlToolkit
+Imports Prosto_ERP_ClassLibrary
 
 Public Class Add_LMS_TR_Training_Videos
     Inherits PageBase
@@ -8,7 +8,7 @@ Public Class Add_LMS_TR_Training_Videos
     Private VideoAR_path As String = Nothing
     Private VideoEn_path As String = Nothing
 
-    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -24,7 +24,7 @@ Public Class Add_LMS_TR_Training_Videos
     End Sub
 
     Private Sub FillBrandsDDL()
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim brands = db.Select_Brands_ForDDL().ToList()
             ddlBrand.DataSource = brands
             ddlBrand.DataTextField = "Title_Ar"
@@ -35,7 +35,7 @@ Public Class Add_LMS_TR_Training_Videos
     End Sub
 
     Private Sub FillLevelsDDL(brandId As Integer)
-        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_DataClassesDataContext
             Dim lv = db.Select_TR_Training_Levels_ForDDL_ByBrandID(brandId).ToList()
             ddlLevel.DataSource = lv
             ddlLevel.DataTextField = "Title_Ar"
@@ -46,7 +46,7 @@ Public Class Add_LMS_TR_Training_Videos
     End Sub
 
     Protected Sub ddlBrand_SelectedIndexChanged(sender As Object, e As EventArgs)
-        Dim brandId As Integer = 0
+        Dim brandId = 0
         If Not String.IsNullOrWhiteSpace(ddlBrand.SelectedValue) Then
             brandId = Convert.ToInt32(ddlBrand.SelectedValue)
         End If
@@ -85,7 +85,6 @@ Public Class Add_LMS_TR_Training_Videos
             End If
 
 
-
             ' ملفات الفيديو (طريقة العمل)
             Dim VideoAR = SaveWorkingMethodVideoFromSession()
             If VideoAR IsNot Nothing AndAlso VideoAR.Count > 0 Then
@@ -105,9 +104,9 @@ Public Class Add_LMS_TR_Training_Videos
             End If
 
 
-            Dim newId As Integer = 0
+            Dim newId = 0
 
-            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Using db As New Prosto_ERP_DataClassesDataContext
 
                 Dim res = db.Insert_TR_Training_Videos(
                     levelId,
@@ -121,9 +120,9 @@ Public Class Add_LMS_TR_Training_Videos
                     orderVal,
                     durationVal,
                     userId
-                )
+                    )
 
-                Dim row = res.Cast(Of Object)().FirstOrDefault()
+                Dim row = res.Cast (Of Object)().FirstOrDefault()
                 If row IsNot Nothing Then
                     Dim p = row.GetType().GetProperty("NewID")
                     If p IsNot Nothing Then
@@ -132,7 +131,9 @@ Public Class Add_LMS_TR_Training_Videos
                 End If
 
                 If newId = 0 Then
-                    Throw New Exception("لم يتم الحصول على رقم الفيديو الجديد (NewID). راجع DBML mapping لــ Insert_TR_Training_Videos.")
+                    Throw _
+                        New Exception(
+                            "لم يتم الحصول على رقم الفيديو الجديد (NewID). راجع DBML mapping لــ Insert_TR_Training_Videos.")
                 End If
             End Using
 
@@ -183,5 +184,6 @@ Public Class Add_LMS_TR_Training_Videos
 
     Protected Sub VideoImageUploader_UploadStart(sender As Object, e As AjaxFileUploadStartEventArgs)
     End Sub
-
 End Class
+
+

@@ -1,6 +1,5 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Site.Master" CodeBehind="Add_JobTitle_Items.aspx.vb" Inherits="CRM.Add_JobTitle_Items" %>
 <%@ Register Assembly="CKEditor.NET" Namespace="CKEditor.NET" TagPrefix="CKEditor" %>
-<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolkit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
@@ -292,24 +291,24 @@
                                 <ItemTemplate>
                                     <div class="draft-card mb-3">
                                         <div class="draft-meta">
-                                            أداة رقم: <b><%# Eval("ToolNumber") %></b> — نوع: <b><%# Eval("ItemTypeText") %></b>
+                                            أداة رقم: <b><%# Eval("ToolNumber")%></b> — نوع: <b><%# Eval("ItemTypeText")%></b>
                                         </div>
 
                                         <div class="draft-title">
-                                            <%# Eval("TitleAr") %> <span class="text-muted" style="font-weight:600;">/</span> <%# Eval("TitleEn") %>
+                                            <%# Eval("TitleAr")%> <span class="text-muted" style="font-weight:600;">/</span> <%# Eval("TitleEn")%>
                                         </div>
 
                                         <div class="draft-grid">
-                                            <div class="kv"><b>المورد</b><span><%# Eval("SupplierText") %></span></div>
-                                            <div class="kv"><b>الصيانة</b><span><%# Eval("MaintenanceText") %></span></div>
-                                            <div class="kv"><b>فيديو طريقة العمل</b><span><%# Eval("WorkingVideoLabel") %></span></div>
-                                            <div class="kv"><b>فيديو التقييم</b><span><%# Eval("EvalVideoLabel") %></span></div>
+                                            <div class="kv"><b>المورد</b><span><%# Eval("SupplierText")%></span></div>
+                                            <div class="kv"><b>الصيانة</b><span><%# Eval("MaintenanceText")%></span></div>
+                                            <div class="kv"><b>فيديو طريقة العمل</b><span><%# Eval("WorkingVideoLabel")%></span></div>
+                                            <div class="kv"><b>فيديو التقييم</b><span><%# Eval("EvalVideoLabel")%></span></div>
                                         </div>
 
                                         <div class="draft-actions">
                                             <asp:LinkButton ID="btnDelete" runat="server"
                                                 CommandName="deleteDraft"
-                                                CommandArgument='<%# Eval("TempId") %>'
+                                                CommandArgument='<%# Eval("TempId")%>'
                                                 CssClass="btn btn-sm btn-danger">
                                                 <i class="bx bx-trash"></i> حذف
                                             </asp:LinkButton>
