@@ -1,0 +1,28 @@
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
+    <ProjectGuid>{228991F9-72E4-44D5-A24B-F9B1F393D799}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ProstoERP.Application</RootNamespace>
+    <AssemblyName>ProstoERP.Application</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <DebugSymbols Condition="'$(Configuration)' == 'Debug'">true</DebugSymbols>
+    <DebugType Condition="'$(Configuration)' == 'Debug'">full</DebugType>
+    <Optimize Condition="'$(Configuration)' == 'Release'">true</Optimize>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
+    <Compile Include="Features\Learning\TrainingCatalogService.cs" />
+    <ProjectReference Include="..\ProstoERP.Infrastructure\ProstoERP.Infrastructure.vbproj">
+      <Project>{C33ABBC1-22E8-44BE-979A-D4795CC9DA62}</Project>
+      <Name>ProstoERP.Infrastructure</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -3,11 +3,219 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.34114.132
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Portal", "Portal\Portal.vbproj", "{901C19FD-C44C-42FB-8934-FF417C0D1F07}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Portal", "src\Portal\Portal.vbproj", "{901C19FD-C44C-42FB-8934-FF417C0D1F07}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Prosto_ERP_ClassLibrary", "Prosto_ERP_ClassLibrary\Prosto_ERP_ClassLibrary.vbproj", "{C33ABBC1-22E8-44BE-979A-D4795CC9DA62}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ProstoERP.Infrastructure", "src\ProstoERP.Infrastructure\ProstoERP.Infrastructure.vbproj", "{C33ABBC1-22E8-44BE-979A-D4795CC9DA62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prosto_ERP_API", "Prosto_ERP_API\Prosto_ERP_API.csproj", "{AFAE452B-B58F-47AC-992C-CD4977B360F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProstoERP.Api", "src\ProstoERP.Api\ProstoERP.Api.csproj", "{AFAE452B-B58F-47AC-992C-CD4977B360F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Encryptor", "src\Encryptor\Encryptor.csproj", "{1387F685-0253-4CC1-A819-5789DB36626C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProstoERP.Application", "src\ProstoERP.Application\ProstoERP.Application.csproj", "{228991F9-72E4-44D5-A24B-F9B1F393D799}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CE6A9B04-9EE9-5AB0-8F0A-5B71CE4A673E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "orchestration", "orchestration", "{8D0E7CE0-A3AB-516F-851F-38C85812694B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProstoERP.AppHost", "ProstoERP.AppHost", "{9A7AF082-3585-5297-87C5-BDE5DB30C088}"
+	ProjectSection(SolutionItems) = preProject
+		orchestration\ProstoERP.AppHost\AppHost.cs = orchestration\ProstoERP.AppHost\AppHost.cs
+		orchestration\ProstoERP.AppHost\HealthChecks\LocalSqlHealthCheck.cs = orchestration\ProstoERP.AppHost\HealthChecks\LocalSqlHealthCheck.cs
+		orchestration\ProstoERP.AppHost\Properties\launchSettings.json = orchestration\ProstoERP.AppHost\Properties\launchSettings.json
+		orchestration\ProstoERP.AppHost\ProstoERP.AppHost.csproj = orchestration\ProstoERP.AppHost\ProstoERP.AppHost.csproj
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{A8BD099B-E1B5-506A-AEBC-0BF1A0154BBE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "migrations", "migrations", "{62247F58-97B5-5FFD-AD3D-9350134DD89E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BioTime", "BioTime", "{DEBFA04C-B55C-5F26-8C97-A7774AEA5D7B}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\BioTime\002_BrandIntegration.sql = database\migrations\BioTime\002_BrandIntegration.sql
+		database\migrations\BioTime\003_IntegrationUrlsAndHR.sql = database\migrations\BioTime\003_IntegrationUrlsAndHR.sql
+		database\migrations\BioTime\004_AdminSecrets.sql = database\migrations\BioTime\004_AdminSecrets.sql
+		database\migrations\BioTime\README.md = database\migrations\BioTime\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CRM", "CRM", "{D2DEA69A-0848-579D-82F5-09088D59886B}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\CRM\001_CRM_Schema.sql = database\migrations\CRM\001_CRM_Schema.sql
+		database\migrations\CRM\002_CRM_Procedures.sql = database\migrations\CRM\002_CRM_Procedures.sql
+		database\migrations\CRM\005_CRM_Retire_Contracts.sql = database\migrations\CRM\005_CRM_Retire_Contracts.sql
+		database\migrations\CRM\006_CRM_Delete.sql = database\migrations\CRM\006_CRM_Delete.sql
+		database\migrations\CRM\README.md = database\migrations\CRM\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Circulars", "Circulars", "{4E06FFB6-72A0-536C-AD5E-844EC5517397}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\Circulars\001_Schema.sql = database\migrations\Circulars\001_Schema.sql
+		database\migrations\Circulars\002_Procedures.sql = database\migrations\Circulars\002_Procedures.sql
+		database\migrations\Circulars\README.md = database\migrations\Circulars\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Correspondence", "Correspondence", "{1BBA2B9B-8E72-5CC6-9A32-761C78AB59A7}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\Correspondence\001_Approved_Fields_And_Relationships.sql = database\migrations\Correspondence\001_Approved_Fields_And_Relationships.sql
+		database\migrations\Correspondence\002_Page_Operations.sql = database\migrations\Correspondence\002_Page_Operations.sql
+		database\migrations\Correspondence\003_Module_Procedures.sql = database\migrations\Correspondence\003_Module_Procedures.sql
+		database\migrations\Correspondence\004_Independent_Procedures.sql = database\migrations\Correspondence\004_Independent_Procedures.sql
+		database\migrations\Correspondence\005_Search_Fields.sql = database\migrations\Correspondence\005_Search_Fields.sql
+		database\migrations\Correspondence\006_Governance.sql = database\migrations\Correspondence\006_Governance.sql
+		database\migrations\Correspondence\007_Catalogs.sql = database\migrations\Correspondence\007_Catalogs.sql
+		database\migrations\Correspondence\008_MobileApi.sql = database\migrations\Correspondence\008_MobileApi.sql
+		database\migrations\Correspondence\README.md = database\migrations\Correspondence\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomerPortal", "CustomerPortal", "{434F5CBB-EF89-5503-B950-202FE8C8432E}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\CustomerPortal\001_Accounts.sql = database\migrations\CustomerPortal\001_Accounts.sql
+		database\migrations\CustomerPortal\002_Services.sql = database\migrations\CustomerPortal\002_Services.sql
+		database\migrations\CustomerPortal\003_Portal.sql = database\migrations\CustomerPortal\003_Portal.sql
+		database\migrations\CustomerPortal\004_MobileApi.sql = database\migrations\CustomerPortal\004_MobileApi.sql
+		database\migrations\CustomerPortal\005_WorkGuideIntegration.sql = database\migrations\CustomerPortal\005_WorkGuideIntegration.sql
+		database\migrations\CustomerPortal\README.md = database\migrations\CustomerPortal\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Email_Notification", "Email_Notification", "{FAA06A2C-691C-572B-B416-4BB7AB9FA9B8}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\Email_Notification\001_BrandGmail.sql = database\migrations\Email_Notification\001_BrandGmail.sql
+		database\migrations\Email_Notification\README.md.example = database\migrations\Email_Notification\README.md.example
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Employee_Feedback", "Employee_Feedback", "{A4D81F3C-2FD9-5FE3-B5EB-74F2646500B2}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\Employee_Feedback\001_Schema.sql = database\migrations\Employee_Feedback\001_Schema.sql
+		database\migrations\Employee_Feedback\002_Simplify.sql = database\migrations\Employee_Feedback\002_Simplify.sql
+		database\migrations\Employee_Feedback\003_Demo_Branch25.sql = database\migrations\Employee_Feedback\003_Demo_Branch25.sql
+		database\migrations\Employee_Feedback\004_Procedures.sql = database\migrations\Employee_Feedback\004_Procedures.sql
+		database\migrations\Employee_Feedback\005_PermissionDefaults.sql = database\migrations\Employee_Feedback\005_PermissionDefaults.sql
+		database\migrations\Employee_Feedback\006_ConfigurableWorkflow.sql = database\migrations\Employee_Feedback\006_ConfigurableWorkflow.sql
+		database\migrations\Employee_Feedback\007_TypesAndApplicant.sql = database\migrations\Employee_Feedback\007_TypesAndApplicant.sql
+		database\migrations\Employee_Feedback\008_DashboardDailyActivity.sql = database\migrations\Employee_Feedback\008_DashboardDailyActivity.sql
+		database\migrations\Employee_Feedback\009_CustomerSupport.sql = database\migrations\Employee_Feedback\009_CustomerSupport.sql
+		database\migrations\Employee_Feedback\README.md = database\migrations\Employee_Feedback\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HR_Types", "HR_Types", "{A9E562A2-5FC9-51B2-AF13-9C012893EA51}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\HR_Types\001_Create_HR_Types.sql = database\migrations\HR_Types\001_Create_HR_Types.sql
+		database\migrations\HR_Types\002_Verify_HR_Types.sql = database\migrations\HR_Types\002_Verify_HR_Types.sql
+		database\migrations\HR_Types\003_Rename_Tables_Recreate_Procedures.sql = database\migrations\HR_Types\003_Rename_Tables_Recreate_Procedures.sql
+		database\migrations\HR_Types\README.md = database\migrations\HR_Types\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Information_Pages", "Information_Pages", "{6FDB7545-A1C7-5CA5-9A29-C9CC49F8522B}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\Information_Pages\001_Schema.sql = database\migrations\Information_Pages\001_Schema.sql
+		database\migrations\Information_Pages\002_Procedures.sql = database\migrations\Information_Pages\002_Procedures.sql
+		database\migrations\Information_Pages\003_Access_Restore_Schema.sql = database\migrations\Information_Pages\003_Access_Restore_Schema.sql
+		database\migrations\Information_Pages\004_Access_Restore_Procedures.sql = database\migrations\Information_Pages\004_Access_Restore_Procedures.sql
+		database\migrations\Information_Pages\005_Brand_Access_Schema.sql = database\migrations\Information_Pages\005_Brand_Access_Schema.sql
+		database\migrations\Information_Pages\006_Brand_Access_Procedures.sql = database\migrations\Information_Pages\006_Brand_Access_Procedures.sql
+		database\migrations\Information_Pages\README.md = database\migrations\Information_Pages\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mobile_API", "Mobile_API", "{06091AD5-D7CD-555D-BD78-F0F2DEF5E84F}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\Mobile_API\001_Sessions.sql = database\migrations\Mobile_API\001_Sessions.sql
+		database\migrations\Mobile_API\002_Procedures.sql = database\migrations\Mobile_API\002_Procedures.sql
+		database\migrations\Mobile_API\003_Feedback.sql = database\migrations\Mobile_API\003_Feedback.sql
+		database\migrations\Mobile_API\004_CustomerFeedback.sql = database\migrations\Mobile_API\004_CustomerFeedback.sql
+		database\migrations\Mobile_API\005_DeviceSessions.sql = database\migrations\Mobile_API\005_DeviceSessions.sql
+		database\migrations\Mobile_API\006_DeviceAccess.sql = database\migrations\Mobile_API\006_DeviceAccess.sql
+		database\migrations\Mobile_API\008_BIOLogin.sql = database\migrations\Mobile_API\008_BIOLogin.sql
+		database\migrations\Mobile_API\README.md = database\migrations\Mobile_API\README.md
+		database\migrations\Mobile_API\Rollback-BrandApiCredentials.sql = database\migrations\Mobile_API\Rollback-BrandApiCredentials.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "News", "News", "{0FD0365B-C9C7-5DC1-83E5-35BD25099CE4}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\News\001_BrandNews.sql = database\migrations\News\001_BrandNews.sql
+		database\migrations\News\README.md.example = database\migrations\News\README.md.example
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Password_Reset", "Password_Reset", "{E0631BF7-D08D-574B-A4DE-C8D8660570CF}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\Password_Reset\001_PasswordReset.sql = database\migrations\Password_Reset\001_PasswordReset.sql
+		database\migrations\Password_Reset\README.md.example = database\migrations\Password_Reset\README.md.example
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorkGuide_Access", "WorkGuide_Access", "{DE23C0A3-4A74-51B8-9047-61E9531A3DD2}"
+	ProjectSection(SolutionItems) = preProject
+		database\migrations\WorkGuide_Access\001_Access_Requests.sql = database\migrations\WorkGuide_Access\001_Access_Requests.sql
+		database\migrations\WorkGuide_Access\002_Activity_Log_Search.sql = database\migrations\WorkGuide_Access\002_Activity_Log_Search.sql
+		database\migrations\WorkGuide_Access\003_Log_View_Download_Export.sql = database\migrations\WorkGuide_Access\003_Log_View_Download_Export.sql
+		database\migrations\WorkGuide_Access\004_Request_DataTable.sql = database\migrations\WorkGuide_Access\004_Request_DataTable.sql
+		database\migrations\WorkGuide_Access\005_Document_Multi_Category.sql = database\migrations\WorkGuide_Access\005_Document_Multi_Category.sql
+		database\migrations\WorkGuide_Access\Before_002_Request_History.sql = database\migrations\WorkGuide_Access\Before_002_Request_History.sql
+		database\migrations\WorkGuide_Access\Before_003_Log_Export.sql = database\migrations\WorkGuide_Access\Before_003_Log_Export.sql
+		database\migrations\WorkGuide_Access\Before_004_Requests.sql = database\migrations\WorkGuide_Access\Before_004_Requests.sql
+		database\migrations\WorkGuide_Access\Before_Access_Requests.sql = database\migrations\WorkGuide_Access\Before_Access_Requests.sql
+		database\migrations\WorkGuide_Access\README.md = database\migrations\WorkGuide_Access\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "development", "development", "{1F858CF3-CC7C-5DBD-A96C-CE89F9766D1F}"
+	ProjectSection(SolutionItems) = preProject
+		database\development\001_Core.sql = database\development\001_Core.sql
+		database\development\migrations.json = database\development\migrations.json
+		database\development\supported-procedures.txt = database\development\supported-procedures.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Branch25_Trial", "Branch25_Trial", "{B7EA7B31-883A-5D78-8BC7-5E612F232165}"
+	ProjectSection(SolutionItems) = preProject
+		database\development\Branch25_Trial\Apply.ps1 = database\development\Branch25_Trial\Apply.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{FF688F7E-4A94-5ED9-91B4-65282B3C12E7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit", "Unit", "{0113532C-38DA-5011-AAB3-900C384582C4}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Unit\.gitkeep = tests\Unit\.gitkeep
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{99E1CC33-CAF1-55C7-AF2D-0B0279D65664}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Integration\.gitkeep = tests\Integration\.gitkeep
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{19987C04-17A8-5C50-8973-71A5598C876F}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\DevelopmentTools.cs = scripts\DevelopmentTools.cs
+		scripts\MonoVisualBasicCodeProvider.cs = scripts\MonoVisualBasicCodeProvider.cs
+		scripts\generate_development_schema.py = scripts\generate_development_schema.py
+		scripts\run_aspire.py = scripts\run_aspire.py
+		scripts\run_aspire.sh = scripts\run_aspire.sh
+		scripts\run_local.py = scripts\run_local.py
+		scripts\run_rider.sh = scripts\run_rider.sh
+		scripts\setup_development.py = scripts\setup_development.py
+		scripts\setup_local.py = scripts\setup_local.py
+		scripts\verify_development.py = scripts\verify_development.py
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{4B90DC6C-1EE6-522A-9E5C-4D63F54B555D}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		docs\PROJECT_STRUCTURE.md = docs\PROJECT_STRUCTURE.md
+		docs\BUILD_CONFIGURATION.md = docs\BUILD_CONFIGURATION.md
+		docs\GENERATED_CODE.md = docs\GENERATED_CODE.md
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Run configurations", "Run configurations", "{46D7AC65-103E-554F-B652-4C16F7EBE5A9}"
+	ProjectSection(SolutionItems) = preProject
+		.run\ERP Aspire.run.xml = .run\ERP Aspire.run.xml
+		.run\Local ERP.run.xml = .run\Local ERP.run.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{65F6CF02-1CFD-55A2-A1FA-5A0F0E401DBB}"
+	ProjectSection(SolutionItems) = preProject
+		build\LegacyWeb.props = build\LegacyWeb.props
+		build\LegacyWeb.targets = build\LegacyWeb.targets
+		build\Portal.Content.props = build\Portal.Content.props
+		build\Api.Content.props = build\Api.Content.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +235,40 @@ Global
 		{AFAE452B-B58F-47AC-992C-CD4977B360F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFAE452B-B58F-47AC-992C-CD4977B360F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFAE452B-B58F-47AC-992C-CD4977B360F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1387F685-0253-4CC1-A819-5789DB36626C}.Debug|Any CPU.ActiveCfg = Debug|AnyCPU
+		{1387F685-0253-4CC1-A819-5789DB36626C}.Debug|Any CPU.Build.0 = Debug|AnyCPU
+		{1387F685-0253-4CC1-A819-5789DB36626C}.Release|Any CPU.ActiveCfg = Release|AnyCPU
+		{1387F685-0253-4CC1-A819-5789DB36626C}.Release|Any CPU.Build.0 = Release|AnyCPU
+		{228991F9-72E4-44D5-A24B-F9B1F393D799}.Debug|Any CPU.ActiveCfg = Debug|AnyCPU
+		{228991F9-72E4-44D5-A24B-F9B1F393D799}.Debug|Any CPU.Build.0 = Debug|AnyCPU
+		{228991F9-72E4-44D5-A24B-F9B1F393D799}.Release|Any CPU.ActiveCfg = Release|AnyCPU
+		{228991F9-72E4-44D5-A24B-F9B1F393D799}.Release|Any CPU.Build.0 = Release|AnyCPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{901C19FD-C44C-42FB-8934-FF417C0D1F07} = {CE6A9B04-9EE9-5AB0-8F0A-5B71CE4A673E}
+		{AFAE452B-B58F-47AC-992C-CD4977B360F7} = {CE6A9B04-9EE9-5AB0-8F0A-5B71CE4A673E}
+		{228991F9-72E4-44D5-A24B-F9B1F393D799} = {CE6A9B04-9EE9-5AB0-8F0A-5B71CE4A673E}
+		{C33ABBC1-22E8-44BE-979A-D4795CC9DA62} = {CE6A9B04-9EE9-5AB0-8F0A-5B71CE4A673E}
+		{1387F685-0253-4CC1-A819-5789DB36626C} = {CE6A9B04-9EE9-5AB0-8F0A-5B71CE4A673E}
+		{9A7AF082-3585-5297-87C5-BDE5DB30C088} = {8D0E7CE0-A3AB-516F-851F-38C85812694B}
+		{62247F58-97B5-5FFD-AD3D-9350134DD89E} = {A8BD099B-E1B5-506A-AEBC-0BF1A0154BBE}
+		{DEBFA04C-B55C-5F26-8C97-A7774AEA5D7B} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{D2DEA69A-0848-579D-82F5-09088D59886B} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{4E06FFB6-72A0-536C-AD5E-844EC5517397} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{1BBA2B9B-8E72-5CC6-9A32-761C78AB59A7} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{434F5CBB-EF89-5503-B950-202FE8C8432E} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{FAA06A2C-691C-572B-B416-4BB7AB9FA9B8} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{A4D81F3C-2FD9-5FE3-B5EB-74F2646500B2} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{A9E562A2-5FC9-51B2-AF13-9C012893EA51} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{6FDB7545-A1C7-5CA5-9A29-C9CC49F8522B} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{06091AD5-D7CD-555D-BD78-F0F2DEF5E84F} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{0FD0365B-C9C7-5DC1-83E5-35BD25099CE4} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{E0631BF7-D08D-574B-A4DE-C8D8660570CF} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{DE23C0A3-4A74-51B8-9047-61E9531A3DD2} = {62247F58-97B5-5FFD-AD3D-9350134DD89E}
+		{1F858CF3-CC7C-5DBD-A96C-CE89F9766D1F} = {A8BD099B-E1B5-506A-AEBC-0BF1A0154BBE}
+		{B7EA7B31-883A-5D78-8BC7-5E612F232165} = {1F858CF3-CC7C-5DBD-A96C-CE89F9766D1F}
+		{0113532C-38DA-5011-AAB3-900C384582C4} = {FF688F7E-4A94-5ED9-91B4-65282B3C12E7}
+		{99E1CC33-CAF1-55C7-AF2D-0B0279D65664} = {FF688F7E-4A94-5ED9-91B4-65282B3C12E7}
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,1789 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\..\build\LegacyWeb.props" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>
+    </SchemaVersion>
+    <ProjectGuid>{901C19FD-C44C-42FB-8934-FF417C0D1F07}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>CRM</RootNamespace>
+    <AssemblyName>CRM</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <MyType>Custom</MyType>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <Use64BitIISExpress />
+    <UseGlobalApplicationHostFile />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>CRM.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>CRM.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>$(ProstoPackagesRoot)$(ProstoCodeDomPackage)\lib\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AjaxControlToolkit, Version=17.1.1.0, Culture=neutral, PublicKeyToken=28f01b0e84b6d53e, processorArchitecture=MSIL">
+      <HintPath>$(ProstoPackagesRoot)AjaxControlToolkit.17.1.1.0\lib\net40\AjaxControlToolkit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CKEditor.NET, Version=3.6.4.0, Culture=neutral, PublicKeyToken=e379cdf2f8354999, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ProstoPackagesRoot)CkeditorForASP.NET.1.0.0\lib\CKEditor.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="ClosedXML, Version=0.80.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>$(ProstoPackagesRoot)ClosedXML.0.80.1\lib\net40-client\ClosedXML.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(ProstoPackagesRoot)DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>$(ProstoPackagesRoot)Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ProstoPackagesRoot)Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="QRCoder, Version=1.7.0.0, Culture=neutral, PublicKeyToken=c4ed5b9ae8358a28, processorArchitecture=MSIL">
+      <HintPath>$(ProstoPackagesRoot)QRCoder.1.7.0\lib\net40\QRCoder.dll</HintPath>
+    </Reference>
+    <Reference Include="RestClient.Net, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(ProstoPackagesRoot)RestClient.Net.4.1.0\lib\net47\RestClient.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="RestClient.Net.Abstractions, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(ProstoPackagesRoot)RestClient.Net.Abstractions.4.1.0\lib\net45\RestClient.Net.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>$(ProstoPackagesRoot)RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Collections.Specialized" />
+    <Import Include="System.Configuration" />
+    <Import Include="System.Text" />
+    <Import Include="System.Text.RegularExpressions" />
+    <Import Include="System.Web" />
+    <Import Include="System.Web.Caching" />
+    <Import Include="System.Web.SessionState" />
+    <Import Include="System.Web.Security" />
+    <Import Include="System.Web.Profile" />
+    <Import Include="System.Web.UI" />
+    <Import Include="System.Web.UI.WebControls" />
+    <Import Include="System.Web.UI.WebControls.WebParts" />
+    <Import Include="System.Web.UI.HtmlControls" />
+  </ItemGroup>
+  <Import Project="..\..\build\Portal.Content.props" />
+
+  <ItemGroup>
+    <Compile Include="Features\Feedback\Presentation\FeedbackPresentation.vb" />
+    <Compile Include="Features\CRM\Presentation\CRMPresentation.vb" />
+    <Compile Include="Features\InformationPages\Presentation\InformationPagesPresentation.vb" />
+    <Compile Include="Features\Circulars\Presentation\CircularsPresentation.vb" />
+    <Compile Include="Features\Correspondence\Presentation\CorrespondencePresentation.vb" />
+    <Compile Include="Features\Attendance\Presentation\AttendancePresentation.vb" />
+    <Compile Include="Features\CustomerPortal\Presentation\CustomerPortalPresentation.vb" />
+    <Compile Include="Features\WorkGuide\Presentation\WorkGuidePresentation.vb" />
+    <Compile Include="Features\Feedback\Storage\EmployeeFeedbackAttachments.vb" />
+    <Compile Include="Features\Correspondence\Storage\CorrespondenceAttachments.vb" />
+    <Compile Include="Features\Circulars\Storage\CircularsDocuments.vb" />
+    <Compile Include="Features\News\Presentation\NewsPresentation.vb" />
+    <Compile Include="Features\Circulars\Web\CircularsPage.vb" />
+    <Compile Include="Features\CustomerPortal\Web\CustomerPortalPage.vb" />
+    <Compile Include="Features\CRM\Models\CRMDefinitions.vb" />
+    <Compile Include="Features\Feedback\Models\FeedbackConfigurationModels.vb" />
+    <Compile Include="Shared\Configuration\AppSettings.vb" />
+    <Compile Include="Shared\Utilities\BasePage.vb" />
+    <Compile Include="Shared\Utilities\ListToDataTableConverter.vb" />
+    <Compile Include="Features\Contracts\Models\SupportContract1.vb" />
+    <Compile Include="Features\EmployeeAccess\Directory\ActiveDirectoryChecker.vb" />
+    <Compile Include="Features\EmployeeAccess\Directory\ActiveDirectorySearcher.vb" />
+    <Compile Include="Features\EmployeeAccess\Directory\Models\ADuserData.vb" />
+    <Compile Include="Shared\Utilities\BusinessClass.vb" />
+    <Compile Include="Shared\Security\EncryptDecrypt.vb" />
+    <Compile Include="Features\EmployeeAccess\Security\RememberMeToken.vb" />
+    <Compile Include="Features\EmployeeAccess\Security\EmployeeSessionResetGuard.vb" />
+    <Compile Include="ForgotPassword.aspx.vb">
+      <DependentUpon>ForgotPassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ForgotPassword.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ForgotPassword.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Features\News\Data\NewsData.vb" />
+    <Compile Include="Features\EmployeeAccess\Security\SessionManager.vb" />
+    <Compile Include="Features\EmployeeAccess\Models\UserEntity.vb" />
+    <Compile Include="Login.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Login.aspx.vb">
+      <DependentUpon>login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS\LMS_Dashboard.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LMS_Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS\LMS_Dashboard.aspx.vb">
+      <DependentUpon>LMS_Dashboard.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS\LMS_TR_Level_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LMS_TR_Level_Types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS\LMS_TR_Level_Types.aspx.vb">
+      <DependentUpon>LMS_TR_Level_Types.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS\LMS_TR_Training_Levels.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LMS_TR_Training_Levels.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS\LMS_TR_Training_Levels.aspx.vb">
+      <DependentUpon>LMS_TR_Training_Levels.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Branch_Shift_Manager\Branch_Evaluations.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Branch_Evaluations.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Branch_Shift_Manager\Branch_Evaluations.aspx.vb">
+      <DependentUpon>Branch_Evaluations.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Brands_Dashboards\Brands_Statistics_Dashboard.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Brands_Statistics_Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Brands_Dashboards\Brands_Statistics_Dashboard.aspx.vb">
+      <DependentUpon>Brands_Statistics_Dashboard.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DeptVideoHandler.ashx.vb">
+      <DependentUpon>DeptVideoHandler.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Branches_Dashboards\Branches_Dashboards.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Branches_Dashboards.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Branches_Dashboards\Branches_Dashboards.aspx.vb">
+      <DependentUpon>Branches_Dashboards.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Branch_Shift_Manager\Branch_Shift_Manager_Dashboard.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Branch_Shift_Manager_Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Branch_Shift_Manager\Branch_Shift_Manager_Dashboard.aspx.vb">
+      <DependentUpon>Branch_Shift_Manager_Dashboard.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Brands_Dashboards\Brands_Dashboards.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Brands_Dashboards.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Brands_Dashboards\Brands_Dashboards.aspx.vb">
+      <DependentUpon>Brands_Dashboards.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Checklist_Employees\AddChecklist_Employees.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddChecklist_Employees.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Checklist_Employees\AddChecklist_Employees.aspx.vb">
+      <DependentUpon>AddChecklist_Employees.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Checklist_Employees\EditChecklist_Employees.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditChecklist_Employees.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Checklist_Employees\EditChecklist_Employees.aspx.vb">
+      <DependentUpon>EditChecklist_Employees.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Checklist_Employees\ManageChecklist_Employees.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageChecklist_Employees.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Checklist_Employees\ManageChecklist_Employees.aspx.vb">
+      <DependentUpon>ManageChecklist_Employees.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Checklist\EditChecklist.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditChecklist.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Checklist\EditChecklist.aspx.vb">
+      <DependentUpon>EditChecklist.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Checklist\AddChecklist.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddChecklist.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Checklist\AddChecklist.aspx.vb">
+      <DependentUpon>AddChecklist.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Checklist\ManageChecklist.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageChecklist.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Checklist\ManageChecklist.aspx.vb">
+      <DependentUpon>ManageChecklist.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Departments_Dashboards\Department_Dashboard.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Department_Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Departments_Dashboards\Department_Dashboard.aspx.vb">
+      <DependentUpon>Department_Dashboard.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Departments_Dashboards\Department_Dashboard_View.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Department_Dashboard_View.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Departments_Dashboards\Department_Dashboard_View.aspx.vb">
+      <DependentUpon>Department_Dashboard_View.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employees\Employee_Evaluation.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Employee_Evaluation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employees\Employee_Evaluation.aspx.vb">
+      <DependentUpon>Employee_Evaluation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employees\MyProfile.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MyProfile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employees\MyProfile.aspx.vb">
+      <DependentUpon>MyProfile.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Evaluations\Tools_Evaluation.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Tools_Evaluation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Evaluations\Tools_Evaluation.aspx.vb">
+      <DependentUpon>Tools_Evaluation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Evaluations\JobTitles_Evaluation.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JobTitles_Evaluation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Evaluations\JobTitles_Evaluation.aspx.vb">
+      <DependentUpon>JobTitles_Evaluation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Genders\EditGenders.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditGenders.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Genders\EditGenders.aspx.vb">
+      <DependentUpon>EditGenders.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Genders\AddGenders.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddGenders.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Genders\AddGenders.aspx.vb">
+      <DependentUpon>AddGenders.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Genders\ManageGenders.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageGenders.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Genders\ManageGenders.aspx.vb">
+      <DependentUpon>ManageGenders.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items\Add_JobTitle_Items.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Add_JobTitle_Items.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items\Add_JobTitle_Items.aspx.vb">
+      <DependentUpon>Add_JobTitle_Items.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items\Edit_JobTitle_Items.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit_JobTitle_Items.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items\Edit_JobTitle_Items.aspx.vb">
+      <DependentUpon>Edit_JobTitle_Items.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items\Manage_JobTitle_Items.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Manage_JobTitle_Items.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items\Manage_JobTitle_Items.aspx.vb">
+      <DependentUpon>Manage_JobTitle_Items.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items_Types\AddJobTitle_Items_types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddJobTitle_Items_types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items_Types\AddJobTitle_Items_types.aspx.vb">
+      <DependentUpon>AddJobTitle_Items_types.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items_Types\EditJobTitle_Items_types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditJobTitle_Items_types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items_Types\EditJobTitle_Items_types.aspx.vb">
+      <DependentUpon>EditJobTitle_Items_types.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items_Types\ManageJobTitle_Items_types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageJobTitle_Items_types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\JobTitle_Items_Types\ManageJobTitle_Items_types.aspx.vb">
+      <DependentUpon>ManageJobTitle_Items_types.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS\LMS_TR_Training_Videos.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LMS_TR_Training_Videos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS\LMS_TR_Training_Videos.aspx.vb">
+      <DependentUpon>LMS_TR_Training_Videos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Levels\Add_LMS_Training_Levels.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Add_LMS_Training_Levels.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Levels\Add_LMS_Training_Levels.aspx.vb">
+      <DependentUpon>Add_LMS_Training_Levels.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Levels\Edit_LMS_Training_Levels.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit_LMS_Training_Levels.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Levels\Edit_LMS_Training_Levels.aspx.vb">
+      <DependentUpon>Edit_LMS_Training_Levels.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Levels\Manage_LMS_Training_Levels.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Manage_LMS_Training_Levels.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Levels\Manage_LMS_Training_Levels.aspx.vb">
+      <DependentUpon>Manage_LMS_Training_Levels.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Level_Types\Add_LMS_Training_Level_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Add_LMS_Training_Level_Types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Level_Types\Add_LMS_Training_Level_Types.aspx.vb">
+      <DependentUpon>Add_LMS_Training_Level_Types.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Level_Types\Edit_LMS_Training_Level_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit_LMS_Training_Level_Types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Level_Types\Edit_LMS_Training_Level_Types.aspx.vb">
+      <DependentUpon>Edit_LMS_Training_Level_Types.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Level_Types\Manage_LMS_Training_Level_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Manage_LMS_Training_Level_Types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS_Training_Level_Types\Manage_LMS_Training_Level_Types.aspx.vb">
+      <DependentUpon>Manage_LMS_Training_Level_Types.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Maintenance_Companies\AddMaintenance_Companies.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddMaintenance_Companies.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Maintenance_Companies\AddMaintenance_Companies.aspx.vb">
+      <DependentUpon>AddMaintenance_Companies.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Maintenance_Companies\EditMaintenance_Companies.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditMaintenance_Companies.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Maintenance_Companies\EditMaintenance_Companies.aspx.vb">
+      <DependentUpon>EditMaintenance_Companies.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Maintenance_Companies\ManageMaintenance_Companies.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageMaintenance_Companies.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Maintenance_Companies\ManageMaintenance_Companies.aspx.vb">
+      <DependentUpon>ManageMaintenance_Companies.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Nationalities\AddNationalities.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddNationalities.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Nationalities\AddNationalities.aspx.vb">
+      <DependentUpon>AddNationalities.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Nationalities\EditNationalities.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditNationalities.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Nationalities\EditNationalities.aspx.vb">
+      <DependentUpon>EditNationalities.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Nationalities\ManageNationalities.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageNationalities.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Nationalities\ManageNationalities.aspx.vb">
+      <DependentUpon>ManageNationalities.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\News\Add_News.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Add_News.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\News\Add_News.aspx.vb">
+      <DependentUpon>Add_News.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\News\Edit_News.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit_News.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\News\Edit_News.aspx.vb">
+      <DependentUpon>Edit_News.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\News\Manage_News.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Manage_News.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\News\Manage_News.aspx.vb">
+      <DependentUpon>Manage_News.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\QRCode\JobTitle_Viewer_QRCode.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JobTitle_Viewer_QRCode.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\QRCode\JobTitle_Viewer_QRCode.aspx.vb">
+      <DependentUpon>JobTitle_Viewer_QRCode.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\QRCode\PrintQRCode.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PrintQRCode.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\QRCode\PrintQRCode.aspx.vb">
+      <DependentUpon>PrintQRCode.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\QRCode\Departments_Viewer_QRCode.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Departments_Viewer_QRCode.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\QRCode\Departments_Viewer_QRCode.aspx.vb">
+      <DependentUpon>Departments_Viewer_QRCode.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\QRCode\Tools_Viewer_QRCode.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Tools_Viewer_QRCode.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\QRCode\Tools_Viewer_QRCode.aspx.vb">
+      <DependentUpon>Tools_Viewer_QRCode.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Shift\AddShift.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddShift.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Shift\AddShift.aspx.vb">
+      <DependentUpon>AddShift.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Shift\EditShift.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditShift.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Shift\EditShift.aspx.vb">
+      <DependentUpon>EditShift.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Shift\ManageShift.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageShift.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Shift\ManageShift.aspx.vb">
+      <DependentUpon>ManageShift.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\JobTitles\AddJobTitles.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddJobTitles.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\JobTitles\AddJobTitles.aspx.vb">
+      <DependentUpon>AddJobTitles.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\JobTitles\EditJobTitles.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditJobTitles.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\JobTitles\EditJobTitles.aspx.vb">
+      <DependentUpon>EditJobTitles.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\JobTitles\ManageJobTitles.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageJobTitles.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\JobTitles\ManageJobTitles.aspx.vb">
+      <DependentUpon>ManageJobTitles.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Departments\AddDepartments.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddDepartments.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Departments\AddDepartments.aspx.vb">
+      <DependentUpon>AddDepartments.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Departments\EditDepartments.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditDepartments.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Departments\EditDepartments.aspx.vb">
+      <DependentUpon>EditDepartments.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Departments\ManageDepartments.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageDepartments.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Departments\ManageDepartments.aspx.vb">
+      <DependentUpon>ManageDepartments.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Branches\AddBranches.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddBranches.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Branches\AddBranches.aspx.vb">
+      <DependentUpon>AddBranches.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Branches\EditBranches.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditBranches.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Branches\EditBranches.aspx.vb">
+      <DependentUpon>EditBranches.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Branches\ManageBranches.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageBranches.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Branches\ManageBranches.aspx.vb">
+      <DependentUpon>ManageBranches.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Brands\AddBrands.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddBrands.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Brands\AddBrands.aspx.vb">
+      <DependentUpon>AddBrands.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Brands\EditBrands.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditBrands.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Brands\EditBrands.aspx.vb">
+      <DependentUpon>EditBrands.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Brands\ManageBrands.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageBrands.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Brands\ManageBrands.aspx.vb">
+      <DependentUpon>ManageBrands.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Suppliers\AddSuppliers.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddSuppliers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Suppliers\AddSuppliers.aspx.vb">
+      <DependentUpon>AddSuppliers.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Suppliers\EditSuppliers.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditSuppliers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Suppliers\EditSuppliers.aspx.vb">
+      <DependentUpon>EditSuppliers.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Suppliers\ManageSuppliers.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageSuppliers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Suppliers\ManageSuppliers.aspx.vb">
+      <DependentUpon>ManageSuppliers.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS_TR_Training_Videos\Add_LMS_TR_Training_Videos.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Add_LMS_TR_Training_Videos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS_TR_Training_Videos\Add_LMS_TR_Training_Videos.aspx.vb">
+      <DependentUpon>Add_LMS_TR_Training_Videos.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS_TR_Training_Videos\Edit_LMS_TR_Training_Videos.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit_LMS_TR_Training_Videos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS_TR_Training_Videos\Edit_LMS_TR_Training_Videos.aspx.vb">
+      <DependentUpon>Edit_LMS_TR_Training_Videos.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\LMS_TR_Training_Videos\Manage_LMS_TR_Training_Videos.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Manage_LMS_TR_Training_Videos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\LMS_TR_Training_Videos\Manage_LMS_TR_Training_Videos.aspx.vb">
+      <DependentUpon>Manage_LMS_TR_Training_Videos.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Users\AddUsers.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddUsers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Users\AddUsers.aspx.vb">
+      <DependentUpon>AddUsers.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Users\EditUsers.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditUsers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Users\EditUsers.aspx.vb">
+      <DependentUpon>EditUsers.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Users\ManageUsers.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageUsers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Users\ManageUsers.aspx.vb">
+      <DependentUpon>ManageUsers.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Categories\AddWorkGuideCategory.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddWorkGuideCategory.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Categories\AddWorkGuideCategory.aspx.vb">
+      <DependentUpon>AddWorkGuideCategory.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Categories\EditWorkGuideCategory.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditWorkGuideCategory.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Categories\EditWorkGuideCategory.aspx.vb">
+      <DependentUpon>EditWorkGuideCategory.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Categories\ManageWorkGuideCategories.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageWorkGuideCategories.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Categories\ManageWorkGuideCategories.aspx.vb">
+      <DependentUpon>ManageWorkGuideCategories.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\AddWorkGuide_Documents.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddWorkGuide_Documents.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\AddWorkGuide_Documents.aspx.vb">
+      <DependentUpon>AddWorkGuide_Documents.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\DownloadWorkGuideFile.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DownloadWorkGuideFile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\DownloadWorkGuideFile.aspx.vb">
+      <DependentUpon>DownloadWorkGuideFile.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\EditWorkGuide_Documents.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditWorkGuide_Documents.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\EditWorkGuide_Documents.aspx.vb">
+      <DependentUpon>EditWorkGuide_Documents.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\ManageWorkGuide_Documents.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageWorkGuide_Documents.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\ManageWorkGuide_Documents.aspx.vb">
+      <DependentUpon>ManageWorkGuide_Documents.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\ViewWorkGuide.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewWorkGuide.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\ViewWorkGuide.aspx.vb">
+      <DependentUpon>ViewWorkGuide.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\ViewWorkGuideFile.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewWorkGuideFile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Documents\ViewWorkGuideFile.aspx.vb">
+      <DependentUpon>ViewWorkGuideFile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Roles\AddWorkGuideRole.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddWorkGuideRole.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Roles\AddWorkGuideRole.aspx.vb">
+      <DependentUpon>AddWorkGuideRole.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Roles\EditWorkGuideRole.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditWorkGuideRole.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Roles\EditWorkGuideRole.aspx.vb">
+      <DependentUpon>EditWorkGuideRole.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Roles\ManageWorkGuideRoles.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageWorkGuideRoles.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Roles\ManageWorkGuideRoles.aspx.vb">
+      <DependentUpon>ManageWorkGuideRoles.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_User_Category_Roles\AddWorkGuide_User_Category_Role.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddWorkGuide_User_Category_Role.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_User_Category_Roles\AddWorkGuide_User_Category_Role.aspx.vb">
+      <DependentUpon>AddWorkGuide_User_Category_Role.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_User_Category_Roles\EditWorkGuide_User_Category_Role.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditWorkGuide_User_Category_Role.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_User_Category_Roles\EditWorkGuide_User_Category_Role.aspx.vb">
+      <DependentUpon>EditWorkGuide_User_Category_Role.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_User_Category_Roles\ManageWorkGuide_User_Category_Roles.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageWorkGuide_User_Category_Roles.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_User_Category_Roles\ManageWorkGuide_User_Category_Roles.aspx.vb">
+      <DependentUpon>ManageWorkGuide_User_Category_Roles.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="My Project\MyExtensions\MyWebExtension.vb">
+      <VBMyExtensionTemplateID>Microsoft.VisualBasic.Web.MyExtension</VBMyExtensionTemplateID>
+      <VBMyExtensionTemplateVersion>1.0.0.0</VBMyExtensionTemplateVersion>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Shared\Web\PageBase.vb">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\QRCode\PrintQRCode1.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PrintQRCode1.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\QRCode\PrintQRCode1.aspx.vb">
+      <DependentUpon>PrintQRCode1.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\QRCode\QRCode_Reader.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QRCode_Reader.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\QRCode\QRCode_Reader.aspx.vb">
+      <DependentUpon>QRCode_Reader.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Site.Master.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Site.Master</DependentUpon>
+    </Compile>
+    <Compile Include="Site.Master.vb">
+      <DependentUpon>Site.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="VacationsSchedule_Final.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VacationsSchedule_Final.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="VacationsSchedule_Final.aspx.vb">
+      <DependentUpon>VacationsSchedule_Final.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="VacationsSchedule.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VacationsSchedule.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="VacationsSchedule.aspx.vb">
+      <DependentUpon>VacationsSchedule.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="WorkSchedule.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>WorkSchedule.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="WorkSchedule.aspx.vb">
+      <DependentUpon>WorkSchedule.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="WorkSchedule1.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>WorkSchedule1.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="WorkSchedule1.aspx.vb">
+      <DependentUpon>WorkSchedule1.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Shared\Storage\Uploader.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ckeditor\images\" />
+    <Folder Include="ckeditor\plugins\a11yhelp\lang\" />
+    <Folder Include="ckeditor\plugins\adobeair\" />
+    <Folder Include="ckeditor\plugins\ajax\" />
+    <Folder Include="ckeditor\plugins\autogrow\" />
+    <Folder Include="ckeditor\plugins\iframedialog\" />
+    <Folder Include="ckeditor\plugins\pastetext\dialogs\" />
+    <Folder Include="ckeditor\plugins\placeholder\dialogs\" />
+    <Folder Include="ckeditor\plugins\placeholder\lang\" />
+    <Folder Include="ckeditor\plugins\specialchar\lang\" />
+    <Folder Include="ckeditor\plugins\styles\styles\" />
+    <Folder Include="ckeditor\plugins\tableresize\" />
+    <Folder Include="ckeditor\plugins\uicolor\dialogs\" />
+    <Folder Include="ckeditor\plugins\uicolor\lang\" />
+    <Folder Include="ckeditor\plugins\uicolor\yui\assets\" />
+    <Folder Include="ckeditor\plugins\xml\" />
+    <Folder Include="ckeditor\skins\kama\images\" />
+    <Folder Include="ckeditor\skins\office2003\images\" />
+    <Folder Include="ckeditor\skins\v2\images\" />
+    <Folder Include="ckeditor\themes\default\" />
+    <Folder Include="FileManager\" />
+    <Folder Include="Modules\Reports\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ProstoERP.Infrastructure\ProstoERP.Infrastructure.vbproj">
+      <Project>{c33abbc1-22e8-44be-979a-d4795cc9da62}</Project>
+      <Name>ProstoERP.Infrastructure</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>52219</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:52219/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>http://localhost:3018</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+
+  <ItemGroup>
+    <Compile Include="Features\HRTypes\Web\HRTypePageBase.vb">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\HR_Vacations_Types\Add_HR_Vacations_Types.aspx.vb">
+      <DependentUpon>Add_HR_Vacations_Types.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\HR_Vacations_Types\Add_HR_Vacations_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Add_HR_Vacations_Types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\HR_Vacations_Types\Edit_HR_Vacations_Types.aspx.vb">
+      <DependentUpon>Edit_HR_Vacations_Types.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\HR_Vacations_Types\Edit_HR_Vacations_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit_HR_Vacations_Types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\HR_Vacations_Types\Manage_HR_Vacations_Types.aspx.vb">
+      <DependentUpon>Manage_HR_Vacations_Types.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\HR_Vacations_Types\Manage_HR_Vacations_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Manage_HR_Vacations_Types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\HR_Leaves_Types\Add_HR_Leaves_Types.aspx.vb">
+      <DependentUpon>Add_HR_Leaves_Types.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\HR_Leaves_Types\Add_HR_Leaves_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Add_HR_Leaves_Types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\HR_Leaves_Types\Edit_HR_Leaves_Types.aspx.vb">
+      <DependentUpon>Edit_HR_Leaves_Types.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\HR_Leaves_Types\Edit_HR_Leaves_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit_HR_Leaves_Types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\HR_Leaves_Types\Manage_HR_Leaves_Types.aspx.vb">
+      <DependentUpon>Manage_HR_Leaves_Types.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\HR_Leaves_Types\Manage_HR_Leaves_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Manage_HR_Leaves_Types.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Modules\Users_Types\UsersTypesPageBase.vb">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Users_Types\Add_Users_Types.aspx.vb">
+      <DependentUpon>Add_Users_Types.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Users_Types\Add_Users_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Add_Users_Types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Users_Types\Edit_Users_Types.aspx.vb">
+      <DependentUpon>Edit_Users_Types.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Users_Types\Edit_Users_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit_Users_Types.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Users_Types\Manage_Users_Types.aspx.vb">
+      <DependentUpon>Manage_Users_Types.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Users_Types\Manage_Users_Types.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Manage_Users_Types.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\WorkGuide\Data\WorkGuideAccess.vb" />
+    <Compile Include="Modules\WorkGuide_Access_Requests\ManageWorkGuideAccessRequests.aspx.vb">
+      <DependentUpon>ManageWorkGuideAccessRequests.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Access_Requests\ManageWorkGuideAccessRequests.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageWorkGuideAccessRequests.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Access_Requests\ReviewWorkGuideAccessRequest.aspx.vb">
+      <DependentUpon>ReviewWorkGuideAccessRequest.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Access_Requests\ReviewWorkGuideAccessRequest.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReviewWorkGuideAccessRequest.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Modules\WorkGuide_Activity_Logs\ManageWorkGuideActivityLogs.aspx.vb">
+      <DependentUpon>ManageWorkGuideActivityLogs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\WorkGuide_Activity_Logs\ManageWorkGuideActivityLogs.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageWorkGuideActivityLogs.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\WorkGuide\Exports\WorkGuideLogExport.vb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Features\Attendance\Data\AttendanceData.vb" />
+    <Compile Include="Modules\Employees\AttendanceHistory.aspx.vb">
+      <DependentUpon>AttendanceHistory.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employees\AttendanceHistory.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AttendanceHistory.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Attendance_Integration\ManageAttendanceIntegration.aspx.vb">
+      <DependentUpon>ManageAttendanceIntegration.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Attendance_Integration\ManageAttendanceIntegration.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageAttendanceIntegration.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Features\CRM\Data\CRMData.vb" />
+    <Compile Include="Features\CRM\Configuration\CRMModel.vb" />
+    <Compile Include="Features\CRM\Web\CRMModulePage.vb">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Account_Types\ManageCRMAccountTypes.aspx.vb">
+      <DependentUpon>ManageCRMAccountTypes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Account_Types\AddCRMAccountTypes.aspx.vb">
+      <DependentUpon>AddCRMAccountTypes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Account_Types\EditCRMAccountTypes.aspx.vb">
+      <DependentUpon>EditCRMAccountTypes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Contract_Types\ManageCRMContractTypes.aspx.vb">
+      <DependentUpon>ManageCRMContractTypes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Contract_Types\AddCRMContractTypes.aspx.vb">
+      <DependentUpon>AddCRMContractTypes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Contract_Types\EditCRMContractTypes.aspx.vb">
+      <DependentUpon>EditCRMContractTypes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Payment_Methods\ManageCRMPaymentMethods.aspx.vb">
+      <DependentUpon>ManageCRMPaymentMethods.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Payment_Methods\AddCRMPaymentMethods.aspx.vb">
+      <DependentUpon>AddCRMPaymentMethods.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Payment_Methods\EditCRMPaymentMethods.aspx.vb">
+      <DependentUpon>EditCRMPaymentMethods.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Accounts\ManageCRMAccounts.aspx.vb">
+      <DependentUpon>ManageCRMAccounts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Accounts\AddCRMAccounts.aspx.vb">
+      <DependentUpon>AddCRMAccounts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Accounts\EditCRMAccounts.aspx.vb">
+      <DependentUpon>EditCRMAccounts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Contacts\ManageCRMContacts.aspx.vb">
+      <DependentUpon>ManageCRMContacts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Contacts\AddCRMContacts.aspx.vb">
+      <DependentUpon>AddCRMContacts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Contacts\EditCRMContacts.aspx.vb">
+      <DependentUpon>EditCRMContacts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Activity_Logs\ManageCRMActivityLogs.aspx.vb">
+      <DependentUpon>ManageCRMActivityLogs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Transactions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\Correspondence\Data\CorrespondenceData.vb" />
+    <Reference Include="System.IO.Compression" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Modules\Correspondence\ManageCorrespondence.aspx.vb">
+      <DependentUpon>ManageCorrespondence.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Correspondence\ManageCorrespondence.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageCorrespondence.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Correspondence\Catalogs.aspx.vb">
+      <DependentUpon>Catalogs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Correspondence\Catalogs.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Catalogs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Correspondence\AddCorrespondence.aspx.vb">
+      <DependentUpon>AddCorrespondence.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Correspondence\AddCorrespondence.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddCorrespondence.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Compile Include="Modules\Employee_Feedback\AddEmployeeFeedback.aspx.vb">
+      <DependentUpon>AddEmployeeFeedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\AddEmployeeFeedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddEmployeeFeedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ManageEmployeeFeedback.aspx.vb">
+      <DependentUpon>ManageEmployeeFeedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ManageEmployeeFeedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageEmployeeFeedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\MyEmployeeFeedback.aspx.vb">
+      <DependentUpon>MyEmployeeFeedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\MyEmployeeFeedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MyEmployeeFeedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\EmployeeFeedbackReports.aspx.vb">
+      <DependentUpon>EmployeeFeedbackReports.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\EmployeeFeedbackReports.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EmployeeFeedbackReports.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewEmployeeFeedback.aspx.vb">
+      <DependentUpon>ViewEmployeeFeedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewEmployeeFeedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewEmployeeFeedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\DownloadEmployeeFeedback.aspx.vb">
+      <DependentUpon>DownloadEmployeeFeedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\DownloadEmployeeFeedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DownloadEmployeeFeedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\EmployeeFeedbackNotifications.aspx.vb">
+      <DependentUpon>EmployeeFeedbackNotifications.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\EmployeeFeedbackNotifications.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EmployeeFeedbackNotifications.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Topics\ManageEmployeeFeedbackTopics.aspx.vb">
+      <DependentUpon>ManageEmployeeFeedbackTopics.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Topics\ManageEmployeeFeedbackTopics.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageEmployeeFeedbackTopics.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Topics\AddEmployeeFeedbackTopics.aspx.vb">
+      <DependentUpon>AddEmployeeFeedbackTopics.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Topics\AddEmployeeFeedbackTopics.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddEmployeeFeedbackTopics.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Topics\EditEmployeeFeedbackTopics.aspx.vb">
+      <DependentUpon>EditEmployeeFeedbackTopics.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Topics\EditEmployeeFeedbackTopics.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditEmployeeFeedbackTopics.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewAdminEmployeeFeedback.aspx.vb">
+      <DependentUpon>ViewAdminEmployeeFeedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewAdminEmployeeFeedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewAdminEmployeeFeedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewClosedEmployeeFeedback.aspx.vb">
+      <DependentUpon>ViewClosedEmployeeFeedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewClosedEmployeeFeedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewClosedEmployeeFeedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewNewBranchEmployeeFeedback.aspx.vb">
+      <DependentUpon>ViewNewBranchEmployeeFeedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewNewBranchEmployeeFeedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewNewBranchEmployeeFeedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewReadOnlyEmployeeFeedback.aspx.vb">
+      <DependentUpon>ViewReadOnlyEmployeeFeedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewReadOnlyEmployeeFeedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewReadOnlyEmployeeFeedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewShiftEmployeeFeedback.aspx.vb">
+      <DependentUpon>ViewShiftEmployeeFeedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewShiftEmployeeFeedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewShiftEmployeeFeedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewSuggestionEmployeeFeedback.aspx.vb">
+      <DependentUpon>ViewSuggestionEmployeeFeedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\ViewSuggestionEmployeeFeedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewSuggestionEmployeeFeedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Features\Feedback\Data\EmployeeFeedbackData.vb" />
+    <Compile Include="Features\Feedback\Web\EmployeeFeedbackPage.vb">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Modules\Information_Pages\Edit.aspx.vb">
+      <DependentUpon>Edit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Information_Pages\Edit.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Information_Pages\History.aspx.vb">
+      <DependentUpon>History.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Information_Pages\History.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>History.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Information_Pages\Index.aspx.vb">
+      <DependentUpon>Index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Information_Pages\Index.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Information_Pages\Logs.aspx.vb">
+      <DependentUpon>Logs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Information_Pages\Logs.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Logs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Information_Pages\Manage.aspx.vb">
+      <DependentUpon>Manage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Information_Pages\Manage.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Manage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Information_Pages\View.aspx.vb">
+      <DependentUpon>View.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Information_Pages\View.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>View.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Features\InformationPages\Data\InformationPagesData.vb" />
+    <Compile Include="Features\InformationPages\Web\InformationPagesPage.vb">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\Feedback\Configuration\EmployeeFeedbackConfig.vb" />
+    <Compile Include="Modules\Employee_Feedback_Permissions\ManageEmployeeFeedbackPermissions.aspx.vb">
+      <DependentUpon>ManageEmployeeFeedbackPermissions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Permissions\ManageEmployeeFeedbackPermissions.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageEmployeeFeedbackPermissions.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\EmployeeFeedbackLogs.aspx.vb">
+      <DependentUpon>EmployeeFeedbackLogs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\EmployeeFeedbackLogs.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EmployeeFeedbackLogs.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\Feedback\Data\EmployeeFeedbackCatalog.vb" />
+    <Compile Include="Modules\Employee_Feedback_Types\ManageEmployeeFeedbackTypes.aspx.vb">
+      <DependentUpon>ManageEmployeeFeedbackTypes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Types\ManageEmployeeFeedbackTypes.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManageEmployeeFeedbackTypes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Types\AddEmployeeFeedbackTypes.aspx.vb">
+      <DependentUpon>AddEmployeeFeedbackTypes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Types\AddEmployeeFeedbackTypes.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AddEmployeeFeedbackTypes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Types\EditEmployeeFeedbackTypes.aspx.vb">
+      <DependentUpon>EditEmployeeFeedbackTypes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback_Types\EditEmployeeFeedbackTypes.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditEmployeeFeedbackTypes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\EmployeeFeedbackContact.aspx.vb">
+      <DependentUpon>EmployeeFeedbackContact.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Employee_Feedback\EmployeeFeedbackContact.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EmployeeFeedbackContact.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\Circulars\Data\CircularsData.vb" />
+    <Compile Include="Modules\Circulars\Index.aspx.vb">
+      <DependentUpon>Index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Circulars\View.aspx.vb">
+      <DependentUpon>View.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\Circulars\File.aspx.vb">
+      <DependentUpon>File.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Customer.Master.vb">
+      <DependentUpon>Customer.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Customer.Master.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Customer.Master</DependentUpon>
+    </Compile>
+    <Compile Include="CustomerPortal\Guide.aspx.vb">
+      <DependentUpon>Guide.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CustomerPortal\Guide.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Guide.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CustomerPortal\GuideFile.aspx.vb">
+      <DependentUpon>GuideFile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CustomerPortal\GuideFile.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GuideFile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CustomerPortal\Download.aspx.vb">
+      <DependentUpon>Download.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CustomerPortal\Download.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Download.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CustomerPortal\Feedback.aspx.vb">
+      <DependentUpon>Feedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CustomerPortal\Feedback.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Feedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\CRM_Accounts\CustomerAccess.aspx.vb">
+      <DependentUpon>CustomerAccess.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Modules\CRM_Accounts\CustomerAccess.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CustomerAccess.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Features\CustomerPortal\Data\CustomerPortalData.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CustomerPortal\FeedbackDetail.aspx.vb">
+      <DependentUpon>FeedbackDetail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CustomerPortal\FeedbackDetail.aspx.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FeedbackDetail.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CustomerPortal\FeedbackFile.aspx.vb">
+      <DependentUpon>FeedbackFile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Encryptor\Encryptor.csproj">
+      <Project>{1387F685-0253-4CC1-A819-5789DB36626C}</Project>
+      <Name>Encryptor</Name>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="..\..\build\LegacyWeb.targets" />
+</Project>

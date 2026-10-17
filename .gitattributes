@@ -1,0 +1,6 @@
+# Legacy VB project files already use CRLF; preserve their existing line endings.
+*.vbproj whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Generated declarations remain available in diffs, but are identified as generated.
+*.designer.vb linguist-generated=true
+*.Designer.vb linguist-generated=true

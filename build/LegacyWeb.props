@@ -1,0 +1,7 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Explicitly imported by the classic web projects; Aspire uses its own SDK. -->
+  <PropertyGroup>
+    <ProstoPackagesRoot>$(MSBuildThisFileDirectory)..\packages\</ProstoPackagesRoot>
+    <ProstoCodeDomPackage>Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0</ProstoCodeDomPackage>
+  </PropertyGroup>
+</Project>

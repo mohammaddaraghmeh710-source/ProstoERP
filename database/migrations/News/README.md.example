@@ -1,0 +1,33 @@
+# Brand-assigned news
+
+News.Brand_ID is an explicit nullable FK to Brands; it is not inferred from the publisher's account. The administrator's Add_News/Edit_News pages require an active brand before saving through News_AdminSave. News_AdminList revalidates active Type=1 administrators and provides brand name/filtering plus existing keyword/status filters. Null remains schema-compatible with historical/legacy writers, but new Portal saves cannot omit a brand. Images/date/order/content/audit conventions remain the existing ones.
+
+Apply 001_BrandNews.sql after Mobile_API/002_Procedures.sql. Apply.ps1 is local-only; optional -BackfillBrandID assigns only currently unassigned news and preserves other fields/existing assignments. The owner selected Prosto (29); three unassigned historic rows were updated on the local configured database. On deployment use the destination brand ID that actually represents Prosto. The migration never guesses brand from AddedUser. Reapplying old 002_Procedures.sql or Rollback-BrandApiCredentials.sql restores an obsolete MobileApi_News; reapply this migration afterwards with the matching API binaries. Legacy ERPController news endpoints and original mapped legacy procedures are unchanged; DBML regeneration is not required.
+
+## Token API
+
+```http
+POST REPLACE_WITH_LOCAL_SECRETapi/Get_News
+Authorization: Bearer <AccessToken>
+Accept: application/json
+Content-Type: application/json
+
+{"BrandID":29}
+```
+
+The JSON Body must contain only {"BrandID":29}. BrandID is a required positive integer; URL/query values do not replace the Body. GET is no longer supported. Use the employee's current Data.User.brand.ID from login as the initial value, updating it if organizational assignment changes. SQL revalidates that the active/nondeleted requested brand equals the current authenticated employee Brand_ID. No role bypass allows cross-brand token reads. Caller-supplied UserID, publisher identity or stale login/session snapshots do not authorize access. Changing employee membership can deny the previous brand while permitting the new one with the same otherwise valid token. Brandless employees and unavailable brands return 403. This intentionally changes the prior global feed contract; clients must now supply BrandID.
+
+The envelope remains Success/Count/Data/Session. Returned rows have the existing fields plus Brand_ID. Only assigned active/nondeleted news for that brand appears; nullable/unassigned news is excluded. Empty results succeed. Ordering remains Item_Order then Date/PID descending, and Image retains absolute URL/null handling. No pagination, read-state audit or new notification is added. No-store and employee Bearer/device/expiry/password checks remain unchanged.
+
+| HTTP | Code | Meaning |
+|---|---|---|
+| 400 | INVALID_BRAND | Missing/nonpositive/unbindable Body BrandID or extra fields |
+| 401 | SESSION_INVALID | Invalid/expired/revoked employee token under existing filter |
+| 403 | BRAND_ACCESS_DENIED | Requested brand unavailable or differs from current employee assignment |
+| 403 | HTTPS_REQUIRED | Existing transport policy rejects HTTP |
+
+## Validation
+
+Mobile_API/Test-MobileApi.ps1 loads this migration into a disposable SQL fixture, then checks matching brand results, omission/invalid/cross-brand requests, inactive/deleted/unassigned news, SQL admin/save/brand checks, editing assignment and current employee membership changes alongside existing login/device/BIO tests. Release build and Portal ASP.NET precompilation check integration; authenticated UI editing on the deployment host remains a separate check. No live news content is created or modified by tests.
+
+Validated locally: Release solution build and Portal precompilation succeeded; 215 mobile/news/device/BIO integration assertions passed. All three pre-existing local news rows are now assigned to Prosto (29), with none unassigned. Authenticated visual add/edit testing was not performed.

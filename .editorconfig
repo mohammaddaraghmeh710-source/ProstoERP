@@ -1,0 +1,32 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{json,xml,csproj,vbproj,config,yml,yaml,sh}]
+indent_size = 2
+
+[*.sln]
+indent_style = tab
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false
+
+# Generated declarations are maintained by their generators.
+[*.{designer,Designer}.{cs,vb}]
+generated_code = true
+indent_style = unset
+indent_size = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+
+# Preserve upstream formatting in vendored assets.
+[{src/Portal/assets/**,src/Portal/ckeditor/**,src/ProstoERP.Api/Content/swagger-ui/**,packages/**}]
+indent_style = unset
+indent_size = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset

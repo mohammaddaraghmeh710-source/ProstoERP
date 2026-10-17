@@ -1,0 +1,106 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Prosto_ERP_API;
+using Prosto_ERP_API.Attendance;
+using Prosto_ERP_API.Controllers;
+
+class BioTimeTests
+{
+    static int passed;
+    static void Check(bool value, string name) { if (!value) throw new Exception(name); passed++; Console.WriteLine("PASS " + name); }
+    static AttendanceTransactionsRequest Input() { return new AttendanceTransactionsRequest { Username="test-user", Password="test-password", EmployeeCode="1001", FromDate="2026-10-01", ToDate="2026-10-06" }; }
+    sealed class Stub : HttpMessageHandler
+    {
+        public Func<HttpRequestMessage,int,HttpResponseMessage> Reply;
+        public int Calls;
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        { return Task.FromResult(Reply(request, Calls++)); }
+    }
+    static HttpResponseMessage Json(string body, HttpStatusCode status=HttpStatusCode.OK) { return new HttpResponseMessage(status) { Content=new StringContent(body) }; }
+    static BioTimeAttendanceService Service(Stub stub) { return new BioTimeAttendanceService(new HttpClient(stub)); }
+    static async Task Error(Stub stub, string expected)
+    {
+        try { await Service(stub).GetTransactionsAsync(Input(), CancellationToken.None); throw new Exception("Missing error " + expected); }
+        catch (BioTimeException ex) { Check(ex.Code==expected, expected); }
+    }
+    static async Task Run()
+    {
+        Check(Input().IsValid(), "valid input");
+        foreach (var field in new[]{"Username","Password","EmployeeCode","FromDate","ToDate"})
+        { var input=Input(); typeof(AttendanceTransactionsRequest).GetProperty(field).SetValue(input," "); Check(!input.IsValid(),"required "+field); }
+        var bad=Input(); bad.FromDate="2026-02-30"; Check(!bad.IsValid(),"invalid date");
+        bad=Input(); bad.ToDate="2026-09-30"; Check(!bad.IsValid(),"reversed dates");
+        bad=Input(); bad.FromDate="2026-10-01T00:00:00"; Check(!bad.IsValid(),"date-only format");
+        bad=JsonConvert.DeserializeObject<AttendanceTransactionsRequest>("{\"username\":\"u\",\"password\":\"p\",\"employeeCode\":\"e\",\"fromDate\":\"2026-10-01\",\"toDate\":\"2026-10-06\",\"url\":\"http://attacker/\"}"); Check(!bad.IsValid(),"reject proxy fields");
+        var stub=new Stub { Reply=(r,n)=> {
+            if(n==0) { Check(r.Method==HttpMethod.Post && r.RequestUri.AbsolutePath=="/jwt-api-token-auth/","auth endpoint"); var body=JObject.Parse(r.Content.ReadAsStringAsync().Result); Check((string)body["password"]=="test-password","auth credentials body"); return Json("{\"token\":\"internal-token\"}"); }
+            Check(r.Headers.Authorization.Scheme=="JWT" && r.Headers.Authorization.Parameter=="internal-token","JWT internal header");
+            var q=System.Web.HttpUtility.ParseQueryString(r.RequestUri.Query); Check(q["emp_code"]=="1001" && q["start_time"]=="2026-10-01 00:00:00" && q["end_time"]=="2026-10-06 23:59:59","inclusive filters");
+            return n==1 ? Json("{\"code\":0,\"data\":[{\"id\":1,\"department\":{\"name\":\"HR\"},\"custom\":true,\"password\":\"secret\"},{\"id\":2}],\"next\":\"?page=2\"}") : Json("{\"data\":[{\"id\":3}],\"next\":null}");
+        }};
+        var data=await Service(stub).GetTransactionsAsync(Input(),CancellationToken.None);
+        Check(data.Count==3 && (bool)data[0]["custom"] && data[0]["department"]!=null,"multiple pages and preserved fields"); Check(data[0]["password"]==null,"upstream secret removed");
+        stub=new Stub { Reply=(r,n)=> n==0?Json("{\"token\":\"t\"}"):Json("{\"data\":[],\"next\":null}") };
+        Check((await Service(stub).GetTransactionsAsync(Input(),CancellationToken.None)).Count==0,"no records / unknown employee");
+        stub=new Stub { Reply=(r,n)=> n==0 || n==2 ? Json("{\"token\":\"t\"}") : n==1 ? Json("{}",HttpStatusCode.Unauthorized) : Json("{\"data\":[{\"id\":1}],\"next\":null}") };
+        Check((await Service(stub).GetTransactionsAsync(Input(),CancellationToken.None)).Count==1 && stub.Calls==4,"401 reauthentication once");
+        stub=new Stub { Reply=(r,n)=> n==0 || n==2 ? Json("{\"token\":\"t\"}") : Json("{}",HttpStatusCode.Unauthorized) };
+        await Error(stub,"BIOTIME_UNAUTHORIZED"); Check(stub.Calls==4,"401 retry bounded");
+        await Error(new Stub { Reply=(r,n)=>Json("{\"password\":\"DO_NOT_RELAY\"}",HttpStatusCode.BadRequest) },"BIOTIME_INVALID_CREDENTIALS");
+        foreach(var status in new[]{HttpStatusCode.Forbidden,HttpStatusCode.NotFound,HttpStatusCode.BadRequest,HttpStatusCode.InternalServerError,HttpStatusCode.Redirect})
+            await Error(new Stub { Reply=(r,n)=> n==0?Json("{\"token\":\"t\"}"):Json("upstream sensitive body",status) },status==HttpStatusCode.Forbidden?"BIOTIME_FORBIDDEN":status==HttpStatusCode.NotFound?"BIOTIME_NOT_FOUND":"BIOTIME_HTTP_ERROR");
+        await Error(new Stub { Reply=(r,n)=> { throw new HttpRequestException("sensitive details"); } },"BIOTIME_UNAVAILABLE");
+        await Error(new Stub { Reply=(r,n)=> { throw new TaskCanceledException("sensitive details"); } },"BIOTIME_TIMEOUT");
+        await Error(new Stub { Reply=(r,n)=>Json("not json") },"BIOTIME_INVALID_RESPONSE");
+        await Error(new Stub { Reply=(r,n)=>Json("{}") },"BIOTIME_INVALID_RESPONSE");
+        foreach(var next in new[]{"http://attacker/iclock/api/transactions/?page=2","http://127.0.0.1:8090/iclock/api/transactions/?page=2","/other/?page=2","?token=bad","?page=2&page=3","?page=-1"})
+        {
+            stub=new Stub { Reply=(r,n)=>n==0?Json("{\"token\":\"t\"}"):Json(JsonConvert.SerializeObject(new{data=new[]{new{id=1}},next=next})) };
+            await Error(stub,"BIOTIME_PAGINATION_ERROR"); Check(stub.Calls==2,"unsafe URL never requested");
+        }
+        stub=new Stub { Reply=(r,n)=>n==0?Json("{\"token\":\"t\"}"):Json("{\"data\":[{\"id\":1}],\"next\":\"?page=2\"}") };
+        await Error(stub,"BIOTIME_PAGINATION_ERROR");
+        stub=new Stub { Reply=(r,n)=>n==0?Json("{\"token\":\"t\"}"):Json("{\"data\":[{\"id\":1},{\"id\":1}],\"next\":null}") };
+        await Error(stub,"BIOTIME_PAGINATION_ERROR");
+        var cfg=new HttpConfiguration(); cfg.EnsureInitialized();
+        stub=new Stub { Reply=(r,n)=>n==0?Json("{\"token\":\"t\"}"):Json("{\"data\":[],\"next\":null}") };
+        var controller=new AttendanceController(Service(stub)) { Request=new HttpRequestMessage(HttpMethod.Post,"http://localhost/api/attendance/transactions"), Configuration=cfg };
+        var model=Input(); var response=await controller.Transactions(model,CancellationToken.None); var text=await response.Content.ReadAsStringAsync();
+        Check(response.StatusCode==HttpStatusCode.OK && text.Contains("\"Count\":0") && !text.Contains("test-password") && !text.Contains("test-user") && !text.Contains("internal-token"),"success envelope without credentials");
+        Check(model.Password=REPLACE_WITH_LOCAL_SECRET"credential references cleared and no-store");
+        response=await controller.Transactions(InputWithBadDate(),CancellationToken.None); Check(response.StatusCode==HttpStatusCode.BadRequest && stub.Calls==2,"validation before upstream");
+                var logs=new System.IO.StringWriter();
+        var listener=new System.Diagnostics.TextWriterTraceListener(logs);
+        System.Diagnostics.Trace.Listeners.Add(listener);
+        stub=new Stub { Reply=(r,n)=>Json("{\"password\":\"test-password\",\"token\":\"internal-token\"}",HttpStatusCode.Unauthorized) };
+        controller=new AttendanceController(Service(stub)) { Request=new HttpRequestMessage(HttpMethod.Post,"http://localhost/api/attendance/transactions"), Configuration=cfg };
+        response=await controller.Transactions(Input(),CancellationToken.None); text=await response.Content.ReadAsStringAsync();
+        Check(response.StatusCode==HttpStatusCode.Unauthorized && !text.Contains("test-password") && !text.Contains("internal-token"),"error credentials never relayed");
+        stub=new Stub { Reply=(r,n)=> { throw new InvalidOperationException("test-password internal-token"); } };
+        controller=new AttendanceController(Service(stub)) { Request=new HttpRequestMessage(HttpMethod.Post,"http://localhost/api/attendance/transactions"), Configuration=cfg };
+        response=await controller.Transactions(Input(),CancellationToken.None); text=await response.Content.ReadAsStringAsync();
+        Check(response.StatusCode==HttpStatusCode.InternalServerError && !text.Contains("test-password") && !text.Contains("internal-token"),"unexpected exception sanitized");
+        System.Diagnostics.Trace.Flush(); System.Diagnostics.Trace.Listeners.Remove(listener);
+        Check(logs.ToString().Contains("BIOTIME_INVALID_CREDENTIALS"),"sanitized troubleshooting log emitted");
+        Check(!logs.ToString().Contains("test-password") && !logs.ToString().Contains("internal-token") && !logs.ToString().Contains("test-user"),"logs contain no credentials or JWT");
+        var routes=new HttpConfiguration(); WebApiConfig.Register(routes); routes.EnsureInitialized();
+        using(var server=new HttpServer(routes)) using(var http=new HttpClient(server))
+        {
+            response=await http.PostAsync("http://localhost/api/attendance/transactions",new StringContent("{}",System.Text.Encoding.UTF8,"application/json")); Check(response.StatusCode==HttpStatusCode.Unauthorized,"HTTP route protected with legacy API auth");
+            http.DefaultRequestHeaders.Authorization=new System.Net.Http.Headers.AuthenticationHeaderValue("Basic","invalid-base64!");
+            response=await http.PostAsync("http://localhost/api/attendance/transactions",new StringContent("{}",System.Text.Encoding.UTF8,"application/json")); Check(response.StatusCode==HttpStatusCode.Unauthorized,"malformed auth safely rejected");
+        }
+        Console.WriteLine("Passed: "+passed);
+        var testConnection=Environment.GetEnvironmentVariable("BIOTIME_TEST_CONNECTION"); if(!string.IsNullOrEmpty(testConnection)) BrandIntegrationTests.Run(testConnection);
+    }
+    static AttendanceTransactionsRequest InputWithBadDate() { var x=Input();x.FromDate="bad";return x; }
+    static int Main() { try { Run().GetAwaiter().GetResult();return 0; } catch(Exception ex) { Console.WriteLine(ex);return 1; } }
+}

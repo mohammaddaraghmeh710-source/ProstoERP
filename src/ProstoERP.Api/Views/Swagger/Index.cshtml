@@ -1,0 +1,27 @@
+@{ Layout = null; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prosto ERP API — Swagger</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/swagger-ui/swagger-ui.css")" />
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="@Url.Content("~/Content/swagger-ui/swagger-ui-bundle.js")"></script>
+    <script>
+        window.onload = function () {
+            window.ui = SwaggerUIBundle({
+                url: '@Url.Content("~/swagger/docs/v1")',
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                validatorUrl: null,
+                persistAuthorization: false,
+                displayRequestDuration: true,
+                presets: [SwaggerUIBundle.presets.apis]
+            });
+        };
+    </script>
+</body>
+</html>

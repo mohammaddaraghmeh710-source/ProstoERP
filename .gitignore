@@ -2,6 +2,8 @@
 .vs/
 .dotnet_cli/
 .nuget/
+.local-development/
+__pycache__/
 packages/
 [Bb]in/
 [Oo]bj/
@@ -17,25 +19,25 @@ packages/
 .env.*
 !.env.example
 # Local settings containing credentials
-/Portal/Web.config
-/Prosto_ERP_API/Web.config
-/Prosto_ERP_ClassLibrary/app.config
-/Database/BioTime/BioTime.IntegrationTests.cs
+/src/Portal/Web.config
+/src/ProstoERP.Api/Web.config
+/src/ProstoERP.Infrastructure/app.config
+/database/migrations/BioTime/BioTime.IntegrationTests.cs
 # Local publish settings and data
 *.pubxml
 *.pubxml.user
 *.bak
 *.mdf
 *.ldf
-/Prosto_ERP_ClassLibrary/My Project/Settings.Designer.vb
-/Database/Email_Notification/README.md
-/Database/Password_Reset/README.md
-/Database/Mobile_API/Transport.IntegrationTests.cs
-/Prosto_ERP_API/Authentication/AuthenticationAttribute.cs
-/Database/BioTime/BioTime.IntegrationTests.cs
-/Prosto_ERP_ClassLibrary/My Project/Settings.settings
-/Portal/App_Data/
-/Portal/FileManager/
-/Database/Branch25_Trial/allocation.csv
-/Portal/Uploads/
-/Database/News/README.md
+/src/ProstoERP.Infrastructure/My Project/Settings.Designer.vb
+/database/migrations/Email_Notification/README.md
+/database/migrations/Password_Reset/README.md
+/database/migrations/Mobile_API/Transport.IntegrationTests.cs
+/src/ProstoERP.Api/Shared/Authentication/AuthenticationAttribute.cs
+/database/migrations/BioTime/BioTime.IntegrationTests.cs
+/src/ProstoERP.Infrastructure/My Project/Settings.settings
+/src/Portal/App_Data/
+/src/Portal/FileManager/
+/database/development/Branch25_Trial/allocation.csv
+/src/Portal/Uploads/
+/database/migrations/News/README.md
