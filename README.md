@@ -61,11 +61,14 @@ and permissions apply.
 
 ### Aspire orchestration on this Mac
 
-Select **ERP Aspire** in Rider and click Run. It builds the legacy solution with
-Mono, stops web servers owned by `run_local.py`, and runs the separate .NET 10
-AppHost. The launcher opens the authenticated Aspire dashboard in your default
-browser. Its base address is <http://127.0.0.1:15888>; the Run output contains the
-generated login link if you need to reopen it. Keep that link private.
+Select **ERP Aspire (native)** in Rider and click Run. AppHost is a real project
+under `orchestration`, with `IsAspireHost=true` for native Aspire discovery.
+Its preparation task builds the Framework solution with Mono and AppHost with
+.NET 10, then stops web servers owned by `run_local.py`. Rider launches AppHost
+through its Aspire integration. The existing **ERP Aspire** shell configuration
+and `bash scripts/run_aspire.sh` remain available as alternatives.
+The dashboard base address is <http://127.0.0.1:15888>; use the generated login
+link in the Run output when prompted. Keep that link private.
 
 The dashboard shows `erp-database`, `api`, and `portal`, their health checks,
 web-service console logs, and links to Swagger and Portal login. The database
@@ -90,9 +93,16 @@ launcher when you do not want a browser window.
 
 The AppHost reads the existing local API `Web.config`; it does not replace the
 database, change credentials, or require changes to the Framework applications.
-Its source appears under **Aspire orchestration** in Rider. It builds separately
-with `dotnet build orchestration/ProstoERP.AppHost/ProstoERP.AppHost.csproj`, because the legacy
-solution uses Mono MSBuild, which cannot build a .NET 10 project. Aspire 13.6.0
+AppHost appears as a native project under **orchestration**. It is excluded from
+the solution's default Build selection so the existing `msbuild ERP_Prosto.sln`
+command continues to build the Framework applications with Mono. Build AppHost
+with `dotnet build orchestration/ProstoERP.AppHost/ProstoERP.AppHost.csproj`.
+For native Aspire launching, Rider must use .NET 10 MSBuild under **Settings →
+Build, Execution, Deployment → Toolset and Build**. The local solution setting
+selects the installed SDK on this Mac. `build/MonoFramework.props` supplies Mono's
+Framework reference assemblies and classic web targets when modern MSBuild loads
+the Framework projects on macOS. It does not affect Windows or Mono MSBuild.
+Aspire 13.6.0
 uses the NuGet-provided orchestrator/dashboard binaries here; CLI-bundle-only
 features are unavailable (build warning ASPIRE010). MessagePack is pinned to
 the compatible 2.5.303 security patch. The dashboard uses token authentication

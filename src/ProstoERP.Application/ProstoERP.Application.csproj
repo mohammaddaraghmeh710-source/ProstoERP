@@ -13,6 +13,12 @@
     <Optimize Condition="'$(Configuration)' == 'Release'">true</Optimize>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -24,5 +30,6 @@
       <Name>ProstoERP.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="..\..\build\MonoFramework.props" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

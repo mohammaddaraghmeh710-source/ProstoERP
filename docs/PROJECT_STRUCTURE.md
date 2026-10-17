@@ -50,9 +50,12 @@ paths adjusted for the new layout. No test projects or new tests are introduced.
 ## Build and run
 
 `ERP_Prosto.sln` builds the Framework applications with Mono MSBuild on macOS.
-The Aspire AppHost is shown as solution items, since its .NET 10 SDK requires a
-separate `dotnet build orchestration/ProstoERP.AppHost/ProstoERP.AppHost.csproj` build.
-The **ERP Aspire** Rider configuration handles both build toolchains.
+The Aspire AppHost is a native SDK project, excluded from the default solution
+Build selection so Mono does not attempt to build .NET 10. It uses a separate
+`dotnet build orchestration/ProstoERP.AppHost/ProstoERP.AppHost.csproj` build.
+The **ERP Aspire (native)** Rider configuration prepares both toolchains before
+launching through Rider's Aspire integration. The existing **ERP Aspire** shell
+launcher remains available.
 See the root README for setup, credentials, local database limitations, and
 the **Local ERP** alternative.
 
@@ -242,3 +245,13 @@ file lists, existing wildcard patterns, and configuration transform relationship
 remain unchanged. When adding a page, place its Content declaration in the
 matching manifest and its code-behind/designer Compile declarations in the
 main project file.
+
+## Namespace compatibility
+
+Directories organize code without redefining existing CLR namespaces. Keep
+WebForms markup `Inherits` values, code-behind/designer partial classes, the two
+UsersController partial implementations, and generated DataContext identities
+consistent. A solution-wide namespace synchronization introduced reserved-word
+VB namespaces and split partial classes; the affected source and view identities
+were restored from the working baseline. Do not use folder synchronization to
+rename these legacy types as part of organizational cleanup.

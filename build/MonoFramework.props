@@ -1,0 +1,7 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Let Rider's modern MSBuild load AppHost while retaining Mono's Framework assets. -->
+  <PropertyGroup Condition="'$(MSBuildRuntimeType)' == 'Core' and '$(OS)' != 'Windows_NT' and Exists('/Library/Frameworks/Mono.framework/Versions/Current/lib/mono')">
+    <FrameworkPathOverride>/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/$(TargetFrameworkVersion.Substring(1))-api</FrameworkPathOverride>
+    <VSToolsPath>/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/xbuild/Microsoft/VisualStudio/v16.0</VSToolsPath>
+  </PropertyGroup>
+</Project>

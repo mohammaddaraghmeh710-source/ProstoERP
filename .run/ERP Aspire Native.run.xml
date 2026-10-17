@@ -1,0 +1,24 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ERP Aspire (native)" type="AspireHostConfiguration" factoryName="Aspire Host">
+    <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/orchestration/ProstoERP.AppHost/ProstoERP.AppHost.csproj" />
+    <option name="PROJECT_TFM" value="net10.0" />
+    <option name="LAUNCH_PROFILE_NAME" value="ProstoERP.AppHost" />
+    <option name="TRACK_ARGUMENTS" value="1" />
+    <option name="TRACK_WORKING_DIRECTORY" value="1" />
+    <option name="TRACK_ENVS" value="0" />
+    <option name="TRACK_URL" value="1" />
+    <option name="TRACK_BROWSER_LAUNCH" value="1" />
+    <envs>
+      <env name="ASPNETCORE_URLS" value="http://127.0.0.1:15888" />
+      <env name="ASPNETCORE_ENVIRONMENT" value="Development" />
+      <env name="DOTNET_ENVIRONMENT" value="Development" />
+      <env name="ASPIRE_ALLOW_UNSECURED_TRANSPORT" value="true" />
+      <env name="ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL" value="http://127.0.0.1:15889" />
+      <env name="ASPIRE_RESOURCE_SERVICE_ENDPOINT_URL" value="http://127.0.0.1:15890" />
+      <env name="PROSTO_XSP_PATH" value="/Library/Frameworks/Mono.framework/Versions/Current/Commands/xsp4" />
+    </envs>
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Prepare ERP Aspire" run_configuration_type="ShConfigurationType" />
+    </method>
+  </configuration>
+</component>

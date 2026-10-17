@@ -7,11 +7,45 @@ The classic Portal and API projects share package-location and Roslyn setup in
 | --- | --- |
 | `build/LegacyWeb.props` | Repository-local `packages` location and existing CodeDom package directory |
 | `build/LegacyWeb.targets` | Existing Roslyn tool path, configuration-registration setting, and package targets import |
+| `build/MonoFramework.props` | Mono Framework references and web targets when modern MSBuild loads the Framework projects on macOS |
 | `build/Portal.Content.props` | Portal's existing Content declarations and metadata |
 | `build/Api.Content.props` | API's existing Content declarations and metadata |
 | Each web project | Assembly references, package versions, source lists, framework, output paths, and Debug/Release compiler options |
 | Each `packages.config` | Existing NuGet dependency declarations |
 | Aspire AppHost project | Its separate .NET SDK, framework, and package references |
+
+AppHost is registered as a native SDK project under `orchestration` and explicitly
+sets `IsAspireHost=true`. Its Debug/Release configurations omit solution `Build.0`
+entries so classic Mono solution builds keep their existing scope.
+Rider uses the installed .NET 10 MSBuild for native project loading and Aspire
+launching; this is selected in the local, ignored solution settings on this Mac.
+Other machines can select their own SDK under Toolset and Build.
+
+Each Framework project imports `MonoFramework.props` before its language targets.
+The import only supplies paths when running modern Core MSBuild on a non-Windows
+machine with the standard macOS Mono installation. Each project retains its
+existing target framework and uses that framework's corresponding Mono API
+directory. The original Mono MSBuild path and Windows builds are unaffected.
+
+**ERP Aspire (native)** runs **Prepare ERP Aspire** before launch. That task builds
+the legacy solution using Mono, builds AppHost using `dotnet`, then releases only
+local-launcher-owned servers. It does not invoke setup, migrations, or tests.
+The native run configuration provides the existing Mono XSP executable path and
+dashboard environment settings. Ports, credentials, database ownership, resource
+ordering, and the AppHost implementation are unchanged.
+
+AppHost uses `Microsoft.NET.Sdk` with an explicit `Aspire.AppHost.Sdk` SDK entry
+so Rider can identify the .NET project and its Aspire extensions. The native run
+configuration supplies `ASPNETCORE_URLS` explicitly, matching the existing launch
+profile's dashboard address.
+
+Validation on this Mac: the Mono Framework solution build, modern MSBuild
+Framework solution build, standalone AppHost build, and Rider solution build
+pass. Rider reports no errors in AppHost or the inspected Users Types and
+password-reset files. The native Aspire configuration launches successfully;
+dashboard, Swagger specification, and Portal login return HTTP 200. Existing
+`ADUsers` and standalone AppHost `ASPIRE010` warnings remain. No tests were added
+or run.
 
 The shared files are imported explicitly. They are not automatic
 `Directory.Build.props` or `Directory.Build.targets` imports, so their legacy
