@@ -1,4 +1,4 @@
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" DefaultTargets="Build">
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
@@ -20,16 +20,58 @@
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System"/>
-    <Reference Include="System.Core"/>
-    <Reference Include="System.Data"/>
-    <Reference Include="System.Data.Linq"/>
-    <Compile Include="Features\Learning\TrainingCatalogService.cs"/>
-    <ProjectReference Include="..\ProstoERP.Infrastructure\ProstoERP.Infrastructure.vbproj">
-      <Project>{C33ABBC1-22E8-44BE-979A-D4795CC9DA62}</Project>
-      <Name>ProstoERP.Infrastructure</Name>
-    </ProjectReference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Compile Include="Features\Learning\TrainingCatalogService.cs" />
   </ItemGroup>
-  <Import Project="..\..\build\MonoFramework.props"/>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+  <Import Project="..\..\build\MonoFramework.props" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="Abstractions\IMobilePlatform.cs" />
+    <Compile Include="Abstractions\IMobileData.cs" />
+    <Compile Include="Data\MobileRowMapper.cs" />
+    <Compile Include="Features\EmployeeAccess\IEmployeeAccessStore.cs" />
+    <ProjectReference Include="..\ProstoERP.Contracts\ProstoERP.Contracts.csproj">
+      <Project>{8C0D0D70-C871-4FA4-AEB4-19959A2D08C8}</Project>
+      <Name>ProstoERP.Contracts</Name>
+    </ProjectReference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Errors\MobileBusinessException.cs" />
+    <Compile Include="Errors\FeedbackException.cs" />
+    <Compile Include="Validation\MobileValidation.cs" />
+    <Compile Include="Validation\MobileJson.cs" />
+    <Compile Include="Features\EmployeeAccess\EmployeeAccessService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\Circulars\ICircularStore.cs" />
+    <Compile Include="Features\Circulars\CircularService.cs" />
+    <Compile Include="Features\EmployeeAccess\MobileContentService.cs" />
+    <Compile Include="Features\EmployeeAccess\IMobileContentStore.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abstractions\IMobileWorkflowContext.cs" />
+    <Compile Include="Features\CustomerPortal\CustomerPortalService.cs" />
+    <Compile Include="Features\CustomerFeedback\CustomerFeedbackService.cs" />
+    <Compile Include="Features\Feedback\FeedbackService.cs" />
+    <Compile Include="Features\Correspondence\CorrespondenceService.cs" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\MobileStatement.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Errors\ResetException.cs" />
+    <Compile Include="Features\PasswordReset\IPasswordResetService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\EmployeeAccess\SessionAuthenticationService.cs" />
+  </ItemGroup>
 </Project>

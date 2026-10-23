@@ -4,6 +4,11 @@ The API is ASP.NET Web API 2 on .NET Framework 4.8. It is not the ASP.NET Core
 host used by MOE. The contracts project follows MOE's separation of shared DTOs
 from controllers and persistence, while retaining this API's existing wire format.
 
+The six-step cleanup is documented in [Mobile architecture](MOBILE_ARCHITECTURE.md).
+It adds per-feature Application workflows, Infrastructure adapters, dependency wiring,
+named response contracts, shared validation/error handling, and
+[release staging](API_DEPLOYMENT.md).
+
 ## Response handling
 
 Before this extraction, mobile responses were mostly anonymous objects created
@@ -88,7 +93,7 @@ src/ProstoERP.Contracts/
   Properties/
 ```
 
-All 12 existing request-model files move unchanged, including DataAnnotations,
+All 12 existing request-model files were moved unchanged, including DataAnnotations,
 login normalization, extension-data checks, and attendance validation. Their
 existing namespaces stay intact to preserve Swagger schema identifiers and
 avoid mass controller changes. DTOs now compile into `ProstoERP.Contracts.dll`.
@@ -111,10 +116,10 @@ and document them on actions with Web API's `ResponseType` attribute, for exampl
 `ApiResponseHandler.Error(Request, status, code, message)` for new mobile actions.
 The envelope's payload remains optional on the wire under the empty-value policy.
 
-Existing endpoints still include anonymous and SQL-derived response payloads.
-This project is a foundation, not a complete typed client contract for every
-legacy response. Add concrete response DTOs as each mobile feature is developed;
-do not expose new database columns automatically.
+Stable mobile response boundaries now have named DTOs and Swagger response types.
+Some nested legacy SQL rows and extension fields remain dynamic to preserve the
+existing procedure output. These are documented compatibility boundaries, not a
+complete typed client model for every possible database column.
 
 ## Contract export and local workflow
 
@@ -166,6 +171,10 @@ Because legacy actions return HttpResponseMessage/anonymous payloads, some exist
 response schemas remain generic until those actions receive explicit response DTOs.
 
 ## Deployment preparation
+
+Use `python3 scripts/prepare_api_release.py` to build and stage a review artifact
+without tests or deployment. See [API deployment](API_DEPLOYMENT.md) for configuration
+validation, credential migration, hosting and outstanding production prerequisites.
 
 Nothing is deployed by this step. Choose the hosting environment before creating
 its deployment configuration. The current host requires ASP.NET Web API 2/.NET

@@ -9,9 +9,9 @@ using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace Prosto_ERP_API.Notifications
 {
-    internal static class BrandEmailSender
+    public static class BrandEmailSender
     {
-        internal static async Task SendGmail(MailMessage mail, NetworkCredential credentials)
+        public static async Task SendGmail(MailMessage mail, NetworkCredential credentials)
         {
             using (var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
             using (var message = MimeMessage.CreateFromMailMessage(mail))

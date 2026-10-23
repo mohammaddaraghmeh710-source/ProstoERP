@@ -1,10 +1,12 @@
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Principal;
 using System.Text;
+using System.Threading;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+
 namespace Prosto_ERP_API.Authentication
 {
     public class AuthenticationAttribute : AuthorizationFilterAttribute
@@ -13,15 +15,25 @@ namespace Prosto_ERP_API.Authentication
         {
             try
             {
-                var header=context.Request.Headers.Authorization;
-                if(header==null) { context.Response=context.Request.CreateResponse(HttpStatusCode.Unauthorized); return; }
-                var pair=Encoding.UTF8.GetString(Convert.FromBase64String(header.Parameter)).Split(':');
-                if(pair.Length<2 || pair[0]!="REPLACE_WITH_LOCAL_USERNAME" || pair[1]!="REPLACE_WITH_LOCAL_SECRET")
-                    context.Response=context.Request.CreateResponse(HttpStatusCode.Unauthorized);
+                var header = context.Request.Headers.Authorization;
+                if (header == null)
+                {
+                    context.Response = context.Request.CreateResponse(HttpStatusCode.Unauthorized);
+                    return;
+                }
+
+                var pair = Encoding.UTF8.GetString(Convert.FromBase64String(header.Parameter)).Split(':');
+                if (pair.Length < 2 || pair[0] != IntegrationCredentials.Username || pair[1] != IntegrationCredentials.Password)
+                    context.Response = context.Request.CreateResponse(HttpStatusCode.Unauthorized);
                 else
-                    System.Threading.Thread.CurrentPrincipal=new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity(pair[0]),null);
+                    Thread.CurrentPrincipal =
+                        new GenericPrincipal(
+                            new GenericIdentity(pair[0]), null);
             }
-            catch(FormatException) { context.Response=context.Request.CreateResponse(HttpStatusCode.Unauthorized); }
+            catch (FormatException)
+            {
+                context.Response = context.Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
         }
     }
 }

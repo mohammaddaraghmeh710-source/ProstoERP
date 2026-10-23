@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -17,15 +17,15 @@ using System.Xml.Linq;
 
 namespace Prosto_ERP_API.Mobile
 {
-    internal sealed class CorrespondenceFiles : IDisposable
+    internal sealed class CorrespondenceFiles : ProstoERP.Application.Abstractions.IMobileUpload
     {
         internal const int MaxBytes = 10 * 1024 * 1024;
         private const int MaxBody = 51 * 1024 * 1024;
         private readonly List<Part> files = new List<Part>();
         private readonly List<string> paths = new List<string>();
-        internal string Data;
-        internal bool PreserveFiles;
-        internal string Xml { get; private set; }
+        public string Data { get; set; }
+        public bool PreserveFiles { get; set; }
+        public string Xml { get; private set; }
 
         internal static string Root
         {
@@ -84,18 +84,18 @@ namespace Prosto_ERP_API.Mobile
                         if (known != null) throw known;
                     }
 
-                    if (ex is IOException || ex is HttpRequestException) throw FeedbackController.Invalid();
+                    if (ex is IOException || ex is HttpRequestException) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
                     throw;
                 }
 
                 foreach (var content in provider.Contents)
                 {
                     var header = content.Headers.ContentDisposition;
-                    if (header == null || header.DispositionType != "form-data") throw FeedbackController.Invalid();
+                    if (header == null || header.DispositionType != "form-data") throw ProstoERP.Application.Validation.MobileValidation.Invalid();
                     var key = (header.Name ?? "").Trim('"');
                     if (key == "data" && header.FileName == null && header.FileNameStar == null)
                     {
-                        if (result.Data != null) throw FeedbackController.Invalid();
+                        if (result.Data != null) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
                         var bytes = await content.ReadAsByteArrayAsync();
                         if (bytes.Length > 65536) throw TooLarge();
                         result.Data = new UTF8Encoding(false, true).GetString(bytes);
@@ -114,11 +114,11 @@ namespace Prosto_ERP_API.Mobile
                     }
                     else
                     {
-                        throw FeedbackController.Invalid();
+                        throw ProstoERP.Application.Validation.MobileValidation.Invalid();
                     }
                 }
 
-                if (result.Data == null) throw FeedbackController.Invalid();
+                if (result.Data == null) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
                 return result;
             }
             finally
@@ -127,7 +127,7 @@ namespace Prosto_ERP_API.Mobile
             }
         }
 
-        internal byte[] Hash(string model)
+        public byte[] Hash(string model)
         {
             using (var sha = SHA256.Create())
             {
@@ -145,7 +145,7 @@ namespace Prosto_ERP_API.Mobile
             }
         }
 
-        internal void Prepare()
+        public void Prepare()
         {
             var xml = new XElement("files");
             // Validate every attachment before persisting any of them.

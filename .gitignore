@@ -34,7 +34,6 @@ packages/
 /database/migrations/Email_Notification/README.md
 /database/migrations/Password_Reset/README.md
 /database/migrations/Mobile_API/Transport.IntegrationTests.cs
-/src/ProstoERP.Api/Shared/Authentication/AuthenticationAttribute.cs
 /database/migrations/BioTime/BioTime.IntegrationTests.cs
 /src/ProstoERP.Infrastructure/My Project/Settings.settings
 /src/Portal/App_Data/

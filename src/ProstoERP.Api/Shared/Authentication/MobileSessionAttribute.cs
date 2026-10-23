@@ -36,16 +36,13 @@ namespace Prosto_ERP_API.Mobile
 
             try
             {
-                var result = MobileApiSupport.Query("dbo.MobileApi_Authenticate",
-                    MobileApiSupport.P("@TokenHash", SqlDbType.Binary, hash, 32),
-                    MobileApiSupport.P("@IdleMinutes", SqlDbType.Int, MobileApiSupport.IdleMinutes));
-                if (result.Tables.Count == 0 || result.Tables[0].Rows.Count == 0)
+                var session = Prosto_ERP_API.Composition.MobileBackend.Current.SessionAuthentication.Employee(hash);
+                if (session == null)
                 {
                     Unauthorized(context);
                     return;
                 }
 
-                var session = result.Tables[0].Rows[0];
                 var identity = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.NameIdentifier,
@@ -55,7 +52,7 @@ namespace Prosto_ERP_API.Mobile
                 context.RequestContext.Principal = principal;
                 Thread.CurrentPrincipal = principal;
                 if (HttpContext.Current != null) HttpContext.Current.User = principal;
-                context.Request.Properties["MobileSession"] = MobileApiSupport.Row(session);
+                context.Request.Properties["MobileSession"] = session;
                 context.Request.Properties["MobileTokenHash"] = hash;
             }
             catch (Exception ex)

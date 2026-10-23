@@ -1,3 +1,4 @@
+using ProstoERP.Contracts.Features.PasswordReset;
 using System;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -15,17 +16,20 @@ using Prosto_ERP_ClassLibrary;
 
 namespace Prosto_ERP_API.Mobile
 {
-    public sealed class PasswordResetService
+    public sealed class PasswordResetService : ProstoERP.Application.Features.PasswordReset.IPasswordResetService
     {
         private readonly AttendanceIntegration db;
+        private readonly ProstoERP.Application.Abstractions.IMobileTokenService tokens;
         private readonly Func<MailMessage, NetworkCredential, Task> sender;
 
         public PasswordResetService(AttendanceIntegration store = null,
-            Func<MailMessage, NetworkCredential, Task> send = null)
+            Func<MailMessage, NetworkCredential, Task> send = null,
+            ProstoERP.Application.Abstractions.IMobileTokenService tokens = null)
         {
             db = store ?? new AttendanceIntegration(ConfigurationManager
                 .ConnectionStrings["Prosto_ERP_ConnectionConnection"].ConnectionString);
             sender = send ?? BrandEmailSender.SendGmail;
+            this.tokens = tokens ?? new ProstoERP.Infrastructure.Mobile.Security.MobileTokenService();
         }
 
         private static SqlParameter P(string name, object value)
@@ -102,7 +106,7 @@ namespace Prosto_ERP_API.Mobile
                 }
 
                 db.Query("dbo.PasswordReset_Delivery", P("@ID", id), P("@Sent", true));
-                return new
+                return new ResetChallengeResponse
                 {
                     ChallengeID = id, MaskedEmail = Mask(email), ExpiresInSeconds = 600, ResendAfterSeconds = 60
                 };
@@ -124,17 +128,17 @@ namespace Prosto_ERP_API.Mobile
 
         public object Verify(Guid id, string code)
         {
-            var token = MobileApiSupport.NewToken();
+            var token = tokens.NewToken();
             db.Query("dbo.PasswordReset_Verify", P("@ID", id), P("@OtpHash", Hash(id.ToString("D") + ":" + code)),
-                P("@ResetHash", MobileApiSupport.TokenHash(token)));
-            return new { ResetToken = token, ExpiresInSeconds = 600 };
+                P("@ResetHash", tokens.TokenHash(token)));
+            return new ResetVerificationResponse { ResetToken = token, ExpiresInSeconds = 600 };
         }
 
         public object Complete(string token, string password)
         {
-            db.Query("dbo.PasswordReset_Complete", P("@ResetHash", MobileApiSupport.TokenHash(token)),
+            db.Query("dbo.PasswordReset_Complete", P("@ResetHash", tokens.TokenHash(token)),
                 P("@EncryptedPassword", new TripleDesEncryptor().Encrypt(password)));
-            return new { PasswordChanged = true };
+            return new ResetCompletionResponse { PasswordChanged = true };
         }
 
         private static bool BareEmail(string value)

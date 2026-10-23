@@ -9,7 +9,6 @@ def main():
     templates = (
         "src/Portal/Web.config",
         "src/ProstoERP.Api/Web.config",
-        "src/ProstoERP.Api/Shared/Authentication/AuthenticationAttribute.cs",
         "src/ProstoERP.Infrastructure/app.config",
         "src/ProstoERP.Infrastructure/My Project/Settings.Designer.vb",
         "src/ProstoERP.Infrastructure/My Project/Settings.settings",

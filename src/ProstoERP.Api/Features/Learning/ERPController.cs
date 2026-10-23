@@ -10,7 +10,7 @@ namespace Prosto_ERP_API.Controllers
 {
     public class ERPController : ApiController
     {
-        private readonly TrainingCatalogService catalog = new TrainingCatalogService();
+        private readonly TrainingCatalogService catalog = Prosto_ERP_API.Composition.MobileBackend.Current.TrainingCatalog;
 
         [HttpPost]
         [Route("api/ERPController/GetVideosStatus")]

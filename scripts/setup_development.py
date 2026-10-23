@@ -86,6 +86,9 @@ def configure():
         if name.endswith("Web.config"):
             app_setting(tree, "LocalDevelopment.Enabled", "true")
             app_setting(tree, "LocalDevelopment.EncryptionKey", values["encryption_key"])
+            if name.startswith("src/ProstoERP.Api/"):
+                app_setting(tree, "Integration.BasicUsername", values["basic_username"])
+                app_setting(tree, "Integration.BasicPassword", values["basic_password"])
             if name.startswith("src/Portal/"):
                 app_setting(tree, "PasswordReset.ApiBaseUrl", "http://127.0.0.1:3001/")
                 app_setting(tree, "PasswordReset.BasicUsername", values["basic_username"])
@@ -116,19 +119,7 @@ def configure():
                     app_setting(tree, key, str(directory))
                 app_setting(tree, "CustomerApi.PortalRoot", str(ROOT / "src/Portal"))
         save_xml(tree, path)
-    # The legacy template compiles fixed credentials into this ignored local source.
-    path = ROOT / "src/ProstoERP.Api/Shared/Authentication/AuthenticationAttribute.cs"
-    template = Path(str(path) + ".example").read_text()
-    if path.exists() and path.read_text() not in (template, template.replace("REPLACE_WITH_LOCAL_USERNAME",
-                                                                             values["basic_username"]).replace(
-        "REPLACE_WITH_LOCAL_SECRET", values["basic_password"])):
-        raise RuntimeError("Refusing to replace custom integration authentication source.")
-    source = template.replace("REPLACE_WITH_LOCAL_USERNAME", values["basic_username"]).replace(
-        "REPLACE_WITH_LOCAL_SECRET", values["basic_password"])
-    if not path.exists() or path.read_text() != source:
-        path.write_text(source)
-    if stat.S_IMODE(path.stat().st_mode) != 0o600:
-        path.chmod(0o600)
+    # Integration authentication now reads the ignored API Web.config settings.
     for folder in ("src/Portal/Uploads", "src/Portal/FileManager", "src/Portal/App_Data"):
         (ROOT / folder).mkdir(parents=True, exist_ok=True)
     config = ET.ElementTree(ET.Element("configuration"))

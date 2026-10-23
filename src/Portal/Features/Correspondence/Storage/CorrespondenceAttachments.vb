@@ -71,7 +71,7 @@ Public NotInheritable Class CorrespondenceAttachments
                     If CLng(source.Width)*source.Height > 20000000 Then _
                         Throw New ArgumentException("أبعاد الصورة كبيرة جدًا.")
                     Using clean As New Bitmap(source.Width, source.Height)
-                        Using graphics = Graphics.FromImage(clean)
+                        Using graphics = System.Drawing.Graphics.FromImage(clean)
                             graphics.DrawImage(source, 0, 0, source.Width, source.Height)
                         End Using
                         Using output As New MemoryStream()

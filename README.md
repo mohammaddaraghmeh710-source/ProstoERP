@@ -10,7 +10,9 @@ Page URLs and legacy assembly names remain unchanged.
 
 For mobile backend development, see [Mobile backend foundation](docs/MOBILE_BACKEND.md)
 for the shared contracts, response handler, empty-value JSON policy, contract
-export command, and preparation for later deployment.
+export command, and preparation for later deployment. See [Mobile architecture](docs/MOBILE_ARCHITECTURE.md)
+for the six cleanup areas and [API deployment](docs/API_DEPLOYMENT.md) for the
+Release staging command.
 
 ## Fresh local development on macOS
 

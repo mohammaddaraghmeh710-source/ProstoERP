@@ -1,0 +1,83 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
+    <ProjectGuid>{72F91163-1F49-4B75-96D4-DB5F67AA9BF1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ProstoERP.Infrastructure.Mobile</RootNamespace>
+    <AssemblyName>ProstoERP.Infrastructure.Mobile</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <DebugSymbols Condition="'$(Configuration)' == 'Debug'">true</DebugSymbols>
+    <DebugType Condition="'$(Configuration)' == 'Debug'">full</DebugType>
+    <Optimize Condition="'$(Configuration)' == 'Release'">true</Optimize>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Configuration" />
+    <ProjectReference Include="..\ProstoERP.Application\ProstoERP.Application.csproj">
+      <Project>{228991F9-72E4-44D5-A24B-F9B1F393D799}</Project>
+      <Name>ProstoERP.Application</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProstoERP.Contracts\ProstoERP.Contracts.csproj">
+      <Project>{8C0D0D70-C871-4FA4-AEB4-19959A2D08C8}</Project>
+      <Name>ProstoERP.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProstoERP.Infrastructure\ProstoERP.Infrastructure.vbproj">
+      <Project>{C33ABBC1-22E8-44BE-979A-D4795CC9DA62}</Project>
+      <Name>ProstoERP.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Encryptor\Encryptor.csproj">
+      <Project>{1387F685-0253-4CC1-A819-5789DB36626C}</Project>
+      <Name>Encryptor</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="..\..\build\MonoFramework.props" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="Configuration\MobileOptions.cs" />
+    <Compile Include="Security\MobileTokenService.cs" />
+    <Compile Include="Security\PasswordCipher.cs" />
+    <Compile Include="Storage\AssetUrlBuilder.cs" />
+    <Compile Include="Data\MobileDataSessionFactory.cs" />
+    <Compile Include="Data\MobileDataSession.cs" />
+    <Compile Include="Data\MobileQueryStore.cs" />
+    <Compile Include="Features\Learning\TrainingCatalogStore.cs" />
+    <Compile Include="Features\EmployeeAccess\EmployeeAccessStore.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\Circulars\CircularStore.cs" />
+    <Compile Include="Features\EmployeeAccess\MobileContentStore.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Data\MobileStatements.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MailKit">
+      <HintPath>..\..\packages\MailKit.4.17.0\lib\net48\MailKit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MimeKit">
+      <HintPath>..\..\packages\MimeKit.4.17.0\lib\net48\MimeKit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\CustomerPortal\CustomerPortalStatements.cs" />
+    <Compile Include="Features\CustomerFeedback\CustomerFeedbackStatements.cs" />
+    <Compile Include="Features\Feedback\FeedbackStatements.cs" />
+    <Compile Include="Features\PasswordReset\PasswordResetService.cs" />
+    <Compile Include="Features\EmailNotifications\BrandEmailSender.cs" />
+    <Compile Include="Features\Correspondence\CorrespondenceStatements.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\SqlParameters.cs" />
+    <Compile Include="Features\EmployeeAccess\SessionAuthenticationStore.cs" />
+  </ItemGroup>
+</Project>

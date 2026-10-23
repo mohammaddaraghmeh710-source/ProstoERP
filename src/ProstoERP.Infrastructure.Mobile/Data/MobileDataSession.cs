@@ -1,19 +1,18 @@
 using System;
-using System.Configuration;
+using ProstoERP.Application.Abstractions;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace Prosto_ERP_API.Mobile
+namespace ProstoERP.Infrastructure.Mobile.Data
 {
-    internal sealed class FeedbackDb : IDisposable
+    public sealed class MobileDataSession : IMobileDataSession
     {
         private readonly SqlConnection connection;
         private SqlTransaction transaction;
 
-        internal FeedbackDb()
+        public MobileDataSession(string connectionString)
         {
-            connection = new SqlConnection(ConfigurationManager.ConnectionStrings["Prosto_ERP_ConnectionConnection"]
-                .ConnectionString);
+            connection = new SqlConnection(connectionString);
             connection.Open();
         }
 
@@ -23,19 +22,19 @@ namespace Prosto_ERP_API.Mobile
             connection.Dispose();
         }
 
-        internal void Begin()
+        public void Begin()
         {
             transaction = connection.BeginTransaction();
         }
 
-        internal void Commit()
+        public void Commit()
         {
             transaction.Commit();
             transaction.Dispose();
             transaction = null;
         }
 
-        internal bool RollbackConfirmed()
+        public bool RollbackConfirmed()
         {
             try
             {
@@ -49,14 +48,10 @@ namespace Prosto_ERP_API.Mobile
             }
         }
 
-        internal DataSet Proc(string name, params object[] parameters)
+        public DataSet Execute(ProstoERP.Application.Data.MobileStatement statement, params object[] parameters)
         {
-            return Query(name, CommandType.StoredProcedure, parameters);
-        }
-
-        internal DataSet Text(string sql, params object[] parameters)
-        {
-            return Query(sql, CommandType.Text, parameters);
+            var definition = MobileStatements.Get(statement);
+            return Query(definition.Text, definition.Type, parameters);
         }
 
         private DataSet Query(string sql, CommandType type, object[] parameters)

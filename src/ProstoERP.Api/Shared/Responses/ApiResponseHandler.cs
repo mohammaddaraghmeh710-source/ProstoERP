@@ -7,6 +7,11 @@ namespace Prosto_ERP_API.Responses
 {
     public static class ApiResponseHandler
     {
+        public static HttpResponseMessage Body(HttpRequestMessage request, object body)
+        {
+            return NoCache(request.CreateResponse(HttpStatusCode.OK, body));
+        }
+
         public static HttpResponseMessage Success<T>(HttpRequestMessage request, T data)
         {
             return NoCache(request.CreateResponse(HttpStatusCode.OK, BaseResponse<T>.Ok(data)));

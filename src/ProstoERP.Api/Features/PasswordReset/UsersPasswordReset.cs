@@ -1,3 +1,5 @@
+using ProstoERP.Contracts.Features.PasswordReset;
+using System.Web.Http.Description;
 using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -17,25 +19,22 @@ namespace Prosto_ERP_API.Mobile
 {
     public sealed partial class UsersController
     {
-        private readonly PasswordResetService resetService;
+        private readonly ProstoERP.Application.Features.PasswordReset.IPasswordResetService resetService;
 
-        public UsersController()
-        {
-        }
-
-        public UsersController(PasswordResetService service)
+        public UsersController(PasswordResetService service) : this(Prosto_ERP_API.Composition.MobileBackend.Current.EmployeeAccess)
         {
             resetService = service;
         }
 
-        private PasswordResetService ResetService()
+        private ProstoERP.Application.Features.PasswordReset.IPasswordResetService ResetService()
         {
-            return resetService ?? new PasswordResetService();
+            return resetService ?? Prosto_ERP_API.Composition.MobileBackend.Current.CreatePasswordReset();
         }
 
         [HttpPost]
         [Route("RequestPasswordReset")]
         [IntegrationBasicAuthentication]
+        [ResponseType(typeof(PasswordResetResponse<ResetChallengeResponse>))]
         public Task<HttpResponseMessage> RequestPasswordReset(ResetRequest model)
         {
             if (model == null || !ModelState.IsValid || model.HasExtra)
@@ -50,6 +49,7 @@ namespace Prosto_ERP_API.Mobile
         [HttpPost]
         [Route("VerifyPasswordResetOTP")]
         [IntegrationBasicAuthentication]
+        [ResponseType(typeof(PasswordResetResponse<ResetVerificationResponse>))]
         public Task<HttpResponseMessage> VerifyPasswordResetOTP(VerifyResetRequest model)
         {
             if (model == null || !ModelState.IsValid || model.HasExtra || model.ChallengeID == Guid.Empty)
@@ -62,6 +62,7 @@ namespace Prosto_ERP_API.Mobile
         [HttpPost]
         [Route("ResetPassword")]
         [IntegrationBasicAuthentication]
+        [ResponseType(typeof(PasswordResetResponse<ResetCompletionResponse>))]
         public Task<HttpResponseMessage> ResetPassword(CompleteResetRequest model)
         {
             if (model == null || !ModelState.IsValid || model.HasExtra ||
@@ -74,80 +75,12 @@ namespace Prosto_ERP_API.Mobile
 
         private HttpResponseMessage ResetError(HttpStatusCode status, string code, string message)
         {
-            var response = MobileApiSupport.Error(Request, status, code, message);
-            response.Headers.WwwAuthenticate.Clear();
-            return response;
+            return Prosto_ERP_API.Responses.MobileErrorHandler.PasswordResetError(Request, status, code, message);
         }
 
-        private async Task<HttpResponseMessage> ResetAction(Func<Task<object>> action, string message)
+        private Task<HttpResponseMessage> ResetAction(Func<Task<object>> action, string message)
         {
-            try
-            {
-                return Success(new { Success = true, Data = await action(), Message = message });
-            }
-            catch (ResetException ex)
-            {
-                return ResetError(ex.Status, ex.Code, ex.Message);
-            }
-            catch (SqlException ex) when (ex.Number >= 51900 && ex.Number <= 51903)
-            {
-                var codes = new[] { "RESET_RATE_LIMITED", "OTP_UNAVAILABLE", "OTP_INVALID", "RESET_TOKEN_INVALID" };
-                var messages = new[]
-                {
-                    "انتظر دقيقة بين الطلبات؛ الحد الأقصى 5 طلبات في الساعة.",
-                    "انتهت صلاحية الرمز أو تم استخدامه أو تجاوز عدد المحاولات. اطلب رمزًا جديدًا.",
-                    "رمز التحقق غير صحيح. لديك 5 محاولات كحد أقصى.",
-                    "تصريح تغيير كلمة المرور غير صالح أو منتهي. ابدأ الاستعادة مجددًا."
-                };
-                return ResetError(ex.Number == 51900 ? (HttpStatusCode)429 : HttpStatusCode.BadRequest,
-                    codes[ex.Number - 51900], messages[ex.Number - 51900]);
-            }
-            catch (OperationCanceledException)
-            {
-                return ResetError(HttpStatusCode.GatewayTimeout, "SMTP_TIMEOUT",
-                    "انتهت مهلة الإرسال. تحقق من بريدك قبل إعادة المحاولة.");
-            }
-            catch (TimeoutException)
-            {
-                return ResetError(HttpStatusCode.GatewayTimeout, "SMTP_TIMEOUT",
-                    "انتهت مهلة الإرسال. أعد المحاولة بعد دقيقة.");
-            }
-            catch (AuthenticationException)
-            {
-                return ResetError(HttpStatusCode.BadGateway, "SMTP_AUTH_FAILED",
-                    "تعذّر تسجيل الدخول إلى بريد العلامة التجارية. يرجى التواصل مع مدير النظام.");
-            }
-            catch (SslHandshakeException)
-            {
-                return ResetError(HttpStatusCode.BadGateway, "SMTP_TLS_FAILED", "تعذّر الاتصال الآمن بخدمة البريد.");
-            }
-            catch (SmtpCommandException)
-            {
-                return ResetError(HttpStatusCode.BadGateway, "SMTP_SEND_FAILED",
-                    "رفض خادم البريد إرسال رمز التحقق. يرجى التواصل مع مدير النظام.");
-            }
-            catch (SmtpProtocolException)
-            {
-                return ResetError(HttpStatusCode.BadGateway, "SMTP_SEND_FAILED", "انقطع اتصال خدمة البريد.");
-            }
-            catch (IOException)
-            {
-                return ResetError(HttpStatusCode.BadGateway, "SMTP_CONNECTION_FAILED", "تعذّر الاتصال بخدمة البريد.");
-            }
-            catch (SocketException)
-            {
-                return ResetError(HttpStatusCode.BadGateway, "SMTP_CONNECTION_FAILED", "تعذّر الاتصال بخدمة البريد.");
-            }
-            catch (SmtpException)
-            {
-                return ResetError(HttpStatusCode.BadGateway, "SMTP_SEND_FAILED", "تعذّر إرسال رمز التحقق عبر البريد.");
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("Password reset failed ({0}).", ex.GetType().Name);
-                return ResetError(HttpStatusCode.ServiceUnavailable, "RESET_SERVICE_UNAVAILABLE",
-                    "خدمة استعادة كلمة المرور غير متاحة حاليًا. يرجى التواصل مع مدير النظام.");
-            }
+            return Prosto_ERP_API.Responses.MobileErrorHandler.PasswordReset(Request, action, message);
         }
     }
 }

@@ -29,8 +29,7 @@ namespace Prosto_ERP_API.Mobile
             {
                 var rows = hash == null
                     ? new List<Dictionary<string, object>>()
-                    : CustomerPortalController.Rows(MobileApiSupport.Query("dbo.CustomerApi_Authenticate",
-                        MobileApiSupport.P("@TokenHash", SqlDbType.Binary, hash, 32)));
+                    : Prosto_ERP_API.Composition.MobileBackend.Current.SessionAuthentication.Customer(hash);
                 if (rows.Count == 0)
                 {
                     context.Response = MobileApiSupport.Error(context.Request, HttpStatusCode.Unauthorized,

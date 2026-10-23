@@ -11,6 +11,7 @@ src/
   ProstoERP.Application/
   ProstoERP.Contracts/
   ProstoERP.Infrastructure/
+  ProstoERP.Infrastructure.Mobile/
   Encryptor/
 orchestration/
   ProstoERP.AppHost/
@@ -29,8 +30,11 @@ docs/
 LINQ-to-SQL mappings and attendance integration. It continues to produce
 `Prosto_ERP_ClassLibrary.dll`, and the API continues to produce `Prosto_ERP_API.dll`.
 Preserving these identities avoids changing the existing configuration and types.
-The new `ProstoERP.Application` project targets .NET Framework 4.7.2 and references
-Infrastructure; the Web API references Application.
+`ProstoERP.Application` targets .NET Framework 4.7.2 and references Contracts.
+The C# `ProstoERP.Infrastructure.Mobile` adapter targets .NET Framework 4.8 and
+implements Application ports using the legacy VB model where needed. The API
+composition root wires these dependencies. Application has no Infrastructure or
+ASP.NET reference. See [mobile architecture](MOBILE_ARCHITECTURE.md).
 
 The Unit and Integration directories contain placeholders only. Existing feature
 verification tools are retained beside their feature migrations, with relative
@@ -39,6 +43,7 @@ paths adjusted for the new layout. No test projects or new tests are introduced.
 | Solution folder                   | Contents                                                                          |
 |-----------------------------------|-----------------------------------------------------------------------------------|
 | src                               | Portal, ProstoERP.Api, ProstoERP.Application, ProstoERP.Infrastructure, Encryptor |
+| src / ProstoERP.Infrastructure.Mobile | Mobile SQL, settings, security and SMTP adapters |
 | src / ProstoERP.Contracts         | Shared mobile request DTOs and common response contracts                          |
 | orchestration / ProstoERP.AppHost | Separate .NET 10 AppHost source and launch settings                               |
 | database / migrations             | Existing feature SQL scripts and associated documentation                         |
@@ -62,6 +67,10 @@ See the root README for setup, credentials, local database limitations, and
 the **Local ERP** alternative.
 
 ## Where changes belong
+
+Mobile workflows live in Application, SQL and external integrations in Infrastructure.Mobile,
+and DTOs in Contracts. See [mobile architecture](MOBILE_ARCHITECTURE.md) and
+[deployment preparation](API_DEPLOYMENT.md) for the current mobile boundaries.
 
 - WebForms pages remain under `src/Portal/Modules` or `src/Portal/CustomerPortal`.
   Moving pages changes their URLs and must be treated as a functional change.

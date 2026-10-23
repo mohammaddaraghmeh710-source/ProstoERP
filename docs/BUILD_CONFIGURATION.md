@@ -114,3 +114,11 @@ database scripts, and existing verification tools.
 The full Framework solution builds successfully in Debug. The existing
 `ActiveDirectorySearcher.vb` warning about `ADUsers` remains. No tests were added
 or run.
+
+## Mobile backend cleanup
+
+The later mobile refactor adds the C# Infrastructure.Mobile adapter and inverts
+Application dependencies. Its current boundaries and release build instructions
+are in [Mobile architecture](MOBILE_ARCHITECTURE.md) and [API deployment](API_DEPLOYMENT.md).
+The earlier byte-identical item snapshots above describe the content-manifest
+extraction, not the subsequent mobile source/project changes.
