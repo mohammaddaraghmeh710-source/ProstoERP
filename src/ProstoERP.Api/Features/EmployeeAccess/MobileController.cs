@@ -34,6 +34,7 @@ namespace Prosto_ERP_API.Mobile
         [HttpPost]
         [Route("v1/devices/status")]
         [ResponseType(typeof(BaseResponse<DeviceAccessResponse>))]
+        [Obsolete("Use email-verified registration.")]
         public HttpResponseMessage DeviceStatus([FromBody] MobileLoginRequest model)
         {
             return DeviceAccess(model, false);
@@ -41,10 +42,7 @@ namespace Prosto_ERP_API.Mobile
 
         private HttpResponseMessage DeviceAccess(MobileLoginRequest model, bool submit)
         {
-            if (model == null || !ModelState.IsValid || !model.NormalizeAndValidate())
-                return MobileApiSupport.Error(Request, HttpStatusCode.BadRequest, "INVALID_REQUEST",
-                    "بيانات الدخول والجهاز وإصدار التطبيق مطلوبة.");
-            return Execute(() => ApiResponseHandler.Success(Request, employeeAccess.DeviceAccess(model, submit)));
+            return MobileApiSupport.Error(Request, HttpStatusCode.Gone, "OTP_REGISTRATION_REQUIRED", "Use /api/v1/auth/register and /verify-otp to activate one device.");
         }
 
         [HttpPost]

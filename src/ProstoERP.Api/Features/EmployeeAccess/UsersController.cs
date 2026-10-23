@@ -36,25 +36,25 @@ namespace Prosto_ERP_API.Mobile
             if (model == null || !ModelState.IsValid || !model.NormalizeAndValidate())
                 return MobileApiSupport.Error(Request, HttpStatusCode.BadRequest, "INVALID_REQUEST",
                     "Username, Password, AppVersion and valid Device information are required.");
-            return Execute(() => ApiResponseHandler.Success(Request, employeeAccess.Login(model)));
+            return Prosto_ERP_API.Features.Authentication.AuthenticationResponses.Execute(Request,
+                () => Composition.MobileBackend.Current.CreateAuthentication(employeeAccess).Login(model, System.Web.HttpContext.Current == null ? "unknown" : System.Web.HttpContext.Current.Request.UserHostAddress));
         }
 
         [HttpPost]
         [Route("LoginViaBIO")]
         [IntegrationBasicAuthentication]
         [ResponseType(typeof(BaseResponse<EmployeeLoginResponse>))]
+        [Obsolete("Use the signed biometric challenge flow.")]
         public HttpResponseMessage LoginViaBIO([FromBody] BioLoginRequest model)
         {
-            if (model == null || !ModelState.IsValid || (model.Extra != null && model.Extra.Count != 0) ||
-                MobileApiSupport.TokenHash(model.BIOID) == null)
-                return MobileApiSupport.Error(Request, HttpStatusCode.BadRequest, "INVALID_BIOID_FORMAT",
-                    "يجب إرسال BIOID صالح فقط في جسم الطلب.");
-            return Execute(() => ApiResponseHandler.Success(Request, employeeAccess.LoginViaBio(model)));
+            return MobileApiSupport.Error(Request, HttpStatusCode.Gone, "BIOMETRIC_CHALLENGE_REQUIRED",
+                "Static BIOID login has been retired. Use /api/v1/auth/biometric/challenge and /biometric/login.");
         }
 
         [HttpPost]
         [Route("AddNewDevices")]
         [ResponseType(typeof(BaseResponse<DeviceAccessResponse>))]
+        [Obsolete("Use email-verified registration.")]
         public HttpResponseMessage Add_New_Devices([FromBody] MobileLoginRequest model)
         {
             return DeviceAccess(model, true);
@@ -62,12 +62,8 @@ namespace Prosto_ERP_API.Mobile
 
         private HttpResponseMessage DeviceAccess(MobileLoginRequest model, bool submit)
         {
-            if (model == null || !ModelState.IsValid || !model.NormalizeAndValidate())
-                return MobileApiSupport.Error(Request, HttpStatusCode.BadRequest, "INVALID_REQUEST",
-                    "بيانات الدخول والجهاز وإصدار التطبيق مطلوبة.");
-            return Execute(() => ApiResponseHandler.Success(Request, employeeAccess.DeviceAccess(model, submit)));
+            return MobileApiSupport.Error(Request, HttpStatusCode.Gone, "OTP_REGISTRATION_REQUIRED", "Use /api/v1/auth/register and /verify-otp to activate one device.");
         }
-
 
 
         private HttpResponseMessage Execute(Func<HttpResponseMessage> action)

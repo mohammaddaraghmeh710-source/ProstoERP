@@ -1,11 +1,10 @@
 using System;
 using System.Data;
-using ProstoERP.Application.Data;
 
-namespace ProstoERP.Application.Abstractions
+namespace ProstoERP.Infrastructure.Mobile.Data
 {
     // One instance owns one connection and its transaction. Never share it between requests.
-    public interface IMobileDataSession : IDisposable
+    internal interface IMobileDataSession : IDisposable
     {
         void Begin();
         void Commit();
@@ -13,7 +12,7 @@ namespace ProstoERP.Application.Abstractions
         DataSet Execute(MobileStatement statement, params object[] parameters);
     }
 
-    public interface IMobileDataSessionFactory
+    internal interface IMobileDataSessionFactory
     {
         IMobileDataSession Open();
     }

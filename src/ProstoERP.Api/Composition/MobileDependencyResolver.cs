@@ -17,6 +17,8 @@ namespace Prosto_ERP_API.Composition
         }
         public object GetService(Type serviceType)
         {
+            if (serviceType == typeof(Prosto_ERP_API.Features.Authentication.AuthenticationController))
+                return new Prosto_ERP_API.Features.Authentication.AuthenticationController(MobileBackend.Current.CreateAuthentication());
             if (serviceType == typeof(UsersController))
                 return new UsersController(MobileBackend.Current.EmployeeAccess);
             if (serviceType == typeof(MobileController))

@@ -5,7 +5,7 @@ using ProstoERP.Contracts.Common;
 using ProstoERP.Contracts.Features.Feedback;
 using ProstoERP.Contracts.Features.CustomerFeedback;
 using ProstoERP.Contracts.Features.CustomerPortal;
-using FeedbackDb = ProstoERP.Application.Abstractions.IMobileDataSession;
+using FeatureStore = ProstoERP.Application.Features.Feedback.IFeedbackStore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -26,10 +26,10 @@ namespace ProstoERP.Application.Features.Feedback
 {
     public sealed class FeedbackService
     {
-        private readonly IMobileDataSessionFactory sessions;
+        private readonly IFeedbackStoreFactory sessions;
         private readonly IMobileWorkflowContext context;
         private readonly IMobileFiles files;
-        public FeedbackService(IMobileDataSessionFactory sessions, IMobileWorkflowContext context, IMobileFiles files)
+        public FeedbackService(IFeedbackStoreFactory sessions, IMobileWorkflowContext context, IMobileFiles files)
         {
             this.sessions = sessions;
             this.context = context;
@@ -53,9 +53,9 @@ namespace ProstoERP.Application.Features.Feedback
                 {
                     return Success(new FeedbackOptionsResponse
                     {
-                        Types = Rows(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackTypes, "Actor", Actor)),
+                        Types = Rows(db.SelectEmployeeFeedbackTypes("Actor", Actor)),
                         Topics =
-                            Rows(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackTopics, "Actor", Actor, "Type", type)),
+                            Rows(db.SelectEmployeeFeedbackTopics("Actor", Actor, "Type", type)),
                         Permissions = Permissions(db), RecipientTypes = Targets(db),
                         Statuses = new[]
                         {
@@ -83,9 +83,9 @@ namespace ProstoERP.Application.Features.Feedback
                     if (model.RequestID.HasValue) RequireCanAct(db, model.RequestID.Value, true);
                     else if (!Flag(Permissions(db), "CanSubmit")) throw Forbidden();
                     var recipients = Rows(model.RequestID.HasValue
-                        ? db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackTransferTargets, "Actor", Actor, "ID",
+                        ? db.SelectEmployeeFeedbackTransferTargets("Actor", Actor, "ID",
                             model.RequestID.Value, "Target", model.RecipientTypeID)
-                        : db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackRecipients, "Actor", Actor, "Target",
+                        : db.SelectEmployeeFeedbackRecipients("Actor", Actor, "Target",
                             model.RecipientTypeID));
                     var fallback = recipients.Any(r => Convert.ToBoolean(r["IsFallback"]));
                     return Success(new FeedbackRoutingResponse
@@ -110,7 +110,7 @@ namespace ProstoERP.Application.Features.Feedback
                     !new[] { "all", "sent", "active", "closed", "action" }.Contains(scope)) throw Invalid();
                 using (var db = Connect(employeeNumber))
                 {
-                    var result = db.Execute(MobileStatement.Feedback_MobileApiFeedbackRequests, "Actor", Actor, "Search", search ?? "",
+                    var result = db.MobileApiFeedbackRequests("Actor", Actor, "Search", search ?? "",
                         "Type", type, "Status", status, "Scope", scope, "Page", page, "PageSize", pageSize);
                     return Success(new CountedPage<Dictionary<string, object>, Dictionary<string, object>>
                     {
@@ -178,8 +178,7 @@ namespace ProstoERP.Application.Features.Feedback
                         if (action)
                         {
                             RequireAccess(db, id);
-                            var row = First(db.Execute(MobileStatement.Feedback_UploadEmployeeFeedbackRequests,
-                                "ID", id));
+                            var row = First(db.UploadEmployeeFeedbackRequests("ID", id));
                             if (Convert.ToInt32(row["Status"]) == 3 ||
                                 !((byte[])row["RowVersion"]).SequenceEqual(version))
                                 throw new FeedbackException(HttpStatusCode.Conflict, "REQUEST_CHANGED",
@@ -197,7 +196,7 @@ namespace ProstoERP.Application.Features.Feedback
                         {
                             var m = (FeedbackAction)model;
                             eventType = m.Action;
-                            db.Execute(MobileStatement.Feedback_UpdateEmployeeFeedbackAction, "Actor", Actor, "ID", id, "Version",
+                            db.UpdateEmployeeFeedbackAction("Actor", Actor, "ID", id, "Version",
                                 version,
                                 "Action", m.Action == "transfer" ? 2 : 3, "Comment", m.Comment, "Files", upload.Xml,
                                 "TargetType", m.RecipientTypeID);
@@ -206,7 +205,7 @@ namespace ProstoERP.Application.Features.Feedback
                         {
                             var m = (FeedbackCreate)model;
                             eventType = "submit";
-                            id = Convert.ToInt32(First(db.Execute(MobileStatement.Feedback_InsertEmployeeFeedbackRequest, "Actor",
+                            id = Convert.ToInt32(First(db.InsertEmployeeFeedbackRequest("Actor",
                                 Actor, "Type", m.TypeID,
                                 "Topic", m.TopicID, "Title", m.Title, "Details", m.Details, "Disclose",
                                 m.DiscloseIdentity, "Target", m.RecipientTypeID, "Files", upload.Xml))["ID"]);
@@ -255,20 +254,19 @@ namespace ProstoERP.Application.Features.Feedback
                     var replay = FindReplay(db, model, hash).HasValue;
                     if (!replay)
                     {
-                        db.Execute(MobileStatement.Feedback_UpdateEmployeeFeedbackRead, "Actor", Actor, "ID", id);
+                        db.UpdateEmployeeFeedbackRead("Actor", Actor, "ID", id);
                         Record(db, model, hash, id, "open");
                     }
 
-                    var details = First(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackRequest, "Actor", Actor, "ID", id));
-                    var type = First(db.Execute(MobileStatement.Feedback_OpenEmployeeFeedbackTypes,
-                        "Type", details["Type"]));
+                    var details = First(db.SelectEmployeeFeedbackRequest("Actor", Actor, "ID", id));
+                    var type = First(db.OpenEmployeeFeedbackTypes("Type", details["Type"]));
                     details["TypeName"] = type["Title_Ar"];
                     details["TypeNameEn"] = type["Title_En"];
                     details["StatusTitle"] = Convert.ToInt32(details["Status"]) == 3 ? "منتهي" :
                         Convert.ToInt32(details["Status"]) == 2 ? "قيد المعالجة" : "جديد";
                     var permissions = Permissions(db);
                     var canAct = Flag(details, "CanAct");
-                    var attachments = Rows(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackAttachments, "Actor", Actor,
+                    var attachments = Rows(db.SelectEmployeeFeedbackAttachments("Actor", Actor,
                         "ID", id));
                     foreach (var item in attachments)
                     {
@@ -277,7 +275,7 @@ namespace ProstoERP.Application.Features.Feedback
                         item["DownloadUrl"] = AttachmentUrl(Convert.ToInt32(item["ID"]), model.EmployeeNumber, true);
                     }
 
-                    var contact = First(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackContact, "Actor", Actor, "ID", id));
+                    var contact = First(db.SelectEmployeeFeedbackContact("Actor", Actor, "ID", id));
                     var recipientTypes = canAct && Flag(permissions, "CanTransfer")
                         ? Targets(db) : new List<Dictionary<string, object>>();
                     if (Convert.ToInt32(contact["SourceType"]) == 2)
@@ -300,7 +298,7 @@ namespace ProstoERP.Application.Features.Feedback
                         Contact = contact,
                         Attachments = attachments,
                         Workflow =
-                            Rows(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackWorkflow, "Actor", Actor, "ID", id)),
+                            Rows(db.SelectEmployeeFeedbackWorkflow("Actor", Actor, "ID", id)),
                         AllowedActions = actions,
                         RecipientTypes = recipientTypes,
                         Replayed = replay
@@ -317,7 +315,7 @@ namespace ProstoERP.Application.Features.Feedback
             {
                 using (var db = Connect(employeeNumber))
                 {
-                    var rows = Rows(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackDownload, "Actor", Actor, "File", id));
+                    var rows = Rows(db.SelectEmployeeFeedbackDownload("Actor", Actor, "File", id));
                     if (rows.Count != 1) throw NotFound();
                     string name = Convert.ToString(rows[0]["FileName"]),
                         ext = Convert.ToString(rows[0]["File_Type"]).ToLowerInvariant();
@@ -343,7 +341,7 @@ namespace ProstoERP.Application.Features.Feedback
                 Page(page, pageSize);
                 using (var db = Connect(employeeNumber))
                 {
-                    var all = Rows(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackNotifications, "Actor", Actor));
+                    var all = Rows(db.SelectEmployeeFeedbackNotifications("Actor", Actor));
                     var filtered = all.Where(r => !unreadOnly || !Convert.ToBoolean(r["IsRead"])).ToList();
                     return Success(new NotificationPage<Dictionary<string, object>>
                     {
@@ -355,13 +353,13 @@ namespace ProstoERP.Application.Features.Feedback
             });
         }
 
-        private FeedbackDb Connect(int employeeNumber)
+        private FeatureStore Connect(int employeeNumber)
         {
             if (employeeNumber <= 0 || !context.IsModelValid) throw Invalid();
             var db = sessions.Open();
             try
             {
-                db.Execute(MobileStatement.Feedback_MobileApiFeedbackActor, "Actor", Actor, "EmployeeNumber", employeeNumber);
+                db.MobileApiFeedbackActor("Actor", Actor, "EmployeeNumber", employeeNumber);
                 return db;
             }
             catch
@@ -371,35 +369,33 @@ namespace ProstoERP.Application.Features.Feedback
             }
         }
 
-        private Dictionary<string, object> Permissions(FeedbackDb db)
+        private Dictionary<string, object> Permissions(FeatureStore db)
         {
-            return First(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackPermissions, "Actor", Actor));
+            return First(db.SelectEmployeeFeedbackPermissions("Actor", Actor));
         }
 
-        private List<Dictionary<string, object>> Targets(FeedbackDb db)
+        private List<Dictionary<string, object>> Targets(FeatureStore db)
         {
-            return Rows(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackTargetTypes, "Actor", Actor));
+            return Rows(db.SelectEmployeeFeedbackTargetTypes("Actor", Actor));
         }
 
-        private void RequireAccess(FeedbackDb db, int id)
+        private void RequireAccess(FeatureStore db, int id)
         {
-            if (Rows(db.Execute(MobileStatement.Feedback_RequireAccessEmployeeFeedbackAccess, "Actor", Actor, "ID",
+            if (Rows(db.RequireAccessEmployeeFeedbackAccess("Actor", Actor, "ID",
                     id)).Count == 0) throw NotFound();
         }
 
-        private void RequireCanAct(FeedbackDb db, int id, bool transfer)
+        private void RequireCanAct(FeatureStore db, int id, bool transfer)
         {
             RequireAccess(db, id);
-            if (!Flag(First(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackRequest, "Actor", Actor, "ID", id)),
+            if (!Flag(First(db.SelectEmployeeFeedbackRequest("Actor", Actor, "ID", id)),
                     "CanAct") || !Flag(Permissions(db), transfer ? "CanTransfer" : "CanClose")) throw Forbidden();
         }
 
-        private int? FindReplay(FeedbackDb db, FeedbackEvent model, byte[] hash)
+        private int? FindReplay(FeatureStore db, FeedbackEvent model, byte[] hash)
         {
-            db.Execute(MobileStatement.Feedback_FindReplayLock,
-                "Key", "feedback:" + Actor + ":" + model.OperationID);
-            var rows = Rows(db.Execute(MobileStatement.Feedback_FindReplayMobileApiFeedbackEvents,
-                "Actor", Actor, "Operation", model.OperationID));
+            db.FindReplayLock("Key", "feedback:" + Actor + ":" + model.OperationID);
+            var rows = Rows(db.FindReplayMobileApiFeedbackEvents("Actor", Actor, "Operation", model.OperationID));
             if (rows.Count == 0) return null;
             if (!((byte[])rows[0]["PayloadHash"]).SequenceEqual(hash))
                 throw new FeedbackException(HttpStatusCode.Conflict, "OPERATION_REUSED",
@@ -407,10 +403,9 @@ namespace ProstoERP.Application.Features.Feedback
             return Convert.ToInt32(rows[0]["RequestID"]);
         }
 
-        private void Record(FeedbackDb db, FeedbackEvent model, byte[] hash, int id, string eventType)
+        private void Record(FeatureStore db, FeedbackEvent model, byte[] hash, int id, string eventType)
         {
-            db.Execute(MobileStatement.Feedback_RecordEmployeeFeedbackWorkflow,
-                "Actor", Actor, "Operation", model.OperationID, "Hash", hash, "ID", id, "Event", eventType,
+            db.RecordEmployeeFeedbackWorkflow("Actor", Actor, "Operation", model.OperationID, "Hash", hash, "ID", id, "Event", eventType,
                 "Occurred", ParseTime(model.OccurredAt), "Received", receivedUtc);
         }
 

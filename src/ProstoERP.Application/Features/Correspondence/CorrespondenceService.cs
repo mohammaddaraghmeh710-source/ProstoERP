@@ -6,7 +6,7 @@ using ProstoERP.Contracts.Common;
 using ProstoERP.Contracts.Features.Feedback;
 using ProstoERP.Contracts.Features.CustomerFeedback;
 using ProstoERP.Contracts.Features.CustomerPortal;
-using FeedbackDb = ProstoERP.Application.Abstractions.IMobileDataSession;
+using FeatureStore = ProstoERP.Application.Features.Correspondence.ICorrespondenceStore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -27,11 +27,11 @@ namespace ProstoERP.Application.Features.Correspondence
 {
     public sealed class CorrespondenceService
     {
-        private readonly IMobileDataSessionFactory sessions;
+        private readonly ICorrespondenceStoreFactory sessions;
         private readonly IMobileWorkflowContext context;
         private readonly IMobileFiles files;
         private readonly IAssetUrlBuilder assets;
-        public CorrespondenceService(IMobileDataSessionFactory sessions, IMobileWorkflowContext context, IMobileFiles files, IAssetUrlBuilder assets)
+        public CorrespondenceService(ICorrespondenceStoreFactory sessions, IMobileWorkflowContext context, IMobileFiles files, IAssetUrlBuilder assets)
         {
             this.sessions = sessions;
             this.context = context;
@@ -52,13 +52,13 @@ namespace ProstoERP.Application.Features.Correspondence
             return Rows(data, table).FirstOrDefault() ?? new Dictionary<string, object>();
         }
 
-        private FeedbackDb Connect(int employeeNumber)
+        private FeatureStore Connect(int employeeNumber)
         {
             if (employeeNumber <= 0 || !context.IsModelValid) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
             var db = sessions.Open();
             try
             {
-                db.Execute(MobileStatement.Correspondence_MobileApiCorrespondenceActor, "Actor", Actor, "EmployeeNumber", employeeNumber);
+                db.MobileApiCorrespondenceActor("Actor", Actor, "EmployeeNumber", employeeNumber);
                 return db;
             }
             catch
@@ -88,26 +88,24 @@ namespace ProstoERP.Application.Features.Correspondence
                 SaveOptions.DisableFormatting);
         }
 
-        private Dictionary<string, object> Detail(FeedbackDb db, int id, bool supervisory)
+        private Dictionary<string, object> Detail(FeatureStore db, int id, bool supervisory)
         {
             if (id <= 0) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
             var access =
-                Rows(db.Execute(MobileStatement.Correspondence_DetailCorrespondenceAccess,
-                    "Actor", Actor, "ID", id));
+                Rows(db.DetailCorrespondenceAccess("Actor", Actor, "ID", id));
             if (access.Count == 0 || (supervisory
                     ? !Convert.ToBoolean(access[0]["IsAdmin"])
                     : !Convert.ToBoolean(access[0]["IsParticipant"])))
                 throw new FeedbackException(HttpStatusCode.NotFound, "NOT_FOUND", "المراسلة غير متاحة ضمن هذا النطاق.");
-            return First(db.Execute(MobileStatement.Correspondence_CorrespondenceDetail, "Actor", Actor, "ThreadID", id, "Supervisory",
+            return First(db.CorrespondenceDetail("Actor", Actor, "ThreadID", id, "Supervisory",
                 supervisory));
         }
 
-        private void Visit(FeedbackDb db, int id, bool supervisory, Guid? visitID)
+        private void Visit(FeatureStore db, int id, bool supervisory, Guid? visitID)
         {
             if (!supervisory) return;
             if (!visitID.HasValue || visitID == Guid.Empty) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
-            if (Rows(db.Execute(MobileStatement.Correspondence_VisitCorrespondenceAudit,
-                    "ID", id, "Actor", Actor, "Event", visitID)).Count == 0)
+            if (Rows(db.VisitCorrespondenceAudit("ID", id, "Actor", Actor, "Event", visitID)).Count == 0)
                 throw new FeedbackException(HttpStatusCode.Forbidden, "OPEN_REQUIRED",
                     "افتح المراسلة إداريًا قبل جلب الرسائل.");
         }
@@ -127,14 +125,14 @@ namespace ProstoERP.Application.Features.Correspondence
                 if (brandID < 0) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
                 using (var db = Connect(employeeNumber))
                 {
-                    var role = First(db.Execute(MobileStatement.Correspondence_MobileApiCorrespondenceActor, "Actor", Actor, "EmployeeNumber",
+                    var role = First(db.MobileApiCorrespondenceActor("Actor", Actor, "EmployeeNumber",
                         employeeNumber));
                     var type = Convert.ToInt32(role["UserType"]);
-                    var priorities = Rows(db.Execute(MobileStatement.Correspondence_CorrespondenceCatalogList, "Actor", Actor, "Kind", "P"));
-                    var reasons = Rows(db.Execute(MobileStatement.Correspondence_CorrespondenceCatalogList, "Actor", Actor, "Kind", "R", "Task",
+                    var priorities = Rows(db.CorrespondenceCatalogList("Actor", Actor, "Kind", "P"));
+                    var reasons = Rows(db.CorrespondenceCatalogList("Actor", Actor, "Kind", "R", "Task",
                         task));
                     var filters =
-                        Rows(db.Execute(MobileStatement.Correspondence_CorrespondenceCatalogList, "Actor", Actor, "Kind", "P", "Mode", 1));
+                        Rows(db.CorrespondenceCatalogList("Actor", Actor, "Kind", "P", "Mode", 1));
                     return Success(new CorrespondenceOptionsResponse
                     {
                         Identity = role,
@@ -147,15 +145,13 @@ namespace ProstoERP.Application.Features.Correspondence
                         Priorities = priorities.Select(CatalogItem), ClosureReasons = reasons.Select(CatalogItem),
                         PriorityFilters = filters.Select(CatalogItem),
                         Brands = type == 1
-                            ? Rows(db.Execute(MobileStatement.Correspondence_OptionsBrands))
+                            ? Rows(db.OptionsBrands())
                             : new List<Dictionary<string, object>>(),
                         RecipientBranches =
-                            Rows(db.Execute(MobileStatement.Correspondence_OptionsCorrespondenceAllowedRecipients,
-                                "Actor", Actor, "Brand", brandID)),
+                            Rows(db.OptionsCorrespondenceAllowedRecipients("Actor", Actor, "Brand", brandID)),
                         RecipientShifts =
-                            Rows(db.Execute(MobileStatement.Correspondence_OptionsCorrespondenceAllowedRecipients2,
-                                "Actor", Actor, "Brand", brandID)),
-                        HistoricalOrganization = Rows(db.Execute(MobileStatement.Correspondence_CorrespondenceOptions, "Actor", Actor))
+                            Rows(db.OptionsCorrespondenceAllowedRecipients2("Actor", Actor, "Brand", brandID)),
+                        HistoricalOrganization = Rows(db.CorrespondenceOptions("Actor", Actor))
                             .Where(r => Convert.ToString(r["Kind"]) != "role"),
                         FileRules = new CorrespondenceFileRules
                         {
@@ -192,8 +188,7 @@ namespace ProstoERP.Application.Features.Correspondence
                     throw ProstoERP.Application.Validation.MobileValidation.Invalid();
                 using (var db = Connect(employeeNumber))
                 {
-                    var data = db.Execute(MobileStatement.Correspondence_RecipientsCorrespondenceAllowedRecipients,
-                        "Actor", Actor, "Brand", brandID, "Branch", branchID, "Shift", shiftID, "Search", search ?? "",
+                    var data = db.RecipientsCorrespondenceAllowedRecipients("Actor", Actor, "Brand", brandID, "Branch", branchID, "Shift", shiftID, "Search", search ?? "",
                         "Skip", (page - 1) * pageSize, "Size", pageSize);
                     return Success(new TotalItemsPage<Dictionary<string, object>>
                     {
@@ -221,7 +216,7 @@ namespace ProstoERP.Application.Features.Correspondence
                     (from.HasValue && to.HasValue && from >= to)) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
                 using (var db = Connect(employeeNumber))
                 {
-                    var data = db.Execute(MobileStatement.Correspondence_MobileApiCorrespondenceList, "Actor", Actor, "All", supervisory, "Page",
+                    var data = db.MobileApiCorrespondenceList("Actor", Actor, "All", supervisory, "Page",
                         page, "PageSize", pageSize, "Title", title, "Person", person, "Filter", filter,
                         "Kind", kind, "Priority", priorityID, "Brand", brandID, "Branch", branchID, "From",
                         from.HasValue ? (object)from.Value.UtcDateTime : null, "To",
@@ -244,16 +239,16 @@ namespace ProstoERP.Application.Features.Correspondence
                 {
                     var detail = Detail(db, id, model.Supervisory);
                     if (model.Supervisory)
-                        db.Execute(MobileStatement.Correspondence_CorrespondenceLogView, "Actor", Actor, "ThreadID", id, "EventID",
+                        db.CorrespondenceLogView("Actor", Actor, "ThreadID", id, "EventID",
                             model.OperationID);
                     return Success(new CorrespondenceDetailResponse
                     {
                         Thread = ThreadItem(detail),
-                        Organization = Rows(db.Execute(MobileStatement.Correspondence_CorrespondenceOrganization, "Actor", Actor, "ThreadID", id)),
-                        Related = Rows(db.Execute(MobileStatement.Correspondence_CorrespondenceRelated, "Actor", Actor, "ThreadID", id)),
+                        Organization = Rows(db.CorrespondenceOrganization("Actor", Actor, "ThreadID", id)),
+                        Related = Rows(db.CorrespondenceRelated("Actor", Actor, "ThreadID", id)),
                         VisitID = model.OperationID,
                         Audit = model.Supervisory
-                            ? Rows(db.Execute(MobileStatement.Correspondence_CorrespondenceAuditList, "Actor", Actor, "ThreadID", id))
+                            ? Rows(db.CorrespondenceAuditList("Actor", Actor, "ThreadID", id))
                             : new List<Dictionary<string, object>>()
                     });
                 }
@@ -271,7 +266,7 @@ namespace ProstoERP.Application.Features.Correspondence
                 {
                     var detail = Detail(db, id, supervisory);
                     Visit(db, id, supervisory, visitID);
-                    var data = db.Execute(MobileStatement.Correspondence_MobileApiCorrespondenceMessages, "Actor", Actor, "ThreadID", id,
+                    var data = db.MobileApiCorrespondenceMessages("Actor", Actor, "ThreadID", id,
                         "AfterID", afterID, "BeforeID", beforeID, "PageSize", pageSize);
                     var messages = Rows(data, 1);
                     var files = Rows(data, 2);
@@ -344,15 +339,14 @@ namespace ProstoERP.Application.Features.Correspondence
                         }
                         else
                         {
-                            var role = Convert.ToInt32(First(db.Execute(MobileStatement.Correspondence_MobileApiCorrespondenceActor, "Actor",
+                            var role = Convert.ToInt32(First(db.MobileApiCorrespondenceActor("Actor",
                                 Actor, "EmployeeNumber", model.EmployeeNumber))["UserType"]);
                             if (!new[] { 1, 2, 3, 4 }.Contains(role) || (role == 4 &&
                                                                          (create.RequiresCompletion ||
                                                                           create.RecipientIDs.Length != 1)))
                                 throw new FeedbackException(HttpStatusCode.Forbidden, "ACTION_NOT_ALLOWED",
                                     "غير مسموح بإنشاء هذا التكليف.");
-                            var allowed = Rows(db.Execute(MobileStatement.Correspondence_UploadCorrespondenceAllowedRecipients,
-                                "Actor", Actor, "Brand", create.BrandID, "IDs", recipients)).Count;
+                            var allowed = Rows(db.UploadCorrespondenceAllowedRecipients("Actor", Actor, "Brand", create.BrandID, "IDs", recipients)).Count;
                             if (allowed != create.RecipientIDs.Length)
                                 throw new FeedbackException(HttpStatusCode.Forbidden, "RECIPIENT_NOT_ALLOWED",
                                     "أحد المستلمين غير متاح لك.");
@@ -362,7 +356,7 @@ namespace ProstoERP.Application.Features.Correspondence
                         object result;
                         if (create != null)
                         {
-                            var rows = db.Execute(MobileStatement.Correspondence_InsertCorrespondenceThread, "Actor", Actor, "Brand",
+                            var rows = db.InsertCorrespondenceThread("Actor", Actor, "Brand",
                                 create.BrandID, "Recipients", recipients, "Title", create.Title.Trim(), "Brief",
                                 create.Brief, "Body", create.Body,
                                 "RequiresCompletion", create.RequiresCompletion, "DueDate",
@@ -375,7 +369,7 @@ namespace ProstoERP.Application.Features.Correspondence
                         }
                         else
                         {
-                            var row = First(db.Execute(MobileStatement.Correspondence_InsertCorrespondenceThreadMessage, "Actor", Actor,
+                            var row = First(db.InsertCorrespondenceThreadMessage("Actor", Actor,
                                 "ThreadID", id, "Body", ((CorrespondenceReply)model).Body, "Files", upload.Xml));
                             result = new { ThreadID = id, MessageID = row["ID"] };
                         }
@@ -411,7 +405,7 @@ namespace ProstoERP.Application.Features.Correspondence
                 if (!Convert.ToBoolean(detail["CanClose"]))
                     throw new FeedbackException(HttpStatusCode.Conflict, "CANNOT_CLOSE",
                         "الإنهاء غير متاح؛ حدّث تفاصيل المراسلة.");
-                db.Execute(MobileStatement.Correspondence_UpdateCorrespondenceThreadClose, "Actor", Actor, "ThreadID", id, "IsCompleted",
+                db.UpdateCorrespondenceThreadClose("Actor", Actor, "ThreadID", id, "IsCompleted",
                     model.IsCompleted, "ClosureReasonID", model.ClosureReasonID, "CloseReason", model.Explanation);
                 return new { ThreadID = id };
             });
@@ -423,10 +417,9 @@ namespace ProstoERP.Application.Features.Correspondence
             {
                 Detail(db, id, false);
                 var xml = IDs(model.MessageIDs);
-                var valid = Rows(db.Execute(MobileStatement.Correspondence_ReadCorrespondenceThreadMessages,
-                    "IDs", xml, "ID", id, "Actor", Actor));
+                var valid = Rows(db.ReadCorrespondenceThreadMessages("IDs", xml, "ID", id, "Actor", Actor));
                 if (valid.Count != model.MessageIDs.Length) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
-                db.Execute(MobileStatement.Correspondence_UpdateCorrespondenceMessagesRead, "Actor", Actor, "ThreadID", id, "MessageIDs", xml);
+                db.UpdateCorrespondenceMessagesRead("Actor", Actor, "ThreadID", id, "MessageIDs", xml);
                 return new { ThreadID = id, model.MessageIDs };
             });
         }
@@ -436,7 +429,7 @@ namespace ProstoERP.Application.Features.Correspondence
             return Mutation("archive", id, model, db =>
             {
                 Detail(db, id, true);
-                db.Execute(MobileStatement.Correspondence_CorrespondenceArchive, "Actor", Actor, "ThreadID", id, "Reason", model.Explanation);
+                db.CorrespondenceArchive("Actor", Actor, "ThreadID", id, "Reason", model.Explanation);
                 return new { ThreadID = id };
             });
         }
@@ -449,14 +442,13 @@ namespace ProstoERP.Application.Features.Correspondence
                 Page(page, pageSize);
                 using (var db = Connect(employeeNumber))
                 {
-                    var data = db.Execute(MobileStatement.Correspondence_NotificationsCorrespondenceNotifications,
-                        "Actor", Actor, "Unread", unreadOnly, "Skip", (page - 1) * pageSize, "Size", pageSize);
+                    var data = db.NotificationsCorrespondenceNotifications("Actor", Actor, "Unread", unreadOnly, "Skip", (page - 1) * pageSize, "Size", pageSize);
                     return Success(new
                     {
                         TotalItems = First(data)["TotalItems"],
                         UnreadNotifications = First(data, 1)["UnreadNotifications"],
                         UnreadThreads =
-                            First(db.Execute(MobileStatement.Correspondence_SelectCorrespondenceUnreadCount, "Actor", Actor))["UnreadThreads"],
+                            First(db.SelectCorrespondenceUnreadCount("Actor", Actor))["UnreadThreads"],
                         Page = page, PageSize = pageSize, Items = Rows(data, 2)
                     });
                 }
@@ -467,8 +459,7 @@ namespace ProstoERP.Application.Features.Correspondence
         {
             return Mutation("notification-read", id, model, db =>
             {
-                var changed = Rows(db.Execute(MobileStatement.Correspondence_NotificationReadN,
-                    "Actor", Actor, "ID", id));
+                var changed = Rows(db.NotificationReadN("Actor", Actor, "ID", id));
                 if (changed.Count == 0)
                     throw new FeedbackException(HttpStatusCode.NotFound, "NOT_FOUND", "التنبيه غير متاح لك.");
                 return new { NotificationID = id };
@@ -476,7 +467,7 @@ namespace ProstoERP.Application.Features.Correspondence
         }
 
         private object Mutation(string action, int id, FeedbackEvent model,
-            Func<FeedbackDb, object> operation)
+            Func<FeatureStore, object> operation)
         {
             return Execute(() =>
             {
@@ -507,12 +498,10 @@ namespace ProstoERP.Application.Features.Correspondence
             });
         }
 
-        private string Replay(FeedbackDb db, FeedbackEvent model, byte[] hash)
+        private string Replay(FeatureStore db, FeedbackEvent model, byte[] hash)
         {
-            db.Execute(MobileStatement.Correspondence_ReplayLock,
-                "Key", "correspondence:" + Actor + ":" + model.OperationID);
-            var rows = Rows(db.Execute(MobileStatement.Correspondence_ReplayMobileApiCorrespondenceEvents,
-                "Actor", Actor, "Operation", model.OperationID));
+            db.ReplayLock("Key", "correspondence:" + Actor + ":" + model.OperationID);
+            var rows = Rows(db.ReplayMobileApiCorrespondenceEvents("Actor", Actor, "Operation", model.OperationID));
             if (rows.Count == 0) return null;
             if (!((byte[])rows[0]["PayloadHash"]).SequenceEqual(hash))
                 throw new FeedbackException(HttpStatusCode.Conflict, "OPERATION_REUSED",
@@ -520,10 +509,9 @@ namespace ProstoERP.Application.Features.Correspondence
             return Convert.ToString(rows[0]["ResultJson"]);
         }
 
-        private void Record(FeedbackDb db, FeedbackEvent model, byte[] hash, string action, string json)
+        private void Record(FeatureStore db, FeedbackEvent model, byte[] hash, string action, string json)
         {
-            db.Execute(MobileStatement.Correspondence_RecordLock,
-                "Actor", Actor, "Operation", model.OperationID, "Hash", hash, "Action", action, "Json", json,
+            db.RecordLock("Actor", Actor, "Operation", model.OperationID, "Hash", hash, "Action", action, "Json", json,
                 "Occurred", ProstoERP.Application.Validation.MobileValidation.ParseTime(model.OccurredAt));
         }
 

@@ -37,6 +37,8 @@ def validate_config(path):
             issues.append("Configure " + key)
     if settings.get("MobileApi.AllowHttp", "false").lower() != "false":
         issues.append("Disable MobileApi.AllowHttp")
+    if any(settings.get(key, "false").lower() != "false" for key in ("LocalOtp.Enabled", "LocalOtp.FixedCode")):
+        issues.append("Disable LocalOtp.Enabled and LocalOtp.FixedCode")
     if any(key.startswith("LocalDevelopment.") for key in settings):
         issues.append("Remove LocalDevelopment.* settings")
     if not settings.get("MobileApi.AssetBaseUrl", "").startswith("https://"):

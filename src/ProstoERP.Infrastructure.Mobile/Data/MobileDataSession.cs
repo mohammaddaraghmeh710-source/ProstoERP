@@ -1,11 +1,10 @@
 using System;
-using ProstoERP.Application.Abstractions;
 using System.Data;
 using System.Data.SqlClient;
 
 namespace ProstoERP.Infrastructure.Mobile.Data
 {
-    public sealed class MobileDataSession : IMobileDataSession
+    internal sealed class MobileDataSession : IMobileDataSession
     {
         private readonly SqlConnection connection;
         private SqlTransaction transaction;
@@ -48,7 +47,7 @@ namespace ProstoERP.Infrastructure.Mobile.Data
             }
         }
 
-        public DataSet Execute(ProstoERP.Application.Data.MobileStatement statement, params object[] parameters)
+        public DataSet Execute(MobileStatement statement, params object[] parameters)
         {
             var definition = MobileStatements.Get(statement);
             return Query(definition.Text, definition.Type, parameters);

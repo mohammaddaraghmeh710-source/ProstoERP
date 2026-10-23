@@ -32,9 +32,9 @@ namespace ProstoERP.Application.Features.EmployeeAccess
         public EmployeeLoginResponse Login(MobileLoginRequest model)
         {
             var token = tokens.NewToken();
-            var bioID = tokens.NewToken();
+            string bioID = null;
             var password = cipher.Encrypt(model.Password);
-            var result = store.Login(model, password, tokens.TokenHash(token), tokens.TokenHash(bioID),
+            var result = store.Login(model, password, tokens.TokenHash(token), null,
                 options.IdleMinutes, options.MaximumMinutes);
             if (result.Tables.Count == 0 || result.Tables[0].Rows.Count == 0)
                 throw new MobileBusinessException(HttpStatusCode.Unauthorized, "INVALID_CREDENTIALS",
@@ -42,12 +42,10 @@ namespace ProstoERP.Application.Features.EmployeeAccess
             return LoginResponse(result, token, bioID);
         }
 
+        [Obsolete("Static BIOID login is retired. Use signed biometric challenges.")]
         public EmployeeLoginResponse LoginViaBio(BioLoginRequest model)
         {
-            var token = tokens.NewToken();
-            var result = store.LoginViaBio(tokens.TokenHash(model.BIOID), tokens.TokenHash(token),
-                options.IdleMinutes, options.MaximumMinutes);
-            return LoginResponse(result, token, model.BIOID);
+            throw new MobileBusinessException(HttpStatusCode.Gone, "BIOMETRIC_CHALLENGE_REQUIRED", "Use the signed biometric challenge flow.");
         }
 
         public DeviceAccessResponse DeviceAccess(MobileLoginRequest model, bool submit)
@@ -58,6 +56,11 @@ namespace ProstoERP.Application.Features.EmployeeAccess
                     "بيانات الدخول غير صحيحة أو الحساب غير فعال.");
             return JObject.FromObject(MobileRowMapper.Row(result.Tables[0].Rows[0]))
                 .ToObject<DeviceAccessResponse>();
+        }
+
+        public EmployeeLoginResponse CreateLoginResponse(DataSet result, string token)
+        {
+            return LoginResponse(result, token, null);
         }
 
         private EmployeeLoginResponse LoginResponse(DataSet result, string token, string bioID)

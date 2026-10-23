@@ -23,7 +23,11 @@ namespace Prosto_ERP_API.Mobile
         public Guid ChallengeID { get; set; }
 
         [Required]
+#if DEBUG
+        [RegularExpression("^(?:[0-9]{6}|12345)$")]
+#else
         [RegularExpression("^[0-9]{6}$")]
+#endif
         public string OTP { get; set; }
     }
 

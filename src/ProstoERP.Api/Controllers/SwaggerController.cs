@@ -1,4 +1,5 @@
 using System.Web.Mvc;
+using Prosto_ERP_API.Documentation;
 
 namespace Prosto_ERP_API.Controllers
 {
@@ -7,8 +8,7 @@ namespace Prosto_ERP_API.Controllers
         [HttpGet]
         public ActionResult Index(string module = "mobile")
         {
-            ViewData["SwaggerModule"] = module == "all" ? "All APIs" : "Mobile API";
-            return View();
+            return View(SwaggerModules.Find(module));
         }
     }
 }

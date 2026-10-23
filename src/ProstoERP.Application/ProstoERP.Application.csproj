@@ -29,7 +29,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="Abstractions\IMobilePlatform.cs" />
-    <Compile Include="Abstractions\IMobileData.cs" />
     <Compile Include="Data\MobileRowMapper.cs" />
     <Compile Include="Features\EmployeeAccess\IEmployeeAccessStore.cs" />
     <ProjectReference Include="..\ProstoERP.Contracts\ProstoERP.Contracts.csproj">
@@ -65,13 +64,21 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\MobileStatement.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Errors\ResetException.cs" />
     <Compile Include="Features\PasswordReset\IPasswordResetService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Features\EmployeeAccess\SessionAuthenticationService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abstractions\IMobileTransaction.cs" />
+    <Compile Include="Features\Feedback\IFeedbackStore.cs" />
+    <Compile Include="Features\Correspondence\ICorrespondenceStore.cs" />
+    <Compile Include="Features\CustomerFeedback\ICustomerFeedbackStore.cs" />
+    <Compile Include="Features\CustomerPortal\ICustomerPortalStore.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\Authentication\IAuthenticationStore.cs" />
+    <Compile Include="Features\Authentication\AuthenticationService.cs" />
   </ItemGroup>
 </Project>

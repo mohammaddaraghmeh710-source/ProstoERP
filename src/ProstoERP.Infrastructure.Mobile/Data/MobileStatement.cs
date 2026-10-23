@@ -1,7 +1,7 @@
-namespace ProstoERP.Application.Data
+namespace ProstoERP.Infrastructure.Mobile.Data
 {
     // Named persistence operations. SQL text, procedure names and command kinds live in Infrastructure.
-    public enum MobileStatement
+    internal enum MobileStatement
     {
         Feedback_SelectEmployeeFeedbackTypes,
         Feedback_SelectEmployeeFeedbackTopics,

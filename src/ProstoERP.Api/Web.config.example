@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <appSettings>
+    <add key="LocalOtp.Enabled" value="false" />
+    <add key="LocalOtp.FixedCode" value="false" />
     <add key="Integration.BasicUsername" value="REPLACE_WITH_LOCAL_USERNAME" />
     <add key="Integration.BasicPassword" value="REPLACE_WITH_LOCAL_SECRET" />
     <add key="PasswordReset.HashKey" value="REPLACE_WITH_LOCAL_VALUE" />

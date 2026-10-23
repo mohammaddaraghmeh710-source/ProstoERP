@@ -14,7 +14,7 @@ namespace Prosto_ERP_API.Mobile
         [StringLength(50)] public string AppBuild { get; set; }
         [Required] public MobileLoginDevice Device { get; set; }
 
-        internal bool NormalizeAndValidate()
+        public bool NormalizeAndValidate()
         {
             if (!Validator.TryValidateObject(this, new ValidationContext(this), new List<ValidationResult>(), true) ||
                 Device == null ||
@@ -27,6 +27,8 @@ namespace Prosto_ERP_API.Mobile
             Device.Model = Device.Model.Trim();
             Device.OSVersion = Device.OSVersion.Trim();
             Device.Manufacturer = Clean(Device.Manufacturer);
+            Device.FCMToken = Clean(Device.FCMToken);
+            if (Device.FCMToken == null || Device.FCMToken.Any(char.IsWhiteSpace)) return false;
             if (string.Equals(Device.Platform, "Android", StringComparison.OrdinalIgnoreCase))
                 Device.Platform = "Android";
             else if (string.Equals(Device.Platform, "iOS", StringComparison.OrdinalIgnoreCase)) Device.Platform = "iOS";
@@ -65,5 +67,6 @@ namespace Prosto_ERP_API.Mobile
         [Required] [StringLength(150)] public string Model { get; set; }
         [Required] [StringLength(50)] public string OSVersion { get; set; }
         [StringLength(32)] public string MACID { get; set; }
+        [Required, StringLength(4000)] public string FCMToken { get; set; }
     }
 }

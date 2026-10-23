@@ -4,10 +4,17 @@ The API is ASP.NET Web API 2 on .NET Framework 4.8. It is not the ASP.NET Core
 host used by MOE. The contracts project follows MOE's separation of shared DTOs
 from controllers and persistence, while retaining this API's existing wire format.
 
+Module documentation and persistence ownership are described in [Mobile modules](MOBILE_MODULES.md).
+
 The six-step cleanup is documented in [Mobile architecture](MOBILE_ARCHITECTURE.md).
 It adds per-feature Application workflows, Infrastructure adapters, dependency wiring,
 named response contracts, shared validation/error handling, and
 [release staging](API_DEPLOYMENT.md).
+
+## Authentication
+
+[Mobile authentication](MOBILE_AUTHENTICATION.md) defines the current email OTP,
+single-device and signed biometric flows, along with the compatibility changes.
 
 ## Response handling
 

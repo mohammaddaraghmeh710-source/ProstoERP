@@ -25,7 +25,8 @@ namespace ProstoERP.Infrastructure.Mobile.Features.EmployeeAccess
                     SqlParameters.P("@DeviceModel", SqlDbType.NVarChar, model.Device.Model, 150),
                     SqlParameters.P("@OSVersion", SqlDbType.NVarChar, model.Device.OSVersion, 50),
                     SqlParameters.P("@MACID", SqlDbType.VarChar, model.Device.MACID, 17),
-                    SqlParameters.P("@BIOHash", SqlDbType.Binary, bioHash, 32));
+                    SqlParameters.P("@BIOHash", SqlDbType.Binary, bioHash, 32),
+                    SqlParameters.P("@FCMToken", SqlDbType.NVarChar, model.Device.FCMToken, 4000));
         }
         public DataSet LoginViaBio(byte[] bioHash, byte[] tokenHash, int idleMinutes, int maximumMinutes)
         {

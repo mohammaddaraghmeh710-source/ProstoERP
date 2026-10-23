@@ -5,7 +5,7 @@ using ProstoERP.Contracts.Common;
 using ProstoERP.Contracts.Features.Feedback;
 using ProstoERP.Contracts.Features.CustomerFeedback;
 using ProstoERP.Contracts.Features.CustomerPortal;
-using FeedbackDb = ProstoERP.Application.Abstractions.IMobileDataSession;
+using FeatureStore = ProstoERP.Application.Features.CustomerPortal.ICustomerPortalStore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -26,12 +26,12 @@ namespace ProstoERP.Application.Features.CustomerPortal
 {
     public sealed class CustomerPortalService
     {
-        private readonly IMobileDataSessionFactory sessions;
+        private readonly ICustomerPortalStoreFactory sessions;
         private readonly IMobileWorkflowContext context;
         private readonly IMobileFiles files;
         private readonly IMobileTokenService tokens;
         private readonly IMobileOptions options;
-        public CustomerPortalService(IMobileDataSessionFactory sessions, IMobileWorkflowContext context, IMobileFiles files, IMobileTokenService tokens, IMobileOptions options)
+        public CustomerPortalService(ICustomerPortalStoreFactory sessions, IMobileWorkflowContext context, IMobileFiles files, IMobileTokenService tokens, IMobileOptions options)
         {
             this.sessions = sessions;
             this.context = context;
@@ -57,9 +57,9 @@ namespace ProstoERP.Application.Features.CustomerPortal
                 : data.Tables[index].Rows.Cast<DataRow>().Select(ProstoERP.Application.Data.MobileRowMapper.Row).ToList();
         }
 
-        private DataSet Query(FeedbackDb db, MobileStatement proc, params object[] args)
+        private DataSet Query(Func<object[], DataSet> query, params object[] args)
         {
-            return db.Execute(proc, new object[] { "AccountID", Account, "Stamp", Stamp }.Concat(args).ToArray());
+            return query(new object[] { "AccountID", Account, "Stamp", Stamp }.Concat(args).ToArray());
         }
 
         public object Login(CustomerPortalLogin model)
@@ -69,14 +69,14 @@ namespace ProstoERP.Application.Features.CustomerPortal
                 Validate(model);
                 using (var db = sessions.Open())
                 {
-                    var rate = Rows(db.Execute(MobileStatement.CustomerPortal_CustomerApiCheckLoginRate, "ClientHash", ClientHash()))[0];
+                    var rate = Rows(db.CustomerApiCheckLoginRate("ClientHash", ClientHash()))[0];
                     if (!Convert.ToBoolean(rate["Allowed"]))
                     {
                         retryAfter = Convert.ToInt32(rate["RetryAfterSeconds"]);
                         throw new FeedbackException((HttpStatusCode)429, "RATE_LIMIT", "حاول تسجيل الدخول لاحقًا.");
                     }
 
-                    var credentials = Rows(db.Execute(MobileStatement.CustomerPortal_CustomerCredentials, "Username", model.Username.Trim()));
+                    var credentials = Rows(db.CustomerCredentials("Username", model.Username.Trim()));
                     var credential = credentials.FirstOrDefault();
                     byte[] actual;
                     using (var derive = new Rfc2898DeriveBytes(model.Password,
@@ -92,17 +92,17 @@ namespace ProstoERP.Application.Features.CustomerPortal
                     for (var i = 0; i < actual.Length; i++) difference |= actual[i] ^ expected[i];
                     var logged = credential == null
                         ? new List<Dictionary<string, object>>()
-                        : Rows(db.Execute(MobileStatement.CustomerPortal_CustomerLoginResult, "AccountID", credential["AccountID"], "Stamp",
+                        : Rows(db.CustomerLoginResult("AccountID", credential["AccountID"], "Stamp",
                             credential["SecurityStamp"], "Success", difference == 0));
                     if (logged.Count == 0)
                     {
-                        db.Execute(MobileStatement.CustomerPortal_CustomerLogLoginFailure, "Username", model.Username.Trim());
+                        db.CustomerLogLoginFailure("Username", model.Username.Trim());
                         throw new FeedbackException(HttpStatusCode.Unauthorized, "INVALID_CREDENTIALS",
                             "اسم المستخدم أو كلمة المرور غير صحيحة أو الحساب غير متاح.");
                     }
                     var identity = logged[0];
                     var token = tokens.NewToken();
-                    var created = Rows(db.Execute(MobileStatement.CustomerPortal_CustomerApiCreateSession, "AccountID", identity["AccountID"],
+                    var created = Rows(db.CustomerApiCreateSession("AccountID", identity["AccountID"],
                         "Stamp", identity["SecurityStamp"], "TokenHash", tokens.TokenHash(token)))[0];
                     return Success(new CustomerLoginResponse
                     {
@@ -119,7 +119,7 @@ namespace ProstoERP.Application.Features.CustomerPortal
             {
                 using (var db = sessions.Open())
                 {
-                    db.Execute(MobileStatement.CustomerPortal_CustomerApiLogout, "TokenHash", context.CustomerTokenHash);
+                    db.CustomerApiLogout("TokenHash", context.CustomerTokenHash);
                 }
 
                 return Success(new CustomerLogoutResponse { LoggedOut = true });
@@ -132,7 +132,7 @@ namespace ProstoERP.Application.Features.CustomerPortal
             {
                 using (var db = sessions.Open())
                 {
-                    var row = Rows(Query(db, MobileStatement.CustomerPortal_CustomerSession))[0];
+                    var row = Rows(Query(db.CustomerSession))[0];
                     return Success(new CustomerSessionResponse
                         { AccountID = Account, Name = row["Name_AR"], ExpiresUtc = Session["ExpiresUtc"] });
                 }
@@ -148,11 +148,11 @@ namespace ProstoERP.Application.Features.CustomerPortal
                 {
                     return Success(new
                     {
-                        Types = Rows(Query(db, MobileStatement.CustomerPortal_CustomerFeedbackOptions, "Section", "types")),
-                        Brands = Rows(Query(db, MobileStatement.CustomerPortal_CustomerFeedbackOptions, "Section", "brands")),
-                        Branches = Rows(Query(db, MobileStatement.CustomerPortal_CustomerFeedbackOptions, "Section", "branches", "Brand",
+                        Types = Rows(Query(db.CustomerFeedbackOptions, "Section", "types")),
+                        Brands = Rows(Query(db.CustomerFeedbackOptions, "Section", "brands")),
+                        Branches = Rows(Query(db.CustomerFeedbackOptions, "Section", "branches", "Brand",
                             brandID)),
-                        Topics = Rows(Query(db, MobileStatement.CustomerPortal_CustomerFeedbackOptions, "Section", "topics", "Brand", brandID,
+                        Topics = Rows(Query(db.CustomerFeedbackOptions, "Section", "topics", "Brand", brandID,
                             "Type", typeID)),
                         RecipientTitle = "إدارة النظام", MaxTitleLength = 300, MaxDetailsLength = 10000,
                         FileRules = new
@@ -173,7 +173,7 @@ namespace ProstoERP.Application.Features.CustomerPortal
                 using (var db = sessions.Open())
                 {
                     return Paged(
-                        Query(db, MobileStatement.CustomerPortal_CustomerApiFeedback, "Page", page, "PageSize", pageSize, "Status", status,
+                        Query(db.CustomerApiFeedback, "Page", page, "PageSize", pageSize, "Status", status,
                             "Search", search ?? ""), page, pageSize);
                 }
             });
@@ -185,7 +185,7 @@ namespace ProstoERP.Application.Features.CustomerPortal
             {
                 using (var db = sessions.Open())
                 {
-                    var data = Query(db, MobileStatement.CustomerPortal_CustomerApiFeedback, "ID", id);
+                    var data = Query(db.CustomerApiFeedback, "ID", id);
                     var attachments = Rows(data, 1);
                     foreach (var file in attachments)
                         file["DownloadUrl"] = context.Link("CustomerFeedbackFile", new { id = file["ID"] });
@@ -200,7 +200,7 @@ namespace ProstoERP.Application.Features.CustomerPortal
             {
                 using (var db = sessions.Open())
                 {
-                    var row = Rows(Query(db, MobileStatement.CustomerPortal_CustomerApiFeedback, "AttachmentID", id)).FirstOrDefault();
+                    var row = Rows(Query(db.CustomerApiFeedback, "AttachmentID", id)).FirstOrDefault();
                     if (row == null) throw Missing();
                     var name = Convert.ToString(row["FileName"]);
                     if (string.IsNullOrWhiteSpace(name) || name != Path.GetFileName(name) || name.Contains(":"))
@@ -228,8 +228,7 @@ namespace ProstoERP.Application.Features.CustomerPortal
                     var hash = upload.Hash(JsonConvert.SerializeObject(model));
                     db.Begin();
                     Lock(db, "customer-feedback:" + Account + ":" + model.OperationID.ToString().ToUpperInvariant());
-                    var previous = Rows(db.Execute(MobileStatement.CustomerPortal_SubmitFeedbackCustomerPortalFeedback,
-                        "Account", Account, "Operation", model.OperationID));
+                    var previous = Rows(db.SubmitFeedbackCustomerPortalFeedback("Account", Account, "Operation", model.OperationID));
                     if (previous.Count > 0)
                     {
                         MatchHash(previous[0]["PayloadHash"], hash);
@@ -238,12 +237,11 @@ namespace ProstoERP.Application.Features.CustomerPortal
                     }
 
                     upload.Prepare();
-                    var saved = Rows(Query(db, MobileStatement.CustomerPortal_CustomerSubmitFeedback, "OperationID", model.OperationID, "Type",
+                    var saved = Rows(Query(db.CustomerSubmitFeedback, "OperationID", model.OperationID, "Type",
                         model.TypeID, "Topic", model.TopicID, "Brand", model.BrandID, "Branch", model.BranchID,
                         "Mobile", model.Mobile, "Title", model.Title, "Details", model.Details, "Files",
                         upload.Xml))[0];
-                    db.Execute(MobileStatement.CustomerPortal_SubmitFeedbackLock,
-                        "Account", Account, "Operation", model.OperationID, "Hash", hash);
+                    db.SubmitFeedbackLock("Account", Account, "Operation", model.OperationID, "Hash", hash);
                     upload.PreserveFiles = true;
                     try
                     {
@@ -264,10 +262,9 @@ namespace ProstoERP.Application.Features.CustomerPortal
             }
         }
 
-        private static void Lock(FeedbackDb db, string key)
+        private static void Lock(FeatureStore db, string key)
         {
-            db.Execute(MobileStatement.CustomerPortal_LockLock,
-                "Key", key);
+            db.LockLock("Key", key);
         }
 
         private static void MatchHash(object previous, byte[] hash)

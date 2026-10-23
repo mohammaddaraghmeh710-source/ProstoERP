@@ -10,7 +10,9 @@ the existing business behavior. No test projects or tests were added.
 | Login, devices, content and session authentication | `src/ProstoERP.Application/Features/EmployeeAccess` |
 | Feedback, correspondence, circulars and customer workflows | `src/ProstoERP.Application/Features/<feature>` |
 | Application ports, request metadata and upload/file results | `src/ProstoERP.Application/Abstractions` |
-| Named persistence operations and row mapping | `src/ProstoERP.Application/Data` |
+| Module persistence interfaces | `src/ProstoERP.Application/Features/<feature>/I*Store.cs` |
+| Shared row mapping | `src/ProstoERP.Application/Data` |
+| Internal statement catalog and SQL execution | `src/ProstoERP.Infrastructure.Mobile/Data` |
 | SQL definitions, execution, tokens, settings, SMTP and password reset | `src/ProstoERP.Infrastructure.Mobile` |
 | Existing VB LINQ-to-SQL model and attendance integration | `src/ProstoERP.Infrastructure` |
 | Controllers, authorization, multipart HTTP adapters and response rendering | `src/ProstoERP.Api` |
@@ -53,9 +55,10 @@ generated model or introducing custom mixed-language build targets.
    metadata and uploads through interfaces, without HttpRequestMessage or MVC types.
 3. **Infrastructure persistence.** Connection ownership, command construction,
    query execution and transaction disposal live in Infrastructure.Mobile.
-   Feedback/correspondence/customer workflows use named `MobileStatement` values;
-   their SQL/procedure definitions live beside the matching infrastructure
-   features. Existing parameter order, result tables, SQL text, command kinds,
+   Feedback/correspondence/customer workflows use their own store interfaces and
+   named methods. `MobileStatement` and the generic data session are internal to
+   Infrastructure.Mobile; their SQL/procedure definitions live beside each
+   matching infrastructure feature. Existing parameter order, result tables, SQL text, command kinds,
    timeouts, transaction calls and attachment commit/rollback ordering are retained.
    DataSet-based adapters are kept for legacy result-set compatibility.
 4. **Focused dependencies.** Options, token generation/hash validation, password
@@ -81,8 +84,8 @@ rename is part of this cleanup. Public WebForms paths remain unchanged.
 
 ## Working on a mobile feature
 
-Add request and response DTOs to Contracts, workflow code to Application, named
-SQL statements or typed stores to Infrastructure.Mobile, and route/authentication
+Add request and response DTOs to Contracts, workflow code and module store
+interfaces to Application, SQL/store implementations to Infrastructure.Mobile, and route/authentication
 metadata to its API controller. Wire dependencies through Composition. Reuse the
 existing feature's error mapping and JSON envelope. Preserve SQL transaction
 boundaries and idempotency/file ownership when editing upload workflows.
@@ -104,3 +107,17 @@ only starts it. Customer login failure auditing and the employee feedback
 customer-transfer restriction live in Application, with SQL definitions in
 Infrastructure.Mobile. The eight customer work-guide actions removed on main
 remain removed from the mobile API and Contracts. See [main integration](MAIN_INTEGRATION.md).
+
+## Mobile module boundaries
+
+[Mobile modules](MOBILE_MODULES.md) documents the feature Swagger documents
+and the persistence interfaces. One API host and the existing database remain in
+use. Controllers and routes are not moved between deployments. The combined mobile
+document now also includes the legacy Learning controller, which was previously
+available only in All APIs. Its Basic authentication and response shapes remain
+unchanged; this change does not rewrite its legacy actions.
+
+The Authentication module adds the explicit email OTP, single-device and signed
+biometric policy in [Mobile authentication](MOBILE_AUTHENTICATION.md). Its SQL
+migration and intentional legacy endpoint changes are separate from the original
+structural cleanup.

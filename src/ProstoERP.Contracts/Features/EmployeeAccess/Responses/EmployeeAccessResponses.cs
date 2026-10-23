@@ -46,6 +46,7 @@ namespace ProstoERP.Contracts.Features.EmployeeAccess
         public string DeviceModel { get; set; }
         public string OSVersion { get; set; }
         public string MACID { get; set; }
+        public string FCMToken { get; set; }
         public DateTime? CreatedUtc { get; set; }
         public DateTime? ExpiresAt { get; set; }
         public DateTime? AbsoluteExpiresAt { get; set; }

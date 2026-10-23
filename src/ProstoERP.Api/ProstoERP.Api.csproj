@@ -317,4 +317,11 @@
   <ItemGroup>
     <Compile Include="Shared\Responses\MobileModuleController.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Documentation\SwaggerModules.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\Authentication\AuthenticationController.cs" />
+    <Compile Include="Features\Authentication\AuthenticationResponses.cs" />
+  </ItemGroup>
 </Project>

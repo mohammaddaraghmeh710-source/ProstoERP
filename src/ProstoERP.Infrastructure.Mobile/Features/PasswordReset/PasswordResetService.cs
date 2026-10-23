@@ -49,6 +49,8 @@ namespace Prosto_ERP_API.Mobile
 
         private static string Code()
         {
+            var local = ProstoERP.Infrastructure.Mobile.Features.Authentication.LocalOtpDelivery.FixedCode();
+            if (local != null) return local;
             using (var rng = RandomNumberGenerator.Create())
             {
                 var bytes = new byte[4];
@@ -63,9 +65,9 @@ namespace Prosto_ERP_API.Mobile
             }
         }
 
-        public async Task<object> Request(int employee, string source)
+        public async Task<object> Request(int employee, string source, Guid? challengeId = null)
         {
-            var id = Guid.NewGuid();
+            var id = challengeId ?? Guid.NewGuid();
             var code = Code();
             var row = db.Query("dbo.PasswordReset_Request", P("@EmployeeNumber", employee), P("@ID", id),
                 P("@OtpHash", Hash(id.ToString("D") + ":" + code)), P("@SourceHash", Hash("client:" + source))).Rows[0];
@@ -81,6 +83,13 @@ namespace Prosto_ERP_API.Mobile
                     "العلامة التجارية غير متاحة. يرجى التواصل مع مدير النظام.");
             try
             {
+                if (await ProstoERP.Infrastructure.Mobile.Features.Authentication.LocalOtpDelivery.Send(email,
+                    "Password recovery — " + Convert.ToString(row["BrandName"]),
+                    EmailBody(Convert.ToString(row["EmployeeName"]), Convert.ToString(row["BrandName"]), code)))
+                {
+                    db.Query("dbo.PasswordReset_Delivery", P("@ID", id), P("@Sent", true));
+                    return new ResetChallengeResponse { ChallengeID = id, MaskedEmail = Mask(email), ExpiresInSeconds = 600, ResendAfterSeconds = 60 };
+                }
                 var settings = db.Query("dbo.EmailNotification_Credentials", P("@BrandID", row["BrandID"]));
                 if (settings.Rows.Count != 1 || !(bool)settings.Rows[0]["Enabled"] ||
                     settings.Rows[0].IsNull("AppPassword"))
@@ -128,6 +137,8 @@ namespace Prosto_ERP_API.Mobile
 
         public object Verify(Guid id, string code)
         {
+            if (!ProstoERP.Infrastructure.Mobile.Features.Authentication.LocalOtpDelivery.IsValidCode(code))
+                throw new ResetException(HttpStatusCode.BadRequest, "INVALID_OTP_FORMAT", "A valid verification code is required.");
             var token = tokens.NewToken();
             db.Query("dbo.PasswordReset_Verify", P("@ID", id), P("@OtpHash", Hash(id.ToString("D") + ":" + code)),
                 P("@ResetHash", tokens.TokenHash(token)));

@@ -1,3 +1,4 @@
+@model Prosto_ERP_API.Documentation.SwaggerModule
 @{ Layout = null; }
 <!DOCTYPE html>
 <html lang="en">
@@ -18,19 +19,26 @@
 <nav class="api-module-bar" aria-label="API documentation module">
     <label for="api-module">API module</label>
     <select id="api-module">
-        <option value="mobile">Mobile API</option>
-        <option value="all">All APIs</option>
+        @foreach (var module in Prosto_ERP_API.Documentation.SwaggerModules.Modules)
+        {
+            if (module.Key == Model.Key)
+            {
+                <option value="@module.Key" selected="selected">@module.Title</option>
+            }
+            else
+            {
+                <option value="@module.Key">@module.Title</option>
+            }
+        }
     </select>
-    <a id="api-contract" href="@Url.Content("~/swagger/docs/mobile-v1")">Open JSON contract</a>
+    <a id="api-contract" href="@Url.Content("~/swagger/docs/" + Model.Document)">Open JSON contract</a>
 </nav>
 <div id="swagger-ui"></div>
 <script src="@Url.Content("~/Content/swagger-ui/swagger-ui-bundle.js")"></script>
 <script>
     window.onload = function () {
-        var selectedModule = '@ViewData["SwaggerModule"]' === 'All APIs' ? 'all' : 'mobile';
-        var specificationUrl = selectedModule === 'all'
-            ? '@Url.Content("~/swagger/docs/v1")'
-            : '@Url.Content("~/swagger/docs/mobile-v1")';
+        var selectedModule = '@Model.Key';
+        var specificationUrl = '@Url.Content("~/swagger/docs/" + Model.Document)';
         var selector = document.getElementById('api-module');
         selector.value = selectedModule;
         selector.onchange = function () {

@@ -60,4 +60,10 @@
     <Compile Include="Features\Correspondence\Responses\CorrespondenceResponses.cs" />
     <Compile Include="Features\PasswordReset\Responses\PasswordResetResponses.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\Authentication\AuthenticationContracts.cs" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
 </Project>

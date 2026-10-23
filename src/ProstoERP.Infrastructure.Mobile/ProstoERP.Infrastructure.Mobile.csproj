@@ -12,6 +12,7 @@
     <DebugType Condition="'$(Configuration)' == 'Debug'">full</DebugType>
     <Optimize Condition="'$(Configuration)' == 'Release'">true</Optimize>
     <Deterministic>true</Deterministic>
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -83,4 +84,29 @@
   <ItemGroup>
     <Compile Include="Features\Circulars\Notifications\CircularNotificationWorker.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\IMobileDataSession.cs" />
+    <Compile Include="Data\MobileStatement.cs" />
+    <Compile Include="Data\MobileTransactionalStore.cs" />
+    <Compile Include="Features\Feedback\FeedbackStore.cs" />
+    <Compile Include="Features\Correspondence\CorrespondenceStore.cs" />
+    <Compile Include="Features\CustomerFeedback\CustomerFeedbackStore.cs" />
+    <Compile Include="Features\CustomerPortal\CustomerPortalStore.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\Authentication\AuthenticationStore.cs" />
+    <Compile Include="Features\Authentication\AuthenticationSecurity.cs" />
+    <Compile Include="Features\Authentication\AuthenticationOtpSender.cs" />
+    <Compile Include="Features\Authentication\LocalOtpDelivery.cs" />
+    <Compile Include="Features\Authentication\PasswordRecoveryDispatcher.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
 </Project>

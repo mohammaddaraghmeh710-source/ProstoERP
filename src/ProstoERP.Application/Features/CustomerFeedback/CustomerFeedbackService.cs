@@ -5,7 +5,7 @@ using ProstoERP.Contracts.Common;
 using ProstoERP.Contracts.Features.Feedback;
 using ProstoERP.Contracts.Features.CustomerFeedback;
 using ProstoERP.Contracts.Features.CustomerPortal;
-using FeedbackDb = ProstoERP.Application.Abstractions.IMobileDataSession;
+using FeatureStore = ProstoERP.Application.Features.CustomerFeedback.ICustomerFeedbackStore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -23,10 +23,10 @@ namespace ProstoERP.Application.Features.CustomerFeedback
     // Public submission only. Viewing or downloading a request still requires the employee session and access checks.
     public sealed class CustomerFeedbackService
     {
-        private readonly IMobileDataSessionFactory sessions;
+        private readonly ICustomerFeedbackStoreFactory sessions;
         private readonly IMobileWorkflowContext context;
         private readonly IMobileFiles files;
-        public CustomerFeedbackService(IMobileDataSessionFactory sessions, IMobileWorkflowContext context, IMobileFiles files)
+        public CustomerFeedbackService(ICustomerFeedbackStoreFactory sessions, IMobileWorkflowContext context, IMobileFiles files)
         {
             this.sessions = sessions;
             this.context = context;
@@ -46,7 +46,7 @@ namespace ProstoERP.Application.Features.CustomerFeedback
                 using (var db = sessions.Open())
                 {
                     CheckRate(db, "options");
-                    var result = db.Execute(MobileStatement.CustomerFeedback_SelectCustomerFeedbackOptions, "Brand", brandID, "Type", typeID);
+                    var result = db.SelectCustomerFeedbackOptions("Brand", brandID, "Type", typeID);
                     return Success(new CustomerFeedbackOptions
                     {
                         Types = ProstoERP.Application.Data.MobileRowMapper.Rows(result), Brands = ProstoERP.Application.Data.MobileRowMapper.Rows(result, 1),
@@ -86,10 +86,8 @@ namespace ProstoERP.Application.Features.CustomerFeedback
                         ProstoERP.Application.Validation.MobileValidation.ValidateOperation(model.OperationID, model.OccurredAt);
                         var hash = upload.Hash("customer-submit/" + JsonConvert.SerializeObject(model));
                         db.Begin();
-                        db.Execute(MobileStatement.CustomerFeedback_CreateLock,
-                            "Key", "customer-feedback:" + model.OperationID);
-                        var previous = ProstoERP.Application.Data.MobileRowMapper.Rows(db.Execute(MobileStatement.CustomerFeedback_CreateCustomerFeedbackSubmissions,
-                            "Operation", model.OperationID));
+                        db.CreateLock("Key", "customer-feedback:" + model.OperationID);
+                        var previous = ProstoERP.Application.Data.MobileRowMapper.Rows(db.CreateCustomerFeedbackSubmissions("Operation", model.OperationID));
                         if (previous.Count > 0)
                         {
                             if (!((byte[])previous[0]["PayloadHash"]).SequenceEqual(hash))
@@ -101,14 +99,12 @@ namespace ProstoERP.Application.Features.CustomerFeedback
                         }
 
                         upload.Prepare();
-                        var saved = ProstoERP.Application.Data.MobileRowMapper.Rows(db.Execute(MobileStatement.CustomerFeedback_InsertCustomerFeedbackRequest,
-                            "Type", model.TypeID, "Topic", model.TopicID, "Brand", model.BrandID, "Branch",
+                        var saved = ProstoERP.Application.Data.MobileRowMapper.Rows(db.InsertCustomerFeedbackRequest("Type", model.TypeID, "Topic", model.TopicID, "Brand", model.BrandID, "Branch",
                             model.BranchID,
                             "Name", model.Name, "Mobile", model.Mobile, "Email", model.Email, "Title", model.Title,
                             "Details", model.Details, "Disclose", model.DiscloseIdentity, "Files", upload.Xml));
                         var id = Convert.ToInt32(saved[0]["ID"]);
-                        db.Execute(MobileStatement.CustomerFeedback_CreateEmployeeFeedbackWorkflow,
-                            "Operation", model.OperationID, "Hash", hash, "ID", id, "Occurred",
+                        db.CreateEmployeeFeedbackWorkflow("Operation", model.OperationID, "Hash", hash, "ID", id, "Occurred",
                             ProstoERP.Application.Validation.MobileValidation.ParseTime(model.OccurredAt), "Received", receivedUtc);
                         upload.PreserveFiles = true;
                         try
@@ -131,7 +127,7 @@ namespace ProstoERP.Application.Features.CustomerFeedback
             }
         }
 
-        private void CheckRate(FeedbackDb db, string scope)
+        private void CheckRate(FeatureStore db, string scope)
         {
             string address = context.ClientAddress;
             // Non-IIS hosts without connection context share a restrictive bucket, rather than trusting caller headers.
@@ -143,7 +139,7 @@ namespace ProstoERP.Application.Features.CustomerFeedback
                 hash = sha.ComputeHash(Encoding.UTF8.GetBytes(address));
             }
 
-            var row = ProstoERP.Application.Data.MobileRowMapper.Rows(db.Execute(MobileStatement.CustomerFeedback_CustomerFeedbackCheckRate, "ClientHash", hash, "Scope",
+            var row = ProstoERP.Application.Data.MobileRowMapper.Rows(db.CustomerFeedbackCheckRate("ClientHash", hash, "Scope",
                 scope))[0];
             if (!Convert.ToBoolean(row["Allowed"]))
             {
