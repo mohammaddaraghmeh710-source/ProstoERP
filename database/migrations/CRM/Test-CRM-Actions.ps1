@@ -9,8 +9,10 @@ function Q([string]$sql,[hashtable]$parameters=@{}) {
 }
 function Assert([bool]$ok,[string]$message){if(-not $ok){throw $message}}
 function NewRecord([string]$entity,[string]$extra='') {
+ if($entity -eq 'Contacts'){$extra+='<Job_Title>مدير</Job_Title><Job_Title_EN>Manager</Job_Title_EN>'}
+ if($entity -eq 'Accounts'){$brand=(Q 'SELECT TOP(1) ID FROM Brands WHERE IsActive=1 AND ISNULL(IsDeleted,0)=0 ORDER BY ID').Rows[0].ID;$extra+="<Brand_ID>$brand</Brand_ID>"}
  $name='CRM actions '+[guid]::NewGuid()
- return (Q "EXEC CRM_Save_$entity @Actor_ID=@a,@Data=@x" @{'@a'=$admin;'@x'="<row><Name_AR>$name</Name_AR>$extra</row>"}).Rows[0]
+ return (Q "EXEC CRM_Save_$entity @Actor_ID=@a,@Data=@x" @{'@a'=$admin;'@x'="<row><Name_AR>$name</Name_AR><Name_EN>Test Contact</Name_EN>$extra</row>"}).Rows[0]
 }
 function DeleteRecord([string]$entity,$record,[int]$actor) {
  [void](Q 'EXEC CRM_Delete @Actor_ID=@a,@Entity=@e,@ID=@id,@Version=@v' @{'@a'=$actor;'@e'=$entity;'@id'=$record.ID;'@v'=$record.Row_Version})

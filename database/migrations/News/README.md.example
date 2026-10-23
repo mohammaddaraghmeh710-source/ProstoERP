@@ -1,4 +1,4 @@
-# Brand-assigned news
+﻿# Brand-assigned news
 
 News.Brand_ID is an explicit nullable FK to Brands; it is not inferred from the publisher's account. The administrator's Add_News/Edit_News pages require an active brand before saving through News_AdminSave. News_AdminList revalidates active Type=1 administrators and provides brand name/filtering plus existing keyword/status filters. Null remains schema-compatible with historical/legacy writers, but new Portal saves cannot omit a brand. Images/date/order/content/audit conventions remain the existing ones.
 
@@ -31,3 +31,7 @@ The envelope remains Success/Count/Data/Session. Returned rows have the existing
 Mobile_API/Test-MobileApi.ps1 loads this migration into a disposable SQL fixture, then checks matching brand results, omission/invalid/cross-brand requests, inactive/deleted/unassigned news, SQL admin/save/brand checks, editing assignment and current employee membership changes alongside existing login/device/BIO tests. Release build and Portal ASP.NET precompilation check integration; authenticated UI editing on the deployment host remains a separate check. No live news content is created or modified by tests.
 
 Validated locally: Release solution build and Portal precompilation succeeded; 215 mobile/news/device/BIO integration assertions passed. All three pre-existing local news rows are now assigned to Prosto (29), with none unassigned. Authenticated visual add/edit testing was not performed.
+
+## Bilingual Portal details
+
+Apply 002_BilingualDetails.sql after 001. Existing customer-enabled deployments use CustomerPortal/Apply-News.ps1 for a verified-backup transaction covering News/002 and CustomerPortal/010. Fresh News/Apply.ps1 includes 001–002; install customer procedures afterward. Existing Arabic Details is unchanged; nullable Details_EN is not auto-translated. The optional final News_AdminSave parameter preserves English when omitted and supports explicit clearing. Portal add/edit require the matching DLL, ASPX/designers, Modules/News/Web.config, local CKEditor and assets/js/news-editor.js. Deferred request validation applies only to the two rich-text inputs; shared InformationPagesData sanitation runs before storage. Current mobile/legacy API projections retain Arabic Details with no new field or notification contract. CustomerPortal/Test-CustomerPortal.ps1 includes real ASP.NET bilingual add/edit, sanitization, editor restoration, explicit clearing, legacy preservation and administrator/brand checks, plus language-tab/image-free customer details and news ownership/publication checks.

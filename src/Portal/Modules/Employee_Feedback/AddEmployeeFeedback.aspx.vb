@@ -1,4 +1,4 @@
-﻿Imports Prosto_ERP_ClassLibrary
+Imports Prosto_ERP_ClassLibrary
 
 Public Class AddEmployeeFeedback
     Inherits EmployeeFeedbackPage
@@ -8,45 +8,38 @@ Public Class AddEmployeeFeedback
             Then Response.Redirect("ManageEmployeeFeedback.aspx")
         EnsureDraft()
         If Not IsPostBack Then
-            EmployeeFeedbackCatalog.FillTypes(ddlType, ActorID, 0, "اختر نوع الطلب")
+            FeedbackPresentation.FillTypes(ddlType, ActorID, 0, "اختر نوع الطلب")
             FillTopics()
-            EmployeeFeedbackConfig.FillTargets(ddlTarget, ActorID)
+            EmployeeFeedbackConfig.FillTargets(ddlTarget,ActorID)
+            Dim applicant=EmployeeFeedbackCatalog.OwnApplicant(ActorID)
+            litApplicant.Text="<div class='row g-3 mb-4'>" & FeedbackPresentation.Info("العلامة التجارية",applicant.BrandName,"bx-store") & FeedbackPresentation.Info("الفرع",applicant.BranchName,"bx-map") & "</div>" & FeedbackPresentation.Contact(applicant)
         End If
     End Sub
 
     Private Sub FillTopics()
-        ddlTopic.Items.Clear()
-        ddlTopic.Items.Add(New ListItem("اختر الموضوع", "0"))
-        If Number(ddlType) = 0 Then Return
+        ddlTopic.Items.Clear() : ddlTopic.Items.Add(New ListItem("اختر الموضوع","0"))
         Using db As New Prosto_ERP_DataClassesDataContext()
-            For Each t In db.Select_Employee_Feedback_Topics(ActorID, 0, Number(ddlType), 0, False)
-                ddlTopic.Items.Add(New ListItem(t.Title_Ar & " — " & t.BrandName, t.ID.ToString()))
+            For Each t In db.Select_Employee_Feedback_Topics(ActorID,0,0,0,False)
+                Dim item As New ListItem(t.Title_Ar & " — " & t.BrandName,t.ID.ToString())
+                item.Attributes("data-feedback-type")=t.Type.ToString()
+                ddlTopic.Items.Add(item)
             Next
         End Using
     End Sub
-
-    Protected Sub Type_Changed(sender As Object, e As EventArgs)
-        Try : FillTopics()
-        Catch ex As Exception : ShowError(ex)
-        End Try
-    End Sub
-
-    Protected Sub Target_Changed(sender As Object, e As EventArgs)
-        Try
-            lblRouting.Text = ""
-            If Number(ddlTarget) = 0 Then Return
-            Using db As New Prosto_ERP_DataClassesDataContext()
-                Dim rows = db.Select_Employee_Feedback_Recipients(ActorID, Number(ddlTarget)).ToList()
-                If rows.Count = 0 Then Throw New ArgumentException("لا يوجد مدير متاح لاستلام الطلب.")
-                lblRouting.Text =
-                    Server.HtmlEncode(
-                        If _
-                            (rows.Any(Function(r) r.IsFallback),
-                             "لا يوجد المدير المطلوب؛ سيُوجّه الطلب إلى مدير النظام. ", "") & "المستلمون: " &
-                        String.Join("، ", rows.Select(Function(r) r.FullName_Ar)))
-            End Using
-        Catch ex As Exception : ShowError(ex)
-        End Try
+    Private Sub FillRoutingPreviews()
+        Using db As New Prosto_ERP_DataClassesDataContext()
+            For Each item As ListItem In ddlTarget.Items
+                If item.Value="0" Then Continue For
+                Try
+                    Dim rows=db.Select_Employee_Feedback_Recipients(ActorID,Integer.Parse(item.Value)).ToList()
+                    item.Attributes("data-feedback-routing")=If(rows.Count=0,"لا يوجد مدير متاح لاستلام الطلب.",If(rows.Any(Function(r) r.IsFallback),"لا يوجد المدير المطلوب؛ سيُوجّه الطلب إلى مدير النظام. ","") & "المستلمون: " & String.Join("، ",rows.Select(Function(r) r.FullName_Ar)))
+                    item.Attributes.Remove("data-feedback-unavailable")
+                Catch ex As Exception
+                    item.Attributes("data-feedback-routing")="الجهة المحددة غير متاحة حاليًا. اختر جهة أخرى."
+                    item.Attributes("data-feedback-unavailable")="1"
+                End Try
+            Next
+        End Using
     End Sub
 
     Protected Sub Save_Click(sender As Object, e As EventArgs)
@@ -66,7 +59,7 @@ Public Class AddEmployeeFeedback
                                                         txtDetails.Text.Trim(), ddlIdentity.SelectedValue = "1",
                                                         Number(ddlTarget), attachments).Single().ID
             End Using
-        Catch ex As Exception : CorrespondenceData.Cleanup(saved)
+        Catch ex As Exception : CorrespondenceAttachments.Cleanup(saved)
             ShowError(ex)
             Return
         End Try
@@ -76,7 +69,24 @@ Public Class AddEmployeeFeedback
     End Sub
 
     Protected Overrides Sub OnPreRender(e As EventArgs)
+        Using db As New Prosto_ERP_DataClassesDataContext()
+            Dim topics=db.Select_Employee_Feedback_Topics(ActorID,0,0,0,False).ToDictionary(Function(topic) topic.ID.ToString())
+            For Each item As ListItem In ddlTopic.Items
+                If item.Value="0" Then Continue For
+                If topics.ContainsKey(item.Value) Then
+                    item.Attributes("data-feedback-type")=topics(item.Value).Type.ToString()
+                    item.Attributes.Remove("data-feedback-unavailable")
+                Else
+                    item.Attributes("data-feedback-unavailable")="1"
+                End If
+            Next
+        End Using
+        FillRoutingPreviews()
         ShowQueued()
+        If IsPostBack Then
+            Dim stepIndex=If(Request.Form("__EVENTTARGET")=btnClearUploads.UniqueID OrElse Request.Form(btnClearUploads.UniqueID) IsNot Nothing,2,3)
+            ScriptManager.RegisterStartupScript(Me,Me.GetType(),"FeedbackWizardStep","document.addEventListener('DOMContentLoaded',function(){var w=document.querySelector('[data-feedback-wizard]');if(w&&window.FeedbackWizard)FeedbackWizard.goTo(w," & stepIndex.ToString() & ");});",True)
+        End If
         MyBase.OnPreRender(e)
     End Sub
 End Class

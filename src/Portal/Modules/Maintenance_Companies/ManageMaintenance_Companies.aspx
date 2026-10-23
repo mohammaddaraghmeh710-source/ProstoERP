@@ -3,7 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 </asp:Content>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server"><asp:UpdatePanel ID="systemAdminPanel" runat="server" UpdateMode="Conditional"><ContentTemplate>
 
     <div class="container-xxl flex-grow-1 container-p-y">
 
@@ -46,16 +46,16 @@
                                     </LayoutTemplate>
 
                                     <ItemTemplate>
-                                        <tr>
-                                            <td data-title="العنوان بالعربية"><%# Eval("Title_Ar")%></td>
-                                            <td data-title="العنوان بالإنجليزية"><%# Eval("Title_En")%></td>
+                                        <tr data-admin-name='<%#: CRM.SystemAdministrationUI.SearchName(Container.DataItem) %>' data-admin-id='<%#: Eval("ID") %>' data-admin-active='<%# CRM.SystemAdministrationUI.State(Container.DataItem) %>'>
+                                            <td data-title="العنوان بالعربية"><%#: Eval("Title_Ar") %></td>
+                                            <td data-title="العنوان بالإنجليزية"><%#: Eval("Title_En") %></td>
                                             <td data-title="تاريخ الإنشاء">
-                                                <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("AddedDate"))%>
+                                                <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("AddedDate", "{0:yyyy/MM/dd HH:mm}")) %>
                                             </td>
 
                                             <td data-title="تعديل">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-secondary"
-                                                    ID="btnEdit" CommandName="Edit" CommandArgument='<%# Eval("ID")%>'
+                                                    ID="btnEdit" CommandName="Edit" CommandArgument='<%#: Eval("ID") %>'
                                                     runat="server" ToolTip="تعديل \ مشاهدة">
                                                     <i class="bx bx-edit-alt"></i>
                                                 </asp:LinkButton>
@@ -64,7 +64,7 @@
                                             <td data-title="حذف">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-danger" ID="btnDelete"
                                                     CommandName="DeleteItem"
-                                                    CommandArgument='<%# Eval("ID")%>'
+                                                    CommandArgument='<%#: Eval("ID") %>'
                                                     runat="server"
                                                     ToolTip="حذف"
                                                     CausesValidation="false"
@@ -91,4 +91,4 @@
 
     </div>
 
-</asp:Content>
+</ContentTemplate></asp:UpdatePanel></asp:Content>

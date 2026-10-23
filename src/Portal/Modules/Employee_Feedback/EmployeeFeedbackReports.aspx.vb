@@ -1,4 +1,4 @@
-﻿Imports System.Globalization
+Imports System.Globalization
 Imports System.Threading
 Imports System.Web.Script.Serialization
 Imports Prosto_ERP_ClassLibrary
@@ -13,7 +13,7 @@ Public Class EmployeeFeedbackReports
         lnkNew.Visible = {2, 3, 4}.Contains(ActorType) AndAlso ListMode <> 2
         If Not IsPostBack Then
             Try
-                EmployeeFeedbackCatalog.FillTypes(ddlType, ActorID, 2, "الكل")
+                FeedbackPresentation.FillTypes(ddlType, ActorID, 2, "الكل")
                 ddlBrand.Items.Add(New ListItem("الكل", "0"))
                 ddlBranch.Items.Add(New ListItem("الكل", "0"))
                 ddlShift.Items.Add(New ListItem("الكل", "0"))
@@ -353,9 +353,9 @@ window.addEventListener('load', function () {
                 output.AppendLine(String.Join(",",
                                               {Csv(r.ID.ToString()), Csv(EmployeeFeedbackData.TypeText(r.Type)),
                                                Csv(r.Title), Csv(r.EmployeeName),
-                                               Csv(EmployeeFeedbackCatalog.SourceName(r.SourceType)), Csv(r.BrandName),
+                                               Csv(FeedbackPresentation.SourceName(r.SourceType)), Csv(r.BrandName),
                                                Csv(r.BranchName), Csv(EmployeeFeedbackData.StatusText(r.Status)),
-                                               Csv(CorrespondenceData.DisplayDate(r.AddedDate))}))
+                                               Csv(CorrespondencePresentation.DisplayDate(r.AddedDate))}))
             Next
             Response.Clear()
             Response.ContentType = "text/csv"

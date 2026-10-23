@@ -1,9 +1,9 @@
-﻿<%@ Page Title="تعديل خبر" Language="vb" AutoEventWireup="false"
+<%@ Page Title="تعديل خبر" Language="vb" AutoEventWireup="false"
     MasterPageFile="~/Site.Master"
     CodeBehind="Edit_News.aspx.vb"
     Inherits="CRM.Edit_News" %>
 
-<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server"></asp:Content>
+<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server"><script src="/ckeditor/ckeditor.js"></script><script src="/assets/js/news-editor.js?v=20261018a" defer></script></asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="container-xxl flex-grow-1 container-p-y" style="direction: rtl; text-align: right;">
@@ -22,42 +22,14 @@
                         <asp:HiddenField ID="hfImagePath" runat="server" />
 
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <asp:Label runat="server" AssociatedControlID="ddlBrand" CssClass="form-label" Text="العلامة التجارية" />
-                                <asp:DropDownList ID="ddlBrand" runat="server" CssClass="form-select" />
-                                <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlBrand" InitialValue="0" ValidationGroup="NewsForm" CssClass="text-danger" Display="Dynamic" ErrorMessage="اختر العلامة التجارية." />
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">العنوان عربي</label>
-                                <asp:TextBox ID="txtTitleAr" runat="server" CssClass="form-control" />
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">العنوان إنجليزي</label>
-                                <asp:TextBox ID="txtTitleEn" runat="server" CssClass="form-control" />
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">نبذة عربي</label>
-                                <asp:TextBox ID="txtBriefAr" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4" />
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">نبذة إنجليزي</label>
-                                <asp:TextBox ID="txtBriefEn" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4" />
-                            </div>
-
-                            <div class="col-12">
-                                <label class="form-label">التفاصيل</label>
-                                <asp:TextBox ID="txtDetails" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="6" />
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">تاريخ الخبر</label>
-                                <asp:TextBox ID="txtDate" runat="server" CssClass="form-control" TextMode="DateTimeLocal" />
-                            </div>
-
+                            <div class="col-md-6"><asp:Label runat="server" AssociatedControlID="ddlBrand" CssClass="form-label" Text="العلامة التجارية"/><asp:DropDownList ID="ddlBrand" runat="server" CssClass="form-select"/><asp:RequiredFieldValidator runat="server" ControlToValidate="ddlBrand" InitialValue="0" ValidationGroup="NewsForm" CssClass="text-danger" Display="Dynamic" ErrorMessage="اختر العلامة التجارية."/></div>
+                            <div class="col-md-6"><asp:Label runat="server" AssociatedControlID="txtDate" CssClass="form-label" Text="تاريخ الخبر"/><asp:TextBox ID="txtDate" runat="server" CssClass="form-control" TextMode="DateTimeLocal"/></div>
+                            <div class="col-md-6"><asp:Label runat="server" AssociatedControlID="txtTitleAr" CssClass="form-label" Text="اسم الخبر بالعربية"/><asp:TextBox ID="txtTitleAr" runat="server" CssClass="form-control" /></div>
+                            <div class="col-md-6"><asp:Label runat="server" AssociatedControlID="txtTitleEn" CssClass="form-label" Text="اسم الخبر بالإنجليزية"/><asp:TextBox ID="txtTitleEn" runat="server" CssClass="form-control" dir="ltr"/></div>
+                            <div class="col-12"><asp:Label runat="server" AssociatedControlID="txtBriefAr" CssClass="form-label" Text="الملخص بالعربية"/><asp:TextBox ID="txtBriefAr" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"/></div>
+                            <div class="col-12"><asp:Label runat="server" AssociatedControlID="txtBriefEn" CssClass="form-label" Text="الملخص بالإنجليزية"/><asp:TextBox ID="txtBriefEn" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" dir="ltr"/></div>
+                            <div class="col-12"><asp:Label runat="server" AssociatedControlID="txtDetails" CssClass="form-label" Text="التفاصيل بالعربية"/><asp:TextBox ID="txtDetails" runat="server" CssClass="form-control" ClientIDMode="Static" TextMode="MultiLine" Rows="8" ValidateRequestMode="Disabled"/></div>
+                            <div class="col-12"><asp:Label runat="server" AssociatedControlID="txtDetailsEn" CssClass="form-label" Text="التفاصيل بالإنجليزية"/><asp:TextBox ID="txtDetailsEn" runat="server" CssClass="form-control" ClientIDMode="Static" TextMode="MultiLine" Rows="8" ValidateRequestMode="Disabled" dir="ltr"/></div>
                             <div class="col-md-2">
                                 <label class="form-label">الترتيب</label>
                                 <asp:TextBox ID="txtOrder" runat="server" CssClass="form-control" TextMode="Number" />
@@ -108,7 +80,7 @@
 
                         <hr class="my-4" />
 
-                        <asp:LinkButton ID="btnSave" runat="server" ValidationGroup="NewsForm" CssClass="btn btn-primary" OnClick="btnSave_Click">
+                        <asp:LinkButton ID="btnSave" runat="server" OnClientClick="crmNewsUpdateEditors();" ValidationGroup="NewsForm" CssClass="btn btn-primary" OnClick="btnSave_Click">
                             حفظ التعديل
                         </asp:LinkButton>
 

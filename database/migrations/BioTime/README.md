@@ -110,10 +110,7 @@ filter/page/page_size query keys. Original filters are reapplied; redirects are 
 URLs/pages/transaction IDs fail safely. Safety limits: 10,000 pages, 1,000,000 records, 8MiB per response, 30-second
 HTTP timeout and two-minute total deadline. Exceeding a pagination bound is a failure, not a truncated success.
 
-Administrators configure independent attendance API and BioTime roots per brand. Request bodies cannot select either
-target. Optional HR URL/username/password are saved only; no HR calls are implemented. The shared .NET Framework
-HttpClient disables cookies/proxies/automatic redirects and never sets shared Authorization headers. This project has no
-existing DI container or managed outbound HttpClient pattern, so no new framework is introduced.
+Administrators configure independent attendance API and BioTime roots per brand. Request bodies cannot select either target. Optional HR URL/username/password are used by the read-only employee HR profile described below. The shared .NET Framework HttpClient disables cookies/proxies/automatic redirects and never sets shared Authorization headers. This project has no existing DI container or managed outbound HttpClient pattern, so no new framework is introduced.
 
 ## Deployment
 
@@ -173,8 +170,8 @@ deployment tests must be completed on the intended server. No live BioTime succe
   authentication is unchanged.
 
 Additional files: src/Portal/Features/Attendance/Data/AttendanceData.vb,
-src/Portal/Modules/Employees/AttendanceHistory.aspx (+ code-behind/designer),
-src/Portal/Modules/Attendance_Integration/ManageAttendanceIntegration.aspx (+ code-behind/designer),
+src/src/Portal/Modules/Employees/AttendanceHistory.aspx (+ code-behind/designer),
+src/src/Portal/Modules/Attendance_Integration/ManageAttendanceIntegration.aspx (+ code-behind/designer),
 src/ProstoERP.Infrastructure/Features/Attendance/AttendanceIntegration.vb,
 database/migrations/BioTime/002_BrandIntegration.sql, BrandIntegrationTests.cs and Test-BrandIntegration.ps1. Profile,
 employee management, Site.Master, Portal Web.config (AttendanceApi.BaseUrl and aspnet:
@@ -203,24 +200,23 @@ knowledge references are updated.
 
 ### Extension verification
 
-Release solution build succeeded with the existing unrelated BC42104 warning. 55 simulated-upstream/HTTP assertions and
-45 real SQL/authentication assertions passed in a disposable database, subsequently removed. SQL cases include DPAPI
-roundtrip, distinct brands, wrong passwords, metadata secrecy, admin restrictions, current employee scope, blank edits,
-optimistic conflicts, rotation, disable/re-enable, duplicate job numbers, foreign-brand access, inactive/retired actors.
-Test credentials were synthetic.
+Release solution build succeeded with the existing unrelated BC42104 warning. 55 simulated-upstream/HTTP assertions and 45 real SQL/authentication assertions passed in a disposable database, subsequently removed. SQL cases include DPAPI roundtrip, distinct brands, wrong passwords, metadata secrecy, admin restrictions, current employee scope, blank edits, optimistic conflicts, rotation, disable/re-enable, duplicate job numbers, foreign-brand access, inactive/retired actors. Test credentials were synthetic.
 
-Test-BrandIntegration.ps1 creates an isolated SQL fixture and calls Test-BioTime.ps1. It does not modify live
-employees/brand credentials. SQL tests succeeded with local SQL access outside the restricted sandbox. Anonymous browser
-checks of profile/history/settings redirected to login without ASPX compilation errors. An authenticated browser session
-was unavailable; final desktop/mobile visuals and admin/employee postbacks remain unverified. Development BioTime
-localhost:8089 is unavailable, so real punches and actual server/IIS/API connectivity still require the intended server.
-The Portal requires appSetting aspnet:UseTaskFriendlySynchronizationContext=true for Task-returning PageAsyncTask
-callbacks. Deploy the updated Portal Web.config with the pages; compilation targetFramework=4.8 alone does not enable
-this runtime behavior. The existing httpRuntime limits and compatibility target are retained.
+Test-BrandIntegration.ps1 creates an isolated SQL fixture and calls Test-BioTime.ps1. It does not modify live employees/brand credentials. SQL tests succeeded with local SQL access outside the restricted sandbox. Anonymous browser checks of profile/history/settings redirected to login without ASPX compilation errors. An authenticated browser session was unavailable; final desktop/mobile visuals and admin/employee postbacks remain unverified. Development BioTime localhost:8089 is unavailable, so real punches and actual server/IIS/API connectivity still require the intended server.
+The Portal requires appSetting aspnet:UseTaskFriendlySynchronizationContext=true for Task-returning PageAsyncTask callbacks. Deploy the updated Portal Web.config with the pages; compilation targetFramework=4.8 alone does not enable this runtime behavior. The existing httpRuntime limits and compatibility target are retained.
 
-Rollback validation: Release API build succeeded; 55 BioTime HTTP assertions, 42 brand/settings SQL assertions and 88
-mobile HTTP/SQL assertions passed (185 total). Attendance credentials, brand scoping, URLs, HR storage, device approvals
-and sessions remain covered. Authenticated browser visuals and live external connections remain unverified.
+Rollback validation: Release API build succeeded; 55 BioTime HTTP assertions, 42 brand/settings SQL assertions and 88 mobile HTTP/SQL assertions passed (185 total). Attendance credentials, brand scoping, URLs, HR storage, device approvals and sessions remain covered. Authenticated browser visuals and live external connections remain unverified.
 
-API controllers are directly under Controllers. Attendance retains database-backed per-brand credentials and employee
-scoping; ERP/mobile authentication has its previous contract. HR settings remain storage only.
+API controllers are directly under Controllers. Attendance retains database-backed per-brand credentials and employee scoping; ERP/mobile authentication has its previous contract. HR settings remain storage only.
+
+## Employee HR profile (Bonanza)
+
+No database update is required. Publish the updated Portal assembly, its restored package dependencies (including System.Net.Http.WinHttpHandler and Microsoft.Bcl.HashCode), Web.config assembly redirects and `Modules/Employees/HRProfile.aspx`, MyProfile and Site.Master. No API application update or employee-data migration is needed. Reuse the existing per-brand HR settings form; HrUrl is the application base URL (optional virtual directory, without `/api/values/`), and HR credentials must be saved on the same Windows host that runs Portal. Attendance Enabled does not control HR reads.
+
+Employees open بيانات HR from the main menu; owners and system administrators can also open it from the employee profile. Every displayed value comes from Bonanza. Brand/branch sections are omitted because vendor endpoints/mappings are undocumented. The existing account/brand/settings tables are read only for server authorization and API routing, not to populate the view. The page calls GetPayEmployers, GetPayEmployeeWorkHours, GetEmployeeAttach, GetPayContracts and, on explicit month selection, GetSalarySlip. It does not write to HR or calculate leave/payroll. HTTP(S) attachment links open at the upstream host; Portal does not proxy file content or forward HR credentials to the browser.
+
+The vendor PDF provides request bodies but no response examples. The adapter accepts explicit common JSON envelopes and requires matching EmpNo on all employee-scoped rows; unknown shapes or unverified identity fail with a clear message. The configured live card/shift responses decode successfully. Tested file/slip queries can return HTTP 200 with JSON null; optional file/slip/custody null is displayed as no returned records. Null remains invalid for employee/shift records or error envelopes. Tested live cards omit base/total salary, and the page states that omission explicitly. The employee salary search found populated June 2026 data after empty July–September 2026 responses. The salary projection groups verified summary, TotalAllowance/Allow1–9, named addition and deduction fields, TotalDeduction and NetSalary; numbered allowance names remain generic. Both Months/Years and EmpMonth/EmpYear are checked when returned. No amounts/totals are calculated. Custody fields follow GetPayContracts in the PDF, with no local inventory lookup.
+
+After building Portal into `tmp/employee-hr-build`, run `database/migrations/BioTime/Test-EmployeeHR.ps1`. It uses a fake HttpMessageHandler, a real loopback WinHTTP GET-body/redirect/cookie test on .NET Framework and a disposable local database, synthetic identities/secrets only, and never changes the configured application database. The default .NET Framework HttpClientHandler rejects GET content; the HR-only client therefore uses the official Microsoft WinHttpHandler package with redirects/cookies/proxies disabled. Existing attendance clients remain unchanged. Live Portal testing matched rendered employee, financial, shift and populated June salary summary/allowance/deduction values to API responses through SHA-256 fingerprints without retaining raw response values. Tested custody and family/history list endpoints returned no records for the authenticated samples; linked qualification lookup succeeded for one sample, while unassigned qualification/specialization render an explicit empty state. Populated upstream file authorization remains unverified; deployment availability remains environment-specific.
+
+Independent cards show employee qualifications/specialization (API-card catalog IDs), children, wives, references, education and experience together; they load automatically with at most three related requests in flight. All employee-scoped records must match EmpNo. Off-date queries require their documented serial/month/year/off/start keys, and penalties require PenaltyNo; each card owns its filter/action controls and requests those exact filters, not an undocumented all-record wildcard. Attendance punches use the existing F23 API integration with current owner/admin checks and selected date range; GetPayTimeAttendance is configuration, not a punch report. No schema/procedure change is needed. The page retains no employee values in ViewState; only boolean request-intent flags persist so report results can be re-fetched after another card action. The optional attendance request starts alongside HR work and the page uses the existing attendance 150-second timeout pattern.

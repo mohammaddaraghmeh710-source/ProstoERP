@@ -4,6 +4,8 @@
     <add connectionString="Server=YOUR_SERVER;Database=YOUR_DATABASE;Integrated Security=True;" providerName="System.Data.SqlClient" name="Prosto_ERP_ConnectionConnection" />
   </connectionStrings>
   <appSettings>
+    <add key="LegacySmtp.Username" value="REPLACE_WITH_LOCAL_VALUE" />
+    <add key="LegacySmtp.Password" value="REPLACE_WITH_LOCAL_VALUE" />
     <add key="PasswordReset.ApiBaseUrl" value="REPLACE_WITH_LOCAL_VALUE" />
     <add key="PasswordReset.BasicUsername" value="REPLACE_WITH_LOCAL_VALUE" />
     <add key="PasswordReset.BasicPassword" value="REPLACE_WITH_LOCAL_VALUE" />
@@ -167,6 +169,10 @@
         <assemblyIdentity name="CKEditor.NET" publicKeyToken="e379cdf2f8354999" culture="neutral" />
         <bindingRedirect oldVersion="0.0.0.0-3.6.4.0" newVersion="3.6.4.0" />
       </dependentAssembly>
+      <dependentAssembly><assemblyIdentity name="System.Buffers" publicKeyToken="cc7b13ffcd2ddd51" culture="neutral"/><bindingRedirect oldVersion="0.0.0.0-4.0.5.0" newVersion="4.0.5.0"/></dependentAssembly>
+      <dependentAssembly><assemblyIdentity name="System.Memory" publicKeyToken="cc7b13ffcd2ddd51" culture="neutral"/><bindingRedirect oldVersion="0.0.0.0-4.0.5.0" newVersion="4.0.5.0"/></dependentAssembly>
+      <dependentAssembly><assemblyIdentity name="System.Numerics.Vectors" publicKeyToken="b03f5f7f11d50a3a" culture="neutral"/><bindingRedirect oldVersion="0.0.0.0-4.1.6.0" newVersion="4.1.6.0"/></dependentAssembly>
+      <dependentAssembly><assemblyIdentity name="System.Runtime.CompilerServices.Unsafe" publicKeyToken="b03f5f7f11d50a3a" culture="neutral"/><bindingRedirect oldVersion="0.0.0.0-6.0.3.0" newVersion="6.0.3.0"/></dependentAssembly>
     </assemblyBinding>
   </runtime>
   <location path="CustomerPortal/Feedback.aspx">

@@ -44,6 +44,13 @@ Public NotInheritable Class InformationPagesData
                                           TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time"))
     End Function
 
+    Public Shared Function AudienceText(value As Object) As String
+        Select Case Convert.ToString(value)
+            Case "customers" : Return "العملاء"
+            Case "all" : Return "الموظفون والعملاء"
+            Case Else : Return "الموظفون"
+        End Select
+    End Function
     Public Shared Function StatusText(value As Object) As String
         Return InformationPagesPresentation.StatusText(value)
     End Function

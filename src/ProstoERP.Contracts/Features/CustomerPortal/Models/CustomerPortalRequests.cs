@@ -9,14 +9,6 @@ namespace Prosto_ERP_API.Mobile
         [Required] [StringLength(128)] public string Password { get; set; }
     }
 
-    public sealed class CustomerAccessCreate
-    {
-        public Guid OperationID { get; set; }
-        [Range(1, int.MaxValue)] public int BrandID { get; set; }
-        public int[] CategoryIDs { get; set; }
-        [Required] [StringLength(1000)] public string Reason { get; set; }
-    }
-
     public sealed class CustomerPortalFeedbackCreate
     {
         public Guid OperationID { get; set; }

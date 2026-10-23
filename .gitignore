@@ -37,7 +37,16 @@ packages/
 /database/migrations/BioTime/BioTime.IntegrationTests.cs
 /src/ProstoERP.Infrastructure/My Project/Settings.settings
 /src/Portal/App_Data/
-/src/Portal/FileManager/
+/src/Portal/FileManager/*
 /database/development/Branch25_Trial/allocation.csv
 /src/Portal/Uploads/
 /database/migrations/News/README.md
+
+# Static upload-directory guards supplied by main
+!/src/Portal/FileManager/CustomerLogos/
+/src/Portal/FileManager/CustomerLogos/*
+!/src/Portal/FileManager/CustomerLogos/web.config
+!/src/Portal/FileManager/CRMWorkGuide/
+/src/Portal/FileManager/CRMWorkGuide/*
+!/src/Portal/FileManager/CRMWorkGuide/web.config
+/tmp/

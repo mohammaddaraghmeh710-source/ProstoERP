@@ -1,4 +1,4 @@
-﻿
+
 
 Public Class ManageEmployeeFeedbackPermissions
     Inherits EmployeeFeedbackPage
@@ -71,9 +71,9 @@ Public Class ManageEmployeeFeedbackPermissions
             EmployeeFeedbackConfig.Save(ActorID, Number(ddlRole), chkSubmit.Checked, chkTransfer.Checked,
                                         chkClose.Checked, targets, TryCast(ViewState("PermissionVersion"), Byte()))
             FillRole()
-            litMessage.Text = "<div class=""alert alert-success"">تم حفظ الصلاحيات وتطبيقها على الطلبات.</div>"
-        Catch ex As Exception : ShowError(ex)
-        End Try
+            SystemAdministrationUI.Complete(Me)
+            litMessage.Text="<div class=""alert alert-success"">تم حفظ الصلاحيات وتطبيقها على الطلبات.</div>"
+        Catch ex As Exception : ShowError(ex) : End Try
     End Sub
 End Class
 

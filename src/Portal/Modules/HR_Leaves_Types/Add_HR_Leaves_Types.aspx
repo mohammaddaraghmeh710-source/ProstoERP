@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="إضافة - أنواع المغادرات" Language="vb" AutoEventWireup="false" MasterPageFile="~/Site.Master" CodeBehind="Add_HR_Leaves_Types.aspx.vb" Inherits="CRM.Add_HR_Leaves_Types" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server" />
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server"><asp:UpdatePanel ID="systemAdminPanel" runat="server" UpdateMode="Conditional"><ContentTemplate>
     <div class="container-xxl flex-grow-1 container-p-y" dir="rtl">
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -37,4 +37,4 @@
             </div>
         </div>
     </div>
-</asp:Content>
+</ContentTemplate></asp:UpdatePanel></asp:Content>

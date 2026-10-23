@@ -266,8 +266,7 @@ namespace Prosto_ERP_API.Responses
             {
                 response = MobileApiSupport.Error(request, HttpStatusCode.NotFound, "NOT_FOUND", "الطلب غير متاح لك.");
             }
-            else if (sql != null && (sql.Number == 51910 || sql.Number == 51500 ||
-                                     (sql.Number >= 51100 && sql.Number <= 51109)))
+            else if (sql != null && (sql.Number == 51910 || sql.Number == 51500))
             {
                 response = MobileApiSupport.Error(request, HttpStatusCode.BadRequest, "BUSINESS_RULE", sql.Message);
             }

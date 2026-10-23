@@ -1,0 +1,9 @@
+# Work-guide retirement
+
+Deploy the Portal, class library and API builds with this change; remove retired ASPX/module/assets from the deployment directory (an overlay publish alone leaves deleted endpoints behind). Customer login now opens `CustomerPortal/Dashboard.aspx`; customer feedback and CRM credentials remain supported.
+
+Run `Apply.ps1` for the configured local SQL database. It creates a full COPY_ONLY backup in SQL Server's default backup directory, verifies it with CHECKSUM, and records its path under workspace `tmp/work-guide-retirement/verified-backup.txt` before applying an atomic transaction. It refreshes shared customer administration, removes the ten guide tables and guide procedures/functions, removes guide-only customer audit entries/DocumentID, and deploys the read-only customer dashboard. Unexpected SQL consumers or foreign keys stop and roll back the migration. A verified backup is mandatory; on other servers use the same SQL through the deployment process after a verified full backup.
+
+Shared employee/CRM/customer-login/feedback tables are retained. Stored guide upload files are retained as recovery material; this migration never deletes shared FileManager files. Restore the verified full database backup together with the matching pre-removal application build to recover the feature; restoring the whole database also rolls back subsequent unrelated database changes.
+
+`Test.ps1` verifies the removal and idempotent repeat in a rollback-only transaction against the current schema before live execution. `../CustomerPortal/Test-CustomerPortal.ps1` checks the remaining login/session/feedback/dashboard behavior in an isolated database, including contact ownership and disabled-account/login denial; add `-ApiBuildDirectory` for actual Web API route checks, including 404 responses for all retired guide routes.

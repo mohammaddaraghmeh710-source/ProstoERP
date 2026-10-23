@@ -1,4 +1,4 @@
-SET NOCOUNT ON;
+﻿SET NOCOUNT ON;
 DECLARE @Results TABLE(Test nvarchar(200));
 IF EXISTS(SELECT 1 FROM UsersMembers WHERE Type=7 AND IsActive=1) OR NOT EXISTS(SELECT 1 FROM UsersMembers WHERE ID=7) THROW 51999,'Retirement failed',1;
 INSERT @Results VALUES('Old external account disabled; history row retained');
@@ -20,24 +20,36 @@ EXEC Customer_SaveLogin @Actor=1,@AccountID=1,@Username='customer',@Version=@Ver
 BEGIN TRY EXEC Customer_Session 1,@Stamp;THROW 51999,'Old session accepted',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51911 THROW;END CATCH;
 INSERT @Results VALUES('Admin credential change invalidates existing sessions');
 SELECT @Stamp=SecurityStamp FROM Customer_Logins WHERE AccountID=1;
-EXEC Customer_SaveGrant @Actor=1,@AccountID=1,@CategoryID=1,@RoleID=1,@Children=1;
-EXEC Customer_SaveGrant @Actor=1,@AccountID=1,@CategoryID=3,@RoleID=1,@Children=0;
-IF (SELECT COUNT(*) FROM Customer_Guide_Effective(1,1) WHERE Can_View_Document=1)<>2 OR (SELECT COUNT(*) FROM Customer_Guide_Effective(1,2) WHERE Can_View_Document=1)<>1 THROW 51999,'Multi-brand/inheritance failed',1;
-IF EXISTS(SELECT 1 FROM Customer_Guide_Effective(2,1) WHERE Can_View_Document=1) THROW 51999,'Other customer gained access',1;
-INSERT @Results VALUES('Multi-brand grants, inheritance, other-customer isolation');
-EXEC Customer_SaveGrant @Actor=1,@AccountID=1,@CategoryID=2,@RoleID=2,@Children=0;
-IF EXISTS(SELECT 1 FROM Customer_Guide_Effective(1,1) WHERE ID=2 AND Can_Download_Document=1) THROW 51999,'Nearest grant failed',1;
-BEGIN TRY EXEC Customer_LogDocument 1,@Stamp,1,'download';THROW 51999,'View-only download allowed',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51910 THROW;END CATCH;
-BEGIN TRY EXEC Customer_LogDocument 1,@Stamp,2,'download';THROW 51999,'Document restriction ignored',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51910 THROW;END CATCH;
-BEGIN TRY EXEC Customer_LogDocument 1,@Stamp,-1,'view';THROW 51999,'Forged document allowed',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51910 THROW;END CATCH;
-INSERT @Results VALUES('Nearest role wins; document/download checks deny unauthorized files');
-UPDATE Customer_Guide_Grants SET End_Date=DATEADD(day,-1,GETDATE()) WHERE Category_ID=3;
-IF EXISTS(SELECT 1 FROM Customer_Guide_Effective(1,2) WHERE Can_View_Document=1) THROW 51999,'Expired grant accepted',1;
-UPDATE Customer_Guide_Grants SET End_Date=NULL WHERE Category_ID=3;
-UPDATE Brands SET IsActive=0 WHERE ID=2;
-IF EXISTS(SELECT 1 FROM Customer_Guide_Effective(1,2)) THROW 51999,'Inactive brand accepted',1;
-UPDATE Brands SET IsActive=1 WHERE ID=2;
-INSERT @Results VALUES('Expired grants and inactive brands denied immediately');
+
+-- The dashboard is scoped to the current customer's identity and exposes no internal CRM notes or credentials.
+INSERT CRM_Contacts(Account_ID,Name_AR,Job_Title,Phone,Email,Is_Active,Is_Deleted,AddedUser) VALUES
+(1,N'جهة العميل الأول',N'مدير','0791111111','first@example.invalid',1,0,1),
+(1,N'جهة موقوفة',NULL,NULL,NULL,0,0,1),(1,N'جهة محذوفة',NULL,NULL,NULL,1,1,1),
+(2,N'جهة عميل آخر',NULL,'0792222222','other@example.invalid',1,0,1);
+DECLARE @Profile TABLE(Name_AR nvarchar(200),Name_EN nvarchar(200),Phone nvarchar(50),Email nvarchar(254),TypeName nvarchar(200),BrandName nvarchar(max),BranchName nvarchar(max),ContactCount int);
+INSERT @Profile EXEC Customer_Dashboard @AccountID=1,@Stamp=@Stamp;
+IF NOT EXISTS(SELECT 1 FROM @Profile WHERE Name_AR=N'عميل الاختبار' AND ContactCount=2) THROW 51999,'Dashboard profile/contact count failed',1;
+DECLARE @Contacts TABLE(ID int,Name_AR nvarchar(200),Name_EN nvarchar(200),Job_Title nvarchar(200),Job_Title_EN nvarchar(200),Phone nvarchar(50),Email nvarchar(254),Gender nvarchar(20),Is_Active bit,Row_Version binary(8));
+INSERT @Contacts EXEC Customer_Dashboard @AccountID=1,@Stamp=@Stamp,@Section='contacts';
+IF (SELECT COUNT(*) FROM @Contacts)<>2 OR EXISTS(SELECT 1 FROM @Contacts WHERE Name_AR IN(N'جهة عميل آخر',N'جهة محذوفة')) THROW 51999,'Dashboard contact isolation failed',1;
+INSERT @Results VALUES('Dashboard returns own profile and nondeleted contacts only, including inactive contact state');
+DECLARE @Credentials TABLE(AccountID int,PasswordHash varbinary(32),Salt varbinary(32),Iterations int,SecurityStamp uniqueidentifier);
+UPDATE Customer_Logins SET IsActive=0 WHERE AccountID=1;
+INSERT @Credentials EXEC Customer_Credentials N'customer';
+IF EXISTS(SELECT 1 FROM @Credentials) THROW 51999,'Disabled login can authenticate',1;
+BEGIN TRY EXEC Customer_Session 1,@Stamp;THROW 51999,'Disabled login session allowed',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51911 THROW;END CATCH;
+BEGIN TRY EXEC Customer_Dashboard 1,@Stamp;THROW 51999,'Disabled login dashboard allowed',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51911 THROW;END CATCH;
+UPDATE Customer_Logins SET IsActive=1 WHERE AccountID=1;
+UPDATE CRM_Accounts SET Is_Active=0 WHERE ID=1;
+INSERT @Credentials EXEC Customer_Credentials N'customer';
+IF EXISTS(SELECT 1 FROM @Credentials) THROW 51999,'Inactive CRM customer can authenticate',1;
+BEGIN TRY EXEC Customer_Dashboard 1,@Stamp;THROW 51999,'Inactive customer dashboard allowed',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51911 THROW;END CATCH;
+UPDATE CRM_Accounts SET Is_Active=1,Is_Deleted=1 WHERE ID=1;
+BEGIN TRY EXEC Customer_Dashboard 1,@Stamp;THROW 51999,'Deleted customer dashboard allowed',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51911 THROW;END CATCH;
+UPDATE CRM_Accounts SET Is_Deleted=0 WHERE ID=1;
+BEGIN TRY EXEC Customer_Dashboard 1,'00000000-0000-0000-0000-000000000000';THROW 51999,'Forged stamp accepted',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51911 THROW;END CATCH;
+INSERT @Results VALUES('Inactive/deleted CRM customers, disabled logins and stale stamps cannot access the portal');
+
 UPDATE CRM_Accounts SET Is_Active=0 WHERE ID=1;
 BEGIN TRY EXEC Customer_Session 1,@Stamp;THROW 51999,'Disabled customer session allowed',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51911 THROW;END CATCH;
 UPDATE CRM_Accounts SET Is_Active=1 WHERE ID=1;

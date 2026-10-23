@@ -1,9 +1,10 @@
-﻿Imports Prosto_ERP_ClassLibrary
+Imports Prosto_ERP_ClassLibrary
 
 Public Class ManageJobTitle_Items_types
     Inherits PageBase
 
-    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+        SystemAdministrationUI.RegisterRefresh(Me, AddressOf BindData)
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If

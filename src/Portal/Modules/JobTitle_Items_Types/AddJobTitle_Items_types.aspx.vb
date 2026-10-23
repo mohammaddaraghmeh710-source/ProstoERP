@@ -5,10 +5,10 @@ Public Class AddJobTitle_Items_types
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
-            Response.Redirect("/login.aspx")
+            SystemAdministrationUI.Redirect(Me, "/login.aspx")
         End If
         If SessionManager.GetInstance.Users.UserType <> 1 Then
-            Response.Redirect("/Default.aspx")
+            SystemAdministrationUI.Redirect(Me, "/Default.aspx")
         End If
     End Sub
 
@@ -23,15 +23,15 @@ Public Class AddJobTitle_Items_types
             db.Insert_JobTitle_Items_Types(titleAr, titleEn, userId)
         End Using
 
-        LBLPOP_ModalPopupExtender.Show()
+        If Not SystemAdministrationUI.Complete(Me) Then LBLPOP_ModalPopupExtender.Show()
     End Sub
 
     Protected Sub btnClosePopup_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/JobTitle_Items_Types/ManageJobTitle_Items_types.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/JobTitle_Items_Types/ManageJobTitle_Items_types.aspx")
     End Sub
 
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/JobTitle_Items_Types/ManageJobTitle_Items_types.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/JobTitle_Items_Types/ManageJobTitle_Items_types.aspx", True)
     End Sub
 End Class
 

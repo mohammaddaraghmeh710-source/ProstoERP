@@ -2,7 +2,7 @@
 
 المسار الأساسي: `https://{host}/api/v1/customer`. هذه الخدمات لحساب العميل المسجل في CRM. تسجيل الموظف وخدماته تبقى على مساراتها الحالية. يختار التطبيق «موظف» أو «عميل» قبل تسجيل الدخول.
 
-مدير النظام وحده ينشئ الحساب ويعيد كلمة المرور. لا يوجد تسجيل ذاتي أو تعديل صلاحيات من العميل. إدارة الدليل والأدوار وطلبات الموافقة تستخدم الشاشات الحالية في النظام.
+مدير النظام وحده ينشئ الحساب ويعيد كلمة المرور. لا يوجد تسجيل ذاتي أو تعديل صلاحيات من العميل. تُدار بيانات العميل وجهات الاتصال من إدارة العملاء، وتُعرض في لوحة العميل بعد الدخول.
 
 ## المصادقة والاستجابة
 
@@ -21,36 +21,10 @@
 
 لا تُرسل AccountID أو EmployeeNumber لتحديد صاحب العملية؛ يؤخذ العميل من الرمز. رموز العملاء والموظفين غير قابلة للتبادل.
 
-## دليل العمل
-
-| الطريقة والمسار | المدخلات / الناتج |
-|---|---|
-| `GET guide/brands` | العلامات الفعالة `{ID,Title}`؛ ظهور العلامة لا يمنح ملفاتها |
-| `GET guide/categories?brandID=1` | شجرة التصنيفات المتاحة وصلاحياتها، `ID`, `Parent_ID`, `Full_Path_Ar` وأعلام `Can_*` |
-| `GET guide/documents?brandID=1&categoryID=0&search=&page=1&pageSize=20` | ملفات مسموحة، `Total,Page,PageSize,Items`؛ 1–100 عنصر في الصفحة |
-| `GET guide/documents/{id}` | بيانات الملف وصلاحياته و`FileUrl` دون المسار الفيزيائي |
-| `GET guide/documents/{id}/file` | PDF للعرض مع Bearer |
-| `GET guide/documents/{id}/file?download=true` | تنزيل PDF عند السماح فقط |
-| `GET guide/access-request-options?brandID=1` | التصنيفات مع `Can_Request`, `Pending_Request_ID` وصلاحية العرض الحالية |
-| `POST guide/access-requests` | طلب صلاحيات عبر المسار الحالي لموافقة مدير النظام |
-| `GET guide/access-requests?brandID=0&status=P&page=1&pageSize=20` | طلبات العميل؛ 0 لجميع العلامات، P معلقة، A موافقة، R رفض، H قرارات سابقة |
-
-لا تعرض زر الطباعة/التنزيل إلا عند تحقق العلم الموافق. العرض لا يساوي السماح بالتنزيل؛ حالة الملف والدور تُراجع في كل طلب. قيود العرض ليست DRM. تواريخ الدليل والقرارات القديمة بتوقيت خادم النظام المحلي؛ لا تفترض أنها UTC.
-
-إنشاء طلب صلاحية:
-
-```json
-{
-  "OperationID":"bcac6c47-70b9-42d8-b6bd-d4acbe6e4797",
-  "BrandID":1,
-  "CategoryIDs":[10,11],
-  "Reason":"أحتاج الاطلاع على تعليمات التشغيل"
-}
-```
-
-من 1 إلى 200 تصنيف، والسبب مطلوب حتى 1000 حرف. لا يمكن طلب تصنيف متاح بالفعل أو له طلب معلق. الناتج `BatchID,Replayed`. يراجع المدير الطلب في إدارة طلبات صلاحيات دليل العمل الحالية. الموافقة تمنح الدور وتظهر للعميل عبر نفس الخدمات؛ الرفض وملاحظة المدير يظهران في السجل.
-
 ## الشكاوى والاقتراحات
+
+Authenticated CRM feedback options and saves require the customer's exact active brand and branch assignments. A brand without explicitly assigned branches offers no branch fallback. Identity is always disclosed, and requests route/forward only to system administrators. Public intake remains independent. The mobile detail response still exposes original request data and initial attachments only; the portal additionally shows authorized workflow/action attachments.
+
 
 | الطريقة والمسار | المدخلات / الناتج |
 |---|---|
@@ -83,9 +57,9 @@
 
 أنشئ UUID جديدًا في `OperationID` لكل تقديم، واحتفظ به مع نفس البيانات والملفات حتى تأكيد النجاح. إعادة نفس العملية تعيد النتيجة دون إنشاء طلب أو مرفقات إضافية. تغيير البيانات مع نفس UUID يعيد `409 OPERATION_REUSED`؛ لا تعِد استخدام UUID بين نموذج الويب والتطبيق.
 
-- `400 INVALID_REQUEST / BUSINESS_RULE`: بيانات غير صحيحة أو تغيرت القوائم/التصنيفات.
+- `400 INVALID_REQUEST / BUSINESS_RULE`: بيانات غير صحيحة أو تغيرت القوائم.
 - `401 SESSION_INVALID / INVALID_CREDENTIALS`: أعد تسجيل الدخول عند انتهاء الجلسة.
-- `403 HTTPS_REQUIRED / DOWNLOAD_DENIED`: اتصال غير مشفر أو تنزيل غير مسموح.
+- `403 HTTPS_REQUIRED`: اتصال غير مشفر.
 - `404 NOT_FOUND`: طلب أو ملف غير متاح لهذا العميل.
 - `409 RETRY_OPERATION`: أعد نفس العملية بعد انتظار قصير.
 - `413`: عدد/حجم المرفقات يتجاوز الحد.
@@ -94,7 +68,7 @@
 
 ## النشر والتحقق
 
-طبّق سكربتات CustomerPortal بالترتيب `001`, `002`, `003`, `005`, `004` داخل معاملة واحدة (`Apply.ps1`). انشر تجميعة API الجديدة واضبط `CustomerApi.PortalRoot` إلى جذر Portal المحلي، و`MobileApi.FeedbackStoragePath` إلى مخزن المرفقات المشترك الحالي. الهوية التي تشغّل API تحتاج قراءة ملفات الدليل والوصول لمخزن المرفقات. لا تستخدم مسارًا عامًا بديلًا للملف لتجاوز التحقق من الصلاحية.
+طبّق سكربتات CustomerPortal بالترتيب `001`, `002`, `003`, `004`, `006`, `007` داخل معاملة واحدة (`Apply.ps1`). انشر تجميعة API واضبط `MobileApi.FeedbackStoragePath` إلى مخزن المرفقات المشترك. أُلغيت جميع خدمات `guide/*` وتعيد 404. تتطلب النسخة الحالية ترحيلات CRM 009/010 وCustomerPortal 007 لسجل الدخول والخروج والتغييرات. تدعم لوحة الويب تعديل بيانات العميل وجهاته؛ لا توجد مسارات API جديدة لهذه التعديلات. يُنفذ حذف جداول الدليل القديمة عبر `database/migrations/WorkGuide_Retirement/Apply.ps1` بعد النسخ الاحتياطي المتحقق منه.
 
 اختبارات التكامل تستخدم قاعدة مستقلة وHttpServer بمسارات Web API الفعلية:
 

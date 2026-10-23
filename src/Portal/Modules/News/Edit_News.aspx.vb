@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Imports System.Globalization
 Imports AjaxControlToolkit
 Imports Prosto_ERP_ClassLibrary
@@ -46,7 +46,8 @@ Public Class Edit_News
             txtTitleEn.Text = If(row.Title_En, "")
             txtBriefAr.Text = If(row.Brief_Ar, "")
             txtBriefEn.Text = If(row.Brief_En, "")
-            txtDetails.Text = If(row.Details, "")
+            txtDetails.Text = NewsData.CleanDetails(If(row.Details, ""))
+            txtDetailsEn.Text = NewsData.CleanDetails(NewsData.EnglishDetails(pid))
             txtOrder.Text = If(row.Item_Order Is Nothing, "", row.Item_Order.ToString())
             chkIsActive.Checked = row.IsActive
 
@@ -96,32 +97,35 @@ Public Class Edit_News
         End If
 
         Try
-            Using db As New Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
 
-                NewsImagePath = hfImagePath.Value
+            NewsImagePath = hfImagePath.Value
 
-                Dim files = SaveFilesFromSession()
-                If files IsNot Nothing AndAlso files.Count > 0 Then
-                    For Each f In files
-                        NewsImagePath = f.Key
-                        Exit For
-                    Next
-                End If
+            Dim files = SaveFilesFromSession()
+            If files IsNot Nothing AndAlso files.Count > 0 Then
+                For Each f In files
+                    NewsImagePath = f.Key
+                    Exit For
+                Next
+            End If
 
-                NewsData.Save(userId, brand, pid,
-                              If(String.IsNullOrWhiteSpace(txtTitleAr.Text), Nothing, txtTitleAr.Text.Trim()),
-                              If(String.IsNullOrWhiteSpace(txtTitleEn.Text), Nothing, txtTitleEn.Text.Trim()),
-                              If(String.IsNullOrWhiteSpace(txtBriefAr.Text), Nothing, txtBriefAr.Text.Trim()),
-                              If(String.IsNullOrWhiteSpace(txtBriefEn.Text), Nothing, txtBriefEn.Text.Trim()),
-                              If(String.IsNullOrWhiteSpace(txtDetails.Text), Nothing, txtDetails.Text.Trim()),
-                              If(String.IsNullOrWhiteSpace(NewsImagePath), Nothing, NewsImagePath),
-                              If(dateVal.HasValue, dateVal.Value, CType(Nothing, DateTime?)),
-                              orderVal,
-                              chkIsActive.Checked
-                              )
-            End Using
+            NewsData.Save(userId, brand, pid,
+                If(String.IsNullOrWhiteSpace(txtTitleAr.Text), Nothing, txtTitleAr.Text.Trim()),
+                If(String.IsNullOrWhiteSpace(txtTitleEn.Text), Nothing, txtTitleEn.Text.Trim()),
+                If(String.IsNullOrWhiteSpace(txtBriefAr.Text), Nothing, txtBriefAr.Text.Trim()),
+                If(String.IsNullOrWhiteSpace(txtBriefEn.Text), Nothing, txtBriefEn.Text.Trim()),
+                If(String.IsNullOrWhiteSpace(txtDetails.Text), Nothing, txtDetails.Text.Trim()),
+                If(String.IsNullOrWhiteSpace(NewsImagePath), Nothing, NewsImagePath),
+                If(dateVal.HasValue, dateVal.Value, CType(Nothing, DateTime?)),
+                orderVal,
+                chkIsActive.Checked, txtDetailsEn.Text
+            )
+        End Using
 
-        Catch ex As SqlException
+        Catch ex As ArgumentException
+            lblError.Text = Server.HtmlEncode(ex.Message)
+            lblError.Visible = True : Return
+        Catch ex As System.Data.SqlClient.SqlException
             lblError.Text = "تعذّر حفظ الخبر. تحقق من العلامة التجارية وصلاحية الحساب ثم حاول مجددًا."
             lblError.Visible = True
             Return

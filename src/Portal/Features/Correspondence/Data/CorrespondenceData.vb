@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 
 Public Enum CorrespondenceStatus
     Active = 1
@@ -9,11 +9,11 @@ End Enum
 Public NotInheritable Class CorrespondenceData
     Public Shared Function P(name As String, type As SqlDbType, value As Object,
                              Optional size As Integer = 0) As SqlParameter
-        Return WorkGuideAccess.Parameter(name, type, value, size)
+        Return PortalSqlData.Parameter(name, type, value, size)
     End Function
 
     Public Shared Function Query(procedure As String, ParamArray parameters As SqlParameter()) As DataTable
-        Return WorkGuideAccess.Query(procedure, parameters)
+        Return PortalSqlData.Query(procedure, parameters)
     End Function
 
     Public Shared Function Catalog(actor As Integer, kind As String, Optional mode As Integer = 0,

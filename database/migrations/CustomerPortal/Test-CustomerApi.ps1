@@ -1,4 +1,4 @@
-param([Parameter(Mandatory)][string]$BuildDirectory,[Parameter(Mandatory)][string]$TestConnection)
+﻿param([Parameter(Mandatory)][string]$BuildDirectory,[Parameter(Mandatory)][string]$TestConnection)
 $ErrorActionPreference='Stop'
 $builder=[Data.SqlClient.SqlConnectionStringBuilder]::new($TestConnection)
 if($builder.DataSource -notin @('localhost','.','(local)') -or $builder.InitialCatalog -notmatch '^Prosto_Customer_Test_[a-f0-9]{32}$'){throw 'Only an isolated customer test database is allowed.'}
@@ -18,11 +18,11 @@ try{
  $source=[xml](Get-Content (Join-Path $api 'Web.config'))
  $config=[xml]'<configuration><connectionStrings/><appSettings/></configuration>'
  $entry=$config.CreateElement('add');$entry.SetAttribute('name','Prosto_ERP_ConnectionConnection');$entry.SetAttribute('connectionString',$TestConnection);[void]$config.SelectSingleNode('/configuration/connectionStrings').AppendChild($entry)
- foreach($pair in @(@('MobileApi.FeedbackStoragePath',(Join-Path $storage 'feedback')),@('CustomerApi.PortalRoot',$storage))){$entry=$config.CreateElement('add');$entry.SetAttribute('key',$pair[0]);$entry.SetAttribute('value',$pair[1]);[void]$config.SelectSingleNode('/configuration/appSettings').AppendChild($entry)}
+ $entry=$config.CreateElement('add');$entry.SetAttribute('key','MobileApi.FeedbackStoragePath');$entry.SetAttribute('value',(Join-Path $storage 'feedback'));[void]$config.SelectSingleNode('/configuration/appSettings').AppendChild($entry)
  if($source.configuration.runtime){[void]$config.configuration.AppendChild($config.ImportNode($source.configuration.runtime,$true))}
  $config.Save("$exe.config")
  $refs=@('Prosto_ERP_API.dll','System.Web.Http.dll','System.Net.Http.Formatting.dll','Newtonsoft.Json.dll')|ForEach-Object {'/reference:'+(Join-Path $BuildDirectory $_)}
- & (Join-Path $api 'bin/roslyn/csc.exe') /nologo /target:exe "/out:$exe" /reference:System.Net.Http.dll /reference:System.Web.dll /reference:System.Configuration.dll /reference:System.Data.dll @refs (Join-Path $PSScriptRoot 'CustomerApi.IntegrationTests.cs')
+ & (Join-Path $api 'bin/roslyn/csc.exe') /nologo /target:exe "/out:$exe" /reference:System.Net.Http.dll /reference:System.Web.dll /reference:System.Configuration.dll /reference:System.Data.dll @refs (Join-Path $PSScriptRoot 'CustomerApi.IntegrationTests.cs') (Join-Path $PSScriptRoot '../Mobile_API/ApiPerformanceProbe.cs')
  if($LASTEXITCODE -ne 0){throw 'API test compilation failed'}
  & $exe
  if($LASTEXITCODE -ne 0){throw 'Customer API integration failed'}

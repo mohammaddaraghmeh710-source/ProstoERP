@@ -1,13 +1,13 @@
-﻿Imports Prosto_ERP_ClassLibrary
+Imports Prosto_ERP_ClassLibrary
 
 Public Class ManageEmployeeFeedbackTopics
     Inherits EmployeeFeedbackPage
-
-    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(sender As Object,e As EventArgs) Handles Me.Load
+        SystemAdministrationUI.RegisterRefresh(Me, AddressOf FillData)
         RequireAdmin()
         If Not IsPostBack Then
             Try
-                EmployeeFeedbackCatalog.FillTypes(ddlType, ActorID, 2, "الكل")
+                FeedbackPresentation.FillTypes(ddlType, ActorID, 2, "الكل")
                 ddlBrand.Items.Add(New ListItem("الكل", "0"))
                 Using db As New Prosto_ERP_DataClassesDataContext()
                     For Each b In db.Select_Brands_All() _

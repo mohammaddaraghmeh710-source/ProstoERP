@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Site.Master" CodeBehind="Manage_JobTitle_Items.aspx.vb" Inherits="CRM.Manage_JobTitle_Items" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
+    <script defer src="/assets/js/tool-suppliers.js?v=20261021ba"></script>
     <style>
         .form-label-sm { font-size: .8rem; margin-bottom: .15rem; }
         .dataTables_filter{
@@ -18,7 +19,7 @@
     </style>
 </asp:Content>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server"><asp:UpdatePanel ID="systemAdminPanel" runat="server" UpdateMode="Conditional"><ContentTemplate>
 
     <div class="container-xxl flex-grow-1 container-p-y">
 
@@ -108,7 +109,7 @@
                                     <div class="row g-2 mb-2">
                                         <div class="col-12 col-md-4">
                                             <label class="form-label form-label-sm">العلامة التجارية</label>
-                                            <asp:DropDownList ID="ddlBrand" runat="server"
+                                            <asp:DropDownList ID="ddlBrand" runat="server" data-tool-brand="true"
                                                 CssClass="form-select form-select-sm"
                                                 AutoPostBack="true"
                                                 OnSelectedIndexChanged="ddlBrand_SelectedIndexChanged"></asp:DropDownList>
@@ -140,7 +141,7 @@
 
                                         <div class="col-12 col-md-4">
                                             <label class="form-label form-label-sm">الشركة الموردة</label>
-                                            <asp:DropDownList ID="ddlSupplier" runat="server"
+                                            <asp:DropDownList ID="ddlSupplier" runat="server" data-tool-suppliers="true" data-allow-all-brands="true" data-include-unavailable="true"
                                                 CssClass="form-select form-select-sm"></asp:DropDownList>
                                         </div>
 
@@ -190,19 +191,19 @@
                                             </LayoutTemplate>
 
                                             <ItemTemplate>
-    <tr>
-        <td data-title="الهيكل التنظيمي"><%# Eval("OrgStructure_Ar")%></td>
-        <td data-title="اسم الأداة"><%# Eval("Title_Ar")%></td>
-        <td data-title="رقم الأداة"><%# Eval("Tool_Number")%></td>
-        <td data-title="نوع الأداة"><%# Eval("ItemType_Title_Ar")%></td>
-        <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate")%></td>
+    <tr data-admin-name='<%#: CRM.SystemAdministrationUI.SearchName(Container.DataItem) %>' data-admin-id='<%#: Eval("ID") %>' data-admin-active='<%# CRM.SystemAdministrationUI.State(Container.DataItem) %>'>
+        <td data-title="الهيكل التنظيمي"><%#: Eval("OrgStructure_Ar") %></td>
+        <td data-title="اسم الأداة"><%#: Eval("Title_Ar") %></td>
+        <td data-title="رقم الأداة"><%#: Eval("Tool_Number") %></td>
+        <td data-title="نوع الأداة"><%#: Eval("ItemType_Title_Ar") %></td>
+        <td data-title="تاريخ الإنشاء"><%#: Eval("AddedDate", "{0:yyyy/MM/dd HH:mm}") %></td>
 
         <!-- QR Code -->
         <td data-title="QR Code">
             <asp:LinkButton CssClass="btn btn-icon btn-label-success"
                 ID="lnkPrintQrCode"
                 CommandName="PrintQrCode"
-                CommandArgument='<%# Eval("ID")%>'
+                CommandArgument='<%#: Eval("ID") %>'
                 runat="server"
                 ToolTip="عرض / طباعة QR Code">
                  <i class="bx bx-qr"></i>
@@ -216,7 +217,7 @@
             <asp:LinkButton CssClass="btn btn-icon btn-label-secondary"
                 ID="btnEdit"
                 CommandName="Edit"
-                CommandArgument='<%# Eval("ID")%>'
+                CommandArgument='<%#: Eval("ID") %>'
                 runat="server"
                 ToolTip="تعديل">
                 <i class="bx bx-edit-alt"></i>
@@ -228,7 +229,7 @@
             <asp:LinkButton CssClass="btn btn-icon btn-label-danger"
                 ID="btnDelete"
                 CommandName="DeleteItem"
-                CommandArgument='<%# Eval("ID")%>'
+                CommandArgument='<%#: Eval("ID") %>'
                 runat="server"
                 ToolTip="حذف"
                 CausesValidation="false"
@@ -274,8 +275,8 @@
  <script type="text/javascript">
      // ===================== Advanced Search Toggle =====================
      function toggleAdvancedSearchProsto() {
-         var pnl = document.getElementById('<%=pnlAdvancedSearch.ClientID%>');
-        var hf = document.getElementById('<%=hfAdvancedOpen.ClientID%>');
+         var pnl = document.getElementById('<%= pnlAdvancedSearch.ClientID %>');
+        var hf = document.getElementById('<%= hfAdvancedOpen.ClientID %>');
         if (!pnl || !hf) return;
 
         pnl.classList.toggle('d-none');
@@ -283,86 +284,18 @@
     }
 
     function applyAdvancedStateProsto() {
-        var pnl = document.getElementById('<%=pnlAdvancedSearch.ClientID%>');
-        var hf = document.getElementById('<%=hfAdvancedOpen.ClientID%>');
+        var pnl = document.getElementById('<%= pnlAdvancedSearch.ClientID %>');
+        var hf = document.getElementById('<%= hfAdvancedOpen.ClientID %>');
          if (!pnl || !hf) return;
 
          if (hf.value === "1") pnl.classList.remove('d-none');
          else pnl.classList.add('d-none');
      }
 
-     // ===================== DataTable Helpers =====================
-     function initERPDataTable() {
-         try {
-             if (typeof $ === "undefined" || !$.fn || !$.fn.DataTable) return;
-
-             var selector = "#ERPTable";
-
-             // إذا تم تهيئته مسبقاً لا تعيد تهيئته
-             if ($.fn.DataTable.isDataTable(selector)) return;
-
-             $(selector).DataTable({
-                 responsive: true,
-                 autoWidth: false,
-                 language: {
-                     search: "بحث:",
-                     lengthMenu: "عرض _MENU_",
-                     info: "عرض _START_ إلى _END_ من أصل _TOTAL_",
-                     infoEmpty: "لا توجد بيانات",
-                     zeroRecords: "لا توجد نتائج",
-                     paginate: { first: "الأول", last: "الأخير", next: "التالي", previous: "السابق" }
-                 }
-             });
-
-         } catch (e) { }
-     }
-
-     function destroyERPDataTable() {
-         try {
-             if (typeof $ === "undefined" || !$.fn || !$.fn.DataTable) return;
-
-             var selector = "#ERPTable";
-             if ($.fn.DataTable.isDataTable(selector)) {
-                 // destroy(true) يزيل Wrappers قبل ما UpdatePanel يعيد رسم الجدول
-                 $(selector).DataTable().destroy(true);
-             }
-         } catch (e) { }
-     }
-
-     // ===================== Hook UpdatePanel Once =====================
-     (function () {
-         // منع تكرار ربط الأحداث لو السكربت اتنفذ أكثر من مرة
-         if (window.__ERP_DT_PRM_HOOKED) return;
-         window.__ERP_DT_PRM_HOOKED = true;
-
-         document.addEventListener("DOMContentLoaded", function () {
-             applyAdvancedStateProsto();
-
-             // IMPORTANT:
-             // لا تعمل initERPDataTable هنا حتى لا تتكرر (لأن القالب غالباً يعمل init تلقائياً)
-
-             if (typeof (Sys) !== "undefined"
-                 && Sys.WebForms
-                 && Sys.WebForms.PageRequestManager) {
-
-                 var prm = Sys.WebForms.PageRequestManager.getInstance();
-
-                 prm.add_beginRequest(function () {
-                     destroyERPDataTable();
-                 });
-
-                 prm.add_endRequest(function () {
-                     // رجّع حالة البحث المتقدم
-                     applyAdvancedStateProsto();
-
-                     // بعد تحديث UpdatePanel: أعد تهيئة الـ DataTable (لأن سكربت القالب لا يعيد تهيئتها)
-                     initERPDataTable();
-                 });
-             }
-         });
-     })();
+     document.addEventListener("DOMContentLoaded",applyAdvancedStateProsto);
+     if(window.Sys&&Sys.WebForms)Sys.WebForms.PageRequestManager.getInstance().add_endRequest(applyAdvancedStateProsto);
  </script>
 
 
 
-</asp:Content>
+</ContentTemplate></asp:UpdatePanel></asp:Content>

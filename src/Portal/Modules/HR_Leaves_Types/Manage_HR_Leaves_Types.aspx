@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="أنواع المغادرات" Language="vb" AutoEventWireup="false" MasterPageFile="~/Site.Master" CodeBehind="Manage_HR_Leaves_Types.aspx.vb" Inherits="CRM.Manage_HR_Leaves_Types" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server" />
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server"><asp:UpdatePanel ID="systemAdminPanel" runat="server" UpdateMode="Conditional"><ContentTemplate>
     <div class="container-xxl flex-grow-1 container-p-y" dir="rtl">
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -34,18 +34,18 @@
                             <asp:ListView ID="lstData" runat="server" OnItemCommand="lstData_ItemCommand">
                                 <LayoutTemplate><asp:PlaceHolder ID="ItemPlaceHolder" runat="server" /></LayoutTemplate>
                                 <ItemTemplate>
-                                    <tr>
-                                        <td data-title="رقم النظام الأساسي"><%#: Eval("Core_ID")%></td>
-                                        <td data-title="الاسم بالعربية"><%#: Eval("Name_AR")%></td>
-                                        <td data-title="الاسم بالإنجليزية"><%#: Eval("Name_En")%></td>
-                                        <td data-title="الحد الأقصى (ساعات)"><%#: Eval("Max_Value", "{0:0.##}")%></td>
-                                        <td data-title="الحالة"><%#: If(Convert.ToBoolean(Eval("Is_Active")), "فعال", "موقوف")%></td>
-                                        <td data-title="تاريخ الإنشاء"><%#: Eval("AddedDate", "{0:dd/MM/yyyy HH:mm}")%></td>
+                                    <tr data-admin-name='<%#: CRM.SystemAdministrationUI.SearchName(Container.DataItem) %>' data-admin-id='<%#: Eval("ID") %>' data-admin-active='<%# CRM.SystemAdministrationUI.State(Container.DataItem) %>'>
+                                        <td data-title="رقم النظام الأساسي"><%#: Eval("Core_ID") %></td>
+                                        <td data-title="الاسم بالعربية"><%#: Eval("Name_AR") %></td>
+                                        <td data-title="الاسم بالإنجليزية"><%#: Eval("Name_En") %></td>
+                                        <td data-title="الحد الأقصى (ساعات)"><%#: Eval("Max_Value", "{0:0.##}") %></td>
+                                        <td data-title="الحالة"><%#: If(Convert.ToBoolean(Eval("Is_Active")), "فعال", "موقوف") %></td>
+                                        <td data-title="تاريخ الإنشاء"><%#: Eval("AddedDate", "{0:yyyy/MM/dd HH:mm}") %></td>
                                         <td data-title="الإجراءات">
-                                            <asp:HyperLink runat="server" CssClass="btn btn-sm btn-label-secondary" Text="تعديل" NavigateUrl='<%# "Edit_HR_Leaves_Types.aspx?ID=" & Eval("ID")%>' />
-                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-warning" CommandName="Deactivate" CommandArgument='<%# Eval("ID")%>' Visible='<%# Convert.ToBoolean(Eval("Is_Active"))%>' Text="إيقاف" CausesValidation="false" />
-                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-success" CommandName="Activate" CommandArgument='<%# Eval("ID")%>' Visible='<%# Not Convert.ToBoolean(Eval("Is_Active"))%>' Text="تفعيل" CausesValidation="false" />
-                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-danger" CommandName="DeleteItem" CommandArgument='<%# Eval("ID")%>' Text="حذف" CausesValidation="false" OnClientClick="return confirm('هل تريد حذف هذا النوع؟');" />
+                                            <asp:HyperLink runat="server" CssClass="btn btn-sm btn-label-secondary" Text="تعديل" NavigateUrl='<%# "Edit_HR_Leaves_Types.aspx?ID=" & Eval("ID") %>' />
+                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-warning" CommandName="Deactivate" CommandArgument='<%#: Eval("ID") %>' Visible='<%# Convert.ToBoolean(Eval("Is_Active")) %>' Text="إيقاف" CausesValidation="false" />
+                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-success" CommandName="Activate" CommandArgument='<%#: Eval("ID") %>' Visible='<%# Not Convert.ToBoolean(Eval("Is_Active")) %>' Text="تفعيل" CausesValidation="false" />
+                                            <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-danger" CommandName="DeleteItem" CommandArgument='<%#: Eval("ID") %>' Text="حذف" CausesValidation="false" OnClientClick="return confirm('هل تريد حذف هذا النوع؟');" />
                                         </td>
                                     </tr>
                                 </ItemTemplate>
@@ -57,4 +57,4 @@
             </div>
         </div>
     </div>
-</asp:Content>
+</ContentTemplate></asp:UpdatePanel></asp:Content>

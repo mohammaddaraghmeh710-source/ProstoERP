@@ -40,7 +40,7 @@ class CircularTests
   var req=new HttpRequestMessage(body==null?HttpMethod.Get:HttpMethod.Post,path);
   if(bearer!=null)req.Headers.Authorization=new AuthenticationHeaderValue("Bearer",bearer);
   if(body!=null)req.Content=new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body),Encoding.UTF8,"application/json");
-  return await client.SendAsync(req);
+  return await ApiPerformanceProbe.Send(client,req);
  }
  static async Task<JObject> Json(HttpResponseMessage response){return JObject.Parse(await response.Content.ReadAsStringAsync());}
  static async Task<string> Login(string user){
@@ -123,6 +123,6 @@ VALUES(1,1,901001,N'circular_admin',@pw,N'مدير تجريبي',1,0,29,25,11,1)
   Query("UPDATE MobileApi_Devices SET IsApproved=1 WHERE UserID=2");
   Console.WriteLine("CIRCULAR CHECKS PASSED: "+checks);
  }
- static int Main(){try{Run().GetAwaiter().GetResult();return 0;}catch(Exception e){Console.WriteLine(e);return 1;}}
+ static int Main(){try{Run().GetAwaiter().GetResult();ApiPerformanceProbe.Save("circulars");return 0;}catch(Exception e){Console.WriteLine(e);return 1;}}
  class Assemblies:System.Web.Http.Dispatcher.DefaultAssembliesResolver{public override ICollection<System.Reflection.Assembly> GetAssemblies(){return new[]{typeof(WebApiConfig).Assembly};}}
 }

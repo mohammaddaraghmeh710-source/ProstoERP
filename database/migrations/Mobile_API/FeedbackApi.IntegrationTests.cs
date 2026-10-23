@@ -29,7 +29,7 @@ class FeedbackApiTests
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         if(token!=null)request.Headers.Authorization=new AuthenticationHeaderValue("Bearer",token);
         if(body!=null)request.Content=new StringContent(JsonConvert.SerializeObject(body),Encoding.UTF8,"application/json");
-        return await client.SendAsync(request);
+        return await ApiPerformanceProbe.Send(client,request);
     }
     static async Task<JToken> Data(HttpResponseMessage response) {
         string json=await response.Content.ReadAsStringAsync();
@@ -49,7 +49,7 @@ class FeedbackApiTests
             form.Add(new StringContent(data.ToString(),Encoding.UTF8,"application/json"),"data");
             for(int i=0;bytes!=null && i<copies;i++)form.Add(new ByteArrayContent(bytes),"files",name);
             var request=new HttpRequestMessage(HttpMethod.Post,path){Content=form}; request.Headers.Authorization=new AuthenticationHeaderValue("Bearer",token);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));return await client.SendAsync(request);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));return await ApiPerformanceProbe.Send(client,request);
         }
     }
     const string root="api/v1/feedback/";
@@ -150,7 +150,7 @@ INSERT dbo.Employee_Feedback_Topics(Type,Brand_ID,Title_Ar,Title_En,AddedUser) V
         checks+=await CustomerFeedbackApiTests.Run(client,employee,admin,adminPeer,manager,peer);
         Console.WriteLine("TOTAL PASSED: "+checks);
     }
-    static int Main() { try {Run().GetAwaiter().GetResult();return 0;}catch(Exception ex){Console.WriteLine(ex);return 1;} }
+    static int Main() { try {Run().GetAwaiter().GetResult();ApiPerformanceProbe.Save("feedback");return 0;}catch(Exception ex){Console.WriteLine(ex);return 1;} }
     class Assemblies : System.Web.Http.Dispatcher.DefaultAssembliesResolver {
         public override System.Collections.Generic.ICollection<System.Reflection.Assembly> GetAssemblies(){return new[]{typeof(WebApiConfig).Assembly};}
     }

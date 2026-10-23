@@ -54,7 +54,7 @@ generated model or introducing custom mixed-language build targets.
 3. **Infrastructure persistence.** Connection ownership, command construction,
    query execution and transaction disposal live in Infrastructure.Mobile.
    Feedback/correspondence/customer workflows use named `MobileStatement` values;
-   their 76 SQL/procedure definitions live beside the matching infrastructure
+   their SQL/procedure definitions live beside the matching infrastructure
    features. Existing parameter order, result tables, SQL text, command kinds,
    timeouts, transaction calls and attachment commit/rollback ordering are retained.
    DataSet-based adapters are kept for legacy result-set compatibility.
@@ -95,3 +95,12 @@ Build checks and local Swagger/HTTP checks can be run without invoking the
 existing database setup or feature verification tools. Successful database write,
 SMTP and multipart attachment flows require the appropriate environment and have
 not been exercised as part of this structural cleanup.
+
+## Integrating main-branch updates
+
+The merge from main at `78ab8a8` retains this layering. Its new circular mail
+worker lives in `Infrastructure.Mobile/Features/Circulars/Notifications`; the API
+only starts it. Customer login failure auditing and the employee feedback
+customer-transfer restriction live in Application, with SQL definitions in
+Infrastructure.Mobile. The eight customer work-guide actions removed on main
+remain removed from the mobile API and Contracts. See [main integration](MAIN_INTEGRATION.md).

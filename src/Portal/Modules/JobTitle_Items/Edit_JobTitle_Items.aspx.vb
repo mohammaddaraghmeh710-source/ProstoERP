@@ -1,4 +1,6 @@
-﻿Imports AjaxControlToolkit
+Imports System.Linq
+Imports System.Collections.Generic
+Imports AjaxControlToolkit
 Imports Prosto_ERP_ClassLibrary
 
 Public Class Edit_JobTitle_Items
@@ -10,16 +12,15 @@ Public Class Edit_JobTitle_Items
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         If SessionManager.GetInstance.Users Is Nothing Then
-            Response.Redirect("/login.aspx")
+            SystemAdministrationUI.Redirect(Me, "/login.aspx")
         End If
         If SessionManager.GetInstance.Users.UserType <> 1 Then
-            Response.Redirect("/Default.aspx")
+            SystemAdministrationUI.Redirect(Me, "/Default.aspx")
         End If
 
         If Not IsPostBack Then
 
             ' تعبئة القوائم العامة
-            FillSuppliers()
             FillMaintenanceCompanies()
             FillItemTypes()
             FillBrands()
@@ -29,7 +30,7 @@ Public Class Edit_JobTitle_Items
             ' قراءة ID من QueryString
             Dim id As Integer
             If Not Integer.TryParse(Request.QueryString("ID"), id) Then
-                Response.Redirect("/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx")
+                SystemAdministrationUI.Redirect(Me, "/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx")
                 Return
             End If
 
@@ -48,7 +49,7 @@ Public Class Edit_JobTitle_Items
 
             Dim row = db.Select_JobTitle_Items_ByID(id).FirstOrDefault()
             If row Is Nothing Then
-                Response.Redirect("/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx")
+                SystemAdministrationUI.Redirect(Me, "/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx")
                 Return
             End If
 
@@ -57,9 +58,11 @@ Public Class Edit_JobTitle_Items
             txtTitleEn.Text = row.Title_En
             txtToolNumber.Text = If(row.Tool_Number, "")
 
-            ' DropDowns (Supplier / Maintenance / Type)
-            If row.SupplierID IsNot Nothing Then
-                ddlSupplier.SelectedValue = row.SupplierID.ToString()
+            ' Keep the current historical supplier available for unchanged edits.
+            FillSuppliers(row.Supplier_Account_ID)
+            ddlSupplier.Attributes("data-current-account") = Convert.ToString(row.Supplier_Account_ID)
+            If row.Supplier_Account_ID IsNot Nothing Then
+                ddlSupplier.SelectedValue = row.Supplier_Account_ID.ToString()
             Else
                 ddlSupplier.SelectedValue = ""
             End If
@@ -107,6 +110,7 @@ Public Class Edit_JobTitle_Items
 
             ' Brand
             ddlBrand.SelectedValue = org.BrandID.ToString()
+            ddlSupplier.Attributes("data-current-brand") = org.BrandID.ToString()
 
             ' Branch
             FillBranches(org.BrandID)
@@ -263,16 +267,69 @@ Public Class Edit_JobTitle_Items
 
     '================= قوائم المورد/الصيانة/النوع =================
 
-    Private Sub FillSuppliers()
-        Using db As New Prosto_ERP_DataClassesDataContext
-            Dim data = db.Select_Suppliers_All().ToList()
-            ddlSupplier.DataSource = data
-            ddlSupplier.DataTextField = "Title_Ar"
-            ddlSupplier.DataValueField = "ID"
-            ddlSupplier.DataBind()
-        End Using
-        ddlSupplier.Items.Insert(0, New ListItem("اختر الشركة الموردة", ""))
+    ' ListItem custom attributes are not restored by DropDownList ViewState on AJAX cascades.
+    ' Restore metadata without rebinding the registered values or losing the posted selection.
+    Protected Sub SupplierMetadata_PreRender(sender As Object, e As EventArgs) Handles Me.PreRender
+        If SessionManager.GetInstance.Users Is Nothing Then Return
+        Dim currentAccountId As Integer? = Nothing
+        Dim itemID As Integer
+        If Integer.TryParse(Request.QueryString("ID"), itemID) Then
+            Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+                Dim item = db.Select_JobTitle_Items_ByID(itemID).FirstOrDefault()
+                If item IsNot Nothing Then
+                    currentAccountId = item.Supplier_Account_ID
+                    ddlSupplier.Attributes("data-current-account") = Convert.ToString(currentAccountId)
+                    ddlSupplier.Attributes("data-current-brand") = GetOrgByJobTitleId(CInt(item.JobTitle_ID)).BrandID.ToString()
+                End If
+            End Using
+        End If
+        Dim rows As New Dictionary(Of String, System.Data.DataRow)(StringComparer.Ordinal)
+        For Each row As System.Data.DataRow In CRMSupplierData.Options(SessionManager.GetInstance.Users.UserID, currentAccountId).Rows
+            rows(Convert.ToString(row("ID"))) = row
+        Next
+        For Each optionItem As ListItem In ddlSupplier.Items
+            If String.IsNullOrEmpty(optionItem.Value) Then Continue For
+            If rows.ContainsKey(optionItem.Value) Then
+                Dim row = rows(optionItem.Value)
+                optionItem.Attributes("data-brand-ids") = Convert.ToString(row("Brand_IDs"))
+                optionItem.Attributes("data-available") = If(Convert.ToBoolean(row("Is_Available")), "1", "0")
+            Else
+                optionItem.Attributes("data-brand-ids") = ""
+                optionItem.Attributes("data-available") = "0"
+            End If
+        Next
     End Sub
+
+    Private Sub FillSuppliers(Optional currentAccountId As Integer? = Nothing)
+        ddlSupplier.Items.Clear()
+        For Each row As System.Data.DataRow In CRMSupplierData.Options(SessionManager.GetInstance.Users.UserID, currentAccountId).Rows
+            Dim nameAr = Convert.ToString(row("Name_AR"))
+            Dim nameEn = Convert.ToString(row("Name_EN"))
+            Dim name = nameAr & If(String.IsNullOrWhiteSpace(nameEn), "", " — " & nameEn)
+            Dim item As New ListItem(name, Convert.ToString(row("ID")))
+            item.Attributes("data-brand-ids") = Convert.ToString(row("Brand_IDs"))
+            item.Attributes("data-available") = If(Convert.ToBoolean(row("Is_Available")), "1", "0")
+            ddlSupplier.Items.Add(item)
+        Next
+        ddlSupplier.Items.Insert(0, New ListItem("اختر المورد من العملاء", ""))
+    End Sub
+
+    Private Function SupplierMatchesBrand(accountId As Integer?, brandId As Integer?, Optional currentAccountId As Integer? = Nothing) As Boolean
+        If Not accountId.HasValue OrElse Not brandId.HasValue Then Return False
+        Dim optionKey = "ToolSupplierOptions:" & If(currentAccountId.HasValue, currentAccountId.Value.ToString(), "available")
+        Dim options = TryCast(Context.Items(optionKey), System.Data.DataTable)
+        If options Is Nothing Then
+            options = CRMSupplierData.Options(SessionManager.GetInstance.Users.UserID, currentAccountId)
+            Context.Items(optionKey) = options
+        End If
+        For Each row As System.Data.DataRow In options.Rows
+            If Convert.ToInt32(row("ID")) <> accountId.Value Then Continue For
+            Dim brands = Convert.ToString(row("Brand_IDs")).Split(","c)
+            Dim belongs = brands.Any(Function(value) value.Trim() = brandId.Value.ToString())
+            Return belongs AndAlso (Convert.ToBoolean(row("Is_Available")) OrElse (currentAccountId.HasValue AndAlso currentAccountId.Value = accountId.Value))
+        Next
+        Return False
+    End Function
 
     Private Sub FillMaintenanceCompanies()
         Using db As New Prosto_ERP_DataClassesDataContext
@@ -304,19 +361,30 @@ Public Class Edit_JobTitle_Items
         Dim id = CInt(hdnID.Value)
         Dim jobTitleId = CInt(ddlJobTitle.SelectedValue)
 
+        cvSupplier.IsValid = True
+        Dim currentSupplier As Integer? = Nothing
+        Using currentDb As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Dim current = currentDb.Select_JobTitle_Items_ByID(id).FirstOrDefault()
+            If current Is Nothing Then
+                cvSupplier.IsValid = False
+                Return
+            End If
+            Dim originalBrand = GetOrgByJobTitleId(CInt(current.JobTitle_ID)).BrandID
+            If ddlBrand.SelectedValue = originalBrand.ToString() Then currentSupplier = current.Supplier_Account_ID
+        End Using
+        Dim selectedSupplier As Integer
+        Dim selectedBrand As Integer
+        If Not Integer.TryParse(ddlSupplier.SelectedValue, selectedSupplier) OrElse
+           Not Integer.TryParse(ddlBrand.SelectedValue, selectedBrand) OrElse
+           Not SupplierMatchesBrand(selectedSupplier, selectedBrand, currentSupplier) Then
+            cvSupplier.IsValid = False
+            Return
+        End If
+
         Dim toolNumber As String = txtToolNumber.Text.Trim()
-        Dim supplierId As Integer? =
-                If _
-                (String.IsNullOrEmpty(ddlSupplier.SelectedValue), CType(Nothing, Integer?),
-                 CInt(ddlSupplier.SelectedValue))
-        Dim maintenanceId As Integer? =
-                If _
-                (String.IsNullOrEmpty(ddlMaintenanceCompany.SelectedValue), CType(Nothing, Integer?),
-                 CInt(ddlMaintenanceCompany.SelectedValue))
-        Dim itemTypeId As Integer? =
-                If _
-                (String.IsNullOrEmpty(ddlItemType.SelectedValue), CType(Nothing, Integer?),
-                 CInt(ddlItemType.SelectedValue))
+        Dim supplierAccountId As Integer? = If(String.IsNullOrEmpty(ddlSupplier.SelectedValue), CType(Nothing, Integer?), CInt(ddlSupplier.SelectedValue))
+        Dim maintenanceId As Integer? = If(String.IsNullOrEmpty(ddlMaintenanceCompany.SelectedValue), CType(Nothing, Integer?), CInt(ddlMaintenanceCompany.SelectedValue))
+        Dim itemTypeId As Integer? = If(String.IsNullOrEmpty(ddlItemType.SelectedValue), CType(Nothing, Integer?), CInt(ddlItemType.SelectedValue))
 
         Dim nameAr As String = txtTitleAr.Text
         Dim nameEn As String = txtTitleEn.Text
@@ -353,7 +421,7 @@ Public Class Edit_JobTitle_Items
                 nameAr,
                 nameEn,
                 toolNumber,
-                supplierId,
+                supplierAccountId,
                 maintenanceId,
                 itemTypeId,
                 txtPolicies_Ar.Text,
@@ -367,22 +435,22 @@ Public Class Edit_JobTitle_Items
                 )
         End Using
 
-        LBLPOP_ModalPopupExtender.Show()
+        If Not SystemAdministrationUI.Complete(Me) Then LBLPOP_ModalPopupExtender.Show()
     End Sub
 
     Protected Sub btnClosePopup_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx")
     End Sub
 
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx", True)
     End Sub
 
     '================= Ajax Upload =================
 
     Protected Sub WorkingMethodVideo_UploadComplete(sender As Object, e As AjaxFileUploadEventArgs)
         Try
-            SaveWorkingMethodVideoOnSession(e.FileName, e.ContentType, e.GetContents())
+            SaveWorkingMethodVideoOnSession(e.FileName, SystemAdministrationUI.UploadExtension(e.FileName,False), e.GetContents())
         Catch
         End Try
     End Sub
@@ -392,7 +460,7 @@ Public Class Edit_JobTitle_Items
 
     Protected Sub EvaluationMethodVideo_UploadComplete(sender As Object, e As AjaxFileUploadEventArgs)
         Try
-            SaveEvaluationMethodVideoOnSession(e.FileName, e.ContentType, e.GetContents())
+            SaveEvaluationMethodVideoOnSession(e.FileName, SystemAdministrationUI.UploadExtension(e.FileName,False), e.GetContents())
         Catch
         End Try
     End Sub

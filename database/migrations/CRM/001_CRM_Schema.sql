@@ -58,6 +58,7 @@ IF OBJECT_ID('dbo.CRM_Contacts','U') IS NULL
 CREATE TABLE dbo.CRM_Contacts(ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
 [Account_ID] int NULL,
 [Name_AR] nvarchar(200) NULL,
+[Name_EN] nvarchar(200) NULL,
 [Job_Title] nvarchar(200) NULL,
 [Phone] nvarchar(50) NULL,
 [Email] nvarchar(254) NULL,
@@ -161,7 +162,7 @@ END
 GO
 
 CREATE OR ALTER VIEW dbo.CRM_v_Accounts AS
-SELECT t.*, o.FullName_Ar AS Owner_Name, at.Name_AR AS Type_Name FROM dbo.CRM_Accounts t LEFT JOIN dbo.UsersMembers o ON o.ID=t.Owner_ID LEFT JOIN dbo.CRM_Account_Types at ON at.ID=t.Account_Type_ID;
+SELECT t.ID,t.Name_AR,t.Name_EN,t.Account_Type_ID,t.Owner_ID,t.Phone,t.Email,t.Address,t.Country,t.Website,t.Registration_Number,t.Notes,t.Normalized_Name,t.Is_Active,t.Is_Deleted,t.AddedUser,t.AddedDate,t.Modified_User,t.Modified_Date,t.Row_Version, o.FullName_Ar AS Owner_Name, at.Name_AR AS Type_Name FROM dbo.CRM_Accounts t LEFT JOIN dbo.UsersMembers o ON o.ID=t.Owner_ID LEFT JOIN dbo.CRM_Account_Types at ON at.ID=t.Account_Type_ID;
 
 GO
 
@@ -184,4 +185,7 @@ END
 
 GO
 
+GO
+
+IF COL_LENGTH('dbo.CRM_Contacts','Job_Title_EN') IS NULL ALTER TABLE dbo.CRM_Contacts ADD Job_Title_EN nvarchar(200) NULL;
 GO

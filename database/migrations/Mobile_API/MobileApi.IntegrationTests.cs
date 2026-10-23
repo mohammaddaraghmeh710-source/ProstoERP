@@ -40,7 +40,7 @@ class MobileApiTests
         if (path.IndexOf("Users/LoginViaBIO",StringComparison.OrdinalIgnoreCase)>=0 && bioBasic)
             request.Headers.Authorization=new AuthenticationHeaderValue("Basic",bioBasicOverride??Environment.GetEnvironmentVariable("BIO_TEST_BASIC"));
         if (body != null) request.Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-        return await client.SendAsync(request);
+        return await ApiPerformanceProbe.Send(client,request);
     }
     static Task<HttpResponseMessage> News(string token=null,int brand=29){return Send("api/Get_News",token,new{BrandID=brand},true);}
     static async Task<JObject> Json(HttpResponseMessage response)
@@ -284,7 +284,23 @@ SELECT @legacy,UserID,PasswordFingerprint,CreatedUtc,LastSeenUtc,ExpiresUtc,Abso
             if(!string.IsNullOrWhiteSpace(batch))Sql(batch);
         Check(historyBefore==(int)Scalar("SELECT COUNT(*) FROM dbo.MobileApi_DeviceHistory") && approvedBefore==(int)Scalar("SELECT ID FROM dbo.MobileApi_Devices WHERE IsApproved=1"),"migration replay preserves approvals and decision history");
         await TestBIO();
+        if(!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("API_AUDIT_TIMING_DIRECTORY")))await Benchmark();
         Console.WriteLine("TOTAL PASSED: " + checks);
+    }
+    static async Task Benchmark()
+    {
+        Sql("INSERT dbo.UsersMembers(Type,UserName,Password,FullName_Ar,Fullname_En,IsActive,IsDeleted,Brand_ID,Gender,Nationality,Employee_Number) VALUES(4,N'perf_test',@password,N'Perf',N'Perf',1,0,29,1,1,69999)",new SqlParameter("@password",new Echo.Encrptor.TripleDesEncryptor().Encrypt(password)));
+        var body=LoginBody();body["Username"]="perf_test";body["Device"]["DeviceID"]="isolated-perf-device";
+        var tokens=new System.Collections.Generic.List<string>();
+        var loginTimes=new System.Collections.Generic.List<double>();var newsTimes=new System.Collections.Generic.List<double>();
+        for(int i=0;i<20;i++){var watch=System.Diagnostics.Stopwatch.StartNew();var response=await Send("api/Users/Login",body:body,post:true);loginTimes.Add(watch.Elapsed.TotalMilliseconds);if(response.StatusCode!=HttpStatusCode.OK)throw new Exception("Perf fixture login failed");tokens.Add((string)(await Json(response))["Data"]["AccessToken"]);}
+        for(int i=0;i<50;i++){var watch=System.Diagnostics.Stopwatch.StartNew();var response=await News(tokens[i%tokens.Count]);newsTimes.Add(watch.Elapsed.TotalMilliseconds);if(response.StatusCode!=HttpStatusCode.OK)throw new Exception("Perf fixture news failed");}
+        var batchWatch=System.Diagnostics.Stopwatch.StartNew();
+        var responses=await Task.WhenAll(Enumerable.Range(0,8).Select(i=>News(tokens[i])));
+        if(responses.Any(r=>r.StatusCode!=HttpStatusCode.OK))throw new Exception("Concurrent perf fixture news failed");
+        Func<System.Collections.Generic.List<double>,object> summarize=a=>{var sorted=a.OrderBy(v=>v).ToArray();return new{Count=sorted.Length,MedianMs=Math.Round(sorted[sorted.Length/2],2),P95Ms=Math.Round(sorted[(int)Math.Ceiling(sorted.Length*.95)-1],2)};};
+        System.IO.File.WriteAllText("C:/Projects/ERPProsto/tmp/api-audit/success-benchmark.json",Newtonsoft.Json.JsonConvert.SerializeObject(new{Scope="Successful requests only, isolated SQL fixture, in-memory HTTP; excludes IIS/network/external SMTP and is not a production load test",Login=summarize(loginTimes),News=summarize(newsTimes),EightConcurrentNewsBatchMs=Math.Round(batchWatch.Elapsed.TotalMilliseconds,2)},Newtonsoft.Json.Formatting.Indented));
+        Console.WriteLine("PERF: 20 successful logins, 50 sequential and 8 concurrent news reads; synthetic isolated account only.");
     }
     static async Task BioDenied(string bioID,HttpStatusCode status,string code)
     {
@@ -352,7 +368,7 @@ SELECT @legacy,UserID,PasswordFingerprint,CreatedUtc,LastSeenUtc,ExpiresUtc,Abso
         BioDecision("ResetAll");await BioDenied(id,HttpStatusCode.Forbidden,"DEVICE_NOT_APPROVED");await BioDenied(other,HttpStatusCode.Forbidden,"DEVICE_NOT_APPROVED");
         await Send("api/Users/Login",body:body,post:true);await BioDenied(id,HttpStatusCode.Unauthorized,"BIOID_INVALID");
     }
-    static int Main() { try { Run().GetAwaiter().GetResult(); return 0; } catch(Exception ex) { Console.WriteLine(ex); return 1; } }
+    static int Main() { try { Run().GetAwaiter().GetResult(); ApiPerformanceProbe.Save("mobile"); return 0; } catch(Exception ex) { Console.WriteLine(ex); return 1; } }
     class ApiAssemblies : System.Web.Http.Dispatcher.DefaultAssembliesResolver
     {
         public override System.Collections.Generic.ICollection<System.Reflection.Assembly> GetAssemblies()

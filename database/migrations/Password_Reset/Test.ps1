@@ -20,7 +20,7 @@ SET IDENTITY_INSERT dbo.Brands ON;INSERT dbo.Brands(ID,Title_Ar,Title_En,IsActiv
 CREATE TABLE dbo.MobileApi_Sessions(UserID int NOT NULL,RevokedUtc datetime2 NULL);
 CREATE TABLE dbo.MobileApi_BIOCredentials(UserID int NOT NULL);
 '@
- foreach($script in @('../Email_Notification/001_BrandGmail.sql','001_PasswordReset.sql')) {
+ foreach($script in @('../Email_Notification/001_BrandGmail.sql','001_PasswordReset.sql','002_PerformanceIndexes.sql')) {
   foreach($batch in [regex]::Split([IO.File]::ReadAllText((Join-Path $PSScriptRoot $script)),'(?im)^\s*GO\s*$')){if($batch.Trim()){SQL $test.ConnectionString $batch}}
  }
  [void][IO.Directory]::CreateDirectory($BuildDirectory);Get-ChildItem (Join-Path $api 'bin') -Filter '*.dll' | Copy-Item -Destination $BuildDirectory -Force

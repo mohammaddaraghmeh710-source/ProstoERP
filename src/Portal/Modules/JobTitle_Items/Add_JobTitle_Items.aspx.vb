@@ -1,4 +1,4 @@
-﻿Imports System.IO
+Imports System.IO
 Imports AjaxControlToolkit
 Imports Prosto_ERP_ClassLibrary
 
@@ -6,7 +6,7 @@ Public Class Add_JobTitle_Items
     Inherits PageBase
 
     '================= Session Keys =================
-    Private Const SK_DRAFT As String = "JTItems_DraftList"
+    Private Const SK_DRAFT As String = "JTItems_CRMAccount_DraftList_v1"
     Private Const SK_WM As String = "JTItems_WorkingVideoTemp"
     Private Const SK_EV As String = "JTItems_EvalVideoTemp"
 
@@ -18,7 +18,7 @@ Public Class Add_JobTitle_Items
 
         Public Property ToolNumber As String
         Public Property ItemTypeId As Integer?
-        Public Property SupplierId As Integer?
+        Public Property SupplierAccountId As Integer?
         Public Property MaintenanceId As Integer?
 
         Public Property TitleAr As String
@@ -49,9 +49,9 @@ Public Class Add_JobTitle_Items
     End Class
 
     '================= Page Load =================
-    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        If SessionManager.GetInstance.Users Is Nothing Then Response.Redirect("/login.aspx")
-        If SessionManager.GetInstance.Users.UserType <> 1 Then Response.Redirect("/Default.aspx")
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+        If SessionManager.GetInstance.Users Is Nothing Then SystemAdministrationUI.Redirect(Me, "/login.aspx")
+        If SessionManager.GetInstance.Users.UserType <> 1 Then SystemAdministrationUI.Redirect(Me, "/Default.aspx")
 
         If Not Page.IsPostBack Then
             FillBrands()
@@ -203,16 +203,58 @@ Public Class Add_JobTitle_Items
     End Sub
 
     '================= قوائم الشركات والأنواع =================
-    Private Sub FillSuppliers()
-        Using db As New Prosto_ERP_DataClassesDataContext
-            Dim data = db.Select_Suppliers_All().ToList()
-            ddlSupplier.DataSource = data
-            ddlSupplier.DataTextField = "Title_Ar"
-            ddlSupplier.DataValueField = "ID"
-            ddlSupplier.DataBind()
-        End Using
-        ddlSupplier.Items.Insert(0, New ListItem("اختر الشركة الموردة", ""))
+    ' ListItem custom attributes are not restored by DropDownList ViewState on AJAX cascades.
+    ' Restore metadata without rebinding the registered values or losing the posted selection.
+    Protected Sub SupplierMetadata_PreRender(sender As Object, e As EventArgs) Handles Me.PreRender
+        If SessionManager.GetInstance.Users Is Nothing Then Return
+        Dim currentAccountId As Integer? = Nothing
+        Dim rows As New Dictionary(Of String, System.Data.DataRow)(StringComparer.Ordinal)
+        For Each row As System.Data.DataRow In CRMSupplierData.Options(SessionManager.GetInstance.Users.UserID, currentAccountId).Rows
+            rows(Convert.ToString(row("ID"))) = row
+        Next
+        For Each optionItem As ListItem In ddlSupplier.Items
+            If String.IsNullOrEmpty(optionItem.Value) Then Continue For
+            If rows.ContainsKey(optionItem.Value) Then
+                Dim row = rows(optionItem.Value)
+                optionItem.Attributes("data-brand-ids") = Convert.ToString(row("Brand_IDs"))
+                optionItem.Attributes("data-available") = If(Convert.ToBoolean(row("Is_Available")), "1", "0")
+            Else
+                optionItem.Attributes("data-brand-ids") = ""
+                optionItem.Attributes("data-available") = "0"
+            End If
+        Next
     End Sub
+
+    Private Sub FillSuppliers()
+        ddlSupplier.Items.Clear()
+        For Each row As System.Data.DataRow In CRMSupplierData.Options(SessionManager.GetInstance.Users.UserID).Rows
+            Dim nameAr = Convert.ToString(row("Name_AR"))
+            Dim nameEn = Convert.ToString(row("Name_EN"))
+            Dim name = nameAr & If(String.IsNullOrWhiteSpace(nameEn), "", " — " & nameEn)
+            Dim item As New ListItem(name, Convert.ToString(row("ID")))
+            item.Attributes("data-brand-ids") = Convert.ToString(row("Brand_IDs"))
+            item.Attributes("data-available") = If(Convert.ToBoolean(row("Is_Available")), "1", "0")
+            ddlSupplier.Items.Add(item)
+        Next
+        ddlSupplier.Items.Insert(0, New ListItem("اختر المورد من العملاء", ""))
+    End Sub
+
+    Private Function SupplierMatchesBrand(accountId As Integer?, brandId As Integer?, Optional currentAccountId As Integer? = Nothing) As Boolean
+        If Not accountId.HasValue OrElse Not brandId.HasValue Then Return False
+        Dim optionKey = "ToolSupplierOptions:" & If(currentAccountId.HasValue, currentAccountId.Value.ToString(), "available")
+        Dim options = TryCast(Context.Items(optionKey), System.Data.DataTable)
+        If options Is Nothing Then
+            options = CRMSupplierData.Options(SessionManager.GetInstance.Users.UserID, currentAccountId)
+            Context.Items(optionKey) = options
+        End If
+        For Each row As System.Data.DataRow In options.Rows
+            If Convert.ToInt32(row("ID")) <> accountId.Value Then Continue For
+            Dim brands = Convert.ToString(row("Brand_IDs")).Split(","c)
+            Dim belongs = brands.Any(Function(value) value.Trim() = brandId.Value.ToString())
+            Return belongs AndAlso (Convert.ToBoolean(row("Is_Available")) OrElse (currentAccountId.HasValue AndAlso currentAccountId.Value = accountId.Value))
+        Next
+        Return False
+    End Function
 
     Private Sub FillMaintenanceCompanies()
         Using db As New Prosto_ERP_DataClassesDataContext
@@ -251,20 +293,25 @@ Public Class Add_JobTitle_Items
         Page.Validate("AddItem")
         If Not Page.IsValid Then Exit Sub
 
+        If Not SupplierMatchesBrand(SafeInt(ddlSupplier.SelectedValue), SafeInt(ddlBrand.SelectedValue)) Then
+            lblMsg.Text = "يرجى اختيار مورد فعال مرتبط بالعلامة التجارية المحددة."
+            Return
+        End If
+
         Dim jobTitleId = CInt(ddlJobTitle.SelectedValue)
 
         Dim draft As New DraftJobTitleItem With {
-                .TempId = Guid.NewGuid().ToString("N"),
-                .JobTitleId = jobTitleId,
-                .ToolNumber = txtToolNumber.Text.Trim(),
-                .ItemTypeId = SafeInt(ddlItemType.SelectedValue),
-                .SupplierId = SafeInt(ddlSupplier.SelectedValue),
-                .MaintenanceId = SafeInt(ddlMaintenanceCompany.SelectedValue),
-                .TitleAr = txtTitleAr.Text.Trim(),
-                .TitleEn = txtTitleEn.Text.Trim(),
-                .PoliciesAr = txtPolicies_Ar.Text,
-                .PoliciesEn = txtPolicies_En.Text
-                }
+            .TempId = Guid.NewGuid().ToString("N"),
+            .JobTitleId = jobTitleId,
+            .ToolNumber = txtToolNumber.Text.Trim(),
+            .ItemTypeId = SafeInt(ddlItemType.SelectedValue),
+            .SupplierAccountId = SafeInt(ddlSupplier.SelectedValue),
+            .MaintenanceId = SafeInt(ddlMaintenanceCompany.SelectedValue),
+            .TitleAr = txtTitleAr.Text.Trim(),
+            .TitleEn = txtTitleEn.Text.Trim(),
+            .PoliciesAr = txtPolicies_Ar.Text,
+            .PoliciesEn = txtPolicies_En.Text
+        }
 
         ' نصوص للعرض (من الدروب داون)
         draft.ItemTypeText = ddlItemType.SelectedItem.Text
@@ -370,14 +417,22 @@ Public Class Add_JobTitle_Items
             Exit Sub
         End If
 
-        Using db As New Prosto_ERP_DataClassesDataContext
+        If list.Any(Function(item) Not SupplierMatchesBrand(item.SupplierAccountId, SafeInt(ddlBrand.SelectedValue))) Then
+            lblMsg.Text = "أحد الموردين لم يعد فعالاً أو لم يعد مرتبطاً بالعلامة التجارية. يرجى مراجعة قائمة الأدوات."
+            Return
+        End If
+
+        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            db.Connection.Open()
+            Using transaction = db.Connection.BeginTransaction()
+                db.Transaction = transaction
             For Each it In list
                 db.Insert_JobTitle_Items(
                     jobTitleId,
                     it.TitleAr,
                     it.TitleEn,
                     it.ToolNumber,
-                    it.SupplierId,
+                    it.SupplierAccountId,
                     it.MaintenanceId,
                     it.ItemTypeId,
                     it.PoliciesAr,
@@ -389,6 +444,8 @@ Public Class Add_JobTitle_Items
                     SessionManager.GetInstance.Users.UserID
                     )
             Next
+                transaction.Commit()
+            End Using
         End Using
 
         ' بعد الحفظ: صفّر السيشن
@@ -396,7 +453,7 @@ Public Class Add_JobTitle_Items
         BindDraft()
         upDraft.Update()
 
-        LBLPOP_ModalPopupExtender.Show()
+        If Not SystemAdministrationUI.Complete(Me) Then LBLPOP_ModalPopupExtender.Show()
     End Sub
 
 
@@ -423,37 +480,32 @@ Public Class Add_JobTitle_Items
             Exit Sub
         End If
 
-        Using db As New Prosto_ERP_DataClassesDataContext
+        Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
+            Dim targets = (From job In db.Select_JobTitles_All().ToList()
+                           Join department In db.Select_Departments_All().ToList() On job.DepartmentID Equals department.ID
+                           Join branch In db.Select_Branches_All().ToList() On department.BranchID Equals branch.ID
+                           Where job.IsDeleted = 0 AndAlso department.IsDeleted = 0 AndAlso branch.IsDeleted = 0 AndAlso
+                                 job.Title_Ar = ddlJobTitle.SelectedItem.Text
+                           Select New With {.ID = job.ID, .BrandID = branch.BrandID}).ToList()
+            If targets.Count = 0 OrElse targets.Any(Function(target) list.Any(Function(item) Not SupplierMatchesBrand(item.SupplierAccountId, target.BrandID))) Then
+                lblMsg.Text = "لا يمكن النسخ إلى جميع المحطات: يجب ربط كل مورد بجميع العلامات التجارية المستهدفة أولاً. لم يتم حفظ أي أداة."
+                Return
+            End If
 
-
-            For Each it In list
-
-                Dim JobTitles =
-                        db.Select_JobTitles_All.Where(Function(x) x.Title_Ar = ddlJobTitle.SelectedItem.ToString())
-                For Each jobTit In JobTitles
-
-
-                    db.Insert_JobTitle_Items(
-                        jobTit.ID,
-                        it.TitleAr,
-                        it.TitleEn,
-                        it.ToolNumber,
-                        it.SupplierId,
-                        it.MaintenanceId,
-                        it.ItemTypeId,
-                        it.PoliciesAr,
-                        it.PoliciesEn,
-                        it.WorkingMethodVideoPath,
-                        it.WorkingMethodVideoPath,
-                        it.EvaluationMethodVideoPath,
-                        it.EvaluationMethodVideoPath,
-                        SessionManager.GetInstance.Users.UserID
-                        )
-
+            db.Connection.Open()
+            Using transaction = db.Connection.BeginTransaction()
+                db.Transaction = transaction
+                For Each target In targets
+                    For Each item In list
+                        db.Insert_JobTitle_Items(target.ID, item.TitleAr, item.TitleEn, item.ToolNumber,
+                            item.SupplierAccountId, item.MaintenanceId, item.ItemTypeId, item.PoliciesAr, item.PoliciesEn,
+                            item.WorkingMethodVideoPath, item.WorkingMethodVideoPath,
+                            item.EvaluationMethodVideoPath, item.EvaluationMethodVideoPath,
+                            SessionManager.GetInstance.Users.UserID)
+                    Next
                 Next
-
-
-            Next
+                transaction.Commit()
+            End Using
         End Using
 
         ' بعد الحفظ: صفّر السيشن
@@ -461,15 +513,15 @@ Public Class Add_JobTitle_Items
         BindDraft()
         upDraft.Update()
 
-        LBLPOP_ModalPopupExtender.Show()
+        If Not SystemAdministrationUI.Complete(Me) Then LBLPOP_ModalPopupExtender.Show()
     End Sub
 
     Protected Sub btnClosePopup_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx")
     End Sub
 
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/JobTitle_Items/Manage_JobTitle_Items.aspx", True)
     End Sub
 
     '================= Ajax Upload (يحفظ الملف فوراً ويضع المسار في Session مؤقت) =================
@@ -481,6 +533,7 @@ Public Class Add_JobTitle_Items
     End Function
 
     Private Function SaveTempFile(fileName As String, bytes() As Byte) As String
+        SystemAdministrationUI.UploadExtension(fileName,False)
         Dim relFolder = EnsureTempFolder()
         Dim safeName = Guid.NewGuid().ToString("N") & "_" & Path.GetFileName(fileName)
         Dim relPath = relFolder.TrimEnd("/"c) & "/" & safeName

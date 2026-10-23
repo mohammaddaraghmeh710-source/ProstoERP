@@ -1,4 +1,4 @@
-﻿Imports Prosto_ERP_ClassLibrary
+Imports Prosto_ERP_ClassLibrary
 
 Public Class FeedbackType
     Public Property ID As Integer

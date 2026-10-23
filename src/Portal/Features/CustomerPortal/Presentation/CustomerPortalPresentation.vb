@@ -6,7 +6,7 @@ Public NotInheritable Class CustomerPortalPresentation
         Dim sql = TryCast(ex, SqlException)
         If _
             sql IsNot Nothing AndAlso
-            ({51910, 51911, 51912, 51500}.Contains(sql.Number) OrElse (sql.Number >= 51100 AndAlso sql.Number <= 51109)) _
+            {51910, 51911, 51912, 51500}.Contains(sql.Number) _
             Then Return sql.Message
         If TypeOf ex Is ArgumentException Then Return ex.Message
         Return "تعذر تنفيذ العملية. يرجى المحاولة مرة أخرى."

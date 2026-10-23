@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Imports System.Security.Cryptography
 
 <Serializable>
@@ -17,15 +17,11 @@ Public NotInheritable Class CustomerPortalData
             HttpContext.Current.Session("CustomerIdentity") = value
         End Set
     End Property
-
-    Public Shared Function Query(name As String, ParamArray parameters As SqlParameter()) _
-        As DataTable
-        Return WorkGuideAccess.Query(name, parameters)
+    Public Shared Function Query(name As String, ParamArray parameters As System.Data.SqlClient.SqlParameter()) As DataTable
+        Return PortalSqlData.Query(name, parameters)
     End Function
-
-    Public Shared Function P(name As String, kind As SqlDbType, value As Object, Optional size As Integer = 0) _
-        As SqlParameter
-        Return WorkGuideAccess.Parameter(name, kind, value, size)
+    Public Shared Function P(name As String, kind As SqlDbType, value As Object, Optional size As Integer = 0) As System.Data.SqlClient.SqlParameter
+        Return PortalSqlData.Parameter(name, kind, value, size)
     End Function
 
     Public Shared Function CustomerQuery(name As String, ParamArray parameters As SqlParameter()) _
@@ -63,6 +59,7 @@ Public NotInheritable Class CustomerPortalData
         Dim rows = Query("dbo.Customer_Credentials", P("@Username", SqlDbType.NVarChar, username, 100))
         If rows.Rows.Count = 0 Then
             HashPassword(password, New Byte(31) {}, 210000)
+            Query("dbo.Customer_LogLoginFailure", P("@Username", SqlDbType.NVarChar, username, 100))
             Return Nothing
         End If
         Dim row = rows.Rows(0),
@@ -72,52 +69,13 @@ Public NotInheritable Class CustomerPortalData
         For i = 0 To actual.Length - 1
             difference = difference Or (CInt(actual(i)) Xor CInt(expected(i)))
         Next
-        Dim result = Query("dbo.Customer_LoginResult", P("@AccountID", SqlDbType.Int, row("AccountID")),
-                           P("@Stamp", SqlDbType.UniqueIdentifier, row("SecurityStamp")),
-                           P("@Success", SqlDbType.Bit, difference = 0))
-        If result.Rows.Count = 0 Then Return Nothing
-        Return _
-            New CustomerIdentity _
-                With {.AccountID = CInt(result.Rows(0)("AccountID")), .Name = CStr(result.Rows(0)("Name_AR")),
-                    .Stamp = CType(result.Rows(0)("SecurityStamp"), Guid)}
+        Dim result = Query("dbo.Customer_LoginResult", P("@AccountID", SqlDbType.Int, row("AccountID")), P("@Stamp", SqlDbType.UniqueIdentifier, row("SecurityStamp")), P("@Success", SqlDbType.Bit, difference = 0))
+        If result.Rows.Count = 0 Then
+            Query("dbo.Customer_LogLoginFailure", P("@Username", SqlDbType.NVarChar, username, 100))
+            Return Nothing
+        End If
+        Return New CustomerIdentity With {.AccountID = CInt(result.Rows(0)("AccountID")), .Name = CStr(result.Rows(0)("Name_AR")), .Stamp = CType(result.Rows(0)("SecurityStamp"), Guid)}
     End Function
-
-    Public Shared Function AdminGuide(section As String, Optional account As Integer = 0, Optional brand As Integer = 0,
-                                      Optional role As Integer = 0, Optional oldRole As Integer = 0,
-                                      Optional categories As String = Nothing, Optional active As Boolean = True) _
-        As DataTable
-        If SessionManager.GetInstance.Users Is Nothing Then Throw New HttpException(401, "يلزم تسجيل الدخول")
-        Return _
-            Query("dbo.Customer_WorkGuideAdmin", P("@Actor", SqlDbType.Int, SessionManager.GetInstance.Users.UserID),
-                  P("@Section", SqlDbType.VarChar, section, 20), P("@AccountID", SqlDbType.Int, account),
-                  P("@Brand", SqlDbType.Int, brand), P("@Role", SqlDbType.Int, role),
-                  P("@OldRole", SqlDbType.Int, oldRole), P("@Categories", SqlDbType.Xml, categories),
-                  P("@Active", SqlDbType.Bit, active))
-    End Function
-
-    Public Shared Function WorkGuide(section As String, Optional brand As Integer = 0,
-                                     Optional categories As String = Nothing, Optional search As String = "",
-                                     Optional reason As String = Nothing, Optional status As String = "P") As DataTable
-        Return _
-            CustomerQuery("dbo.Customer_WorkGuide", P("@Section", SqlDbType.VarChar, section, 20),
-                          P("@Brand", SqlDbType.Int, brand), P("@Categories", SqlDbType.Xml, categories),
-                          P("@Search", SqlDbType.NVarChar, search, 500), P("@Reason", SqlDbType.NVarChar, reason, 1000),
-                          P("@Status", SqlDbType.Char, status, 1))
-    End Function
-
-    Public Shared Function Guide(section As String, Optional brand As Integer = 0, Optional document As Integer = 0,
-                                 Optional search As String = "") As DataTable
-        Return _
-            CustomerQuery("dbo.Customer_Guide", P("@Section", SqlDbType.VarChar, section, 16),
-                          P("@Brand", SqlDbType.Int, brand), P("@DocumentID", SqlDbType.Int, document),
-                          P("@Search", SqlDbType.NVarChar, search, 200))
-    End Function
-
-    Public Shared Sub LogFile(document As Integer, action As String)
-        CustomerQuery("dbo.Customer_LogDocument", P("@DocumentID", SqlDbType.Int, document),
-                      P("@Action", SqlDbType.VarChar, action, 30))
-    End Sub
-
     Public Shared Function ErrorText(ex As Exception) As String
         Return CustomerPortalPresentation.ErrorText(ex)
     End Function

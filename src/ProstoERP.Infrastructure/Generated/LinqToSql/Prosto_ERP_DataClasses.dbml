@@ -9,46 +9,10 @@
       <Column Name="Evaluation_Items_Count" Type="System.Int32" DbType="Int" CanBeNull="true" />
     </ElementType>
   </Function>
-  <Function Name="dbo.Upsert_Work_Guide_Role_Permissions" Method="Upsert_Work_Guide_Role_Permissions">
-    <Parameter Name="Role_ID" Parameter="role_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Can_View_Category" Parameter="can_View_Category" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="Can_View_Document" Parameter="can_View_Document" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="Can_Print_Document" Parameter="can_Print_Document" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="Can_Download_Document" Parameter="can_Download_Document" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Return Type="System.Int32" />
-  </Function>
   <Function Name="dbo.Brand_Evaluation_Checklist_Count" Method="Brand_Evaluation_Checklist_Count">
     <ElementType Name="Brand_Evaluation_Checklist_CountResult">
       <Column Name="Brand_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="Total_Evaluation_Items_Count" Type="System.Int32" DbType="Int" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Check_Work_Guide_User_Document_Permission" Method="Check_Work_Guide_User_Document_Permission">
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Document_ID" Parameter="document_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Check_Work_Guide_User_Document_PermissionResult">
-      <Column Name="Document_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Category_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Original_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Stored_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="File_Path" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="File_Extension" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Mime_Type" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
-      <Column Name="File_Size" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
-      <Column Name="Version_No" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Is_Download_Allowed" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="User_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Role_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Role_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Role_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Role_Code" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="Can_View_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Print_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Download_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
     </ElementType>
   </Function>
   <Function Name="dbo.Checklist_Categories_Delete" Method="Checklist_Categories_Delete">
@@ -375,7 +339,7 @@
     <Parameter Name="Title_Ar" Parameter="title_Ar" Type="System.String" DbType="NVarChar(MAX)" />
     <Parameter Name="Title_En" Parameter="title_En" Type="System.String" DbType="NVarChar(MAX)" />
     <Parameter Name="Tool_Number" Parameter="tool_Number" Type="System.String" DbType="NVarChar(100)" />
-    <Parameter Name="SupplierID" Parameter="supplierID" Type="System.Int32" DbType="Int" />
+    <Parameter Name="Supplier_Account_ID" Parameter="supplier_Account_ID" Type="System.Int32" DbType="Int" />
     <Parameter Name="MaintenanceCompanyID" Parameter="maintenanceCompanyID" Type="System.Int32" DbType="Int" />
     <Parameter Name="ItemTypeID" Parameter="itemTypeID" Type="System.Int32" DbType="Int" />
     <Parameter Name="Policies_Ar" Parameter="policies_Ar" Type="System.String" DbType="NVarChar(MAX)" />
@@ -456,14 +420,6 @@
     <Parameter Name="AddedUser" Parameter="addedUser" Type="System.Int32" DbType="Int" />
     <Parameter Name="NewID" Parameter="newID" Type="System.Int32" DbType="Int" Direction="InOut" />
     <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Insert_Suppliers" Method="Insert_Suppliers">
-    <Parameter Name="Title_Ar" Parameter="title_Ar" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Title_En" Parameter="title_En" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="AddedUser" Parameter="addedUser" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Insert_SuppliersResult">
-      <Column Name="NewID" Type="System.Decimal" DbType="Decimal(38,0)" CanBeNull="true" />
-    </ElementType>
   </Function>
   <Function Name="dbo.Insert_TR_Level_Types" Method="Insert_TR_Level_Types">
     <Parameter Name="Image" Parameter="image" Type="System.String" DbType="NVarChar(MAX)" />
@@ -592,90 +548,6 @@
       <Column Name="NewID" Type="System.Decimal" DbType="Decimal(38,0)" CanBeNull="true" />
     </ElementType>
   </Function>
-  <Function Name="dbo.Insert_Work_Guide_Activity_Logs" Method="Insert_Work_Guide_Activity_Logs">
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Category_ID" Parameter="category_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Document_ID" Parameter="document_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Action_Type" Parameter="action_Type" Type="System.String" DbType="NVarChar(100)" />
-    <Parameter Name="Action_Details" Parameter="action_Details" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="IPAddress" Parameter="iPAddress" Type="System.String" DbType="NVarChar(100)" />
-    <Parameter Name="UserAgent" Parameter="userAgent" Type="System.String" DbType="NVarChar(MAX)" />
-    <ElementType Name="Insert_Work_Guide_Activity_LogsResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Insert_Work_Guide_Category" Method="Insert_Work_Guide_Category">
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Parent_ID" Parameter="parent_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Title_Ar" Parameter="title_Ar" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Title_En" Parameter="title_En" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Description_Ar" Parameter="description_Ar" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Description_En" Parameter="description_En" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Item_Order" Parameter="item_Order" Type="System.Int32" DbType="Int" />
-    <Parameter Name="AddedUser" Parameter="addedUser" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Insert_Work_Guide_CategoryResult">
-      <Column Name="ID" Type="System.Decimal" DbType="Decimal(38,0)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Insert_Work_Guide_Document" Method="Insert_Work_Guide_Document">
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Category_ID" Parameter="category_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Title_Ar" Parameter="title_Ar" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Title_En" Parameter="title_En" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Description_Ar" Parameter="description_Ar" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Description_En" Parameter="description_En" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Original_File_Name" Parameter="original_File_Name" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Stored_File_Name" Parameter="stored_File_Name" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="File_Path" Parameter="file_Path" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="File_Extension" Parameter="file_Extension" Type="System.String" DbType="NVarChar(50)" />
-    <Parameter Name="Mime_Type" Parameter="mime_Type" Type="System.String" DbType="NVarChar(200)" />
-    <Parameter Name="File_Size" Parameter="file_Size" Type="System.Int64" DbType="BigInt" />
-    <Parameter Name="File_Hash" Parameter="file_Hash" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Item_Order" Parameter="item_Order" Type="System.Int32" DbType="Int" />
-    <Parameter Name="AddedUser" Parameter="addedUser" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Insert_Work_Guide_DocumentResult">
-      <Column Name="ID" Type="System.Decimal" DbType="Decimal(38,0)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Insert_Work_Guide_Document_Version" Method="Insert_Work_Guide_Document_Version">
-    <Parameter Name="Document_ID" Parameter="document_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Version_No" Parameter="version_No" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Original_File_Name" Parameter="original_File_Name" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Stored_File_Name" Parameter="stored_File_Name" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="File_Path" Parameter="file_Path" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="File_Extension" Parameter="file_Extension" Type="System.String" DbType="NVarChar(50)" />
-    <Parameter Name="Mime_Type" Parameter="mime_Type" Type="System.String" DbType="NVarChar(200)" />
-    <Parameter Name="File_Size" Parameter="file_Size" Type="System.Int64" DbType="BigInt" />
-    <Parameter Name="File_Hash" Parameter="file_Hash" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Change_Notes" Parameter="change_Notes" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="AddedUser" Parameter="addedUser" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Insert_Work_Guide_Document_VersionResult">
-      <Column Name="ID" Type="System.Decimal" DbType="Decimal(38,0)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Insert_Work_Guide_Role" Method="Insert_Work_Guide_Role">
-    <Parameter Name="Title_Ar" Parameter="title_Ar" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Title_En" Parameter="title_En" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Code" Parameter="code" Type="System.String" DbType="NVarChar(100)" />
-    <Parameter Name="Description_Ar" Parameter="description_Ar" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Description_En" Parameter="description_En" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="AddedUser" Parameter="addedUser" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Insert_Work_Guide_RoleResult">
-      <Column Name="ID" Type="System.Decimal" DbType="Decimal(38,0)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Insert_Work_Guide_User_Category_Role" Method="Insert_Work_Guide_User_Category_Role">
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Category_ID" Parameter="category_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Role_ID" Parameter="role_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="AddedUser" Parameter="addedUser" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsActive" Parameter="isActive" Type="System.Boolean" DbType="Bit" />
-    <ElementType Name="Insert_Work_Guide_User_Category_RoleResult">
-      <Column Name="ID" Type="System.Decimal" DbType="Decimal(38,0)" CanBeNull="true" />
-    </ElementType>
-  </Function>
   <Function Name="dbo.QR_GetByToken" Method="QR_GetByToken">
     <Parameter Name="Token" Parameter="token" Type="System.Guid" DbType="UniqueIdentifier" />
     <ElementType Name="QR_GetByTokenResult">
@@ -688,34 +560,6 @@
     <Parameter Name="EntityID" Parameter="entityID" Type="System.Int32" DbType="Int" />
     <ElementType Name="QR_GetOrCreateResult">
       <Column Name="Token" Type="System.Guid" DbType="UniqueIdentifier" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Restore_Work_Guide_Document_Version" Method="Restore_Work_Guide_Document_Version">
-    <Parameter Name="Document_ID" Parameter="document_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Version_ID" Parameter="version_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Search_Work_Guide_Documents" Method="Search_Work_Guide_Documents">
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="SearchText" Parameter="searchText" Type="System.String" DbType="NVarChar(500)" />
-    <ElementType Name="Search_Work_Guide_DocumentsResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Category_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Description_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Description_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Original_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="File_Extension" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Mime_Type" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
-      <Column Name="File_Size" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
-      <Column Name="Version_No" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="Category_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Category_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
     </ElementType>
   </Function>
   <Function Name="dbo.Select_Branches_All" Method="Select_Branches_All">
@@ -2040,7 +1884,7 @@
       <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="Tool_Number" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="SupplierID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Supplier_Account_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="MaintenanceCompanyID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="ItemTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="Policies_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
@@ -2095,7 +1939,7 @@
       <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Column Name="Tool_Number" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="SupplierID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Supplier_Account_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="MaintenanceCompanyID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="ItemTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="JobTitle_Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
@@ -2128,7 +1972,7 @@
       <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Column Name="Tool_Number" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="SupplierID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Supplier_Account_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="MaintenanceCompanyID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="ItemTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="JobTitle_Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
@@ -2149,7 +1993,7 @@
       <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="Tool_Number" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="SupplierID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Supplier_Account_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="MaintenanceCompanyID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="ItemTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="Policies_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
@@ -2182,7 +2026,7 @@
     <Parameter Name="BranchID" Parameter="branchID" Type="System.Int32" DbType="Int" />
     <Parameter Name="DepartmentID" Parameter="departmentID" Type="System.Int32" DbType="Int" />
     <Parameter Name="JobTitle_ID" Parameter="jobTitle_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="SupplierID" Parameter="supplierID" Type="System.Int32" DbType="Int" />
+    <Parameter Name="Supplier_Account_ID" Parameter="supplier_Account_ID" Type="System.Int32" DbType="Int" />
     <Parameter Name="MaintenanceCompanyID" Parameter="maintenanceCompanyID" Type="System.Int32" DbType="Int" />
     <ElementType Name="Select_JobTitle_Items_Filter_V2Result">
       <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
@@ -2191,7 +2035,7 @@
       <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="ItemTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="SupplierID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Supplier_Account_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="MaintenanceCompanyID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="Policies_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="Policies_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
@@ -2232,7 +2076,7 @@
       <Column Name="Item_Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="Item_Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="Tool_Number" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="SupplierID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Supplier_Account_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="MaintenanceCompanyID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="ItemTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="DepartmentID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
@@ -2262,7 +2106,7 @@
     <Parameter Name="BranchID" Parameter="branchID" Type="System.Int32" DbType="Int" />
     <Parameter Name="DepartmentID" Parameter="departmentID" Type="System.Int32" DbType="Int" />
     <Parameter Name="JobTitle_ID" Parameter="jobTitle_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="SupplierID" Parameter="supplierID" Type="System.Int32" DbType="Int" />
+    <Parameter Name="Supplier_Account_ID" Parameter="supplier_Account_ID" Type="System.Int32" DbType="Int" />
     <Parameter Name="MaintenanceCompanyID" Parameter="maintenanceCompanyID" Type="System.Int32" DbType="Int" />
     <Parameter Name="ItemTypeID" Parameter="itemTypeID" Type="System.Int32" DbType="Int" />
     <Parameter Name="Tool_Number" Parameter="tool_Number" Type="System.String" DbType="NVarChar(100)" />
@@ -2274,7 +2118,7 @@
       <Column Name="Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="Tool_Number" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
       <Column Name="ItemTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="SupplierID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Supplier_Account_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="MaintenanceCompanyID" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
@@ -2513,35 +2357,6 @@
       <Column Name="End_Time" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
       <Column Name="Start_Time_Ramadan" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
       <Column Name="End_Time_Ramadan" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Suppliers_All" Method="Select_Suppliers_All">
-    <ElementType Name="Select_Suppliers_AllResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Item_Order" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Suppliers_ByID" Method="Select_Suppliers_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Suppliers_ByIDResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Item_Order" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
@@ -3396,445 +3211,6 @@
       <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
     </ElementType>
   </Function>
-  <Function Name="dbo.Select_Work_Guide_Activity_Logs" Method="Select_Work_Guide_Activity_Logs">
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Category_ID" Parameter="category_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Document_ID" Parameter="document_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Date_From" Parameter="date_From" Type="System.DateTime" DbType="DateTime" />
-    <Parameter Name="Date_To" Parameter="date_To" Type="System.DateTime" DbType="DateTime" />
-    <ElementType Name="Select_Work_Guide_Activity_LogsResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="User_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Category_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Document_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Action_Type" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="Action_Details" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="IPAddress" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="UserAgent" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="User_FullName_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="User_FullName_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Brand_Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Brand_Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Category_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Category_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Document_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Document_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Authorized_Categories_ByUserBrand" Method="Select_Work_Guide_Authorized_Categories_ByUserBrand">
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Authorized_Categories_ByUserBrandResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Parent_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Description_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Description_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Item_Order" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Level_No" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Role_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Role_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Role_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Role_Code" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="Can_View_Category" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_View_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Print_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Download_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Sort_Order" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Authorized_Documents_ByUserBrandCategory" Method="Select_Work_Guide_Authorized_Documents_ByUserBrandCategory">
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Category_ID" Parameter="category_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Authorized_Documents_ByUserBrandCategoryResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Category_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Description_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Description_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Original_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="File_Extension" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Mime_Type" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
-      <Column Name="File_Size" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
-      <Column Name="Version_No" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Is_Download_Allowed" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Item_Order" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="Category_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Category_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Can_Print_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Download_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Sort_Order" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Categories_All" Method="Select_Work_Guide_Categories_All">
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Categories_AllResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Parent_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Description_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Description_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Item_Order" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Brand_Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Brand_Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Parent_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Parent_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Categories_ByParent" Method="Select_Work_Guide_Categories_ByParent">
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Parent_ID" Parameter="parent_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Categories_ByParentResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Parent_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Description_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Description_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Item_Order" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Categories_Tree_ByBrand" Method="Select_Work_Guide_Categories_Tree_ByBrand">
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Exclude_Category_ID" Parameter="exclude_Category_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Categories_Tree_ByBrandResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Parent_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Item_Order" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Level_No" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Sort_Path" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Full_Path_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Full_Path_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Tree_Title_Ar" Type="System.String" DbType="NVarChar(4000)" CanBeNull="true" />
-      <Column Name="Tree_Title_En" Type="System.String" DbType="NVarChar(4000)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Category_ByID" Method="Select_Work_Guide_Category_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Category_ByIDResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Parent_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Description_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Description_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Item_Order" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Brand_Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Brand_Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Parent_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Parent_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Document_ByID" Method="Select_Work_Guide_Document_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Document_ByIDResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Category_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Description_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Description_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Original_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Stored_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="File_Path" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="File_Extension" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Mime_Type" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
-      <Column Name="File_Size" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
-      <Column Name="File_Hash" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Version_No" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Is_Download_Allowed" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Item_Order" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Category_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Category_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Brand_Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Brand_Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Document_Version_ByID" Method="Select_Work_Guide_Document_Version_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Document_Version_ByIDResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Document_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Version_No" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Original_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Stored_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="File_Path" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="File_Extension" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Mime_Type" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
-      <Column Name="File_Size" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
-      <Column Name="File_Hash" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Change_Notes" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Document_Versions_ByDocumentID" Method="Select_Work_Guide_Document_Versions_ByDocumentID">
-    <Parameter Name="Document_ID" Parameter="document_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Document_Versions_ByDocumentIDResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Document_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Version_No" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Original_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Stored_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="File_Path" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="File_Extension" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Mime_Type" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
-      <Column Name="File_Size" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
-      <Column Name="File_Hash" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Change_Notes" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Documents_All" Method="Select_Work_Guide_Documents_All">
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Category_ID" Parameter="category_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Documents_AllResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Category_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Description_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Description_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Original_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Stored_File_Name" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="File_Path" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="File_Extension" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Mime_Type" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
-      <Column Name="File_Size" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
-      <Column Name="Version_No" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Is_Download_Allowed" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Item_Order" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Category_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Category_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Brand_Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Brand_Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Role_ByID" Method="Select_Work_Guide_Role_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Role_ByIDResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Code" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="Description_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Description_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Role_Permissions_ByRoleID" Method="Select_Work_Guide_Role_Permissions_ByRoleID">
-    <Parameter Name="Role_ID" Parameter="role_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_Role_Permissions_ByRoleIDResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Role_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Can_View_Category" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Add_Category" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Edit_Category" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Delete_Category" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_View_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Upload_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Edit_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Delete_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Print_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Download_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Manage_Users" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Manage_Roles" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_View_Logs" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_Roles_All" Method="Select_Work_Guide_Roles_All">
-    <ElementType Name="Select_Work_Guide_Roles_AllResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Code" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="Description_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Description_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_User_Category_Role_ByID" Method="Select_Work_Guide_User_Category_Role_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_User_Category_Role_ByIDResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="User_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Category_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Role_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Apply_To_Children" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Start_Date" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="End_Date" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_User_Category_Roles_All" Method="Select_Work_Guide_User_Category_Roles_All">
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_User_Category_Roles_AllResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="User_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Category_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Role_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Apply_To_Children" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Start_Date" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="End_Date" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="AddedUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ModifyUser" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ModifyDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="User_FullName_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="User_FullName_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Brand_Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Brand_Title_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Category_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Category_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Role_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Role_Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Role_Code" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_User_Category_Roles_ByUserBrandRole" Method="Select_Work_Guide_User_Category_Roles_ByUserBrandRole">
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Role_ID" Parameter="role_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_User_Category_Roles_ByUserBrandRoleResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="User_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Category_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Role_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_User_Category_Roles_Grouped" Method="Select_Work_Guide_User_Category_Roles_Grouped">
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Role_ID" Parameter="role_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_User_Category_Roles_GroupedResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="User_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="User_FullName_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Role_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Role_Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Categories_Count" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="IsActive" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_View_Authorized_Categories" Method="Select_Work_Guide_View_Authorized_Categories">
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_View_Authorized_CategoriesResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Parent_ID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Item_Order" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Level_No" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Sort_Path" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Full_Path_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Tree_Title_Ar" Type="System.String" DbType="NVarChar(4000)" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.Select_Work_Guide_View_Authorized_Documents" Method="Select_Work_Guide_View_Authorized_Documents">
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Category_ID" Parameter="category_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Search_Text" Parameter="search_Text" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="PageNumber" Parameter="pageNumber" Type="System.Int32" DbType="Int" />
-    <Parameter Name="PageSize" Parameter="pageSize" Type="System.Int32" DbType="Int" />
-    <ElementType Name="Select_Work_Guide_View_Authorized_DocumentsResult">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Brand_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Category_ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Title_Ar" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Title_En" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Description_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Description_En" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Category_Title_Ar" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="File_Size" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
-      <Column Name="AddedDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="Can_View_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Download_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Can_Print_Document" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="TotalRows" Type="System.Int32" DbType="Int" CanBeNull="true" />
-    </ElementType>
-  </Function>
   <Function Name="dbo.Sync_TR_Level_UserTypes" Method="Sync_TR_Level_UserTypes">
     <Parameter Name="LevelID" Parameter="levelID" Type="System.Int32" DbType="Int" />
     <Parameter Name="UserTypesCSV" Parameter="userTypesCSV" Type="System.String" DbType="NVarChar(MAX)" />
@@ -4196,7 +3572,7 @@
     <Parameter Name="Title_Ar" Parameter="title_Ar" Type="System.String" DbType="NVarChar(MAX)" />
     <Parameter Name="Title_En" Parameter="title_En" Type="System.String" DbType="NVarChar(MAX)" />
     <Parameter Name="Tool_Number" Parameter="tool_Number" Type="System.String" DbType="NVarChar(100)" />
-    <Parameter Name="SupplierID" Parameter="supplierID" Type="System.Int32" DbType="Int" />
+    <Parameter Name="Supplier_Account_ID" Parameter="supplier_Account_ID" Type="System.Int32" DbType="Int" />
     <Parameter Name="MaintenanceCompanyID" Parameter="maintenanceCompanyID" Type="System.Int32" DbType="Int" />
     <Parameter Name="ItemTypeID" Parameter="itemTypeID" Type="System.Int32" DbType="Int" />
     <Parameter Name="Policies_Ar" Parameter="policies_Ar" Type="System.String" DbType="NVarChar(MAX)" />
@@ -4354,26 +3730,6 @@
   <Function Name="dbo.Update_Shift_IsDeleted_ByID" Method="Update_Shift_IsDeleted_ByID">
     <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
     <Parameter Name="IsDeleted" Parameter="isDeleted" Type="System.Boolean" DbType="Bit" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Suppliers_ByID" Method="Update_Suppliers_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Title_Ar" Parameter="title_Ar" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Title_En" Parameter="title_En" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsActive" Parameter="isActive" Type="System.Boolean" DbType="Bit" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Suppliers_IsActive_ByID" Method="Update_Suppliers_IsActive_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsActive" Parameter="isActive" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Suppliers_IsDeleted_ByID" Method="Update_Suppliers_IsDeleted_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsDeleted" Parameter="isDeleted" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
     <Return Type="System.Int32" />
   </Function>
   <Function Name="dbo.Update_TR_Level_Types_ByID" Method="Update_TR_Level_Types_ByID">
@@ -4667,91 +4023,6 @@
   <Function Name="dbo.Update_UsersMembers_IsDeleted_ByID" Method="Update_UsersMembers_IsDeleted_ByID">
     <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
     <Parameter Name="IsDeleted" Parameter="isDeleted" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Work_Guide_Category_ByID" Method="Update_Work_Guide_Category_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Parent_ID" Parameter="parent_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Title_Ar" Parameter="title_Ar" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Title_En" Parameter="title_En" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Description_Ar" Parameter="description_Ar" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Description_En" Parameter="description_En" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Item_Order" Parameter="item_Order" Type="System.Int32" DbType="Int" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsActive" Parameter="isActive" Type="System.Boolean" DbType="Bit" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Work_Guide_Category_IsDelete_ByID" Method="Update_Work_Guide_Category_IsDelete_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsDeleted" Parameter="isDeleted" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Work_Guide_Document_ByID" Method="Update_Work_Guide_Document_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Category_ID" Parameter="category_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Title_Ar" Parameter="title_Ar" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Title_En" Parameter="title_En" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Description_Ar" Parameter="description_Ar" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Description_En" Parameter="description_En" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Original_File_Name" Parameter="original_File_Name" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Stored_File_Name" Parameter="stored_File_Name" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="File_Path" Parameter="file_Path" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="File_Extension" Parameter="file_Extension" Type="System.String" DbType="NVarChar(50)" />
-    <Parameter Name="Mime_Type" Parameter="mime_Type" Type="System.String" DbType="NVarChar(200)" />
-    <Parameter Name="File_Size" Parameter="file_Size" Type="System.Int64" DbType="BigInt" />
-    <Parameter Name="File_Hash" Parameter="file_Hash" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Item_Order" Parameter="item_Order" Type="System.Int32" DbType="Int" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsActive" Parameter="isActive" Type="System.Boolean" DbType="Bit" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Work_Guide_Document_IsDelete_ByID" Method="Update_Work_Guide_Document_IsDelete_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsDeleted" Parameter="isDeleted" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Work_Guide_Role_ByID" Method="Update_Work_Guide_Role_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Title_Ar" Parameter="title_Ar" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Title_En" Parameter="title_En" Type="System.String" DbType="NVarChar(500)" />
-    <Parameter Name="Code" Parameter="code" Type="System.String" DbType="NVarChar(100)" />
-    <Parameter Name="Description_Ar" Parameter="description_Ar" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="Description_En" Parameter="description_En" Type="System.String" DbType="NVarChar(MAX)" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsActive" Parameter="isActive" Type="System.Boolean" DbType="Bit" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Work_Guide_Role_IsDelete_ByID" Method="Update_Work_Guide_Role_IsDelete_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsDeleted" Parameter="isDeleted" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Work_Guide_User_Category_Role_ByID" Method="Update_Work_Guide_User_Category_Role_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Category_ID" Parameter="category_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Role_ID" Parameter="role_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsActive" Parameter="isActive" Type="System.Boolean" DbType="Bit" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Work_Guide_User_Category_Role_IsDelete_ByID" Method="Update_Work_Guide_User_Category_Role_IsDelete_ByID">
-    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
-    <Parameter Name="IsDeleted" Parameter="isDeleted" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.Update_Work_Guide_User_Category_Roles_Delete_ByUserBrandRole" Method="Update_Work_Guide_User_Category_Roles_Delete_ByUserBrandRole">
-    <Parameter Name="User_ID" Parameter="user_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Brand_ID" Parameter="brand_ID" Type="System.Int32" DbType="Int" />
-    <Parameter Name="Role_ID" Parameter="role_ID" Type="System.Int32" DbType="Int" />
     <Parameter Name="ModifyUser" Parameter="modifyUser" Type="System.Int32" DbType="Int" />
     <Return Type="System.Int32" />
   </Function>

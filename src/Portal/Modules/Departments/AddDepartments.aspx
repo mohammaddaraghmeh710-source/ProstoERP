@@ -9,7 +9,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <script type="text/javascript">
         function togglePoliciesDept() {
-            var pnl = document.getElementById('<%=pnlPolicies.ClientID%>');
+            var pnl = document.getElementById('<%= pnlPolicies.ClientID %>');
             if (pnl) {
                 if (pnl.style.display === "none" || pnl.style.display === "") {
                     pnl.style.display = "block";
@@ -21,7 +21,7 @@
     </script>
 </asp:Content>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server"><asp:UpdatePanel ID="systemAdminPanel" runat="server" UpdateMode="Conditional"><ContentTemplate>
 
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="card mb-4 cvv-code-mask" style="min-height: -webkit-fill-available;">
@@ -141,7 +141,7 @@
                                     <div class="nk-int-st">
                                         <div class="form-group">
                                             <div class="col-sm-9" style="width: 100%">
-                                                <cc1:AjaxFileUpload ID="WorkingMethodVideo"
+                                                <cc1:AjaxFileUpload AutoStartUpload="true" ID="WorkingMethodVideo"
                                                     runat="server"
                                                     AllowedFileTypes="mp4,avi,mov,wmv,flv,webm"
                                                     MaximumNumberOfFiles="1"
@@ -167,7 +167,7 @@
                                     <div class="nk-int-st">
                                         <div class="form-group">
                                             <div class="col-sm-9" style="width: 100%">
-                                                <cc1:AjaxFileUpload ID="EvaluationMethodVideo"
+                                                <cc1:AjaxFileUpload AutoStartUpload="true" ID="EvaluationMethodVideo"
                                                     runat="server"
                                                     AllowedFileTypes="mp4,avi,mov,wmv,flv,webm"
                                                     MaximumNumberOfFiles="1"
@@ -230,4 +230,4 @@
         </div>
     </div>
 
-</asp:Content>
+</ContentTemplate></asp:UpdatePanel></asp:Content>

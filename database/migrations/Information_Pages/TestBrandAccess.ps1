@@ -1,4 +1,4 @@
-param([switch]$KeepForUI)
+﻿param([switch]$KeepForUI)
 $ErrorActionPreference='Stop'
 $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
 $config=[xml](Get-Content (Join-Path $PSScriptRoot '../../../src/Portal/Web.config'))
@@ -23,9 +23,15 @@ CREATE TABLE dbo.Brands(ID int PRIMARY KEY,Title_Ar nvarchar(200),Title_En nvarc
 INSERT dbo.Brands VALUES(29,N'بروستو',N'Prosto',1,0),(30,N'علامة ثانية',N'Second brand',1,0),(31,N'موقوفة',N'Inactive',0,0),(32,N'محذوفة',N'Deleted',1,1);
 CREATE TABLE dbo.UsersMembers(ID int PRIMARY KEY,Type int,Brand_ID int,FullName_Ar nvarchar(500),FullName_En nvarchar(500),IsActive bit,IsDeleted bit);
 INSERT dbo.UsersMembers VALUES(1,1,NULL,N'مدير اختبار',N'Admin',1,0),(151,4,29,N'موظف اختبار',N'Employee',1,0),(152,2,29,N'مدير فرع اختبار',N'Manager',1,0),(153,4,30,N'موظف علامة ثانية',N'Second employee',1,0),(154,4,NULL,N'بلا علامة',N'No brand',1,0);
+CREATE TABLE dbo.CRM_Accounts(ID int PRIMARY KEY,Name_AR nvarchar(200),Brand_ID int,Is_Active bit,Is_Deleted bit);
+CREATE TABLE dbo.Customer_Logins(AccountID int PRIMARY KEY,SecurityStamp uniqueidentifier,IsActive bit);
+CREATE TABLE dbo.Customer_Portal_Activity(ID bigint IDENTITY PRIMARY KEY,AccountID int,Action varchar(30),Entity nvarchar(80),RecordID int,Note nvarchar(1000));
+INSERT dbo.CRM_Accounts VALUES(101,N'عميل أول',29,1,0),(102,N'عميل ثان',29,1,0),(103,N'عميل علامة ثانية',30,1,0),(104,N'عميل موقوف',29,0,0),(105,N'عميل محذوف',29,1,1);
+INSERT dbo.Customer_Logins SELECT ID,'11111111-1111-1111-1111-111111111111',1 FROM dbo.CRM_Accounts;
 CREATE TABLE dbo.Users_Types(ID int PRIMARY KEY,Title_Ar nvarchar(200),Title_En nvarchar(200),Item_Order int,IsActive bit,IsDeleted bit);
 INSERT dbo.Users_Types VALUES(1,N'مدير نظام',N'Admin',1,1,0),(2,N'مدير فرع',N'Manager',2,1,0),(4,N'موظف',N'Employee',4,1,0),(8,N'غير فعال',N'Inactive',8,0,0);
 '@
+ $check=[regex]::Match([IO.File]::ReadAllText((Join-Path $PSScriptRoot '../CustomerPortal/007_SelfService.sql')),'(?s)CREATE OR ALTER PROCEDURE dbo.Customer_WriteCheck.*?(?=\r?\nGO)').Value;N $check
  foreach($file in @('001_Schema.sql','003_Access_Restore_Schema.sql')){
   foreach($batch in [regex]::Split([IO.File]::ReadAllText((Join-Path $PSScriptRoot $file)),'(?im)^\s*GO\s*$')){if($batch.Trim()){N $batch}}
  }
@@ -84,6 +90,7 @@ SELECT ID,VersionNumber,Title_Ar,Title_En,Summary_Ar,Summary_En,Details_Ar,Detai
  N 'UPDATE dbo.Brands SET IsActive=1 WHERE ID=30; UPDATE dbo.UsersMembers SET Brand_ID=29 WHERE ID=151'
  & (Join-Path $PSScriptRoot 'Apply.ps1') -ConfigPath $configPath
  $r=Q "SELECT BrandID FROM dbo.Information_Page_Brands WHERE PageID=$id";Check ($r.Rows.Count -eq 1 -and $r.Rows[0].BrandID -eq 30) 'Reapplying migration does not reset edited brands to Prosto'
+ . (Join-Path $PSScriptRoot 'TestAudience.ps1')
  $success=$true;"All $passed brand checks passed, plus existing information-page/access-restore suites."
  if($KeepForUI){[IO.File]::WriteAllText((Join-Path $folder 'database.txt'),$database);"UI fixture config: $configPath"}
 } finally {

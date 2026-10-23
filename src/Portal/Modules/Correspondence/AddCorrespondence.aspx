@@ -1,10 +1,14 @@
 ﻿<%@ Page Title="محادثة جديدة" Language="vb" AutoEventWireup="false" MasterPageFile="~/Site.Master" CodeBehind="AddCorrespondence.aspx.vb" Inherits="CRM.AddCorrespondence" ValidateRequest="false" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
-<asp:Content ID="Head" ContentPlaceHolderID="HeadContent" runat="server"></asp:Content>
+<asp:Content ID="Head" ContentPlaceHolderID="HeadContent" runat="server">
+<script>if(/^[a-f0-9]{32}$/i.test(new URL(location.href).searchParams.get('editor')||''))document.documentElement.classList.add('correspondence-editor');</script>
+<link rel="stylesheet" href="/assets/css/crm.css?v=20261017" /><link rel="stylesheet" href="/assets/css/crm-list.css?v=20261017" /><link rel="stylesheet" href="/assets/css/correspondence-chat.css?v=20261022e" />
+</asp:Content>
 <asp:Content ID="Main" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-<div class="container-xxl flex-grow-1 container-p-y" dir="rtl"><div class="d-inline-flex align-items-center gap-3 mb-4"><a href="ManageCorrespondence.aspx" class="btn btn-label-secondary" aria-label="العودة للمحادثات"><i class="bx bx-arrow-back"></i></a><div><h4 class="mb-1"><i class="bx bx-edit text-primary me-2"></i>مراسلة جديدة</h4><p class="small text-muted mb-3">حدد المستلمين واكتب رسالتك لبدء المتابعة.</p></div></div>
+<asp:UpdatePanel ID="upEditor" runat="server" UpdateMode="Conditional"><ContentTemplate>
+<div class="container-xxl flex-grow-1 container-p-y correspondence-new-page crm-shell crm-types" dir="rtl"><div class="correspondence-new-heading d-inline-flex align-items-center gap-3 mb-4"><a href="ManageCorrespondence.aspx" class="btn btn-label-secondary" aria-label="العودة للمحادثات"><i class="bx bx-arrow-back"></i></a><div><h4 class="mb-1"><i class="bx bx-edit text-primary me-2"></i>مراسلة جديدة</h4><p class="small text-muted mb-3">حدد المستلمين واكتب رسالتك لبدء المتابعة.</p></div></div>
 <div class="alert alert-info"><i class="bx bx-shield-quarter me-2"></i>هذه قناة مراسلات عمل رسمية تخضع لاطلاع مدير النظام. تُحفظ الرسائل والمرفقات بعد الإرسال ولا يمكن تعديلها أو حذفها من هذه الشاشة.</div><asp:Literal ID="litRelated" runat="server" /><asp:Literal ID="litMessage" runat="server" />
-<div class="card cvv-code-mask"><div class="card-body">
+<div class="card cvv-code-mask correspondence-editor-card"><div class="card-body correspondence-editor-form">
 <asp:Panel ID="pnlAdmin" runat="server" CssClass="row g-3 mb-3">
  <div class="col-md-4"><asp:Label runat="server" AssociatedControlID="ddlBrand" CssClass="form-label" Text="العلامة التجارية *" /><asp:DropDownList ID="ddlBrand" runat="server" CssClass="form-select select2" AutoPostBack="true" OnSelectedIndexChanged="Brand_Changed" /></div>
  <div class="col-md-4"><asp:Label runat="server" AssociatedControlID="ddlBranch" CssClass="form-label" Text="الفرع" /><asp:DropDownList ID="ddlBranch" runat="server" CssClass="form-select select2" AutoPostBack="true" OnSelectedIndexChanged="Recipients_Changed" /></div>
@@ -17,6 +21,8 @@
 <div class="mb-3"><asp:Label runat="server" AssociatedControlID="ddlPriority" CssClass="form-label" Text="الأولوية" /><asp:DropDownList ID="ddlPriority" runat="server" CssClass="form-select"></asp:DropDownList></div><div class="mb-3"><asp:Label runat="server" AssociatedControlID="txtBody" CssClass="form-label" Text="الرسالة الأولى" /><asp:TextBox ID="txtBody" runat="server" TextMode="MultiLine" Rows="4" MaxLength="4000" CssClass="form-control" placeholder="اكتب رسالتك… يمكنك إرسال مرفق دون نص" /></div>
 <details class="border-top pt-3 mb-3"><summary class="text-primary mb-2"><i class="bx bx-paperclip me-1"></i>إضافة مرفقات</summary><div><asp:Label runat="server" AssociatedControlID="AttachmentUpload" CssClass="form-label" Text="المرفقات" /><cc1:AjaxFileUpload ID="AttachmentUpload" runat="server" AllowedFileTypes="pdf,doc,docx,xls,xlsx,jpg,jpeg,png,gif" MaximumNumberOfFiles="5" MaxFileSize="10240" OnUploadComplete="AttachmentUpload_UploadComplete" OnUploadStart="AttachmentUpload_UploadStart" />
 <div class="form-text mt-2">PDF، Word، Excel أو صور. ارفع المرفقات أولاً ثم اضغط إرسال.</div><div class="mt-2"><asp:Label ID="lblQueued" runat="server" CssClass="form-text" /></div><div class="mb-3"><asp:LinkButton ID="btnClearUploads" runat="server" CssClass="btn btn-sm btn-label-secondary mt-2" Text="مسح المرفقات المحددة" OnClick="ClearUploads_Click" CausesValidation="false" /></div><span class="form-text">PDF، Word، Excel أو صور · حتى 5 ملفات، 10 ميجابايت لكل ملف. تُحفظ المرفقات المرفوعة إلى حين الإرسال.</span></div></details>
-<div class="d-inline-flex gap-2"><asp:Button ID="btnSave" runat="server" CssClass="btn btn-primary" Text="إرسال المراسلة" OnClick="Save_Click" /><a href="ManageCorrespondence.aspx" class="btn btn-outline-secondary">إلغاء</a></div>
+<div class="d-inline-flex gap-2"><asp:Button ID="btnSave" runat="server" CssClass="btn btn-primary" Text="إرسال المراسلة" OnClick="Save_Click" /><a href="ManageCorrespondence.aspx" class="btn btn-label-secondary" data-correspondence-cancel="true">إلغاء</a></div>
 </div></div></div>
+</ContentTemplate></asp:UpdatePanel>
+<script defer src="/assets/js/correspondence-chat.js?v=20261022d"></script>
 </asp:Content>

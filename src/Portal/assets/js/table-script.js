@@ -5,7 +5,7 @@
         el.addEventListener('touchstart', function (e) {
             e.preventDefault();
             handler(e);
-        }, {passive: false});
+        }, { passive: false });
     }
 
     function initTableFeatures() {
@@ -214,5 +214,7 @@
         table.dataset.enhanced = '1';
     }
 
+    // Conditional Web Forms regions can replace the table after initial page load.
+    window.ERPTableFeatures = { refresh: initTableFeatures };
     document.addEventListener('DOMContentLoaded', initTableFeatures);
 })();

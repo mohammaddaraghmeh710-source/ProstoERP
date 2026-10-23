@@ -4,7 +4,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 </asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server"><asp:UpdatePanel ID="systemAdminPanel" runat="server" UpdateMode="Conditional"><ContentTemplate>
 
     <div class="container-xxl flex-grow-1 container-p-y">
 
@@ -92,22 +92,22 @@
                                             <asp:PlaceHolder runat="server" ID="ItemPlaceHolder"></asp:PlaceHolder>
                                         </LayoutTemplate>
                                         <ItemTemplate>
-                                            <tr>
-                                                <td data-title="العنوان بالعربيه"><%# Eval("Title_Ar")%></td>
-                                                <td data-title="العنوان بالانجليزيه"><%# Eval("Title_En")%></td>
-                                                <td data-title="تاريخ الإنشاء"><%# Eval("AddedDate")%></td>
+                                            <tr data-admin-name='<%#: CRM.SystemAdministrationUI.SearchName(Container.DataItem) %>' data-admin-id='<%#: Eval("ID") %>' data-admin-active='<%# CRM.SystemAdministrationUI.State(Container.DataItem) %>'>
+                                                <td data-title="العنوان بالعربيه"><%#: Eval("Title_Ar") %></td>
+                                                <td data-title="العنوان بالانجليزيه"><%#: Eval("Title_En") %></td>
+                                                <td data-title="تاريخ الإنشاء"><%#: Eval("AddedDate", "{0:yyyy/MM/dd HH:mm}") %></td>
                                                 <td data-title="QRCode">
-                                                    <asp:LinkButton CssClass="btn btn-icon btn-label-success" ID="lnkQRCode" CommandName="QRCode" CommandArgument='<%# Eval("ID")%>' runat="server" ToolTip="طباعة QRCode">    <i class="bx bx-qr"></i> </asp:LinkButton>
+                                                    <asp:LinkButton CssClass="btn btn-icon btn-label-success" ID="lnkQRCode" CommandName="QRCode" CommandArgument='<%#: Eval("ID") %>' runat="server" ToolTip="طباعة QRCode">    <i class="bx bx-qr"></i> </asp:LinkButton>
                                                 </td>
                                                 <td data-title="تعديل">
                                                    
-                                                    <asp:LinkButton CssClass="btn btn-icon btn-label-secondary" ID="btnEdit" CommandName="Edit" CommandArgument='<%# Eval("ID")%>' runat="server" ToolTip="تعديل \ مشاهدة"> <i class="bx bx-edit-alt"></i> </asp:LinkButton>
+                                                    <asp:LinkButton CssClass="btn btn-icon btn-label-secondary" ID="btnEdit" CommandName="Edit" CommandArgument='<%#: Eval("ID") %>' runat="server" ToolTip="تعديل \ مشاهدة"> <i class="bx bx-edit-alt"></i> </asp:LinkButton>
                                                     
                                                 </td>
                                                   <td data-title="حذف">
     <asp:LinkButton CssClass="btn btn-icon btn-label-danger" ID="btnDelete"
         CommandName="DeleteItem"
-        CommandArgument='<%# Eval("ID")%>'
+        CommandArgument='<%#: Eval("ID") %>'
         runat="server"
         ToolTip="حذف"
         CausesValidation="false"
@@ -139,6 +139,5 @@
             </div>
         </div>
    
-}
-</asp:Content>
+</ContentTemplate></asp:UpdatePanel></asp:Content>
 

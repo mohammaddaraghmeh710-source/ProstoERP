@@ -1,4 +1,4 @@
-﻿
+
 
 Public Class EditInformationPage
     Inherits InformationPagesPage
@@ -33,6 +33,13 @@ Public Class EditInformationPage
             item.Selected = CBool(role("IsSelected"))
             cblRoles.Items.Add(item)
         Next
+        Dim customers = InformationPagesData.Query("dbo.Select_Information_Page_Customers", InformationPagesData.P("@Actor", SqlDbType.Int, Actor), InformationPagesData.P("@ID", SqlDbType.Int, PageID))
+        For Each customer As DataRow In customers.Rows
+            Dim item As New ListItem(Convert.ToString(customer("Name_AR")) & " — " & Convert.ToString(customer("BrandName")) & If(CBool(customer("IsAvailable")), "", " (غير متاح؛ أزله قبل الحفظ)"), Convert.ToString(customer("ID")))
+            item.Attributes("data-brand-ids") = Convert.ToString(customer("Brand_IDs"))
+            item.Attributes("data-customer-name") = Convert.ToString(customer("Name_AR"))
+            item.Selected = CBool(customer("IsSelected")) : lstCustomers.Items.Add(item)
+        Next
         lblVersion.Text = "صفحة جديدة"
         If PageID = 0 Then Return
         Dim data = InformationPagesData.Query("dbo.Select_Information_Page",
@@ -43,6 +50,8 @@ Public Class EditInformationPage
         If CBool(row("IsDeleted")) Then Throw New HttpException(404, "الصفحة محذوفة")
         ViewState("Version") = CInt(row("VersionNumber"))
         ViewState("AccessRevision") = CInt(row("AccessRevision"))
+        ddlAudience.SelectedValue = CStr(row("Audience"))
+        ddlCustomersAccess.SelectedValue = If(CBool(row("AllCustomers")), "all", "selected")
         ddlAccess.SelectedValue = If(CBool(row("AllUserTypes")), "all", "roles")
         lblVersion.Text = "الإصدار الحالي: " & row("VersionNumber").ToString()
         txtTitleAr.Text = CStr(row("Title_Ar"))
@@ -67,13 +76,20 @@ Public Class EditInformationPage
             Next
             If Not brands.HasElements Then Throw New ArgumentException("اختر علامة تجارية واحدة على الأقل.")
             Dim roles As New XElement("roles")
-            If ddlAccess.SelectedValue = "roles" Then
+            If ddlAudience.SelectedValue = "employees" AndAlso ddlAccess.SelectedValue = "roles" Then
                 For Each item As ListItem In cblRoles.Items
                     If item.Selected Then _
                         roles.Add(New XElement("role", New XAttribute("id", Integer.Parse(item.Value))))
                 Next
                 If Not roles.HasElements Then _
                     Throw New ArgumentException("اختر نوع مستخدم واحدًا على الأقل لصلاحيات الاطلاع.")
+            End If
+            Dim customers As New XElement("customers")
+            If ddlAudience.SelectedValue = "customers" AndAlso ddlCustomersAccess.SelectedValue = "selected" Then
+                For Each item As ListItem In lstCustomers.Items
+                    If item.Selected Then customers.Add(New XElement("customer", New XAttribute("id", Integer.Parse(item.Value))))
+                Next
+                If Not customers.HasElements Then Throw New ArgumentException("اختر عميلًا واحدًا على الأقل.")
             End If
             Dim order As Integer
             If Not Integer.TryParse(txtOrder.Text, order) OrElse order < 0 Then _
@@ -86,39 +102,24 @@ Public Class EditInformationPage
                     Throw New ArgumentException("يجب أن تكون نهاية العرض بعد بدايته.")
             End If
             InformationPagesData.Query("dbo.Save_Information_Page",
-                                       InformationPagesData.P("@Actor", SqlDbType.Int, Actor),
-                                       InformationPagesData.P("@ID", SqlDbType.Int, PageID),
-                                       InformationPagesData.P("@ExpectedVersion", SqlDbType.Int,
-                                                              CInt(ViewState("Version"))),
-                                       InformationPagesData.P("@TitleAr", SqlDbType.NVarChar,
-                                                              InformationPagesData.RequiredText(txtTitleAr.Text, 250,
-                                                                                                "العنوان العربي"), 250),
-                                       InformationPagesData.P("@TitleEn", SqlDbType.NVarChar,
-                                                              InformationPagesData.RequiredText(txtTitleEn.Text, 250,
-                                                                                                "العنوان الإنجليزي"),
-                                                              250),
-                                       InformationPagesData.P("@SummaryAr", SqlDbType.NVarChar,
-                                                              InformationPagesData.RequiredText(txtSummaryAr.Text, 2000,
-                                                                                                "الملخص العربي"), 2000),
-                                       InformationPagesData.P("@SummaryEn", SqlDbType.NVarChar,
-                                                              InformationPagesData.RequiredText(txtSummaryEn.Text, 2000,
-                                                                                                "الملخص الإنجليزي"),
-                                                              2000),
-                                       InformationPagesData.P("@DetailsAr", SqlDbType.NVarChar,
-                                                              InformationPagesData.CleanHtml(txtDetailsAr.Text), - 1),
-                                       InformationPagesData.P("@DetailsEn", SqlDbType.NVarChar,
-                                                              InformationPagesData.CleanHtml(txtDetailsEn.Text), - 1),
-                                       InformationPagesData.P("@Order", SqlDbType.Int, order),
-                                       InformationPagesData.P("@Published", SqlDbType.Bit, ddlStatus.SelectedValue = "1"),
-                                       InformationPagesData.P("@Mode", SqlDbType.VarChar, ddlMode.SelectedValue, 10),
-                                       InformationPagesData.P("@StartUtc", SqlDbType.DateTime2, startUtc),
-                                       InformationPagesData.P("@EndUtc", SqlDbType.DateTime2, endUtc),
-                                       InformationPagesData.P("@AllTypes", SqlDbType.Bit,
-                                                              ddlAccess.SelectedValue = "all"),
-                                       InformationPagesData.P("@Roles", SqlDbType.Xml, roles.ToString()),
-                                       InformationPagesData.P("@ExpectedAccessRevision", SqlDbType.Int,
-                                                              CInt(ViewState("AccessRevision"))),
-                                       InformationPagesData.P("@Brands", SqlDbType.Xml, brands.ToString()))
+                InformationPagesData.P("@Actor", SqlDbType.Int, Actor), InformationPagesData.P("@ID", SqlDbType.Int, PageID),
+                InformationPagesData.P("@ExpectedVersion", SqlDbType.Int, CInt(ViewState("Version"))),
+                InformationPagesData.P("@TitleAr", SqlDbType.NVarChar, InformationPagesData.RequiredText(txtTitleAr.Text, 250, "العنوان العربي"), 250),
+                InformationPagesData.P("@TitleEn", SqlDbType.NVarChar, InformationPagesData.RequiredText(txtTitleEn.Text, 250, "العنوان الإنجليزي"), 250),
+                InformationPagesData.P("@SummaryAr", SqlDbType.NVarChar, InformationPagesData.RequiredText(txtSummaryAr.Text, 2000, "الملخص العربي"), 2000),
+                InformationPagesData.P("@SummaryEn", SqlDbType.NVarChar, InformationPagesData.RequiredText(txtSummaryEn.Text, 2000, "الملخص الإنجليزي"), 2000),
+                InformationPagesData.P("@DetailsAr", SqlDbType.NVarChar, InformationPagesData.CleanHtml(txtDetailsAr.Text), -1),
+                InformationPagesData.P("@DetailsEn", SqlDbType.NVarChar, InformationPagesData.CleanHtml(txtDetailsEn.Text), -1),
+                InformationPagesData.P("@Order", SqlDbType.Int, order), InformationPagesData.P("@Published", SqlDbType.Bit, ddlStatus.SelectedValue = "1"),
+                InformationPagesData.P("@Mode", SqlDbType.VarChar, ddlMode.SelectedValue, 10),
+                InformationPagesData.P("@StartUtc", SqlDbType.DateTime2, startUtc), InformationPagesData.P("@EndUtc", SqlDbType.DateTime2, endUtc),
+                InformationPagesData.P("@AllTypes", SqlDbType.Bit, ddlAudience.SelectedValue <> "employees" OrElse ddlAccess.SelectedValue = "all"),
+                InformationPagesData.P("@Roles", SqlDbType.Xml, roles.ToString()),
+                InformationPagesData.P("@ExpectedAccessRevision", SqlDbType.Int, CInt(ViewState("AccessRevision"))),
+                InformationPagesData.P("@Brands", SqlDbType.Xml, brands.ToString()),
+                InformationPagesData.P("@Audience", SqlDbType.VarChar, ddlAudience.SelectedValue, 10),
+                InformationPagesData.P("@AllCustomers", SqlDbType.Bit, ddlAudience.SelectedValue = "all" OrElse (ddlAudience.SelectedValue = "customers" AndAlso ddlCustomersAccess.SelectedValue = "all")),
+                InformationPagesData.P("@Customers", SqlDbType.Xml, customers.ToString()))
         Catch ex As Exception
             ShowError(litMessage, ex)
             Return

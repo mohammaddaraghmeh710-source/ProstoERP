@@ -1,4 +1,4 @@
-﻿# شكاوى واقتراحات الموظفين
+# شكاوى واقتراحات الموظفين
 
 ## الوضع الحالي
 
@@ -147,6 +147,12 @@ DownloadEmployeeFeedback.aspx بأسماء محايدة. المرفقات الأ
 مقدم الطلب الخارجي، مع الحفاظ على تواقيع إجراءات الموظفين وصلاحيات CMS الحالية. تُظهر الشاشات المصدر عبر حقل
 `SourceType` الموجود.
 
-التقديم العام يستخدم `Insert_Customer_Feedback_Request` ويُرسل لجميع مديري النظام الفعالين. بيانات التواصل والعلامة
-والفرع تحفظ وقت التقديم. يُطبّق الملف مع `Mobile_API/004_CustomerFeedback.sql` عبر
-`Mobile_API/Apply-CustomerFeedback.ps1`. توثيق الواجهات في `Mobile_API/Customer-Feedback-API.md`.
+التقديم العام يستخدم `Insert_Customer_Feedback_Request` ويُرسل لجميع مديري النظام الفعالين. بيانات التواصل والعلامة والفرع تحفظ وقت التقديم. يُطبّق الملف مع `Mobile_API/004_CustomerFeedback.sql` عبر `Mobile_API/Apply-CustomerFeedback.ps1`. توثيق الواجهات في `Mobile_API/Customer-Feedback-API.md`.
+
+## Feedback administration workspace
+
+Deploy the Portal build with `Dashboard.aspx`, the feedback/customer wizard assets and the combined notification widget. Apply `Apply-Workspace.ps1` after the current employee feedback 009, authenticated customer portal/self-service and canonical CRM account organization migrations. The runner takes and verifies a full COPY_ONLY database backup and applies the latest applicant/customer readers, `010_WorkspaceNotifications.sql` and `CustomerPortal/012_FeedbackWorkspace.sql` in one transaction. Existing requests, snapshots, attachments and audit rows are retained. Activated workspace contracts are reasserted by incremental employee runners and the CRM account organization helper; do not deploy an older standalone SQL file afterward.
+
+Customer complaints always disclose CRM identity, use only explicitly assigned active brands/branches and route/forward only to system administrators. No branch assignment means no selectable branch. Customers submit/follow only; they never become employee workflow recipients. Creation, transfer and closure notices are transactionally deduplicated per workflow group and real recipient identity; customer read acknowledgement is ownership/session checked. Both master bells preserve circular notifications and add complaint events. Unified logs include notification delivery/read events with anonymous employee masks. The standalone notification page redirects to the relevant follow-up/log page.
+
+Run `database/migrations/CustomerPortal/Test-CustomerPortal.ps1 -FeedbackOnly` using Windows PowerShell 5.1 for schema-only synthetic SQL plus real ASP.NET pages. Checks cover route/member forgery, stale/first-action guards, identity isolation, anonymity, notification deduplication/reads, the administrator dashboard, the four-step forms and immediate persisted customer list updates. Add `-KeepDatabase` only for local browser verification; remove the named isolated fixture after verification. No source customer data or credentials are copied.

@@ -1,4 +1,4 @@
-﻿Imports System.Globalization
+Imports System.Globalization
 Imports System.Net.Mail
 
 Public MustInherit Class CRMModulePage
@@ -12,9 +12,21 @@ Public MustInherit Class CRMModulePage
     Private content As Control
     Private current As DataRow
 
-    Private Function Field (Of T As Control)(name As String) As T
+    Protected Function Field(Of T As Control)(name As String) As T
         Return TryCast(content.FindControl(name), T)
     End Function
+
+    Protected ReadOnly Property CRMAccessAllowed As Boolean
+        Get
+            Return allowed
+        End Get
+    End Property
+
+    Protected ReadOnly Property CRMIsAdmin As Boolean
+        Get
+            Return admin
+        End Get
+    End Property
 
     Protected Overrides Sub OnInit(e As EventArgs)
         If SessionManager.GetInstance.Users Is Nothing Then Response.Redirect("~/Login.aspx") : Return
@@ -23,12 +35,8 @@ Public MustInherit Class CRMModulePage
         MyBase.OnInit(e)
         content = Master.FindControl("ContentPlaceHolder1")
         Try
-            admin =
-                CBool(
-                    CRMData.Query("dbo.CRM_CheckUser", CRMData.P("@Actor_ID", SqlDbType.Int, actor)).Rows(0)("Is_Admin"))
-            If _
-                New String() {"Account_Types", "Contract_Types", "Payment_Methods"}.Contains(EntityName) AndAlso
-                Not admin Then Throw New InvalidOperationException("إدارة التعريفات متاحة لمدير النظام فقط.")
+            admin = CBool(CRMData.Query("dbo.CRM_CheckUser", CRMData.P("@Actor_ID", SqlDbType.Int, actor)).Rows(0)("Is_Admin"))
+            If New String() {"Account_Types", "Contract_Types", "Payment_Methods", "WorkGuide_Items"}.Contains(EntityName) AndAlso Not admin Then Throw New InvalidOperationException("إدارة التعريفات متاحة لمدير النظام فقط.")
             allowed = True
             If Mode = "Edit" Then
                 If Not Integer.TryParse(Request.QueryString("id"), recordID) OrElse recordID <= 0 Then _
@@ -38,12 +46,27 @@ Public MustInherit Class CRMModulePage
                     Throw New InvalidOperationException("السجل غير متاح أو لا تملك صلاحية الوصول إليه.")
                 current = data.Rows(0)
             End If
+            ' Keep legacy account links on the current editor, including organizational memberships.
+            ' Existing form submissions still run their original validation and are never redirected first.
+            If EntityName = "Accounts" AndAlso Mode <> "Manage" AndAlso String.Equals(Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase) Then
+                allowed = False
+                Response.Redirect(CRMData.Link("Accounts") & If(Mode = "Edit", "?edit=" & recordID.ToString(), "?new=1"), False)
+                Context.ApplicationInstance.CompleteRequest()
+                Return
+            End If
             If Mode <> "Manage" Then
                 For Each f In CRMModel.Entities(EntityName).Fields
-                    If CRMModel.Entities.ContainsKey(f.Kind) OrElse f.Kind = "Users" Then _
-                        FillOptions(Field (Of DropDownList)("f_" & f.Name), f.Kind)
+                    If CRMModel.Entities.ContainsKey(f.Kind) OrElse f.Kind = "Users" OrElse f.Kind = "Brands" Then FillOptions(Field(Of DropDownList)("f_" & f.Name), f.Kind)
                 Next
-                If EntityName = "Accounts" AndAlso Not admin Then Field (Of DropDownList)("f_Owner_ID").Enabled = False
+                If EntityName = "Accounts" Then
+                    Dim brand = Field(Of DropDownList)("f_Brand_ID")
+                    If current IsNot Nothing AndAlso Not IsDBNull(current("Brand_ID")) AndAlso brand.Items.FindByValue(Convert.ToString(current("Brand_ID"))) Is Nothing Then
+                        brand.Items.Add(New ListItem(Convert.ToString(current("Brand_Name")) & " (غير متاحة)", Convert.ToString(current("Brand_ID"))))
+                    End If
+                    Dim selected = If(IsPostBack, Request.Form(brand.UniqueID), If(current Is Nothing, "", Convert.ToString(current("Brand_ID"))))
+                    FillAccountBranches(selected)
+                End If
+                If EntityName = "Accounts" AndAlso Not admin Then Field(Of DropDownList)("f_Owner_ID").Enabled = False
             Else
                 If Field (Of DropDownList)("filterAccount") IsNot Nothing Then _
                     FillOptions(Field (Of DropDownList)("filterAccount"), "Accounts")
@@ -60,16 +83,32 @@ Public MustInherit Class CRMModulePage
     End Sub
 
     Private Sub FillOptions(ddl As DropDownList, entity As String)
-        ddl.Items.Clear()
-        ddl.Items.Add(New ListItem("— اختر —", ""))
-        Dim data =
-                If _
-                (entity = "Users",
-                 CRMData.Query("dbo.CRM_Select_Options", CRMData.P("@Actor_ID", SqlDbType.Int, actor),
-                               CRMData.P("@Kind", SqlDbType.NVarChar, "Users", 30)), CRMData.Rows(entity, actor))
+        ddl.Items.Clear() : ddl.Items.Add(New ListItem("— اختر —", ""))
+        Dim data = If(entity = "Users" OrElse entity = "Brands", CRMData.Query("dbo.CRM_Select_Options", CRMData.P("@Actor_ID", SqlDbType.Int, actor), CRMData.P("@Kind", SqlDbType.NVarChar, entity, 30)), CRMData.Rows(entity, actor))
         For Each row As DataRow In data.Rows
             ddl.Items.Add(New ListItem(Convert.ToString(row("Name_AR")), Convert.ToString(row("ID"))))
         Next
+    End Sub
+
+    Private Sub FillAccountBranches(brandValue As String)
+        Dim branches = Field(Of DropDownList)("f_Branch_ID")
+        branches.Items.Clear()
+        branches.Items.Add(New ListItem("بدون فرع (اختياري)", ""))
+        Dim brandID As Integer
+        If Not Integer.TryParse(brandValue, brandID) OrElse brandID <= 0 Then Return
+        Dim options = CRMData.Query("dbo.CRM_Select_Options", CRMData.P("@Actor_ID", SqlDbType.Int, actor), CRMData.P("@Kind", SqlDbType.NVarChar, "Branches", 30))
+        For Each row As DataRow In options.Rows
+            If CInt(row("BrandID")) = brandID Then branches.Items.Add(New ListItem(Convert.ToString(row("Name_AR")), Convert.ToString(row("ID"))))
+        Next
+        If current IsNot Nothing AndAlso Convert.ToString(current("Brand_ID")) = brandValue AndAlso Not IsDBNull(current("Branch_ID")) AndAlso branches.Items.FindByValue(Convert.ToString(current("Branch_ID"))) Is Nothing Then
+            branches.Items.Add(New ListItem(Convert.ToString(current("Branch_Name")) & " (غير متاح)", Convert.ToString(current("Branch_ID"))))
+        End If
+    End Sub
+
+    Protected Sub Brand_Changed(sender As Object, e As EventArgs)
+        If allowed AndAlso EntityName = "Accounts" AndAlso Mode <> "Manage" Then
+            FillAccountBranches(Field(Of DropDownList)("f_Brand_ID").SelectedValue)
+        End If
     End Sub
 
     Protected Overrides Sub OnLoad(e As EventArgs)
@@ -109,6 +148,8 @@ Public MustInherit Class CRMModulePage
 
     Protected Sub Save_Click(sender As Object, e As EventArgs)
         If Not allowed Then Return
+        Page.Validate()
+        If Not Page.IsValid Then Return
         Try
             Dim xml As New XElement("row")
             For Each f In CRMModel.Entities(EntityName).Fields
@@ -161,12 +202,7 @@ Public MustInherit Class CRMModulePage
                               CRMData.P("@Is_Active", SqlDbType.Bit, e.CommandName = "Activate"),
                               CRMData.P("@Version", SqlDbType.Binary, key.Values("Row_Version"), 8))
             End If
-            Field (Of Literal)("litMessage").Text = "<div class='alert alert-success'>" &
-                                                    If _
-                                                        (e.CommandName = "DeleteItem", "تم حذف العنصر.",
-                                                         If _
-                                                            (e.CommandName = "Activate", "تم تفعيل العنصر.",
-                                                             "تم إيقاف العنصر.")) & "</div>"
+            ShowSuccess(If(e.CommandName = "DeleteItem", "تم حذف العنصر.", If(e.CommandName = "Activate", "تم تفعيل العنصر.", "تم إيقاف العنصر.")))
         Catch ex As Exception
             ShowError(ex)
         End Try
@@ -184,35 +220,23 @@ Public MustInherit Class CRMModulePage
     End Function
 
     Private Sub BindData()
-        Dim data =
-                If _
-                (EntityName = "Activity_Logs",
-                 CRMData.Query("dbo.CRM_Select_Logs", CRMData.P("@Actor_ID", SqlDbType.Int, actor)),
-                 CRMData.Rows(EntityName, actor))
-        Dim rows = data.Rows.Cast (Of DataRow)()
-        For Each pair In _
-            New String() {"filterName=Name_AR", "filterEmail=Email", "filterJob=Job_Title", "filterPhone=Phone"}
+        Dim data = LoadListData()
+        PrepareListData(data)
+        Dim rows = data.Rows.Cast(Of DataRow)()
+        For Each pair In New String() {"filterName=Name_AR", "filterEmail=Email", "filterJob=Job_Title", "filterPhone=Phone"}
             Dim p = pair.Split("="c), value = TextValue(p(0)), col = p(1)
-            If value <> "" Then _
-                rows =
-                    rows.Where(
-                        Function(r) _
-                                  Convert.ToString(r(col)).IndexOf(value, StringComparison.CurrentCultureIgnoreCase) >=
-                                  0 OrElse
-                                  (col = "Name_AR" AndAlso data.Columns.Contains("Name_EN") AndAlso
-                                   Convert.ToString(r("Name_EN")).IndexOf(value,
-                                                                          StringComparison.CurrentCultureIgnoreCase) >=
-                                   0))
+            If value <> "" Then rows = rows.Where(Function(r) Convert.ToString(r(col)).IndexOf(value, StringComparison.CurrentCultureIgnoreCase) >= 0 OrElse ((col = "Name_AR" OrElse col = "Job_Title") AndAlso data.Columns.Contains(If(col = "Name_AR", "Name_EN", "Job_Title_EN")) AndAlso Convert.ToString(r(If(col = "Name_AR", "Name_EN", "Job_Title_EN"))).IndexOf(value, StringComparison.CurrentCultureIgnoreCase) >= 0))
         Next
-        For Each pair In _
-            New String() _
-                {"filterAccount=Account_ID", "filterType=Account_Type_ID", "filterUser=Actor_ID", "filterEntity=Entity",
-                 "filterStatus=Is_Active"}
+        For Each pair In New String() {"filterAccount=Account_ID", "filterType=Account_Type_ID", "filterUser=Actor_ID", "filterEntity=Entity", "filterStatus=Is_Active", "filterBrand=Brand_ID", "filterBranch=Branch_ID"}
             Dim p = pair.Split("="c), value = TextValue(p(0)), col = p(1)
-            If value <> "" Then _
-                rows =
-                    rows.Where(
-                        Function(r) If(col = "Is_Active", If(CBool(r(col)), "1", "0"), Convert.ToString(r(col))) = value)
+            If value <> "" Then
+                If EntityName = "Accounts" AndAlso (col = "Brand_ID" OrElse col = "Branch_ID") AndAlso data.Columns.Contains(If(col = "Brand_ID", "Brand_IDs", "Branch_IDs")) Then
+                    Dim memberships = If(col = "Brand_ID", "Brand_IDs", "Branch_IDs")
+                    rows = rows.Where(Function(row) Convert.ToString(row(memberships)).Split(","c).Any(Function(id) id.Trim() = value))
+                Else
+                    rows = rows.Where(Function(r) If(col = "Is_Active", If(CBool(r(col)), "1", "0"), Convert.ToString(r(col))) = value)
+                End If
+            End If
         Next
         Dim first As DateTime, last As DateTime
         If _
@@ -238,12 +262,18 @@ Public MustInherit Class CRMModulePage
         list.DataBind()
     End Sub
 
+    Protected Overridable Sub PrepareListData(data As DataTable)
+    End Sub
+
+    Protected Overridable Function LoadListData() As DataTable
+        Return If(EntityName = "Activity_Logs", CRMData.Query("dbo.CRM_Select_Logs", CRMData.P("@Actor_ID", SqlDbType.Int, actor)), CRMData.Rows(EntityName, actor))
+    End Function
+
     Protected Overrides Sub OnPreRender(e As EventArgs)
         If allowed Then
             Try
                 If Mode = "Manage" Then BindData()
-                If Request.QueryString("saved") = "1" AndAlso Field (Of Literal)("litMessage").Text = "" Then _
-                    Field (Of Literal)("litMessage").Text = "<div class='alert alert-success'>تم حفظ البيانات.</div>"
+                If Request.QueryString("saved") = "1" AndAlso Field(Of Literal)("litMessage").Text = "" Then ShowSuccess("تم حفظ البيانات.")
             Catch ex As Exception
                 ShowError(ex)
             End Try
@@ -253,12 +283,28 @@ Public MustInherit Class CRMModulePage
 
     Protected Function EntityTitle(value As Object) As String
         Dim name = Convert.ToString(value)
+        If name = "Customer_Session" Then Return "دخول العملاء"
+        If name = "WorkGuide_Permissions" Then Return "صلاحيات دليل العمل"
+        If name = "WorkGuide_Categories" Then Return "تصنيفات دليل العمل"
+        If name = "News" Then Return "الأخبار"
+        If name = "JobTitle_Items" Then Return "الأدوات"
+        If name = "Activity_Logs" Then Return "سجل النشاطات"
         Return If(CRMModel.Entities.ContainsKey(name), CRMModel.Entities(name).Title, name)
     End Function
 
-    Private Sub ShowError(ex As Exception)
-        Field (Of Literal)("litMessage").Text = "<div class='alert alert-danger' role='alert'>" &
-                                                CRMData.H(CRMData.ErrorMessage(ex)) & "</div>"
+    Protected Function ActivityActionTitle(value As Object) As String
+        Dim action = Convert.ToString(value)
+        If action = "news-list" Then Return "عرض أخبار العلامة التجارية"
+        If action = "news-details" Then Return "عرض تفاصيل خبر"
+        Return action
+    End Function
+
+    Protected Overridable Sub ShowSuccess(message As String)
+        Field(Of Literal)("litMessage").Text = "<div class='alert alert-success'>" & CRMData.H(message) & "</div>"
+    End Sub
+
+    Protected Overridable Sub ShowError(ex As Exception)
+        Field(Of Literal)("litMessage").Text = "<div class='alert alert-danger' role='alert'>" & CRMData.H(CRMData.ErrorMessage(ex)) & "</div>"
     End Sub
 End Class
 

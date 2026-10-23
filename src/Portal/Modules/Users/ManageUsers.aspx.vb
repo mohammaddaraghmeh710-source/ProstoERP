@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Imports Prosto_ERP_ClassLibrary
 
 Public Class ManageUsers
@@ -92,9 +92,7 @@ Public Class ManageUsers
         litDeviceHistory.Text =
             If(history.Length = 0, "<p class='text-muted'>لا توجد قرارات مسجلة بعد.</p>", history.ToString())
         pnlDevices.Visible = True
-        ClientScript.RegisterStartupScript(Me.GetType(), "deviceModal",
-                                           "window.addEventListener('load',function(){bootstrap.Modal.getOrCreateInstance(document.getElementById('deviceModal')).show();});",
-                                           True)
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "deviceModal", "if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){bootstrap.Modal.getOrCreateInstance(document.getElementById('deviceModal')).show();},{once:true});}else{bootstrap.Modal.getOrCreateInstance(document.getElementById('deviceModal')).show();}", True)
     End Sub
 
     Protected Sub DeviceFilterChanged(sender As Object, e As EventArgs)
@@ -148,7 +146,8 @@ Public Class ManageUsers
         ShowDevices()
     End Sub
 
-    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        SystemAdministrationUI.RegisterRefresh(Me, AddressOf FillData)
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -231,33 +230,31 @@ Public Class ManageUsers
             Dim genders = db.Select_Genders_All().ToList()
 
             Dim result = (From u In users
-                    Let typeTitle = (From t In types Where t.ID = u.Type Select t.Title_Ar).FirstOrDefault()
-                    Let statusTitle = (From s In statuses Where s.ID = u.Status Select s.Title_Ar).FirstOrDefault()
-                    Let genderTitle = (From g In genders Where g.ID = u.Gender Select g.Title_Ar).FirstOrDefault()
-                    Let img = u.User_Image
-                    Let imgUrl =
-                    If(Not String.IsNullOrEmpty(img),
-                       img,
-                       If(genderTitle IsNot Nothing AndAlso genderTitle.Trim() = "ذكر",
-                          "../../assets/img/Prosto/avatar-male.png",
-                          If _
-                             (
-                                 genderTitle IsNot Nothing AndAlso
-                                 (genderTitle.Trim() = "أنثى" OrElse genderTitle.Trim() = "انثى"),
-                                 "../../assets/img/Prosto/avatar-female.png",
-                                 "../../assets/img/Prosto/avatar.png")))
-                    Select New With {
-                    .ID = u.ID,
-                    .PendingDevices = If(pending.ContainsKey(u.ID), pending(u.ID), 0),
-                    .FullName_Ar = u.FullName_Ar,
-                    .Fullname_En = u.Fullname_En,
-                    .Employee_Number = u.Employee_Number,
-                    .UserName = u.UserName,
-                    .UserTypeTitle = If(typeTitle, ""),
-                    .StatusTitle = If(statusTitle, ""),
-                    .AddedDate = u.AddedDate,
-                    .UserImageUrl = imgUrl
-                    }).OrderByDescending(Function(x) x.ID).ToList()
+                          Let typeTitle = (From t In types Where t.ID = u.Type Select t.Title_Ar).FirstOrDefault()
+                          Let statusTitle = (From s In statuses Where s.ID = u.Status Select s.Title_Ar).FirstOrDefault()
+                          Let genderTitle = (From g In genders Where g.ID = u.Gender Select g.Title_Ar).FirstOrDefault()
+                          Let img = u.User_Image
+                          Let imgUrl =
+                              If(Not String.IsNullOrEmpty(img),
+                                 img,
+                                 If(genderTitle IsNot Nothing AndAlso genderTitle.Trim() = "ذكر",
+                                    "../../assets/img/Prosto/avatar-male.png",
+                                    If(genderTitle IsNot Nothing AndAlso (genderTitle.Trim() = "أنثى" OrElse genderTitle.Trim() = "انثى"),
+                                       "../../assets/img/Prosto/avatar-female.png",
+                                       "../../assets/img/Prosto/avatar.png")))
+                          Select New With {
+                              .ID = u.ID,
+                 .IsActive = u.IsActive,
+                              .PendingDevices = If(pending.ContainsKey(u.ID), pending(u.ID), 0),
+                              .FullName_Ar = u.FullName_Ar,
+                              .Fullname_En = u.Fullname_En,
+                              .Employee_Number = u.Employee_Number,
+                              .UserName = u.UserName,
+                              .UserTypeTitle = If(typeTitle, ""),
+                              .StatusTitle = If(statusTitle, ""),
+                              .AddedDate = u.AddedDate,
+                              .UserImageUrl = imgUrl
+                          }).OrderByDescending(Function(x) x.ID).ToList()
 
             lstData.DataSource = result
             lstData.DataBind()

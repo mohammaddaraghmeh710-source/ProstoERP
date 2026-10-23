@@ -1,4 +1,4 @@
-﻿Imports Prosto_ERP_ClassLibrary
+Imports Prosto_ERP_ClassLibrary
 
 Public Class AddEmployeeFeedbackTopics
     Inherits EmployeeFeedbackPage
@@ -6,10 +6,10 @@ Public Class AddEmployeeFeedbackTopics
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         RequireAdmin()
-        If Editing AndAlso RequestID = 0 Then Response.Redirect("ManageEmployeeFeedbackTopics.aspx")
+        If Editing AndAlso RequestID=0 Then SystemAdministrationUI.Redirect(Me, "ManageEmployeeFeedbackTopics.aspx")
         If Not IsPostBack Then
             Try
-                EmployeeFeedbackCatalog.FillTypes(ddlType, ActorID, 0, "اختر النوع")
+                FeedbackPresentation.FillTypes(ddlType, ActorID, 0, "اختر النوع")
                 ddlBrand.Items.Add(New ListItem("اختر العلامة التجارية", "0"))
                 Using db As New Prosto_ERP_DataClassesDataContext()
                     For Each b In db.Select_Brands_All() _
@@ -43,10 +43,8 @@ Public Class AddEmployeeFeedbackTopics
                 db.Save_Employee_Feedback_Topic(ActorID, If(Editing, RequestID, 0), Number(ddlType), Number(ddlBrand),
                                                 txtAr.Text.Trim(), txtEn.Text.Trim(), order, chkActive.Checked).ToList()
             End Using
-        Catch ex As Exception : ShowError(ex)
-            Return
-        End Try
-        Response.Redirect("ManageEmployeeFeedbackTopics.aspx")
+        Catch ex As Exception : ShowError(ex) : Return : End Try
+        SystemAdministrationUI.Redirect(Me, "ManageEmployeeFeedbackTopics.aspx")
     End Sub
 End Class
 

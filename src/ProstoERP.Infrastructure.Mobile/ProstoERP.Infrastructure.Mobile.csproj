@@ -80,4 +80,7 @@
     <Compile Include="Data\SqlParameters.cs" />
     <Compile Include="Features\EmployeeAccess\SessionAuthenticationStore.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\Circulars\Notifications\CircularNotificationWorker.cs" />
+  </ItemGroup>
 </Project>

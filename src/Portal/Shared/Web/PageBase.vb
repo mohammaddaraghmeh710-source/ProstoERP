@@ -24,6 +24,7 @@ Public Class PageBase
                                                                    StringComparison.OrdinalIgnoreCase) Then
             Throw New HttpException(403, "هذه الخدمة مخصصة للموظفين.")
         End If
+        SystemAdministrationUI.Prepare(Me)
         MyBase.OnPreInit(e)
     End Sub
 
@@ -274,8 +275,8 @@ Public Class PageBase
         Dim msg As String = String.Empty
         Try
 
-            Dim userName = "mohd@gmail.com"
-            Dim password = "123456"
+            Dim userName = System.Configuration.ConfigurationManager.AppSettings("LegacySmtp.Username")
+            Dim password = System.Configuration.ConfigurationManager.AppSettings("LegacySmtp.Password")
             Dim msg1 = New MailMessage()
             Dim msg2 = New MailMessage()
 

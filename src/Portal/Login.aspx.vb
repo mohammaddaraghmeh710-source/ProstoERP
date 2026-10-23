@@ -1,4 +1,4 @@
-﻿Imports Echo.Encrptor
+Imports Echo.Encrptor
 Imports Prosto_ERP_ClassLibrary
 
 Public Class Login
@@ -78,12 +78,8 @@ Public Class Login
                     ShowError("اسم المستخدم أو كلمة المرور غير صحيحة، أو الحساب غير متاح.")
                     Return
                 End If
-                Session.Clear()
-                SessionManager.GetInstance.Users = Nothing
-                CustomerPortalData.Current = identity
-                Response.Redirect("~/CustomerPortal/Guide.aspx", False)
-                Context.ApplicationInstance.CompleteRequest()
-                Return
+                Session.Clear() : SessionManager.GetInstance.Users=Nothing : CustomerPortalData.Current=identity
+                Response.Redirect("~/CustomerPortal/Dashboard.aspx",False) : Context.ApplicationInstance.CompleteRequest() : Return
             End If
             Using db As New Prosto_ERP_DataClassesDataContext
                 Dim encryptor As New TripleDesEncryptor()

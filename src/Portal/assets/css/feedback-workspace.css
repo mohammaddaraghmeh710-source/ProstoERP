@@ -1,0 +1,51 @@
+.feedback-workspace .feedback-wizard{box-shadow:none;border-radius:.5rem}
+.light-style .feedback-workspace .bs-stepper:not(.wizard-modern),.dark-style .feedback-workspace .bs-stepper:not(.wizard-modern){box-shadow:none}
+.feedback-workspace .feedback-wizard .bs-stepper-header{padding:1.5rem;border-bottom:0;gap:.5rem}
+.feedback-workspace .feedback-wizard .bs-stepper-content{padding:1.5rem}
+.feedback-workspace .feedback-wizard .step-trigger{padding:.5rem;gap:.65rem;text-align:start}
+.feedback-workspace .feedback-wizard .bs-stepper-label{margin:0;white-space:normal;min-width:0}
+.feedback-workspace .feedback-wizard .bs-stepper-title{font-size:.9rem;line-height:1.6}
+.feedback-workspace .feedback-wizard .bs-stepper-subtitle{font-size:.75rem;line-height:1.5}
+.feedback-workspace .feedback-wizard .bs-stepper-circle{flex-shrink:0;width:2.4rem;height:2.4rem;display:grid;place-items:center}
+.feedback-workspace .feedback-wizard .step.active .bs-stepper-circle{background:#5a8dee;color:white;box-shadow:0 .125rem .375rem #5a8dee40}
+.feedback-workspace .feedback-wizard .step.done .bs-stepper-circle{background:#dff7ec;color:#28c76f}
+.feedback-workspace .feedback-wizard .step.active .bs-stepper-title{color:#5a8dee}
+.feedback-workspace .feedback-wizard [data-feedback-step][hidden],.feedback-workspace .feedback-wizard [hidden]{display:none!important}
+.feedback-workspace .feedback-wizard-footer,.feedback-workspace .feedback-wizard-final{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.feedback-workspace .feedback-wizard-final{margin-inline-start:auto;justify-content:flex-end}
+.feedback-workspace .ajax__fileupload{width:100%!important;max-width:100%;border:1px dashed var(--erp-border,#d4d8dd);border-radius:.5rem;padding:1rem;background:var(--erp-surface,#fff)}
+.feedback-workspace .ajax__fileupload_dropzone{height:auto!important;border:0;padding:1.25rem;text-align:center}
+.feedback-workspace .ajax__fileupload_selectFileContainer{position:relative!important;float:none!important;display:inline-flex;align-items:center;justify-content:center;width:100%!important;height:42px!important;overflow:hidden;background:#5a8dee!important;color:white!important;border-radius:.375rem;cursor:pointer}
+.feedback-workspace .ajax__fileupload_selectFileButton{display:block;width:100%;text-align:center;background:transparent!important;color:inherit!important;padding:.5rem}
+.feedback-workspace .ajax__fileupload_selectFileContainer input[type=file]{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;opacity:0!important;cursor:pointer}
+.feedback-workspace .ajax__fileupload_topFileStatus{display:block;clear:both;font-size:.8rem;padding-top:.5rem}
+.feedback-workspace #ERPTable tr.feedback-needs-action>td{background:#fff8ec!important}
+.feedback-workspace #ERPTable tr.feedback-needs-action>td:first-child{border-inline-start:3px solid #ffab36}
+.feedback-workspace #ERPTable tr.feedback-needs-action .badge.bg-label-danger{background:#ffe5e5!important;color:#ff5b5c!important}
+.feedback-workspace #ERPTable tr[hidden]{display:none!important}
+.feedback-workspace .feedback-request-title{font-size:1.0625rem;font-weight:600;line-height:1.6;overflow-wrap:anywhere}
+.feedback-workspace .feedback-request-body{min-width:0}
+.feedback-workspace .feedback-request-text{font-size:.875rem;line-height:1.8;overflow-wrap:anywhere}
+.feedback-workspace .feedback-request-meta{font-size:.875rem;line-height:1.8}
+.feedback-workspace .feedback-request-meta dt{font-weight:400}
+.feedback-workspace .feedback-request-meta dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.feedback-workspace.feedback-detail .feedback-detail-card .card-body{min-width:0;padding:1rem}
+.feedback-workspace.feedback-detail .feedback-section-title{font-size:.875rem;font-weight:600;line-height:1.6}
+.feedback-workspace.feedback-detail .feedback-request-meta{font-size:.8125rem;line-height:1.7}
+.feedback-workspace.feedback-detail .feedback-request-applicant .feedback-request-meta>div{width:100%;flex:0 0 100%}
+.feedback-workspace.feedback-detail .feedback-detail-card .badge{font-size:.75rem}
+.feedback-workspace.feedback-detail .feedback-detail-footer{margin-top:.75rem!important}
+.feedback-workspace.feedback-detail .feedback-detail-card .timeline-event{padding:.5rem}
+@media(max-width:575.98px){.feedback-workspace.feedback-detail .feedback-detail-card .card-body{padding:.875rem}.feedback-workspace.feedback-detail .feedback-request-applicant .bg-lighter{padding:.75rem!important}}
+.feedback-workspace .feedback-detail-card .timeline{padding-inline-start:1.25rem}
+.feedback-workspace .feedback-detail-card .timeline-event{border:0;border-radius:.5rem;padding:1rem}
+.feedback-workspace .feedback-detail-card .timeline-item{padding-inline-start:1.5rem!important}
+@media(max-width:1199.98px){.feedback-workspace .feedback-wizard .bs-stepper-header{flex-wrap:wrap}.feedback-workspace .feedback-wizard .step{flex:1 1 40%}.feedback-workspace .feedback-wizard .line{display:none}}
+@media(max-width:768px){.feedback-workspace #ERPTable tbody td[data-title="العنوان / مقدّم الطلب"]{display:grid!important;grid-template-columns:30% minmax(0,1fr)}.feedback-workspace #ERPTable tbody td[data-title="العنوان / مقدّم الطلب"]::before{grid-column:1;grid-row:1 / span 3;width:auto!important}.feedback-workspace #ERPTable tbody td[data-title="العنوان / مقدّم الطلب"]>a,.feedback-workspace #ERPTable tbody td[data-title="العنوان / مقدّم الطلب"]>div{grid-column:2;min-width:0;overflow-wrap:anywhere;text-align:start}.feedback-workspace #ERPTable tr.feedback-needs-action{border-inline-start:3px solid #ffab36}.feedback-workspace #ERPTable tr.feedback-needs-action>td:first-child{border-inline-start:0}}
+@media(max-width:575.98px){.feedback-workspace .feedback-wizard .bs-stepper-header,.feedback-workspace .feedback-wizard .bs-stepper-content{padding:1rem}.feedback-workspace .feedback-wizard .step-trigger{padding:.25rem;gap:.5rem}.feedback-workspace .feedback-wizard .bs-stepper-circle{width:2rem;height:2rem;font-size:.85rem}.feedback-workspace .feedback-wizard .bs-stepper-title{font-size:.8rem}.feedback-workspace .feedback-wizard .bs-stepper-subtitle{font-size:.7rem}.feedback-workspace .feedback-wizard-footer .btn{min-height:40px}.feedback-workspace .feedback-detail-card .timeline-event{padding:.75rem}}
+
+.feedback-workspace.feedback-detail .feedback-detail-tabs{padding:.5rem .5rem 0;gap:.25rem}
+.feedback-workspace.feedback-detail .feedback-detail-tabs .nav-link{padding:.65rem .75rem;font-size:.8125rem;border:0;border-bottom:2px solid transparent;border-radius:.35rem .35rem 0 0}
+.feedback-workspace.feedback-detail .feedback-detail-tabs .nav-link.active{color:#5a8dee;background:var(--erp-primary-soft,#e5edfc);border-bottom-color:#5a8dee;box-shadow:none}
+.feedback-workspace.feedback-detail .tab-content{box-shadow:none}
+@media(max-width:575.98px){.feedback-workspace.feedback-detail .feedback-detail-tabs .nav-item{flex:1 1 42%}.feedback-workspace.feedback-detail .feedback-detail-tabs .nav-link{width:100%;padding:.6rem .35rem}}

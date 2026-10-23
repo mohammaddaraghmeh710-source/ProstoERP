@@ -6,7 +6,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 </asp:Content>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server"><asp:UpdatePanel ID="systemAdminPanel" runat="server" UpdateMode="Conditional"><ContentTemplate>
 
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="card mb-4 cvv-code-mask" style="min-height: -webkit-fill-available;">
@@ -140,7 +140,7 @@
                                     <div class="nk-int-st">
                                         <div class="form-group">
                                             <div class="col-sm-9" style="width: 100%">
-                                                <ajaxToolkit:AjaxFileUpload ID="WorkingMethodVideo" AllowedFileTypes="mp4,avi,mov,wmv,jpeg,png,jpg"
+                                                <ajaxToolkit:AjaxFileUpload AutoStartUpload="true" ID="WorkingMethodVideo" AllowedFileTypes="mp4,avi,mov,wmv,jpeg,png,jpg"
                                                     MaximumNumberOfFiles="1" MaxFileSize="102400" runat="server"
                                                     OnUploadComplete="WorkingMethodVideo_UploadComplete"
                                                     OnUploadStart="WorkingMethodVideo_UploadStart" />
@@ -161,7 +161,7 @@
                                     <div class="nk-int-st">
                                         <div class="form-group">
                                             <div class="col-sm-9" style="width: 100%">
-                                                <ajaxToolkit:AjaxFileUpload ID="EvaluationMethodVideo" AllowedFileTypes="mp4,avi,mov,wmv,jpeg,png,jpg"
+                                                <ajaxToolkit:AjaxFileUpload AutoStartUpload="true" ID="EvaluationMethodVideo" AllowedFileTypes="mp4,avi,mov,wmv,jpeg,png,jpg"
                                                     MaximumNumberOfFiles="1" MaxFileSize="102400" runat="server"
                                                     OnUploadComplete="EvaluationMethodVideo_UploadComplete"
                                                     OnUploadStart="EvaluationMethodVideo_UploadStart" />
@@ -226,4 +226,4 @@
         }
     </script>
 
-</asp:Content>
+</ContentTemplate></asp:UpdatePanel></asp:Content>

@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Imports System.Net.Mail
 Imports System.Security.Cryptography
 Imports Prosto_ERP_ClassLibrary
@@ -26,6 +26,10 @@ Public Class ManageAttendanceIntegration
             ddlBrand.Items.Insert(0, New ListItem("اختر العلامة التجارية", "0"))
             ResetConnections()
             chkEnabled.Checked = True
+            Dim brand As Integer
+            If Integer.TryParse(Request.QueryString("brand"),brand) AndAlso ddlBrand.Items.FindByValue(brand.ToString()) IsNot Nothing Then
+                ddlBrand.SelectedValue=brand.ToString() : BrandChanged(Me,EventArgs.Empty)
+            End If
         End If
     End Sub
 
@@ -179,6 +183,7 @@ Public Class ManageAttendanceIntegration
                                         txtHrUrl.Text.Trim(), txtHrUser.Text.Trim(), txtHrPassword.Text)
             LoadSettings()
             ShowMessage(litMessage, "تم حفظ إعدادات API.", True)
+            SystemAdministrationUI.Complete(Me)
         Catch ex As SqlException
             Diagnostics.Trace.TraceWarning("Attendance settings SQL failed ({0}).", ex.Number)
             ShowMessage(litMessage,
@@ -232,27 +237,13 @@ Public Class ManageAttendanceIntegration
                 address.Address <> txtSenderEmail.Text.Trim() OrElse txtSenderEmail.Text.Contains(vbCr) OrElse
                 txtSenderEmail.Text.Contains(vbLf) Then Throw New FormatException()
             Dim password = txtSmtpPassword.Text.Replace(" ", "").Trim()
-            If txtSmtpPassword.Text.Length > 0 AndAlso password.Length = 0 Then _
-                ShowMessage(litEmailMessage, "App Password لا يمكن أن يتكون من مسافات.") : Return
-            Dim version As Byte() =
-                    If _
-                    (ViewState("EmailVersion") Is Nothing, Nothing,
-                     Convert.FromBase64String(CStr(ViewState("EmailVersion"))))
-            AttendanceData.Store().Query("dbo.EmailNotification_Save",
-                                         New SqlParameter("@Actor", SessionManager.GetInstance.Users.UserID),
-                                         New SqlParameter("@BrandID", CInt(ddlBrand.SelectedValue)),
-                                         New SqlParameter("@SenderEmail", address.Address),
-                                         New SqlParameter("@AppPassword", SqlDbType.VarBinary, - 1) _
-                                            With { _
-                                            .Value =
-                                            If _
-                                            (password.Length = 0, CType(DBNull.Value, Object),
-                                             AttendanceIntegration.Protect(password))},
-                                         New SqlParameter("@Enabled", chkEmailEnabled.Checked),
-                                         New SqlParameter("@Version", SqlDbType.Binary, 8) _
-                                            With {.Value = If(version Is Nothing, CType(DBNull.Value, Object), version)})
-            LoadEmailSettings()
-            ShowMessage(litEmailMessage, "تم حفظ إعدادات Gmail لهذه العلامة التجارية.", True)
+            If txtSmtpPassword.Text.Length > 0 AndAlso password.Length = 0 Then ShowMessage(litEmailMessage, "App Password لا يمكن أن يتكون من مسافات.") : Return
+            Dim version As Byte() = If(ViewState("EmailVersion") Is Nothing, Nothing, Convert.FromBase64String(CStr(ViewState("EmailVersion"))))
+            AttendanceData.Store().Query("dbo.EmailNotification_Save", New SqlParameter("@Actor", SessionManager.GetInstance.Users.UserID), New SqlParameter("@BrandID", CInt(ddlBrand.SelectedValue)),
+                New SqlParameter("@SenderEmail", address.Address), New SqlParameter("@AppPassword", SqlDbType.VarBinary, -1) With {.Value = If(password.Length = 0, CType(DBNull.Value, Object), Prosto_ERP_ClassLibrary.AttendanceIntegration.Protect(password))},
+                New SqlParameter("@Enabled", chkEmailEnabled.Checked), New SqlParameter("@Version", SqlDbType.Binary, 8) With {.Value = If(version Is Nothing, CType(DBNull.Value, Object), version)})
+            LoadEmailSettings() : ShowMessage(litEmailMessage, "تم حفظ إعدادات Gmail لهذه العلامة التجارية.", True)
+            SystemAdministrationUI.Complete(Me)
         Catch ex As FormatException
             ShowMessage(litEmailMessage, "أدخل عنوان بريد إلكتروني واحدًا صالحًا دون اسم عرض.")
         Catch ex As SqlException

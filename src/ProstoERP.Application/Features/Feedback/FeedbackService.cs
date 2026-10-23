@@ -277,8 +277,13 @@ namespace ProstoERP.Application.Features.Feedback
                         item["DownloadUrl"] = AttachmentUrl(Convert.ToInt32(item["ID"]), model.EmployeeNumber, true);
                     }
 
+                    var contact = First(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackContact, "Actor", Actor, "ID", id));
+                    var recipientTypes = canAct && Flag(permissions, "CanTransfer")
+                        ? Targets(db) : new List<Dictionary<string, object>>();
+                    if (Convert.ToInt32(contact["SourceType"]) == 2)
+                        recipientTypes = recipientTypes.Where(row => Convert.ToInt32(row["ID"]) == 1).ToList();
                     var actions = new List<FeedbackActionOption>();
-                    if (canAct && Flag(permissions, "CanTransfer"))
+                    if (recipientTypes.Count > 0)
                         actions.Add(new FeedbackActionOption
                         {
                             Code = "transfer", Title = "تحويل للمتابعة", CommentRequired = true,
@@ -292,14 +297,12 @@ namespace ProstoERP.Application.Features.Feedback
                     var result = new FeedbackDetailResponse
                     {
                         Request = details,
-                        Contact = First(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackContact, "Actor", Actor, "ID", id)),
+                        Contact = contact,
                         Attachments = attachments,
                         Workflow =
                             Rows(db.Execute(MobileStatement.Feedback_SelectEmployeeFeedbackWorkflow, "Actor", Actor, "ID", id)),
                         AllowedActions = actions,
-                        RecipientTypes = canAct && Flag(permissions, "CanTransfer")
-                            ? Targets(db)
-                            : new List<Dictionary<string, object>>(),
+                        RecipientTypes = recipientTypes,
                         Replayed = replay
                     };
                     db.Commit();

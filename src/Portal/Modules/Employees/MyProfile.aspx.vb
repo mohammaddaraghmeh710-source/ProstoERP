@@ -1,4 +1,4 @@
-﻿Imports System.Globalization
+Imports System.Globalization
 Imports System.Threading.Tasks
 Imports Prosto_ERP_ClassLibrary
 
@@ -49,9 +49,9 @@ Public Class MyProfile
         End If
 
         LoadParameters()
-        pnlAttendance.Visible = EmployeeID > 0 AndAlso
-                                (SessionManager.GetInstance.Users.UserType = 1 OrElse
-                                 EmployeeID = SessionManager.GetInstance.Users.UserID)
+        lnkHRProfile.Visible = EmployeeID > 0 AndAlso (SessionManager.GetInstance.Users.UserType = 1 OrElse EmployeeID = SessionManager.GetInstance.Users.UserID)
+        If lnkHRProfile.Visible Then lnkHRProfile.NavigateUrl = "~/Modules/Employees/HRProfile.aspx?EmployeeID=" & EmployeeID.ToString(CultureInfo.InvariantCulture)
+        pnlAttendance.Visible = EmployeeID > 0 AndAlso (SessionManager.GetInstance.Users.UserType = 1 OrElse EmployeeID = SessionManager.GetInstance.Users.UserID)
         If pnlAttendance.Visible Then
             lnkAttendance.NavigateUrl = "/Modules/Employees/AttendanceHistory.aspx?EmployeeID=" &
                                         EmployeeID.ToString(CultureInfo.InvariantCulture)

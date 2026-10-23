@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Imports System.Globalization
 Imports AjaxControlToolkit
 Imports Prosto_ERP_ClassLibrary
@@ -57,20 +57,23 @@ Public Class Add_News
                     Next
                 End If
 
-                NewsData.Save(userId, brand, Nothing,
-                              If(String.IsNullOrWhiteSpace(txtTitleAr.Text), Nothing, txtTitleAr.Text.Trim()),
-                              If(String.IsNullOrWhiteSpace(txtTitleEn.Text), Nothing, txtTitleEn.Text.Trim()),
-                              If(String.IsNullOrWhiteSpace(txtBriefAr.Text), Nothing, txtBriefAr.Text.Trim()),
-                              If(String.IsNullOrWhiteSpace(txtBriefEn.Text), Nothing, txtBriefEn.Text.Trim()),
-                              If(String.IsNullOrWhiteSpace(txtDetails.Text), Nothing, txtDetails.Text.Trim()),
-                              If(String.IsNullOrWhiteSpace(NewsImagePath), Nothing, NewsImagePath),
-                              If(dateVal.HasValue, dateVal.Value, CType(Nothing, DateTime?)),
-                              orderVal,
-                              True
-                              )
-            End Using
+            NewsData.Save(userId, brand, Nothing,
+                If(String.IsNullOrWhiteSpace(txtTitleAr.Text), Nothing, txtTitleAr.Text.Trim()),
+                If(String.IsNullOrWhiteSpace(txtTitleEn.Text), Nothing, txtTitleEn.Text.Trim()),
+                If(String.IsNullOrWhiteSpace(txtBriefAr.Text), Nothing, txtBriefAr.Text.Trim()),
+                If(String.IsNullOrWhiteSpace(txtBriefEn.Text), Nothing, txtBriefEn.Text.Trim()),
+                If(String.IsNullOrWhiteSpace(txtDetails.Text), Nothing, txtDetails.Text.Trim()),
+                If(String.IsNullOrWhiteSpace(NewsImagePath), Nothing, NewsImagePath),
+                If(dateVal.HasValue, dateVal.Value, CType(Nothing, DateTime?)),
+                orderVal,
+                True, txtDetailsEn.Text
+            )
+        End Using
 
-        Catch ex As SqlException
+        Catch ex As ArgumentException
+            lblError.Text = Server.HtmlEncode(ex.Message)
+            lblError.Visible = True : Return
+        Catch ex As System.Data.SqlClient.SqlException
             lblError.Text = "تعذّر حفظ الخبر. تحقق من العلامة التجارية وصلاحية الحساب ثم حاول مجددًا."
             lblError.Visible = True
             Return

@@ -1,4 +1,4 @@
-param([string]$BuildDirectory='C:/Projects/ERPProsto/tmp/mobile-api-build')
+﻿param([string]$BuildDirectory='C:/Projects/ERPProsto/tmp/mobile-api-build')
 $ErrorActionPreference='Stop'
 $api=Join-Path $PSScriptRoot '../../../src/ProstoERP.Api'
 $config=[xml](Get-Content (Join-Path $api 'Web.config'))
@@ -11,6 +11,8 @@ function Execute-Sql([string]$connection,[string]$sql){
  $cn=New-Object System.Data.SqlClient.SqlConnection $connection
  try{$cn.Open();$cmd=$cn.CreateCommand();$cmd.CommandText=$sql;$cmd.CommandTimeout=90;[void]$cmd.ExecuteNonQuery()}finally{$cn.Dispose()}
 }
+[void][IO.Directory]::CreateDirectory($BuildDirectory)
+Get-ChildItem (Join-Path $api 'bin') -Filter '*.dll' | Copy-Item -Destination $BuildDirectory -Force
 $created=$false
 $exe=Join-Path $BuildDirectory 'FeedbackApiTests.exe'
 $storage=Join-Path $BuildDirectory $testName
@@ -49,10 +51,11 @@ SET IDENTITY_INSERT dbo.Branches ON; INSERT dbo.Branches(ID,BrandID,Title_Ar,Tit
   if($node.GetAttribute('key') -eq 'MobileApi.FeedbackStoragePath'){$node.SetAttribute('value',$storage)}
   [void]$xml.SelectSingleNode('/configuration/appSettings').AppendChild($node)
  }
+ $http=$xml.SelectSingleNode('/configuration/appSettings/add[@key="MobileApi.AllowHttp"]');if($http){$http.SetAttribute('value','false')}
  if($config.configuration.runtime){[void]$xml.configuration.AppendChild($xml.ImportNode($config.configuration.runtime,$true))}
  $xml.Save("$exe.config")
  $refs=@('Prosto_ERP_API.dll','System.Web.Http.dll','System.Net.Http.Formatting.dll','Newtonsoft.Json.dll','Encryptor.dll') | ForEach-Object { '/reference:'+(Join-Path $BuildDirectory $_) }
- & (Join-Path $api 'bin/roslyn/csc.exe') /nologo /target:exe "/out:$exe" /reference:System.Net.Http.dll /reference:System.Web.dll /reference:System.Configuration.dll /reference:System.Data.dll /reference:System.Drawing.dll @refs (Join-Path $PSScriptRoot 'FeedbackApi.IntegrationTests.cs') (Join-Path $PSScriptRoot 'CustomerFeedbackApi.IntegrationTests.cs')
+ & (Join-Path $api 'bin/roslyn/csc.exe') /nologo /target:exe "/out:$exe" /reference:System.Net.Http.dll /reference:System.Web.dll /reference:System.Configuration.dll /reference:System.Data.dll /reference:System.Drawing.dll @refs (Join-Path $PSScriptRoot 'FeedbackApi.IntegrationTests.cs') (Join-Path $PSScriptRoot 'CustomerFeedbackApi.IntegrationTests.cs') (Join-Path $PSScriptRoot 'ApiPerformanceProbe.cs')
  if($LASTEXITCODE -ne 0){throw 'Test compilation failed'}
  & $exe
  if($LASTEXITCODE -ne 0){throw 'Feedback API integration tests failed'}

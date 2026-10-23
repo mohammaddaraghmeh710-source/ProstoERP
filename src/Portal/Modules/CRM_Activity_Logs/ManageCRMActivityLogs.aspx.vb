@@ -1,17 +1,9 @@
 ﻿Public Class ManageCRMActivityLogs
-    Inherits CRMModulePage
+    Inherits PageBase
 
-    Protected Overrides ReadOnly Property EntityName As String
-        Get
-            Return "Activity_Logs"
-        End Get
-    End Property
-
-    Protected Overrides ReadOnly Property Mode As String
-        Get
-            Return "Manage"
-        End Get
-    End Property
+    Protected Overrides Sub OnLoad(e As EventArgs)
+        MyBase.OnLoad(e)
+        Response.Redirect("~/Modules/CRM_Account_Types/Overview.aspx#crmActivity", False)
+        Context.ApplicationInstance.CompleteRequest()
+    End Sub
 End Class
-
-

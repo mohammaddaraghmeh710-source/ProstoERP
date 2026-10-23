@@ -1,9 +1,10 @@
-﻿Imports Prosto_ERP_ClassLibrary
+Imports Prosto_ERP_ClassLibrary
 
 Public Class ManageBranches
     Inherits PageBase
 
-    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        SystemAdministrationUI.RegisterRefresh(Me, AddressOf FillData)
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -28,15 +29,16 @@ Public Class ManageBranches
 
 
             Dim data =
-                    (From b In branches.ToList()
-                    Join br In brands On b.BrandID Equals br.ID
-                    Select New With {
-                    .ID = b.ID,
-                    .Title_Ar = b.Title_Ar,
-                    .Title_En = b.Title_En,
-                    .AddedDate = b.AddedDate,
-                    .BrandTitle_Ar = br.Title_Ar
-                    }).ToList()
+            (From b In branches.ToList()
+             Join br In brands On b.BrandID Equals br.ID
+             Select New With {
+                 .ID = b.ID,
+                 .IsActive = b.IsActive,
+                 .Title_Ar = b.Title_Ar,
+                 .Title_En = b.Title_En,
+                 .AddedDate = b.AddedDate,
+                 .BrandTitle_Ar = br.Title_Ar
+             }).ToList()
 
             lstData.DataSource = data
             lstData.DataBind()

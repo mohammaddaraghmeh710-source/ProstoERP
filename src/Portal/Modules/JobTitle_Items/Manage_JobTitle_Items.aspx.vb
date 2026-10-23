@@ -1,10 +1,13 @@
-﻿Imports Prosto_ERP_ClassLibrary
+Imports Prosto_ERP_ClassLibrary
+Imports System.Linq
+Imports System.Collections.Generic
 
 Public Class Manage_JobTitle_Items
     Inherits PageBase
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
+        SystemAdministrationUI.RegisterRefresh(Me, AddressOf BindData)
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -95,15 +98,40 @@ Public Class Manage_JobTitle_Items
         ddlJobTitleAdvanced.Items.Insert(0, New ListItem("الكل", ""))
     End Sub
 
+    ' ListItem custom attributes are not restored by DropDownList ViewState on AJAX cascades.
+    ' Restore metadata without rebinding the registered values or losing the posted selection.
+    Protected Sub SupplierMetadata_PreRender(sender As Object, e As EventArgs) Handles Me.PreRender
+        If SessionManager.GetInstance.Users Is Nothing Then Return
+        Dim currentAccountId As Integer? = Nothing
+        Dim rows As New Dictionary(Of String, System.Data.DataRow)(StringComparer.Ordinal)
+        For Each row As System.Data.DataRow In CRMSupplierData.Options(SessionManager.GetInstance.Users.UserID, currentAccountId, True).Rows
+            rows(Convert.ToString(row("ID"))) = row
+        Next
+        For Each optionItem As ListItem In ddlSupplier.Items
+            If String.IsNullOrEmpty(optionItem.Value) Then Continue For
+            If rows.ContainsKey(optionItem.Value) Then
+                Dim row = rows(optionItem.Value)
+                optionItem.Attributes("data-brand-ids") = Convert.ToString(row("Brand_IDs"))
+                optionItem.Attributes("data-available") = If(Convert.ToBoolean(row("Is_Available")), "1", "0")
+            Else
+                optionItem.Attributes("data-brand-ids") = ""
+                optionItem.Attributes("data-available") = "0"
+            End If
+        Next
+    End Sub
+
     Private Sub FillSuppliers()
-        Using db As New Prosto_ERP_DataClassesDataContext
-            Dim data = db.Select_Suppliers_All().Where(Function(x) x.IsDeleted = 0).ToList()
-            ddlSupplier.DataSource = data
-            ddlSupplier.DataTextField = "Title_Ar"
-            ddlSupplier.DataValueField = "ID"
-            ddlSupplier.DataBind()
-        End Using
-        ddlSupplier.Items.Insert(0, New ListItem("الكل", ""))
+        ddlSupplier.Items.Clear()
+        For Each row As System.Data.DataRow In CRMSupplierData.Options(SessionManager.GetInstance.Users.UserID, Nothing, True).Rows
+            Dim nameAr = Convert.ToString(row("Name_AR"))
+            Dim nameEn = Convert.ToString(row("Name_EN"))
+            Dim name = nameAr & If(String.IsNullOrWhiteSpace(nameEn), "", " — " & nameEn)
+            Dim item As New ListItem(name, Convert.ToString(row("ID")))
+            item.Attributes("data-brand-ids") = Convert.ToString(row("Brand_IDs"))
+            item.Attributes("data-available") = If(Convert.ToBoolean(row("Is_Available")), "1", "0")
+            ddlSupplier.Items.Add(item)
+        Next
+        ddlSupplier.Items.Insert(0, New ListItem("جميع الموردين", ""))
     End Sub
 
     Private Sub FillMaintenanceCompanies()

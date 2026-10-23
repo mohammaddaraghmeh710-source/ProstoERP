@@ -95,8 +95,11 @@ namespace ProstoERP.Application.Features.CustomerPortal
                         : Rows(db.Execute(MobileStatement.CustomerPortal_CustomerLoginResult, "AccountID", credential["AccountID"], "Stamp",
                             credential["SecurityStamp"], "Success", difference == 0));
                     if (logged.Count == 0)
+                    {
+                        db.Execute(MobileStatement.CustomerPortal_CustomerLogLoginFailure, "Username", model.Username.Trim());
                         throw new FeedbackException(HttpStatusCode.Unauthorized, "INVALID_CREDENTIALS",
                             "اسم المستخدم أو كلمة المرور غير صحيحة أو الحساب غير متاح.");
+                    }
                     var identity = logged[0];
                     var token = tokens.NewToken();
                     var created = Rows(db.Execute(MobileStatement.CustomerPortal_CustomerApiCreateSession, "AccountID", identity["AccountID"],
@@ -132,158 +135,6 @@ namespace ProstoERP.Application.Features.CustomerPortal
                     var row = Rows(Query(db, MobileStatement.CustomerPortal_CustomerSession))[0];
                     return Success(new CustomerSessionResponse
                         { AccountID = Account, Name = row["Name_AR"], ExpiresUtc = Session["ExpiresUtc"] });
-                }
-            });
-        }
-
-        public object Brands()
-        {
-            return GuideSection("brands", 0);
-        }
-
-        public object Categories(int brandID)
-        {
-            return GuideSection("categories", brandID);
-        }
-
-        public object RequestOptions(int brandID)
-        {
-            return GuideSection("request-categories", brandID);
-        }
-
-        private object GuideSection(string section, int brand)
-        {
-            return Execute(() =>
-            {
-                if (!context.IsModelValid || brand < 0 || (section != "brands" && brand == 0))
-                    throw ProstoERP.Application.Validation.MobileValidation.Invalid();
-                using (var db = sessions.Open())
-                {
-                    return Success(Rows(Query(db, MobileStatement.CustomerPortal_CustomerWorkGuide, "Section", section, "Brand", brand)));
-                }
-            });
-        }
-
-        public object Documents(int brandID, int categoryID = 0, string search = "", int page = 1,
-            int pageSize = 20)
-        {
-            return Execute(() =>
-            {
-                Paging(page, pageSize, search);
-                if (brandID <= 0 || categoryID < 0) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
-                using (var db = sessions.Open())
-                {
-                    return Paged(
-                        Query(db, MobileStatement.CustomerPortal_CustomerApiGuide, "Brand", brandID, "Category", categoryID, "Search",
-                            search ?? "", "Page", page, "PageSize", pageSize), page, pageSize);
-                }
-            });
-        }
-
-        public object Document(int id)
-        {
-            return Execute(() =>
-            {
-                using (var db = sessions.Open())
-                {
-                    var row = DocumentRow(db, id);
-                    row.Remove("File_Path");
-                    row["FileUrl"] = context.Link("CustomerGuideFile", new { id });
-                    return Success(row);
-                }
-            });
-        }
-
-        private Dictionary<string, object> DocumentRow(FeedbackDb db, int id)
-        {
-            var row = Rows(Query(db, MobileStatement.CustomerPortal_CustomerGuide, "Section", "file", "DocumentID", id)).FirstOrDefault();
-            if (row == null) throw Missing();
-            return row;
-        }
-
-        public object GuideFile(int id, bool download = false)
-        {
-            return Execute(() =>
-            {
-                if (!context.IsModelValid) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
-                using (var db = sessions.Open())
-                {
-                    var row = DocumentRow(db, id);
-                    if (download && !Convert.ToBoolean(row["Can_Download_Document"]))
-                        throw new FeedbackException(HttpStatusCode.Forbidden, "DOWNLOAD_DENIED",
-                            "التنزيل غير متاح لهذا الملف.");
-                    var relative = Convert.ToString(row["File_Path"]).Replace('\\', '/');
-                    if (relative.Contains(":") || relative.StartsWith("//")) throw Missing();
-                    var root = options.PortalRoot;
-                    if (string.IsNullOrWhiteSpace(root) || !Path.IsPathRooted(root))
-                        throw new ConfigurationErrorsException("Configure CustomerApi.PortalRoot.");
-                    root = Path.GetFullPath(root).TrimEnd('\\', '/') + Path.DirectorySeparatorChar;
-                    var path = Path.GetFullPath(Path.Combine(root, relative.TrimStart('~', '/')));
-                    if (!path.StartsWith(root, StringComparison.OrdinalIgnoreCase) ||
-                        !string.Equals(Path.GetExtension(path), ".pdf", StringComparison.OrdinalIgnoreCase) ||
-                        !File.Exists(path)) throw Missing();
-                    Query(db, MobileStatement.CustomerPortal_CustomerLogDocument, "DocumentID", id, "Action", download ? "download" : "view");
-                    return FileResponse(path, "application/pdf", "guide-" + id + ".pdf", download);
-                }
-            });
-        }
-
-        public object AccessRequests(int brandID = 0, string status = "P", int page = 1, int pageSize = 20)
-        {
-            return Execute(() =>
-            {
-                Paging(page, pageSize, "");
-                if (brandID < 0 || !new[] { "P", "A", "R", "H" }.Contains(status)) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
-                using (var db = sessions.Open())
-                {
-                    var rows = Rows(Query(db, MobileStatement.CustomerPortal_CustomerWorkGuide, "Section", "requests", "Brand", brandID,
-                        "Status", status));
-                    return Success(new
-                    {
-                        Total = rows.Count, Page = page, PageSize = pageSize,
-                        Items = rows.Skip((page - 1) * pageSize).Take(pageSize)
-                    });
-                }
-            });
-        }
-
-        public object RequestAccess(CustomerAccessCreate model)
-        {
-            return Execute(() =>
-            {
-                Validate(model);
-                if (model.OperationID == Guid.Empty || model.CategoryIDs == null || model.CategoryIDs.Length < 1 ||
-                    model.CategoryIDs.Length > 200 ||
-                    model.CategoryIDs.Any(x => x < 1)) throw ProstoERP.Application.Validation.MobileValidation.Invalid();
-                model.CategoryIDs = model.CategoryIDs.Distinct().OrderBy(x => x).ToArray();
-                byte[] hash;
-                using (var sha = SHA256.Create())
-                {
-                    hash = sha.ComputeHash(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model)));
-                }
-
-                using (var db = sessions.Open())
-                {
-                    db.Begin();
-                    Lock(db, "customer-guide:" + Account + ":" + model.OperationID);
-                    var previous =
-                        Rows(db.Execute(MobileStatement.CustomerPortal_RequestAccessCustomerApiGuideOperations,
-                            "Account", Account, "Operation", model.OperationID));
-                    if (previous.Count > 0)
-                    {
-                        MatchHash(previous[0]["PayloadHash"], hash);
-                        db.Commit();
-                        return Success(new { BatchID = previous[0]["BatchID"], Replayed = true });
-                    }
-
-                    var categories = new XElement("items",
-                        model.CategoryIDs.Select(id => new XElement("item", new XAttribute("id", id)))).ToString();
-                    var saved = Rows(Query(db, MobileStatement.CustomerPortal_CustomerWorkGuide, "Section", "submit", "Brand", model.BrandID,
-                        "Categories", categories, "Reason", model.Reason))[0];
-                    db.Execute(MobileStatement.CustomerPortal_RequestAccessLock,
-                        "Account", Account, "Operation", model.OperationID, "Hash", hash, "Batch", saved["Batch_ID"]);
-                    db.Commit();
-                    return Success(new { BatchID = saved["Batch_ID"], Replayed = false });
                 }
             });
         }

@@ -14,7 +14,6 @@
     <add key="MobileApi.AssetBaseUrl" value="REPLACE_WITH_LOCAL_VALUE" />
     <add key="MobileApi.CorrespondenceStoragePath" value="REPLACE_WITH_LOCAL_VALUE" />
     <add key="MobileApi.FeedbackStoragePath" value="REPLACE_WITH_LOCAL_VALUE" />
-    <add key="CustomerApi.PortalRoot" value="REPLACE_WITH_LOCAL_VALUE" />
   </appSettings>
   <connectionStrings>
     <add connectionString="Server=YOUR_SERVER;Database=YOUR_DATABASE;Integrated Security=True;" providerName="System.Data.SqlClient" name="Prosto_ERP_ConnectionConnection" />

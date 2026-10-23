@@ -1,5 +1,5 @@
-﻿
-
+Imports System.Data
+Imports System.Linq
 Public Class InformationPageLogs
     Inherits InformationPagesPage
 
@@ -34,9 +34,10 @@ Public Class InformationPageLogs
             lstLogs.DataSource = data
             lstLogs.DataBind()
             Dim total = If(data.Rows.Count = 0, 0, CInt(data.Rows(0)("TotalRows")))
-            lblCount.Text = "عدد السجلات: " & total.ToString() & " | الصفحة: " & (Offset\50 + 1).ToString()
-            btnPrevious.Enabled = Offset > 0
-            btnNext.Enabled = Offset + 50 < total
+            Dim visits = data.Rows.Cast(Of DataRow)().Count(Function(row) {"view", "preview"}.Contains(CStr(row("Action"))))
+            statTotal.Text = total.ToString() : statVisits.Text = visits.ToString() : statChanges.Text = (data.Rows.Count - visits).ToString()
+            lblCount.Text = "عدد السجلات: " & total.ToString() & " | الدفعة: " & (Offset \ 50 + 1).ToString()
+            btnPrevious.Enabled = Offset > 0 : btnNext.Enabled = Offset + 50 < total
         Catch ex As Exception
             ShowError(litMessage, ex)
         End Try
@@ -46,7 +47,9 @@ Public Class InformationPageLogs
         Offset = 0
         BindLogs()
     End Sub
-
+    Protected Sub Reset_Click(sender As Object, e As EventArgs)
+        txtEmployee.Text = "" : ddlAction.SelectedIndex = 0 : Offset = 0 : BindLogs()
+    End Sub
     Protected Sub Previous_Click(sender As Object, e As EventArgs)
         Offset -= 50
         BindLogs()

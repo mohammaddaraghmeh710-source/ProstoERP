@@ -19,22 +19,30 @@ Public NotInheritable Class FeedbackPresentation
             "<div class=""col-sm-6 col-xl-4""><div class=""d-inline-flex align-items-start gap-2""><i class=""bx " &
             icon & " text-primary mt-1"" aria-hidden=""true""></i><div><div class=""small text-muted mb-1"">" &
             HttpUtility.HtmlEncode(label) & "</div><div class=""text-break"">" &
-            HttpUtility.HtmlEncode(EmployeeFeedbackCatalog.Display(value)) & "</div></div></div></div>"
+            HttpUtility.HtmlEncode(FeedbackPresentation.Display(value)) & "</div></div></div></div>"
     End Function
 
-    Public Shared Function Contact(row As FeedbackApplicant) As String
-        If Not row.CanViewContact Then _
-            Return _
-                "<div class=""alert alert-secondary mb-0"" role=""status""><i class=""bx bx-lock-alt me-2"" aria-hidden=""true""></i>اختار مقدم الطلب إخفاء هويته؛ بيانات التواصل غير متاحة.</div>"
-        Return _
-            "<div class=""row g-3"">" & Info("الاسم", row.ApplicantName, "bx-user") &
-            Info("الاسم بالإنجليزية", row.ApplicantNameEn, "bx-user-circle") &
-            Info("الرقم الوظيفي", row.ApplicantEmployeeNumber, "bx-id-card") &
-            Info("رقم الجوال", row.ApplicantMobile, "bx-mobile-alt") &
-            Info("رقم الهاتف", row.ApplicantPhone, "bx-phone") &
-            Info("البريد الإلكتروني", row.ApplicantEmail, "bx-envelope") & "</div>"
+    Public Shared Function RequestField(label As String,value As Object) As String
+        Return "<div class=""col-12 col-md-6 col-xl-4 d-flex flex-wrap align-items-baseline gap-1""><dt class=""text-muted"">" & HttpUtility.HtmlEncode(label) & ":</dt><dd class=""text-break""><bdi>" & HttpUtility.HtmlEncode(FeedbackPresentation.Display(value)) & "</bdi></dd></div>"
     End Function
-
+    Public Shared Function Contact(row As FeedbackApplicant,Optional compact As Boolean=False) As String
+        If compact Then
+            Dim fields=""
+            If row.CanViewContact Then
+                fields=RequestField("الاسم",row.ApplicantName)
+                If Not String.IsNullOrWhiteSpace(row.ApplicantNameEn) Then fields &= RequestField("الاسم بالإنجليزية",row.ApplicantNameEn)
+                If row.ApplicantEmployeeNumber.HasValue Then fields &= RequestField("الرقم الوظيفي",row.ApplicantEmployeeNumber.Value)
+                fields &= RequestField("رقم الجوال",row.ApplicantMobile) & RequestField("البريد الإلكتروني",row.ApplicantEmail)
+                If Not String.IsNullOrWhiteSpace(row.ApplicantPhone) Then fields &= RequestField("رقم الهاتف",row.ApplicantPhone)
+            End If
+            fields &= RequestField("العلامة التجارية",row.BrandName) & RequestField("الفرع",row.BranchName)
+            Dim details="<dl class=""row g-2 mb-0 feedback-request-meta"">" & fields & "</dl>"
+            If Not row.CanViewContact Then details="<div class=""alert alert-secondary mb-3"" role=""status""><i class=""bx bx-lock-alt me-2"" aria-hidden=""true""></i>اختار مقدم الطلب إخفاء هويته؛ بيانات التواصل غير متاحة.</div>" & details
+            Return details
+        End If
+        If Not row.CanViewContact Then Return "<div class=""alert alert-secondary mb-0"" role=""status""><i class=""bx bx-lock-alt me-2"" aria-hidden=""true""></i>اختار مقدم الطلب إخفاء هويته؛ بيانات التواصل غير متاحة.</div>"
+        Return "<div class=""row g-3"">" & Info("الاسم",row.ApplicantName,"bx-user") & Info("الاسم بالإنجليزية",row.ApplicantNameEn,"bx-user-circle") & Info("الرقم الوظيفي",row.ApplicantEmployeeNumber,"bx-id-card") & Info("رقم الجوال",row.ApplicantMobile,"bx-mobile-alt") & Info("رقم الهاتف",row.ApplicantPhone,"bx-phone") & Info("البريد الإلكتروني",row.ApplicantEmail,"bx-envelope") & "</div>"
+    End Function
     Public Shared Function LogDate(value As Object) As String
         If value Is Nothing OrElse IsDBNull(value) Then Return "—"
         Return _

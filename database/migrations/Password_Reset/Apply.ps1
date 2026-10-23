@@ -6,7 +6,7 @@ $cn=[Data.SqlClient.SqlConnection]::new($builder.ConnectionString)
 try {
  $cn.Open();$transaction=$cn.BeginTransaction()
  try {
-  foreach($batch in [regex]::Split([IO.File]::ReadAllText((Join-Path $PSScriptRoot '001_PasswordReset.sql')),'(?im)^\s*GO\s*$')){
+  foreach($batch in [regex]::Split(([IO.File]::ReadAllText((Join-Path $PSScriptRoot '001_PasswordReset.sql'))+[Environment]::NewLine+[IO.File]::ReadAllText((Join-Path $PSScriptRoot '002_PerformanceIndexes.sql'))),'(?im)^\s*GO\s*$')){
    if(!$batch.Trim()){continue};$cmd=$cn.CreateCommand();$cmd.Transaction=$transaction;$cmd.CommandText=$batch;$cmd.CommandTimeout=90;[void]$cmd.ExecuteNonQuery();$cmd.Dispose()
   }
   $transaction.Commit();'Password reset schema installed; no passwords changed and no email sent.'

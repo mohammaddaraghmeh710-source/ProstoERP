@@ -1,11 +1,17 @@
-﻿Imports System.Globalization
+Imports System.Globalization
 Imports System.IO
 Imports AjaxControlToolkit
 Imports Prosto_ERP_ClassLibrary
 
 Public Class AddCorrespondence
     Inherits PageBase
-
+    Protected ReadOnly Property EditorToken As String
+        Get
+            Dim token As Guid
+            If Guid.TryParseExact(Request.QueryString("editor"), "N", token) Then Return token.ToString("N")
+            Return ""
+        End Get
+    End Property
     Private ReadOnly Property ActorID As Integer
         Get
             Return SessionManager.GetInstance.Users.UserID
@@ -34,7 +40,7 @@ Public Class AddCorrespondence
         lstRecipients.SelectionMode = If(ActorType = 4, ListSelectionMode.Single, ListSelectionMode.Multiple)
         If Not IsPostBack Then
             Try
-                CorrespondenceData.FillCatalog(ddlPriority, ActorID, "P")
+                CorrespondencePresentation.FillCatalog(ddlPriority, ActorID, "P")
                 If ddlPriority.Items.FindByValue("1") IsNot Nothing Then ddlPriority.SelectedValue = "1"
                 ddlBrand.Items.Add(New ListItem("اختر العلامة التجارية", "0"))
                 ddlBranch.Items.Add(New ListItem("جميع الفروع", "0"))
@@ -148,7 +154,7 @@ Public Class AddCorrespondence
                 due = TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(dateValue, DateTimeKind.Unspecified),
                                                     TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time"))
             End If
-            Dim attachments = CorrespondenceData.SaveQueuedAttachments(
+            Dim attachments = CorrespondenceAttachments.SaveQueuedAttachments(
                 TryCast(Session(UploadKey), List(Of FileAttribute)), saved)
             Dim result = CorrespondenceData.Query("dbo.Insert_Correspondence_Thread",
                                                   CorrespondenceData.P("@Actor", SqlDbType.Int, ActorID),
@@ -184,14 +190,18 @@ Public Class AddCorrespondence
             ids = result.AsEnumerable().Select(Function(r) CInt(r("ID"))).ToList()
 
         Catch ex As Exception
-            CorrespondenceData.Cleanup(saved)
+            CorrespondenceAttachments.Cleanup(saved)
             ShowError(ex)
             Return
         End Try
         Session.Remove(UploadKey)
-        Response.Redirect(
-            "ManageCorrespondence.aspx" &
-            If(ids.Count = 1, "?ID=" & ids(0).ToString(), "?created=" & ids.Count.ToString()), False)
+        If EditorToken <> "" Then
+            Dim payload = New System.Web.Script.Serialization.JavaScriptSerializer().Serialize(New With {.type = "correspondence-created", .token = EditorToken, .ids = ids})
+            ScriptManager.RegisterStartupScript(Me, Me.GetType(), "correspondence-created", "window.parent.postMessage(" & payload & ",window.location.origin);", True)
+            btnSave.Enabled = False
+            Return
+        End If
+        Response.Redirect("ManageCorrespondence.aspx" & If(ids.Count = 1, "?ID=" & ids(0).ToString(), "?created=" & ids.Count.ToString()), False)
         Context.ApplicationInstance.CompleteRequest()
     End Sub
 
@@ -260,7 +270,7 @@ Public Class AddCorrespondence
 
     Private Sub ShowError(ex As Exception)
         litMessage.Text = "<div class=""alert alert-danger"" role=""alert"">" &
-                          Server.HtmlEncode(CorrespondenceData.ErrorText(ex)) & "</div>"
+                          Server.HtmlEncode(CorrespondencePresentation.ErrorText(ex)) & "</div>"
     End Sub
 End Class
 

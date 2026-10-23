@@ -28,11 +28,11 @@ Public Class CircularsPage
     End Function
 
     Protected Function NameOfState(value As Object) As String
-        Return CircularsData.Label(value)
+        Return CircularsPresentation.Label(value)
     End Function
 
     Protected Sub Failure(target As Literal, ex As Exception)
-        target.Text = "<div class='alert alert-danger' role='alert'>" & H(CircularsData.ErrorText(ex)) & "</div>"
+        target.Text = "<div class='alert alert-danger' role='alert'>" & H(CircularsPresentation.ErrorText(ex)) & "</div>"
     End Sub
 End Class
 
