@@ -1,4 +1,5 @@
 ﻿Imports System.Data
+Imports System.Linq
 Public Class InformationPageHistory
     Inherits InformationPagesPage
     Protected Overrides Sub OnInit(e As EventArgs)
@@ -6,13 +7,15 @@ Public Class InformationPageHistory
     End Sub
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If IsPostBack Then Return
-        lnkLogs.NavigateUrl = "Logs.aspx?ID=" & PageID.ToString()
         BindHistory()
     End Sub
     Private Sub BindHistory()
         Try
-            lstVersions.DataSource = InformationPagesData.Query("dbo.Select_Information_Page_History", InformationPagesData.P("@Actor", SqlDbType.Int, Actor), InformationPagesData.P("@ID", SqlDbType.Int, PageID))
-            lstVersions.DataBind()
+            Dim data = InformationPagesData.Query("dbo.Select_Information_Page_History", InformationPagesData.P("@Actor", SqlDbType.Int, Actor), InformationPagesData.P("@ID", SqlDbType.Int, PageID))
+            lstVersions.DataSource = data : lstVersions.DataBind()
+            statTotal.Text = data.Rows.Count.ToString()
+            statUpdates.Text = data.Rows.Cast(Of DataRow)().Count(Function(row) CStr(row("Action")) = "update").ToString()
+            statRestores.Text = data.Rows.Cast(Of DataRow)().Count(Function(row) CStr(row("Action")) = "restore").ToString()
         Catch ex As Exception
             ShowError(litMessage, ex)
         End Try

@@ -6,6 +6,7 @@ Imports Prosto_ERP_ClassLibrary
 Public Class ManageEmployeeFeedbackTopics
     Inherits EmployeeFeedbackPage
     Protected Sub Page_Load(sender As Object,e As EventArgs) Handles Me.Load
+        SystemAdministrationUI.RegisterRefresh(Me, AddressOf FillData)
         RequireAdmin()
         If Not IsPostBack Then
             Try

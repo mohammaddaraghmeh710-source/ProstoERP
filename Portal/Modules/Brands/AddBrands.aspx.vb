@@ -11,12 +11,12 @@ Public Class AddBrands
     Private WorkingMethodVideo_path As String = Nothing
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ClearFileSession()
+        If Request.HttpMethod="GET" Then ClearFileSession()
         If SessionManager.GetInstance.Users Is Nothing Then
-            Response.Redirect("/login.aspx")
+            SystemAdministrationUI.Redirect(Me, "/login.aspx")
         End If
         If SessionManager.GetInstance.Users.UserType <> 1 Then
-            Response.Redirect("/Default.aspx")
+            SystemAdministrationUI.Redirect(Me, "/Default.aspx")
         End If
     End Sub
 
@@ -80,13 +80,13 @@ Public Class AddBrands
             )
         End Using
 
-        LBLPOP_ModalPopupExtender.Show()
+        If Not SystemAdministrationUI.Complete(Me) Then LBLPOP_ModalPopupExtender.Show()
     End Sub
 
     ' الشعار
     Protected Sub TaskVideoAr_UploadComplete(sender As Object, e As AjaxFileUploadEventArgs)
         Try
-            SaveFileOnSession(e.FileName, e.ContentType, e.GetContents())
+            SaveFileOnSession(e.FileName, SystemAdministrationUI.UploadExtension(e.FileName,True), e.GetContents())
         Catch
         End Try
     End Sub
@@ -97,7 +97,7 @@ Public Class AddBrands
     ' فيديو طريقة العمل
     Protected Sub WorkingMethodVideo_UploadComplete(sender As Object, e As AjaxFileUploadEventArgs)
         Try
-            SaveWorkingMethodVideoOnSession(e.FileName, e.ContentType, e.GetContents())
+            SaveWorkingMethodVideoOnSession(e.FileName, SystemAdministrationUI.UploadExtension(e.FileName,False), e.GetContents())
         Catch
         End Try
     End Sub
@@ -108,7 +108,7 @@ Public Class AddBrands
     ' فيديو طريقة التقييم
     Protected Sub EvaluationMethodVideo_UploadComplete(sender As Object, e As AjaxFileUploadEventArgs)
         Try
-            SaveEvaluationMethodVideoOnSession(e.FileName, e.ContentType, e.GetContents())
+            SaveEvaluationMethodVideoOnSession(e.FileName, SystemAdministrationUI.UploadExtension(e.FileName,False), e.GetContents())
         Catch
         End Try
     End Sub
@@ -117,11 +117,11 @@ Public Class AddBrands
     End Sub
 
     Protected Sub btnClosePopup_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/Brands/ManageBrands.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/Brands/ManageBrands.aspx")
     End Sub
 
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/Brands/ManageBrands.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/Brands/ManageBrands.aspx", True)
     End Sub
 
 End Class

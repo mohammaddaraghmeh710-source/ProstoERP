@@ -84,7 +84,7 @@ body.erp-ui {
   color: var(--erp-muted) !important;
 }
 .erp-ui small { font-size: var(--erp-small); }
-.erp-ui :is(.card,.modal-content,.work-guide-section-card,.lt-card,.lt-news-card) {
+.erp-ui :is(.card,.modal-content,.lt-card,.lt-news-card) {
   border: 1px solid var(--erp-border);
   border-radius: var(--erp-radius);
   background-color: var(--erp-surface);
@@ -172,7 +172,7 @@ body.erp-ui {
 .erp-ui .text-danger { color: var(--erp-danger) !important; }
 .erp-ui .btn-outline-success { color: var(--erp-success); border-color: var(--erp-success); }
 .erp-ui .btn-outline-success:hover { color: #fff; background: var(--erp-success); border-color: var(--erp-success); }
-.erp-ui :is(.table,.ERP_ProstoTBL,.work-guide-table) { font-size: var(--erp-detail); color: var(--erp-text); }
+.erp-ui :is(.table,.ERP_ProstoTBL) { font-size: var(--erp-detail); color: var(--erp-text); }
 .erp-ui .table thead th { background: #f8f9fc; color: var(--erp-muted); font-size: var(--erp-detail); font-weight: 700; text-transform: none; letter-spacing: normal; }
 .erp-ui .table :is(th,td) { padding: .8rem .9rem; vertical-align: middle; border-color: var(--erp-border); }
 .erp-ui .table-pagination { flex-wrap: wrap; }
@@ -185,9 +185,8 @@ body.erp-ui {
 .erp-ui .select2-container .select2-selection--single { min-height: 2.75rem; border-radius: .5rem; border-color: #cbd1db; }
 .erp-ui .select2-container .select2-selection--single .select2-selection__rendered { line-height: 2.6rem; font-size: var(--erp-body); }
 .erp-ui .select2-results__option { font-size: var(--erp-body); }
-.erp-ui :is(.work-guide-welcome-title,.lt-title,.page-title) { font-size: var(--erp-title); }
-.erp-ui :is(.work-guide-welcome-desc,.work-guide-file-name) { font-size: var(--erp-detail); }
-.erp-ui :is(.work-guide-empty-box,.lt-empty) { background: #f8f9fc; border: 1px dashed #cbd1db; border-radius: .75rem; color: var(--erp-muted); }
+.erp-ui :is(.lt-title,.page-title) { font-size: var(--erp-title); }
+.erp-ui :is(.lt-empty) { background: #f8f9fc; border: 1px dashed #cbd1db; border-radius: .75rem; color: var(--erp-muted); }
 .erp-ui .content-footer { font-size: var(--erp-small); color: var(--erp-muted); border-top: 1px solid var(--erp-border); }
 .erp-ui .erp-brand-name { font-size: var(--erp-detail); color: var(--erp-text); }
 .erp-ui .erp-brand-logo { width: 38px; height: 38px; object-fit: contain; }

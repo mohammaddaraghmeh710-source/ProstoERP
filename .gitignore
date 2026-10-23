@@ -35,7 +35,16 @@ packages/
 /Database/BioTime/BioTime.IntegrationTests.cs
 /Prosto_ERP_ClassLibrary/My Project/Settings.settings
 /Portal/App_Data/
-/Portal/FileManager/
+/Portal/FileManager/*
+!/Portal/FileManager/CustomerLogos/
+/Portal/FileManager/CustomerLogos/*
+!/Portal/FileManager/CustomerLogos/web.config
+!/Portal/FileManager/CRMWorkGuide/
+/Portal/FileManager/CRMWorkGuide/*
+!/Portal/FileManager/CRMWorkGuide/web.config
 /Database/Branch25_Trial/allocation.csv
 /Portal/Uploads/
 /Database/News/README.md
+
+# Local diagnostics, browser evidence and temporary test artifacts
+/tmp/

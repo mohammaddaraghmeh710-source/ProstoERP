@@ -1,0 +1,82 @@
+﻿.erp-ui .crm-types { --erp-text: #677788; --erp-muted: #a8b1bd; --erp-border: #d4d8dd; --erp-primary: #5a8dee; --erp-primary-hover: #517fd6; --erp-primary-soft: #e5edfc; }
+.erp-ui .crm-types .type-flex { display: flex !important; }
+.erp-ui .crm-types .card { border-radius: .5rem; box-shadow: 0 .25rem 1.125rem rgba(75, 91, 111, .12); }
+.crm-types .type-stat-card .card-body { padding: 1.5rem; }
+.erp-ui .crm-types .type-stat-count { color: #566a7f; font-size: 1.65rem; font-weight: 600; line-height: 1.2; margin-top: .5rem; }
+.crm-types .type-stat-icon { display: grid; place-items: center; width: 48px; height: 48px; font-size: 1.5rem; }
+.crm-types .type-stat-icon i { font-size: 1.5rem; }
+.erp-ui .crm-types .bg-label-primary { background: #e5edfc !important; color: #5a8dee !important; }
+.erp-ui .crm-types .bg-label-success { background: #dff7ec !important; color: #28c76f !important; }
+.erp-ui .crm-types .bg-label-secondary { background: #e7ebef !important; color: #69809a !important; }
+.erp-ui .crm-types .bg-label-warning { background: #fff2df !important; color: #ffab36 !important; }
+.erp-ui .crm-types .btn-primary { background: #5a8dee; border-color: #5a8dee; box-shadow: 0 2px 4px rgba(90,141,238,.3); }
+.erp-ui .crm-types .btn-primary:hover { background: #517fd6; border-color: #517fd6; }
+.erp-ui .crm-types .form-control,.erp-ui .crm-types .form-select { border-color: #d4d8dd; color: #677788; border-radius: .25rem; font-size: .9375rem; }
+.erp-ui .crm-types .form-control::placeholder { color: #a8b1bd; }
+.crm-types .type-page-header { gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.crm-types .type-filter-header { border-bottom: 1px solid var(--erp-border); padding: 1.5rem; }
+.erp-ui .crm-types .type-filter-header .card-title { color: #566a7f; margin-bottom: 1.5rem !important; }
+.crm-types .type-record-icon { display: grid; place-items: center; width: 38px; height: 38px; flex-shrink: 0; }
+.crm-types .type-record-name { min-width: 0; overflow-wrap: anywhere; }
+.crm-types .type-table-toolbar { padding: 1rem 0; }
+.crm-types .type-toolbar-actions { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.crm-types .type-toolbar-controls { gap: .75rem; flex-wrap: wrap; }
+.crm-types .type-toolbar-actions .dataTables_filter { margin: 0; }
+.crm-types .type-toolbar-actions .dataTables_filter label { margin: 0; }
+.crm-types .type-toolbar-actions .dataTables_filter input { width: 220px; margin: 0 !important; }
+.crm-types .type-row-actions { gap: 0; flex-wrap: nowrap; }
+.erp-ui .crm-types #ERPTable .type-row-action { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 32px; min-width: 30px; min-height: 32px; padding: 0; flex-shrink: 0; color: #69809a !important; border: 0; background: transparent; box-shadow: none; }
+.erp-ui .crm-types #ERPTable .type-row-action:hover { color: #5a8dee !important; background: #e5edfc; }
+.erp-ui .crm-types #ERPTable .type-row-action.text-danger:hover { color: #ff5b5c !important; background: #ffe5e5; }
+.erp-ui .crm-types #ERPTable :is(th,td),.erp-ui .crm-types #ERPTable .type-record-name :is(span,small),.erp-ui .crm-types #ERPTable .badge { font-size: .875rem; line-height: 1.5; }
+.erp-ui .crm-types #ERPTable thead th { padding: .5rem 1.25rem; font-weight: 600; color: #566a7f; background: #fff; }
+.erp-ui .crm-types #ERPTable tbody td { padding: .875rem 1.25rem; color: #677788; }
+.erp-ui .crm-types #ERPTable .badge { border-radius: .2rem; padding: .25rem .6rem; font-weight: 400; }
+.crm-types .type-table-toolbar .dataTables_length { margin: 0; }
+.crm-types .type-table-pagination { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .75rem; padding: 1rem 1.25rem; }
+.crm-types .crm-table { margin: 0 !important; }
+.crm-types .crm-table th { white-space: nowrap; }
+.crm-types .crm-table td { padding: 1rem 1.25rem; }
+.crm-types .type-notes { max-width: 360px; }
+.crm-types .type-editor { width: 420px; max-width: 100vw; }
+.crm-types .type-editor .offcanvas-body { overflow-y: auto; }
+.crm-types .type-editor .form-check-input { float: none; margin: 0; }
+.crm-types .type-editor .form-check-label { margin-inline-start: .5rem; }
+@media(max-width:768px) {
+ .crm-types .card-datatable { padding: 0 1rem; }
+ .crm-types .type-table-toolbar,.crm-types .type-table-pagination { padding: 1rem 0; }
+ .crm-types .type-table-toolbar { margin-inline: 0 !important; }
+ .crm-types .type-table-toolbar > div { padding-inline: 0; }
+ .crm-types .type-table-toolbar > div + div { margin-top: .75rem; }
+ .crm-types .type-toolbar-actions { justify-content: space-between; gap: .75rem; }
+ .crm-types .type-toolbar-actions .dataTables_filter { flex: 1 1 100%; }
+ .crm-types .type-toolbar-actions .dataTables_filter label,.crm-types .type-toolbar-actions .dataTables_filter input { width: 100%; }
+ .erp-ui .crm-types #ERPTable .type-row-action { width: 38px; height: 40px; min-width: 38px; min-height: 40px; }
+ .crm-types .type-stat-card .card-body { padding: 1rem 1.25rem; }
+ .crm-types .type-notes { max-width: none; }
+ .erp-ui .crm-types #ERPTable tbody td { display: flex !important; justify-content: space-between; align-items: center; gap: .75rem; padding: .75rem; text-align: left; }
+ .erp-ui .crm-types #ERPTable tbody td::before { position: static; transform: none; float: none; flex: 0 0 30%; width: auto; font-size: .875rem; }
+ .erp-ui .crm-types #ERPTable .type-row-action { margin-inline: 0; }
+ .crm-types #ERPTable td > .type-flex { flex: 1; min-width: 0; justify-content: flex-end; }
+ .crm-types #ERPTable .type-record-name { text-align: right; }
+ .erp-ui .crm-types #ERPTable td.dataTables_empty { display: block !important; text-align: center; }
+ .crm-types .type-table-pagination > div { width: 100%; }
+ .crm-types .type-table-pagination .pagination { justify-content: center; flex-wrap: wrap; }
+}
+.crm-types .type-editor.crm-editor-wide { width: 760px; }
+.crm-types .type-contact-count { color: var(--erp-primary); font-weight: 600; }
+.erp-ui .crm-types #ERPTable small { font-size: .875rem; line-height: 1.5; }
+.erp-ui .crm-types #ERPTable .badge { white-space: nowrap; }
+.crm-types .type-cell-details { min-width: 0; overflow-wrap: anywhere; }
+.erp-ui .crm-types .form-label,.erp-ui .crm-types .form-text { color: #677788; }
+.crm-types .type-customer-logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; border-radius: .375rem; background: #f6f8fb; }
+.crm-types .type-logo-preview { object-fit: contain; background: #f6f8fb; flex-shrink: 0; }
+.crm-types .type-logo-upload > div { min-width: 0; }
+.crm-types .crm-account-organization .crm-search-select { min-width: 0; }
+.crm-types .crm-account-organization .select2-selection--multiple { min-height: 2.5rem; }
+.crm-types .crm-account-organization .select2-selection__choice { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+@media(max-width:575px) { .crm-types .type-logo-upload { flex-wrap: wrap; } .crm-types .type-logo-upload > div { width: 100%; } }
+@media(min-width:769px) {
+ .crm-types #ERPTable td[data-title="العميل"] .type-record-name { min-width: 120px; }
+ .crm-types #ERPTable td[data-title="بيانات التواصل"] { min-width: 150px; }
+}

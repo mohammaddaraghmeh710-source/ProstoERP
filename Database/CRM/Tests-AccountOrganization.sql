@@ -1,0 +1,46 @@
+﻿IF DB_NAME() NOT LIKE 'Prosto_CRM_Page_Test[_]%' THROW 51999,'Disposable CRM fixture required',1;
+SET IDENTITY_INSERT Brands ON;INSERT Brands(ID,Title_Ar,Title_En,IsActive,IsDeleted) VALUES(3,N'علامة ثالثة','Third brand',1,0),(4,N'علامة موقوفة','Paused brand',0,0);SET IDENTITY_INSERT Brands OFF;
+SET IDENTITY_INSERT Branches ON;INSERT Branches(ID,Title_Ar,Title_En,BrandID,IsActive,IsDeleted) VALUES(101,N'الفرع الأول','Branch one',1,1,0),(102,N'الفرع الثاني','Branch two',1,1,0),(201,N'فرع العلامة الثانية','Brand two branch',2,1,0),(301,N'فرع العلامة الثالثة','Brand three branch',3,1,0),(401,N'فرع موقوف','Paused branch',1,0,0);SET IDENTITY_INSERT Branches OFF;
+DECLARE @x xml=N'<row><Name_AR>عميل متعدد العلامات SQL</Name_AR><Name_EN>Multi-brand SQL</Name_EN><Owner_ID>2</Owner_ID><Account_Type_ID>1</Account_Type_ID><Account_Brands><Brand ID="1"/><Brand ID="2"/></Account_Brands><Account_Branches><Branch ID="101"/><Branch ID="102"/><Branch ID="201"/></Account_Branches><Is_Active>1</Is_Active></row>';
+EXEC CRM_Save_Accounts @Actor_ID=1,@Data=@x;
+DECLARE @id int=(SELECT ID FROM CRM_Accounts WHERE Name_AR=N'عميل متعدد العلامات SQL'),@v binary(8),@stale binary(8),@stamp uniqueidentifier=NEWID();
+SELECT @v=Row_Version,@stale=Row_Version FROM CRM_Accounts WHERE ID=@id;
+IF (SELECT COUNT(*) FROM CRM_Account_Brands WHERE Account_ID=@id)<>2 OR (SELECT COUNT(*) FROM CRM_Account_Branches WHERE Account_ID=@id)<>3 THROW 51999,'Many brands and many branches were not persisted',1;
+IF NOT EXISTS(SELECT 1 FROM CRM_v_Accounts WHERE ID=@id AND Brand_IDs='1,2' AND Branch_Name LIKE N'%الفرع الأول%' AND Branch_Name LIKE N'%الفرع الثاني%' AND Brand_Name LIKE N'%علامة ثانية%') THROW 51999,'Account membership list projection incorrect',1;
+IF NOT EXISTS(SELECT 1 FROM CRM_Activity_Logs WHERE Account_ID=@id AND After_Data.value('count(/row/Account_Brands/Brand)','int')=2 AND After_Data.value('count(/row/Account_Branches/Branch)','int')=3) THROW 51999,'Atomic organization audit missing',1;
+EXEC CRM_Account_Organization 2,@id;
+BEGIN TRY EXEC CRM_Account_Organization 0,@id;THROW 51999,'Anonymous organization options exposed',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51200 THROW;END CATCH;
+-- Membership edits participate in account optimistic concurrency, including branch-only changes.
+SET @x.modify('delete /row/Account_Branches/Branch[@ID="102"]');
+EXEC CRM_Save_Accounts 2,@id,@x,@v;
+SELECT @v=Row_Version FROM CRM_Accounts WHERE ID=@id;
+IF @v=@stale OR EXISTS(SELECT 1 FROM CRM_Account_Branches WHERE Account_ID=@id AND Branch_ID=102) THROW 51999,'Branch update/version failed',1;
+BEGIN TRY EXEC CRM_Save_Accounts 1,@id,@x,@stale;THROW 51999,'Stale account form accepted',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51201 THROW;END CATCH;
+SET @x.modify('insert <Branch ID="301"/> into (/row/Account_Branches)[1]');
+BEGIN TRY EXEC CRM_Save_Accounts 1,@id,@x,@v;THROW 51999,'Foreign-brand branch accepted',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51201 THROW;END CATCH;
+IF (SELECT COUNT(*) FROM CRM_Account_Branches WHERE Account_ID=@id)<>2 THROW 51999,'Invalid branch save partially committed',1;
+SET @x.modify('delete /row/Account_Branches/Branch[@ID="301"]');SET @x.modify('insert <Branch ID="401"/> into (/row/Account_Branches)[1]');
+BEGIN TRY EXEC CRM_Save_Accounts 1,@id,@x,@v;THROW 51999,'New paused branch accepted',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51201 THROW;END CATCH;
+SET @x.modify('delete /row/Account_Branches/Branch[@ID="401"]');SET @x.modify('insert <Brand ID="4"/> into (/row/Account_Brands)[1]');
+BEGIN TRY EXEC CRM_Save_Accounts 1,@id,@x,@v;THROW 51999,'New paused brand accepted',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51201 THROW;END CATCH;
+SET @x.modify('delete /row/Account_Brands/Brand[@ID="4"]');SET @x.modify('delete /row/Account_Brands/Brand');
+BEGIN TRY EXEC CRM_Save_Accounts 1,@id,@x,@v;THROW 51999,'Empty brands accepted',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51201 THROW;END CATCH;
+SET @x.modify('insert <Brand ID="2"/> into (/row/Account_Brands)[1]');SET @x.modify('delete /row/Account_Branches/Branch');
+EXEC CRM_Save_Accounts 1,@id,@x,@v;
+IF (SELECT COUNT(*) FROM CRM_Account_Brands WHERE Account_ID=@id)<>1 OR EXISTS(SELECT 1 FROM CRM_Account_Branches WHERE Account_ID=@id) OR NOT EXISTS(SELECT 1 FROM CRM_Accounts WHERE ID=@id AND Brand_ID=2 AND Branch_ID IS NULL) THROW 51999,'Optional branches or membership removal failed',1;
+BEGIN TRY INSERT CRM_Account_Branches(Account_ID,Brand_ID,Branch_ID,AddedUser) VALUES(@id,2,101,1);THROW 51999,'Cross-brand branch escaped FK',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>547 THROW;END CATCH;
+BEGIN TRY INSERT CRM_Account_Branches(Account_ID,Brand_ID,Branch_ID,AddedUser) VALUES(@id,1,101,1);THROW 51999,'Unassigned-brand branch escaped FK',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>547 THROW;END CATCH;
+-- Supplier tools consume the same memberships, never a second independent list.
+DECLARE @supplierType int=(SELECT ID FROM CRM_Account_Types WHERE System_Code='SUPPLIER');
+SET @x=CONVERT(xml,CONCAT(N'<row><Name_AR>مورد متعدد العلامات SQL</Name_AR><Owner_ID>2</Owner_ID><Account_Type_ID>',@supplierType,'</Account_Type_ID><Account_Brands><Brand ID="1"/><Brand ID="2"/></Account_Brands><Account_Branches/></row>'));
+EXEC CRM_Save_Accounts 1,0,@x;
+DECLARE @s int=(SELECT ID FROM CRM_Accounts WHERE Name_AR=N'مورد متعدد العلامات SQL');
+IF (SELECT COUNT(*) FROM CRM_Supplier_Brands WHERE Account_ID=@s)<>2 THROW 51999,'Supplier compatibility coverage differs from account membership',1;
+SET IDENTITY_INSERT Departments ON;INSERT Departments(ID,BranchID,Title_Ar,Title_En,IsActive,IsDeleted) VALUES(101,101,N'قسم','Dept',1,0),(201,201,N'قسم ثان','Dept two',1,0),(301,301,N'قسم ثالث','Dept three',1,0);SET IDENTITY_INSERT Departments OFF;
+SET IDENTITY_INSERT JobTitles ON;INSERT JobTitles(ID,DepartmentID,Title_Ar,Title_En,IsActive,IsDeleted) VALUES(101,101,N'محطة','Station',1,0),(201,201,N'محطة ثانية','Station two',1,0),(301,301,N'محطة ثالثة','Station three',1,0);SET IDENTITY_INSERT JobTitles OFF;
+EXEC CRM_Require_Tool_Supplier 1,@s,101;EXEC CRM_Require_Tool_Supplier 1,@s,201;
+BEGIN TRY EXEC CRM_Require_Tool_Supplier 1,@s,301;THROW 51999,'Tool accepted supplier from unassigned brand',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51201 THROW;END CATCH;
+SELECT @v=Row_Version FROM CRM_Accounts WHERE ID=@s;
+BEGIN TRY EXEC CRM_Save_Accounts 2,@s,@x,@v;THROW 51999,'Owner modified supplier brands',1;END TRY BEGIN CATCH IF ERROR_NUMBER()<>51200 THROW;END CATCH;
+-- Keep fixtures for subsequent real ASP.NET round trips; all rows are synthetic.
+SELECT 'PASS multiple brands/branches, optional branches, server hierarchy, FK integrity, concurrency, atomic audit, owner/admin boundaries and shared supplier eligibility' Result;

@@ -5,7 +5,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 </asp:Content>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server"><asp:UpdatePanel ID="systemAdminPanel" runat="server" UpdateMode="Conditional"><ContentTemplate>
 
     <!-- يجب أن يكون لديك ScriptManager في الماستر، وإلا أضفه هنا -->
     <%-- <asp:ScriptManager ID="ScriptManager1" runat="server" /> --%>
@@ -166,7 +166,7 @@
                                     <div class="form-group">
                                         <label>صورة المستخدم (اختياري)</label>
                                         <div style="width:100%">
-                                            <cc1:AjaxFileUpload ID="UserImageUpload"
+                                            <cc1:AjaxFileUpload AutoStartUpload="true" ID="UserImageUpload"
                                                 runat="server"
                                                 AllowedFileTypes="jpeg,jpg,png"
                                                 MaximumNumberOfFiles="1"
@@ -307,4 +307,4 @@
         </ContentTemplate>
     </asp:UpdatePanel>
 
-</asp:Content>
+</ContentTemplate></asp:UpdatePanel></asp:Content>

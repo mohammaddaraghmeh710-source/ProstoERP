@@ -9,7 +9,7 @@ Public Class Edit_HR_Vacations_Types
         Get
             Dim id As Integer
             If Not Integer.TryParse(Request.QueryString("ID"), id) OrElse id <= 0 Then
-                Response.Redirect("Manage_HR_Vacations_Types.aspx")
+                SystemAdministrationUI.Redirect(Me, "Manage_HR_Vacations_Types.aspx")
                 Return 0
             End If
             Return id
@@ -23,7 +23,7 @@ Public Class Edit_HR_Vacations_Types
                 Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
                     Dim row = db.Select_HR_Vacations_Types_ByID(id).FirstOrDefault()
                     If row Is Nothing Then
-                        Response.Redirect("Manage_HR_Vacations_Types.aspx?missing=1")
+                        SystemAdministrationUI.Redirect(Me, "Manage_HR_Vacations_Types.aspx?missing=1")
                         Return
                     End If
                     txtCoreID.Text = row.Core_ID.ToString(CultureInfo.InvariantCulture)
@@ -56,6 +56,6 @@ Public Class Edit_HR_Vacations_Types
             ShowDatabaseError(litMessage, ex)
             Return
         End Try
-        Response.Redirect("Manage_HR_Vacations_Types.aspx?updated=1")
+        SystemAdministrationUI.Redirect(Me, "Manage_HR_Vacations_Types.aspx?updated=1")
     End Sub
 End Class

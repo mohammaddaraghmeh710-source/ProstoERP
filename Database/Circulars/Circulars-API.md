@@ -122,3 +122,8 @@ X-Circular-Version: 1
 إعادة طلب ملف منتهٍ أو مُعطل تُرفض حتى عند إعادة EventID ناجح سابقًا. ترتيب القائمة: غير المقروء أولًا ثم تاريخ التعميم الأحدث ثمID.
 
 ملفات الاستيراد: [Circulars.openapi.json](Circulars.openapi.json) و[Prosto-Circulars.postman_collection.json](Prosto-Circulars.postman_collection.json).
+
+
+### Branded publication metadata
+
+With migration 003_BrandedAudiences applied last, employee visibility additionally matches the circular’s explicit BrandID and current active employee brand. The existing all/role/organization and device/session checks remain; customer-targeted circulars never enter employee endpoints. Metadata additionally contains nullable historical Title_EN/Summary_EN, BrandID and HasPeriod. Existing Title/Summary stay Arabic. HasPeriod=false means no expiry period; internal StartUtc/EndUtc boundary values must not be presented as a user-selected schedule. Current enabled state, targeting and validity are rechecked for every file request. No customer circular mobile route is introduced.

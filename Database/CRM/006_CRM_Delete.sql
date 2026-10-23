@@ -35,9 +35,9 @@ BEGIN SET NOCOUNT ON; SET XACT_ABORT ON;
  IF dbo.CRM_CanAccess(@Actor_ID,@Scope)=0 THROW 51200,N'لا تملك صلاحية هذا السجل.',1;
  IF NOT EXISTS(SELECT 1 FROM dbo.CRM_Accounts WHERE ID=@ID AND Is_Deleted=0 AND Row_Version=@Version) THROW 51201,N'السجل تغير أو حُذف. حدّث الصفحة وأعد المحاولة.',1;
  IF EXISTS(SELECT 1 FROM dbo.CRM_Contacts WHERE Account_ID=@ID AND Is_Deleted=0) THROW 51201,N'لا يمكن حذف عميل لديه جهات اتصال. احذف جهات الاتصال أو انقلها إلى عميل آخر أولًا.',1;
- SELECT @Before=(SELECT * FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE);
+ SELECT @Before=(SELECT ID,Name_AR,Name_EN,Account_Type_ID,Owner_ID,Phone,Email,Address,Country,Website,Registration_Number,Notes,Normalized_Name,Is_Active,Is_Deleted,AddedUser,AddedDate,Modified_User,Modified_Date,Row_Version FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE);
  UPDATE dbo.CRM_Accounts SET Is_Deleted=1,Is_Active=0,Modified_User=@Actor_ID,Modified_Date=SYSDATETIME() WHERE ID=@ID;
- SELECT @After=(SELECT * FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE); SET @Found=1;
+ SELECT @After=(SELECT ID,Name_AR,Name_EN,Account_Type_ID,Owner_ID,Phone,Email,Address,Country,Website,Registration_Number,Notes,Normalized_Name,Is_Active,Is_Deleted,AddedUser,AddedDate,Modified_User,Modified_Date,Row_Version FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE); SET @Found=1;
  END;
  IF @Entity=N'Contacts' BEGIN
  SELECT @Scope=Account_ID FROM dbo.CRM_Contacts WHERE ID=@ID;

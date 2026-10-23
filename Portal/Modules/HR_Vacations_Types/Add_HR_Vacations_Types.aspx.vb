@@ -21,6 +21,6 @@ Public Class Add_HR_Vacations_Types
             ShowDatabaseError(litMessage, ex)
             Return
         End Try
-        Response.Redirect("Manage_HR_Vacations_Types.aspx?added=1")
+        SystemAdministrationUI.Redirect(Me, "Manage_HR_Vacations_Types.aspx?added=1")
     End Sub
 End Class

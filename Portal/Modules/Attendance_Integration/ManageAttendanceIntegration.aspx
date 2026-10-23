@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="إعدادات تكامل API" Language="vb" AutoEventWireup="false" MasterPageFile="~/Site.Master" CodeBehind="ManageAttendanceIntegration.aspx.vb" Inherits="CRM.ManageAttendanceIntegration" %>
 <asp:Content ID="Head" ContentPlaceHolderID="HeadContent" runat="server" />
-<asp:Content ID="Body" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
- <div class="container-xxl flex-grow-1 container-p-y" dir="rtl"><div class="card mb-4">
+<asp:Content ID="Body" ContentPlaceHolderID="ContentPlaceHolder1" runat="server"><asp:UpdatePanel ID="systemAdminPanel" runat="server" UpdateMode="Conditional"><ContentTemplate>
+ <div class="container-xxl flex-grow-1 container-p-y" dir="rtl"><div class="card mb-4" data-admin-settings-panel>
  <div class="card-header"><h5 class="card-title mb-0">إعدادات تكامل API حسب العلامة التجارية</h5></div>
  <div class="card-body"><asp:Literal ID="litMessage" runat="server" />
  <div class="row g-3">
@@ -28,7 +28,7 @@
  <div class="col-12"><div class="form-check form-switch"><asp:CheckBox ID="chkEmailEnabled" runat="server" Text="تفعيل إرسال البريد لهذه العلامة" /></div></div>
  <div class="col-12"><asp:Button ID="btnSaveEmail" runat="server" Text="حفظ إعدادات البريد" CssClass="btn btn-primary" OnClick="SaveEmailSettings" /></div>
  </div></div></div></div>
-<script>
+<div class='card' data-admin-summary><div class='card-body'><%= CRM.SystemAdministrationUI.IntegrationRows(Me) %></div></div><script>
 function toggleApiPassword(button) {
  const input = button.parentElement.querySelector('input');
  const show = input.type === 'password';
@@ -38,4 +38,4 @@ function toggleApiPassword(button) {
  button.querySelector('i').className = show ? 'bx bx-show' : 'bx bx-hide';
 }
 </script>
-</asp:Content>
+</ContentTemplate></asp:UpdatePanel></asp:Content>

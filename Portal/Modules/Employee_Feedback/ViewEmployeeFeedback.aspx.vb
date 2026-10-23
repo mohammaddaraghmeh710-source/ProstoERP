@@ -12,14 +12,14 @@ Public Class ViewEmployeeFeedback
         If ReportMode Then RequireAdmin()
         If RequestID=0 Then Response.Redirect("ManageEmployeeFeedback.aspx")
         EnsureDraft()
-        lnkBack.NavigateUrl=If(ReportMode,"EmployeeFeedbackReports.aspx",If(Request.QueryString("source")="my","ManageEmployeeFeedback.aspx?view=mine","ManageEmployeeFeedback.aspx"))
+        lnkBack.NavigateUrl="ManageEmployeeFeedback.aspx"
         If Not IsPostBack Then
             Try
                 Using db As New Prosto_ERP_DataClassesDataContext()
                     db.Update_Employee_Feedback_Read(ActorID,RequestID,ReportMode)
                 End Using
                 FillDetails(True)
-                If Request.QueryString("tab")="contact" Then ScriptManager.RegisterStartupScript(Me,Me.GetType(),"ContactTab","window.addEventListener('load',function(){bootstrap.Tab.getOrCreateInstance(document.getElementById('feedback-contact-tab')).show();});",True)
+                If Request.QueryString("tab")="contact" Then ScriptManager.RegisterStartupScript(Me,Me.GetType(),"ContactTab","window.addEventListener('load',function(){document.getElementById('feedback-applicant').scrollIntoView({block:'start'});});",True)
             Catch ex As Exception : ShowError(ex) : End Try
         End If
     End Sub
@@ -27,20 +27,24 @@ Public Class ViewEmployeeFeedback
         Using db As New Prosto_ERP_DataClassesDataContext()
             Dim r=db.Select_Employee_Feedback_Request(ActorID,RequestID,ReportMode).Single()
             Dim applicant=EmployeeFeedbackCatalog.Summary(ActorID,RequestID,ReportMode)
-            litContact.Text=FeedbackPresentation.Contact(EmployeeFeedbackCatalog.Contact(ActorID,RequestID,ReportMode))
-            lblSource.Text=EmployeeFeedbackCatalog.SourceName(applicant.SourceType)
+            Dim contact=EmployeeFeedbackCatalog.Contact(ActorID,RequestID,ReportMode)
+            litContact.Text=FeedbackPresentation.Contact(contact,True)
+            lblSource.Text=If(applicant.SourceType=2,"عميل",EmployeeFeedbackCatalog.SourceName(applicant.SourceType))
             fileRows=db.Select_Employee_Feedback_Attachments(ActorID,RequestID,ReportMode).ToList()
             pnlDetails.Visible=True : litID.Text=r.ID.ToString() : litTitle.Text=r.Title
             lblType.Text=Server.HtmlEncode(EmployeeFeedbackData.TypeText(r.Type)) : lblStatus.Text=EmployeeFeedbackData.StatusText(r.Status) : lblStatus.CssClass=EmployeeFeedbackData.StatusCss(r.Status)
-            lblEmployee.Text=Server.HtmlEncode(r.EmployeeName) : litDetails.Text=CorrespondenceData.MessageHtml(r.Details)
-            litMeta.Text="<div class=""row g-3"">" & FeedbackPresentation.Info("الموضوع",r.TopicName,"bx-category") & FeedbackPresentation.Info("تاريخ التقديم",CorrespondenceData.DisplayDate(r.AddedDate),"bx-calendar") & FeedbackPresentation.Info("العلامة التجارية",r.BrandName,"bx-store") & FeedbackPresentation.Info("الفرع",r.BranchName,"bx-map")
-            For Each entry In New Dictionary(Of String,String) From {{"القسم",r.DepartmentName},{"المسمى الوظيفي",r.JobTitleName},{"الوردية",r.ShiftName}}
-                If Not String.IsNullOrEmpty(entry.Value) Then litMeta.Text &= FeedbackPresentation.Info(entry.Key,entry.Value,"bx-buildings")
-            Next
-            If r.CloseDate.HasValue Then litMeta.Text &= FeedbackPresentation.Info("تاريخ الإغلاق",CorrespondenceData.DisplayDate(r.CloseDate),"bx-calendar-check")
-            litMeta.Text &= "</div>"
+            litDetails.Text=CorrespondenceData.MessageHtml(r.Details)
+            litMeta.Text=FeedbackPresentation.RequestField("الموضوع",r.TopicName) & FeedbackPresentation.RequestField("تاريخ التقديم",CorrespondenceData.DisplayDate(r.AddedDate))
+            Dim organization=""
+            If contact.CanViewContact Then
+                For Each entry In New Dictionary(Of String,String) From {{"القسم",r.DepartmentName},{"المسمى الوظيفي",r.JobTitleName},{"الوردية",r.ShiftName}}
+                    If Not String.IsNullOrEmpty(entry.Value) Then organization &= FeedbackPresentation.RequestField(entry.Key,entry.Value)
+                Next
+            End If
+            If organization<>"" Then litContact.Text &= "<dl class=""row g-2 mt-0 mb-0 feedback-request-meta"">" & organization & "</dl>"
+            If r.CloseDate.HasValue Then litMeta.Text &= FeedbackPresentation.RequestField("تاريخ الإغلاق",CorrespondenceData.DisplayDate(r.CloseDate))
             pnlActions.Visible=r.CanAct : pnlReadOnly.Visible=Not r.CanAct
-            btnTransfer.Visible=r.CanAct AndAlso EmployeeFeedbackConfig.Mine(ActorID).CanTransfer
+            btnTransfer.Visible=r.CanAct AndAlso EmployeeFeedbackConfig.Mine(ActorID).CanTransfer AndAlso (applicant.SourceType<>2 OrElse EmployeeFeedbackConfig.Targets(ActorID).Any(Function(target) target.ID=1))
             btnClose.Visible=r.CanAct AndAlso EmployeeFeedbackConfig.Mine(ActorID).CanClose
             btnTransfer.Text="تحويل للمتابعة"
             If resetVersion Then ViewState("Version")=r.RowVersion.ToArray()
@@ -71,24 +75,37 @@ Public Class ViewEmployeeFeedback
             Dim permission=EmployeeFeedbackConfig.Mine(ActorID)
             If (action=2 AndAlso Not permission.CanTransfer) OrElse (action=3 AndAlso Not permission.CanClose) Then Throw New ArgumentException("لا تملك صلاحية هذا الإجراء.")
             pnlTransferTarget.Visible=action=2
-            If action=2 Then EmployeeFeedbackConfig.FillTargets(ddlTransferTarget,ActorID)
+            If action=2 Then
+                EmployeeFeedbackConfig.FillTargets(ddlTransferTarget,ActorID)
+                Dim customerRequest=EmployeeFeedbackCatalog.Summary(ActorID,RequestID,False).SourceType=2
+                For index=ddlTransferTarget.Items.Count-1 To 1 Step -1
+                    Dim item=ddlTransferTarget.Items(index)
+                    If customerRequest AndAlso item.Value<>"1" Then ddlTransferTarget.Items.RemoveAt(index)
+                Next
+
+            End If
             lblTransferRouting.Text=""
             ViewState("Action")=action : litActionTitle.Text=If(action=2,"تحويل الطلب","إغلاق الطلب") : litActionError.Text="" : txtComment.Text=""
             FillDetails(False) : ActionModal.Show()
         Catch ex As Exception : ShowError(ex) : End Try
     End Sub
-    Protected Sub TransferTarget_Changed(sender As Object,e As EventArgs)
-        Try
-            lblTransferRouting.Text=""
-            If Number(ddlTransferTarget)=0 Then Return
-            Using db As New Prosto_ERP_DataClassesDataContext()
-                Dim rows=db.ExecuteQuery(Of Select_Employee_Feedback_RecipientsResult)("EXEC dbo.Select_Employee_Feedback_TransferTargets @Actor={0},@ID={1},@Target={2}",ActorID,RequestID,Number(ddlTransferTarget)).ToList()
-                If rows.Count=0 Then Throw New ArgumentException("لا يوجد مستلم متاح لهذا النوع.")
-                lblTransferRouting.Text=Server.HtmlEncode(If(rows.Any(Function(r) r.IsFallback),"سيُوجّه الطلب إلى مدير النظام لعدم وجود المدير المطلوب. ","") & "المستلمون: " & String.Join("، ",rows.Select(Function(r) r.FullName_Ar)))
-            End Using
-        Catch ex As Exception
-            litActionError.Text="<div class=""alert alert-danger"">" & Server.HtmlEncode(EmployeeFeedbackData.ErrorText(ex)) & "</div>"
-        End Try
+    Private Sub RefreshTransferRouting()
+        If ViewState("Action") Is Nothing OrElse CInt(ViewState("Action"))<>2 OrElse Not pnlActions.Visible Then Return
+        Dim customerRequest=EmployeeFeedbackCatalog.Summary(ActorID,RequestID,False).SourceType=2
+        Using db As New Prosto_ERP_DataClassesDataContext()
+            For Each item As ListItem In ddlTransferTarget.Items
+                If item.Value="0" Then Continue For
+                Try
+                    If customerRequest AndAlso item.Value<>"1" Then Throw New ArgumentException()
+                    Dim recipients=db.ExecuteQuery(Of Select_Employee_Feedback_RecipientsResult)("EXEC dbo.Select_Employee_Feedback_TransferTargets @Actor={0},@ID={1},@Target={2}",ActorID,RequestID,Integer.Parse(item.Value)).ToList()
+                    item.Attributes("data-feedback-routing")=If(recipients.Count=0,"لا يوجد مستلم متاح لهذا النوع.",If(recipients.Any(Function(r) r.IsFallback),"سيُوجّه الطلب إلى مدير النظام لعدم وجود المدير المطلوب. ","") & "المستلمون: " & String.Join("، ",recipients.Select(Function(r) r.FullName_Ar)))
+                    item.Attributes.Remove("data-feedback-unavailable")
+                Catch ex As Exception
+                    item.Attributes("data-feedback-routing")="الجهة المحددة غير متاحة حاليًا. اختر جهة أخرى."
+                    item.Attributes("data-feedback-unavailable")="1"
+                End Try
+            Next
+        End Using
     End Sub
     Protected Sub Transfer_Click(sender As Object,e As EventArgs)
         StartAction(EmployeeFeedbackData.TransferAction)
@@ -127,6 +144,7 @@ Public Class ViewEmployeeFeedback
             Try : FillDetails(False) : Catch ex As Exception : ShowError(ex) : End Try
         End If
         If pnlActions.Visible AndAlso ViewState("Action") IsNot Nothing Then ActionModal.Show()
+        RefreshTransferRouting()
         ShowQueued() : MyBase.OnPreRender(e)
     End Sub
 End Class

@@ -3,10 +3,10 @@
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
-            Response.Redirect("/login.aspx")
+            SystemAdministrationUI.Redirect(Me, "/login.aspx")
         End If
         If SessionManager.GetInstance.Users.UserType <> 1 Then
-            Response.Redirect("/Default.aspx")
+            SystemAdministrationUI.Redirect(Me, "/Default.aspx")
         End If
         If Not Page.IsPostBack Then
             fillData()
@@ -92,15 +92,15 @@
             )
         End Using
 
-        LBLPOP_ModalPopupExtender.Show()
+        If Not SystemAdministrationUI.Complete(Me) Then LBLPOP_ModalPopupExtender.Show()
     End Sub
 
     Protected Sub btnClosePopup_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/Shift/ManageShift.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/Shift/ManageShift.aspx")
     End Sub
 
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/Shift/ManageShift.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/Shift/ManageShift.aspx", True)
     End Sub
 
 End Class

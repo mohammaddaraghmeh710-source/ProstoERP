@@ -3,7 +3,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server"></asp:Content>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server"><asp:UpdatePanel ID="systemAdminPanel" runat="server" UpdateMode="Conditional"><ContentTemplate>
 
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="card mb-4 cvv-code-mask" style="min-height: -webkit-fill-available;">
@@ -75,4 +75,4 @@
         </div>
     </div>
 
-</asp:Content>
+</ContentTemplate></asp:UpdatePanel></asp:Content>

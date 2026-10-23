@@ -47,6 +47,12 @@
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Net.Http.WinHttpHandler"><HintPath>..\packages\System.Net.Http.WinHttpHandler.10.0.13\lib\net462\System.Net.Http.WinHttpHandler.dll</HintPath><Private>True</Private></Reference>
+    <Reference Include="Microsoft.Bcl.HashCode"><HintPath>..\packages\Microsoft.Bcl.HashCode.6.0.0\lib\net462\Microsoft.Bcl.HashCode.dll</HintPath><Private>True</Private></Reference>
+    <Reference Include="System.Buffers"><HintPath>..\packages\System.Buffers.4.6.1\lib\net462\System.Buffers.dll</HintPath><Private>True</Private></Reference>
+    <Reference Include="System.Memory"><HintPath>..\packages\System.Memory.4.6.3\lib\net462\System.Memory.dll</HintPath><Private>True</Private></Reference>
+    <Reference Include="System.Numerics.Vectors"><HintPath>..\packages\System.Numerics.Vectors.4.6.1\lib\net462\System.Numerics.Vectors.dll</HintPath><Private>True</Private></Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe"><HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath><Private>True</Private></Reference>
     <Reference Include="AjaxControlToolkit, Version=17.1.1.0, Culture=neutral, PublicKeyToken=28f01b0e84b6d53e, processorArchitecture=MSIL">
       <HintPath>..\packages\AjaxControlToolkit.17.1.1.0\lib\net40\AjaxControlToolkit.dll</HintPath>
       <Private>True</Private>
@@ -80,10 +86,7 @@
       <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Echo_AlphaPlus\EchoIntraApp\bin\Newtonsoft.Json.dll</HintPath>
-    </Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath><Private>True</Private></Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="QRCoder, Version=1.7.0.0, Culture=neutral, PublicKeyToken=c4ed5b9ae8358a28, processorArchitecture=MSIL">
@@ -470,6 +473,22 @@
     <Content Include="assets\js\pages-profile.js" />
     <Content Include="assets\js\pdf.min.js" />
     <Content Include="assets\js\pdf.worker.min.js" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\FoxitDingbats.pfb" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\FoxitFixed.pfb" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\FoxitFixedBold.pfb" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\FoxitFixedBoldItalic.pfb" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\FoxitFixedItalic.pfb" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\FoxitSerif.pfb" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\FoxitSerifBold.pfb" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\FoxitSerifBoldItalic.pfb" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\FoxitSerifItalic.pfb" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\FoxitSymbol.pfb" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\LiberationSans-Bold.ttf" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\LiberationSans-BoldItalic.ttf" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\LiberationSans-Italic.ttf" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\LiberationSans-Regular.ttf" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\LICENSE_FOXIT" />
+    <Content Include="assets\vendor\libs\pdfjs\standard_fonts\LICENSE_LIBERATION" />
     <Content Include="assets\js\table-script.js" />
     <Content Include="assets\js\tables-datatables-advanced.js" />
     <Content Include="assets\js\tables-datatables-basic.js" />
@@ -2728,30 +2747,12 @@
     <Content Include="Modules\Brands\AddBrands.aspx" />
     <Content Include="Modules\Brands\EditBrands.aspx" />
     <Content Include="Modules\Brands\ManageBrands.aspx" />
-    <Content Include="Modules\Suppliers\AddSuppliers.aspx" />
-    <Content Include="Modules\Suppliers\EditSuppliers.aspx" />
-    <Content Include="Modules\Suppliers\ManageSuppliers.aspx" />
     <Content Include="Modules\LMS_TR_Training_Videos\Add_LMS_TR_Training_Videos.aspx" />
     <Content Include="Modules\LMS_TR_Training_Videos\Edit_LMS_TR_Training_Videos.aspx" />
     <Content Include="Modules\LMS_TR_Training_Videos\Manage_LMS_TR_Training_Videos.aspx" />
     <Content Include="Modules\Users\AddUsers.aspx" />
     <Content Include="Modules\Users\EditUsers.aspx" />
     <Content Include="Modules\Users\ManageUsers.aspx" />
-    <Content Include="Modules\WorkGuide_Categories\AddWorkGuideCategory.aspx" />
-    <Content Include="Modules\WorkGuide_Categories\EditWorkGuideCategory.aspx" />
-    <Content Include="Modules\WorkGuide_Categories\ManageWorkGuideCategories.aspx" />
-    <Content Include="Modules\WorkGuide_Documents\AddWorkGuide_Documents.aspx" />
-    <Content Include="Modules\WorkGuide_Documents\DownloadWorkGuideFile.aspx" />
-    <Content Include="Modules\WorkGuide_Documents\EditWorkGuide_Documents.aspx" />
-    <Content Include="Modules\WorkGuide_Documents\ManageWorkGuide_Documents.aspx" />
-    <Content Include="Modules\WorkGuide_Documents\ViewWorkGuide.aspx" />
-    <Content Include="Modules\WorkGuide_Documents\ViewWorkGuideFile.aspx" />
-    <Content Include="Modules\WorkGuide_Roles\AddWorkGuideRole.aspx" />
-    <Content Include="Modules\WorkGuide_Roles\EditWorkGuideRole.aspx" />
-    <Content Include="Modules\WorkGuide_Roles\ManageWorkGuideRoles.aspx" />
-    <Content Include="Modules\WorkGuide_User_Category_Roles\AddWorkGuide_User_Category_Role.aspx" />
-    <Content Include="Modules\WorkGuide_User_Category_Roles\EditWorkGuide_User_Category_Role.aspx" />
-    <Content Include="Modules\WorkGuide_User_Category_Roles\ManageWorkGuide_User_Category_Roles.aspx" />
     <Content Include="Pages_Html\app-access-permission.html" />
     <Content Include="Pages_Html\app-access-roles.html" />
     <Content Include="Pages_Html\app-calendar.html" />
@@ -3363,27 +3364,6 @@
       <DependentUpon>ManageBrands.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="Modules\Suppliers\AddSuppliers.aspx.designer.vb">
-      <DependentUpon>AddSuppliers.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\Suppliers\AddSuppliers.aspx.vb">
-      <DependentUpon>AddSuppliers.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\Suppliers\EditSuppliers.aspx.designer.vb">
-      <DependentUpon>EditSuppliers.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\Suppliers\EditSuppliers.aspx.vb">
-      <DependentUpon>EditSuppliers.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\Suppliers\ManageSuppliers.aspx.designer.vb">
-      <DependentUpon>ManageSuppliers.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\Suppliers\ManageSuppliers.aspx.vb">
-      <DependentUpon>ManageSuppliers.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
     <Compile Include="Modules\LMS_TR_Training_Videos\Add_LMS_TR_Training_Videos.aspx.designer.vb">
       <DependentUpon>Add_LMS_TR_Training_Videos.aspx</DependentUpon>
     </Compile>
@@ -3424,111 +3404,6 @@
     </Compile>
     <Compile Include="Modules\Users\ManageUsers.aspx.vb">
       <DependentUpon>ManageUsers.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Categories\AddWorkGuideCategory.aspx.designer.vb">
-      <DependentUpon>AddWorkGuideCategory.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Categories\AddWorkGuideCategory.aspx.vb">
-      <DependentUpon>AddWorkGuideCategory.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Categories\EditWorkGuideCategory.aspx.designer.vb">
-      <DependentUpon>EditWorkGuideCategory.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Categories\EditWorkGuideCategory.aspx.vb">
-      <DependentUpon>EditWorkGuideCategory.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Categories\ManageWorkGuideCategories.aspx.designer.vb">
-      <DependentUpon>ManageWorkGuideCategories.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Categories\ManageWorkGuideCategories.aspx.vb">
-      <DependentUpon>ManageWorkGuideCategories.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\AddWorkGuide_Documents.aspx.designer.vb">
-      <DependentUpon>AddWorkGuide_Documents.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\AddWorkGuide_Documents.aspx.vb">
-      <DependentUpon>AddWorkGuide_Documents.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\DownloadWorkGuideFile.aspx.designer.vb">
-      <DependentUpon>DownloadWorkGuideFile.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\DownloadWorkGuideFile.aspx.vb">
-      <DependentUpon>DownloadWorkGuideFile.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\EditWorkGuide_Documents.aspx.designer.vb">
-      <DependentUpon>EditWorkGuide_Documents.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\EditWorkGuide_Documents.aspx.vb">
-      <DependentUpon>EditWorkGuide_Documents.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\ManageWorkGuide_Documents.aspx.designer.vb">
-      <DependentUpon>ManageWorkGuide_Documents.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\ManageWorkGuide_Documents.aspx.vb">
-      <DependentUpon>ManageWorkGuide_Documents.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\ViewWorkGuide.aspx.designer.vb">
-      <DependentUpon>ViewWorkGuide.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\ViewWorkGuide.aspx.vb">
-      <DependentUpon>ViewWorkGuide.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\ViewWorkGuideFile.aspx.designer.vb">
-      <DependentUpon>ViewWorkGuideFile.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Documents\ViewWorkGuideFile.aspx.vb">
-      <DependentUpon>ViewWorkGuideFile.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Roles\AddWorkGuideRole.aspx.designer.vb">
-      <DependentUpon>AddWorkGuideRole.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Roles\AddWorkGuideRole.aspx.vb">
-      <DependentUpon>AddWorkGuideRole.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Roles\EditWorkGuideRole.aspx.designer.vb">
-      <DependentUpon>EditWorkGuideRole.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Roles\EditWorkGuideRole.aspx.vb">
-      <DependentUpon>EditWorkGuideRole.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Roles\ManageWorkGuideRoles.aspx.designer.vb">
-      <DependentUpon>ManageWorkGuideRoles.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Roles\ManageWorkGuideRoles.aspx.vb">
-      <DependentUpon>ManageWorkGuideRoles.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_User_Category_Roles\AddWorkGuide_User_Category_Role.aspx.designer.vb">
-      <DependentUpon>AddWorkGuide_User_Category_Role.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_User_Category_Roles\AddWorkGuide_User_Category_Role.aspx.vb">
-      <DependentUpon>AddWorkGuide_User_Category_Role.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_User_Category_Roles\EditWorkGuide_User_Category_Role.aspx.designer.vb">
-      <DependentUpon>EditWorkGuide_User_Category_Role.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_User_Category_Roles\EditWorkGuide_User_Category_Role.aspx.vb">
-      <DependentUpon>EditWorkGuide_User_Category_Role.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_User_Category_Roles\ManageWorkGuide_User_Category_Roles.aspx.designer.vb">
-      <DependentUpon>ManageWorkGuide_User_Category_Roles.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_User_Category_Roles\ManageWorkGuide_User_Category_Roles.aspx.vb">
-      <DependentUpon>ManageWorkGuide_User_Category_Roles.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -3737,6 +3612,7 @@
     <Folder Include="ckeditor\skins\v2\images\" />
     <Folder Include="ckeditor\themes\default\" />
     <Folder Include="FileManager\" />
+    <Content Include="FileManager\CustomerLogos\web.config" />
     <Folder Include="Modules\Reports\" />
   </ItemGroup>
   <ItemGroup>
@@ -3781,7 +3657,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
@@ -3874,44 +3750,19 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppCode\WorkGuideAccess.vb" />
-    <Content Include="assets\css\work-guide-access.css" />
-    <Content Include="assets\js\work-guide-tree.js" />
-    <Content Include="Modules\WorkGuide_Access_Requests\ManageWorkGuideAccessRequests.aspx" />
-    <Compile Include="Modules\WorkGuide_Access_Requests\ManageWorkGuideAccessRequests.aspx.vb">
-      <DependentUpon>ManageWorkGuideAccessRequests.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Access_Requests\ManageWorkGuideAccessRequests.aspx.designer.vb">
-      <DependentUpon>ManageWorkGuideAccessRequests.aspx</DependentUpon>
-    </Compile>
-    <Content Include="Modules\WorkGuide_Access_Requests\ReviewWorkGuideAccessRequest.aspx" />
-    <Compile Include="Modules\WorkGuide_Access_Requests\ReviewWorkGuideAccessRequest.aspx.vb">
-      <DependentUpon>ReviewWorkGuideAccessRequest.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Access_Requests\ReviewWorkGuideAccessRequest.aspx.designer.vb">
-      <DependentUpon>ReviewWorkGuideAccessRequest.aspx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Modules\WorkGuide_Activity_Logs\ManageWorkGuideActivityLogs.aspx" />
-    <Compile Include="Modules\WorkGuide_Activity_Logs\ManageWorkGuideActivityLogs.aspx.vb">
-      <DependentUpon>ManageWorkGuideActivityLogs.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Modules\WorkGuide_Activity_Logs\ManageWorkGuideActivityLogs.aspx.designer.vb">
-      <DependentUpon>ManageWorkGuideActivityLogs.aspx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppCode\WorkGuideLogExport.vb" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\js\work-guide-datatables.js" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppCode\AttendanceData.vb" />
+    <Compile Include="AppCode\EmployeeHRData.vb" />
+    <Content Include="Modules\Employees\HRProfile.aspx" />
+    <Compile Include="Modules\Employees\HRProfile.aspx.vb"><DependentUpon>HRProfile.aspx</DependentUpon><SubType>ASPXCodeBehind</SubType></Compile>
+    <Compile Include="Modules\Employees\HRProfile.aspx.designer.vb"><DependentUpon>HRProfile.aspx</DependentUpon></Compile>
     <Compile Include="Modules\Employees\AttendanceHistory.aspx.vb">
       <DependentUpon>AttendanceHistory.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3927,10 +3778,53 @@
       <DependentUpon>ManageAttendanceIntegration.aspx</DependentUpon>
     </Compile>
     <Compile Include="AppCode\CRMData.vb" />
+    <Compile Include="AppCode\CRMSupplierData.vb" />
+    <Compile Include="AppCode\CRMAccountLogo.vb" />
+    <Compile Include="AppCode\CRMWorkGuideFile.vb" />
+    <Compile Include="AppCode\CRMWorkGuidePreview.vb" />
+    <Compile Include="AppCode\CRMWorkGuideContent.vb" />
+    <Compile Include="Modules\CRM_WorkGuide\Permissions.aspx.vb" />
+    <Content Include="Modules\CRM_WorkGuide\Permissions.aspx" />
+    <Content Include="assets\js\crm-guide-permissions.js" />
+    <Content Include="assets\js\crm-guide-tree-search.js" />
+    <Compile Include="CustomerPortal\WorkGuideDetail.aspx.vb" />
+    <Content Include="CustomerPortal\WorkGuideDetail.aspx" />
+    <Compile Include="CustomerPortal\NewsDetail.aspx.vb" />
+    <Content Include="CustomerPortal\NewsDetail.aspx" />
+    <Content Include="CustomerPortal\InformationPage.aspx" />
+    <Compile Include="CustomerPortal\InformationPage.aspx.vb" />
+    <Content Include="assets\css\customer-news.css" />
+    <Content Include="assets\css\customer-detail.css" />
+    <Content Include="assets\js\detail-language.js" />
+    <Content Include="assets\js\news-editor.js" />
+    <Content Include="Modules\News\Web.config" />
+    <Compile Include="CustomerPortal\WorkGuide.aspx.vb" />
+    <Content Include="CustomerPortal\WorkGuide.aspx" />
+    <Compile Include="CustomerPortal\WorkGuideFile.aspx.vb" />
+    <Content Include="CustomerPortal\WorkGuideFile.aspx" />
+    <Content Include="assets\js\customer-workguide.js" />
+    <Content Include="assets\js\customer-guide-details.js" />
+    <Content Include="assets\js\customer-content-filters.js" />
+    <Compile Include="PageBase\CRMCatalogManagePage.vb" />
+    <Compile Include="Modules\CRM_WorkGuide\ManageCRMWorkGuide.aspx.vb"><DependentUpon>ManageCRMWorkGuide.aspx</DependentUpon></Compile>
+    <Compile Include="Modules\CRM_WorkGuide\File.aspx.vb"><DependentUpon>File.aspx</DependentUpon></Compile>
+    <Content Include="Modules\CRM_WorkGuide\ManageCRMWorkGuide.aspx" />
+    <Content Include="Modules\CRM_WorkGuide\File.aspx" />
+    <Content Include="Modules\CRM_WorkGuide\web.config" />
+    <Content Include="FileManager\CRMWorkGuide\web.config" />
+    <Content Include="assets\css\crm-workguide.css" />
+    <Content Include="assets\js\crm-workguide.js" />
+    <Content Include="Modules\CRM_Accounts\Logo.aspx" />
+    <Compile Include="Modules\CRM_Accounts\Logo.aspx.vb"><DependentUpon>Logo.aspx</DependentUpon></Compile>
+    <Content Include="assets\img\illustrations\customer-default.svg" />
     <Compile Include="AppCode\CRMModel.vb" />
+    <Compile Include="PageBase\CRMInlineManagePage.vb" />
     <Compile Include="PageBase\CRMModulePage.vb">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Content Include="Modules\CRM_Account_Types\Overview.aspx" />
+    <Compile Include="Modules\CRM_Account_Types\Overview.aspx.vb"><DependentUpon>Overview.aspx</DependentUpon><SubType>ASPXCodeBehind</SubType></Compile>
+    <Compile Include="Modules\CRM_Account_Types\Overview.aspx.designer.vb"><DependentUpon>Overview.aspx</DependentUpon></Compile>
     <Content Include="Modules\CRM_Account_Types\ManageCRMAccountTypes.aspx" />
     <Compile Include="Modules\CRM_Account_Types\ManageCRMAccountTypes.aspx.vb">
       <DependentUpon>ManageCRMAccountTypes.aspx</DependentUpon>
@@ -4012,6 +3906,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Content Include="assets\css\crm.css" />
+    <Content Include="assets\css\crm-list.css" />
+    <Content Include="assets\js\crm-list.js" />
+    <Content Include="assets\js\tool-suppliers.js" />
     <Content Include="assets\js\crm.js" />
   </ItemGroup>
   <ItemGroup>
@@ -4019,9 +3916,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppCode\CorrespondenceData.vb" />
+    <Content Include="assets\css\correspondence-chat.css" />
+    <Content Include="assets\js\correspondence-chat.js" />
     <Reference Include="System.IO.Compression" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Modules\Correspondence\Dashboard.aspx" />
+    <Compile Include="Modules\Correspondence\Dashboard.aspx.vb"><DependentUpon>Dashboard.aspx</DependentUpon><SubType>ASPXCodeBehind</SubType></Compile>
+    <Content Include="assets\js\correspondence-catalogs.js" />
+    <Content Include="assets\js\correspondence-dashboard.js" />
     <Content Include="Modules\Correspondence\ManageCorrespondence.aspx" />
     <Compile Include="Modules\Correspondence\ManageCorrespondence.aspx.vb">
       <DependentUpon>ManageCorrespondence.aspx</DependentUpon>
@@ -4236,6 +4139,36 @@
     </Compile>
     <Content Include="Modules\Information_Pages\Web.config" />
     <Compile Include="AppCode\InformationPagesData.vb" />
+    <Compile Include="AppCode\ContentManagementData.vb" />
+    <Compile Include="PageBase\ContentManagementPage.vb" />
+    <Compile Include="Modules\ContentManagementAjax.aspx.vb" />
+    <Content Include="Modules\ContentManagementAjax.aspx" />
+    <Content Include="Controls\ContentManagement.ascx" />
+    <Content Include="Controls\CircularManagement.ascx" />
+    <Content Include="Controls\CircularNotifications.ascx" />
+    <Content Include="Controls\CircularReader.ascx" />
+    <Compile Include="Controls\CircularReader.ascx.vb"><DependentUpon>CircularReader.ascx</DependentUpon></Compile>
+    <Content Include="CircularReader.aspx" />
+    <Compile Include="CircularReader.aspx.vb"><DependentUpon>CircularReader.aspx</DependentUpon></Compile>
+    <Content Include="assets\js\circular-reader.js" />
+    <Content Include="assets\js\feedback-preview.js" />
+    <Content Include="assets\css\circular-reader.css" />
+    <Content Include="assets\js\customer-circular-table.js" />
+    <Content Include="assets\css\customer-circular-table.css" />
+    <Content Include="assets\js\circular-notifications.js" />
+    <Content Include="CircularNotifications.aspx" />
+    <Content Include="CustomerPortal\Circulars.aspx" />
+    <Content Include="CustomerPortal\CircularFile.aspx" />
+    <Compile Include="CircularNotifications.aspx.vb" />
+    <Compile Include="CustomerPortal\Circulars.aspx.vb" />
+    <Compile Include="CustomerPortal\CircularFile.aspx.vb" />
+    <Content Include="assets\js\circular-management.js" />
+    <Content Include="Modules\Circulars\Manage.aspx" />
+    <Compile Include="Modules\Circulars\Manage.aspx.vb" />
+    <Content Include="Modules\Circulars\AdminAjax.aspx" />
+    <Compile Include="Modules\Circulars\AdminAjax.aspx.vb" />
+    <Content Include="assets\js\content-management.js" />
+    <Content Include="assets\js\information-reports.js" />
     <Compile Include="PageBase\InformationPagesPage.vb">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -4295,6 +4228,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppCode\SystemAdministrationUI.vb" />
+    <Compile Include="Controls\SystemAdminWorkspace.ascx.vb"><DependentUpon>SystemAdminWorkspace.ascx</DependentUpon></Compile>
+    <Content Include="Controls\SystemAdminWorkspace.ascx" />
+    <Content Include="assets\css\system-administration.css" />
+    <Content Include="assets\js\system-administration.js" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="AppCode\CircularsData.vb" />
     <Compile Include="Modules\Circulars\Index.aspx.vb">
       <DependentUpon>Index.aspx</DependentUpon>
@@ -4324,30 +4264,6 @@
     <Compile Include="Customer.Master.designer.vb">
       <DependentUpon>Customer.Master</DependentUpon>
     </Compile>
-    <Content Include="CustomerPortal\Guide.aspx" />
-    <Compile Include="CustomerPortal\Guide.aspx.vb">
-      <DependentUpon>Guide.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="CustomerPortal\Guide.aspx.designer.vb">
-      <DependentUpon>Guide.aspx</DependentUpon>
-    </Compile>
-    <Content Include="CustomerPortal\GuideFile.aspx" />
-    <Compile Include="CustomerPortal\GuideFile.aspx.vb">
-      <DependentUpon>GuideFile.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="CustomerPortal\GuideFile.aspx.designer.vb">
-      <DependentUpon>GuideFile.aspx</DependentUpon>
-    </Compile>
-    <Content Include="CustomerPortal\Download.aspx" />
-    <Compile Include="CustomerPortal\Download.aspx.vb">
-      <DependentUpon>Download.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="CustomerPortal\Download.aspx.designer.vb">
-      <DependentUpon>Download.aspx</DependentUpon>
-    </Compile>
     <Content Include="CustomerPortal\Feedback.aspx" />
     <Compile Include="CustomerPortal\Feedback.aspx.vb">
       <DependentUpon>Feedback.aspx</DependentUpon>
@@ -4364,6 +4280,12 @@
     <Compile Include="Modules\CRM_Accounts\CustomerAccess.aspx.designer.vb">
       <DependentUpon>CustomerAccess.aspx</DependentUpon>
     </Compile>
+    <Content Include="CustomerPortal\Dashboard.aspx" />
+    <Compile Include="CustomerPortal\Dashboard.aspx.vb"><DependentUpon>Dashboard.aspx</DependentUpon><SubType>ASPXCodeBehind</SubType></Compile>
+    <Compile Include="CustomerPortal\Dashboard.aspx.designer.vb"><DependentUpon>Dashboard.aspx</DependentUpon></Compile>
+    <Content Include="CustomerPortal\Logo.aspx" />
+    <Compile Include="CustomerPortal\Logo.aspx.vb"><DependentUpon>Logo.aspx</DependentUpon><SubType>ASPXCodeBehind</SubType></Compile>
+    <Compile Include="AppCode\PortalSqlData.vb" />
     <Compile Include="AppCode\CustomerPortalData.vb" />
   </ItemGroup>
   <ItemGroup>
@@ -4380,5 +4302,16 @@
       <DependentUpon>FeedbackFile.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Modules\Employee_Feedback\Dashboard.aspx" />
+    <Compile Include="Modules\Employee_Feedback\Dashboard.aspx.vb"><DependentUpon>Dashboard.aspx</DependentUpon><SubType>ASPXCodeBehind</SubType></Compile>
+    <Content Include="assets\css\feedback-dashboard.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\css\feedback-workspace.css" />
+    <Content Include="assets\js\feedback-wizard.js" />
+    <Content Include="assets\css\customer-feedback.css" />
+    <Content Include="assets\js\customer-feedback.js" />
   </ItemGroup>
 </Project>

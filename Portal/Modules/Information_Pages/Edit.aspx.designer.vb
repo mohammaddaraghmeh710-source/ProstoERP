@@ -2,6 +2,9 @@
 Option Explicit On
 Partial Public Class EditInformationPage
     Protected WithEvents lstBrands As Global.System.Web.UI.WebControls.ListBox
+    Protected WithEvents ddlAudience As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents ddlCustomersAccess As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents lstCustomers As Global.System.Web.UI.WebControls.ListBox
     Protected WithEvents ddlAccess As Global.System.Web.UI.WebControls.DropDownList
     Protected WithEvents cblRoles As Global.System.Web.UI.WebControls.CheckBoxList
     Protected WithEvents litMessage As Global.System.Web.UI.WebControls.Literal

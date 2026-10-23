@@ -1,4 +1,4 @@
-Imports System.Data
+﻿Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Linq
 
@@ -6,6 +6,7 @@ Public Class Manage_Users_Types
     Inherits UsersTypesPageBase
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
+        SystemAdministrationUI.RegisterRefresh(Me, AddressOf BindData)
         If Not IsPostBack Then
             If Request.QueryString("added") = "1" Then ShowMessage(litMessage, "تمت إضافة النوع بنجاح.", True)
             If Request.QueryString("updated") = "1" Then ShowMessage(litMessage, "تم حفظ التعديلات بنجاح.", True)

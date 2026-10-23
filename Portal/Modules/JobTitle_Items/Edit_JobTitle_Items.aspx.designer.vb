@@ -13,6 +13,8 @@ Option Explicit On
 
 Partial Public Class Edit_JobTitle_Items
 
+    Protected WithEvents cvSupplier As Global.System.Web.UI.WebControls.CustomValidator
+
     '''<summary>
     '''hdnID control.
     '''</summary>

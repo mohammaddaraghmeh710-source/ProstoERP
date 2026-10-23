@@ -5,20 +5,24 @@ Public Class ViewInformationPage
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         Dim preview = Request.QueryString("preview") = "1"
         If preview Then RequireAdmin()
+        Dim showEnglish = If(IsPostBack, detailLanguage.Value = "en", English)
         Try
             Dim version = QueryNumber("version")
             Dim data = InformationPagesData.Query("dbo.Select_Information_Page", InformationPagesData.P("@Actor", SqlDbType.Int, Actor),
                 InformationPagesData.P("@ID", SqlDbType.Int, PageID), InformationPagesData.P("@Admin", SqlDbType.Bit, preview),
                 InformationPagesData.P("@Version", SqlDbType.Int, version), InformationPagesData.P("@LogVisit", SqlDbType.Bit, Not IsPostBack),
-                InformationPagesData.P("@Language", SqlDbType.VarChar, If(English, "en", "ar"), 2))
+                InformationPagesData.P("@Language", SqlDbType.VarChar, If(showEnglish, "en", "ar"), 2))
             Dim row = data.Rows(0)
-            litTitle.Text = CStr(row(If(English, "Title_En", "Title_Ar")))
-            litDetails.Text = InformationPagesData.CleanHtml(CStr(row(If(English, "Details_En", "Details_Ar"))))
-            litVersion.Text = If(English, "Version ", "الإصدار ") & row("VersionNumber").ToString()
+            pnlPage.Attributes("data-detail-language") = If(showEnglish, "en", "ar")
+            detailLanguage.Value = If(showEnglish, "en", "ar")
+            litTitle.Text = CStr(row("Title_Ar")) : litTitleEn.Text = CStr(row("Title_En"))
+            litDetails.Text = InformationPagesData.CleanHtml(CStr(row("Details_Ar")))
+            litDetailsEn.Text = InformationPagesData.CleanHtml(CStr(row("Details_En")))
+            litVersion.Text = "الإصدار " & row("VersionNumber").ToString()
+            litVersionEn.Text = "Version " & row("VersionNumber").ToString()
             litVersionDate.Text = InformationPagesData.LocalDate(row("OccurredUtc"))
-            Title = litTitle.Text
-            lnkLanguage.Text = If(English, "العربية", "English")
-            lnkLanguage.NavigateUrl = "View.aspx?ID=" & PageID.ToString() & If(English, "&lang=ar", "&lang=en") & If(preview, "&preview=1&version=" & version.ToString(), "")
+            Title = If(showEnglish, litTitleEn.Text, litTitle.Text)
+            lnkLanguage.Text = If(showEnglish, "العربية", "English")
             lnkHistory.NavigateUrl = "History.aspx?ID=" & PageID.ToString()
             pnlPreview.Visible = preview : pnlPage.Visible = True
         Catch ex As Exception

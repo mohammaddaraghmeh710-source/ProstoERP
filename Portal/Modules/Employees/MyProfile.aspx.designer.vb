@@ -354,6 +354,7 @@ Partial Public Class MyProfile
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents rptAttachmentsCarousel As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents lnkHRProfile As Global.System.Web.UI.WebControls.HyperLink
     Protected WithEvents pnlAttendance As Global.System.Web.UI.WebControls.Panel
     Protected WithEvents lnkAttendance As Global.System.Web.UI.WebControls.HyperLink
     Protected WithEvents litAttendanceMessage As Global.System.Web.UI.WebControls.Literal

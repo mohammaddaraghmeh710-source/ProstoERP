@@ -1,4 +1,4 @@
-Imports System.Data
+﻿Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Globalization
 Imports System.Linq
@@ -10,7 +10,7 @@ Public Class Edit_Users_Types
         Get
             Dim id As Integer
             If Not Integer.TryParse(Request.QueryString("ID"), id) OrElse id <= 0 Then
-                Response.Redirect("Manage_Users_Types.aspx")
+                SystemAdministrationUI.Redirect(Me, "Manage_Users_Types.aspx")
                 Return 0
             End If
             Return id
@@ -24,7 +24,7 @@ Public Class Edit_Users_Types
                 Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
                     Dim row = db.Select_Users_Types_ByID(id).FirstOrDefault()
                     If row Is Nothing OrElse row.IsDeleted.GetValueOrDefault() Then
-                        Response.Redirect("Manage_Users_Types.aspx?missing=1")
+                        SystemAdministrationUI.Redirect(Me, "Manage_Users_Types.aspx?missing=1")
                         Return
                     End If
                     txtNameAR.Text = If(row.Title_Ar, "")
@@ -63,6 +63,6 @@ Public Class Edit_Users_Types
             ReportError(litMessage, ex)
             Return
         End Try
-        Response.Redirect("Manage_Users_Types.aspx?updated=1")
+        SystemAdministrationUI.Redirect(Me, "Manage_Users_Types.aspx?updated=1")
     End Sub
 End Class

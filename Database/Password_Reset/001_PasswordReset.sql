@@ -33,7 +33,7 @@ AS BEGIN
    WHERE Employee_Number=@EmployeeNumber AND ISNULL(IsDeleted,0)=0 AND IsActive=1 AND Type<>7;
   INSERT dbo.PasswordReset_Challenges(ID,EmployeeNumber,SourceHash,UserID,Email,BrandID,PasswordFingerprint,OtpHash,CreatedUtc,ExpiresUtc)
    VALUES(@ID,@EmployeeNumber,@SourceHash,@User,@Email,@Brand,HASHBYTES('SHA2_256',CONVERT(varbinary(max),@Password)),@OtpHash,@Now,DATEADD(minute,10,@Now));
-  UPDATE dbo.PasswordReset_Challenges SET Invalidated=1 WHERE UserID=@User AND ID<>@ID AND UsedUtc IS NULL;
+  UPDATE dbo.PasswordReset_Challenges SET Invalidated=1 WHERE UserID=@User AND ID<>@ID AND UsedUtc IS NULL AND Invalidated=0;
   SELECT @BrandName=Title_Ar FROM dbo.Brands WHERE ID=@Brand AND IsActive=1 AND ISNULL(IsDeleted,0)=0;
   COMMIT;
   SELECT @User UserID,@Email Email,@Brand BrandID,@Name EmployeeName,@BrandName BrandName;

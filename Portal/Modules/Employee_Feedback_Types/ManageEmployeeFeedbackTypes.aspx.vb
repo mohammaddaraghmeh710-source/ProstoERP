@@ -2,6 +2,7 @@
 Public Class ManageEmployeeFeedbackTypes
     Inherits EmployeeFeedbackPage
     Protected Sub Page_Load(sender As Object,e As EventArgs) Handles Me.Load
+        SystemAdministrationUI.RegisterRefresh(Me, AddressOf FillData)
         RequireAdmin()
         If Not IsPostBack Then
             Try : FillData() : Catch ex As Exception : ShowError(ex) : End Try

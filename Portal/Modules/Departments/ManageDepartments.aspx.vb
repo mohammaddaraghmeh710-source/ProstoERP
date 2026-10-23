@@ -8,6 +8,7 @@ Public Class ManageDepartments
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
+        SystemAdministrationUI.RegisterRefresh(Me, AddressOf FillData)
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If

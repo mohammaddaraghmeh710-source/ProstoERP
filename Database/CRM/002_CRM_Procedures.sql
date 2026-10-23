@@ -133,13 +133,13 @@ IF @ID<>0 BEGIN
  SELECT @OldScope=ID FROM dbo.CRM_v_Accounts WHERE ID=@ID;
 IF NOT EXISTS(SELECT 1 FROM dbo.CRM_Accounts WHERE ID=@ID AND Is_Deleted=0 AND Row_Version=@Version) THROW 51201,N'تم تعديل السجل أو إلغاؤه. حدّث الصفحة قبل الحفظ.',1;
 IF dbo.CRM_CanAccess(@Actor_ID,@OldScope)=0 THROW 51201,N'ليس لديك صلاحية للسجل السابق.',1;
-SELECT @Before=(SELECT * FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE); END;
+SELECT @Before=(SELECT ID,Name_AR,Name_EN,Account_Type_ID,Owner_ID,Phone,Email,Address,Country,Website,Registration_Number,Notes,Normalized_Name,Is_Active,Is_Deleted,AddedUser,AddedDate,Modified_User,Modified_Date,Row_Version FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE); END;
 IF @Account_Type_ID IS NOT NULL AND NOT EXISTS(SELECT 1 FROM dbo.CRM_Account_Types WHERE ID=@Account_Type_ID AND Is_Active=1 AND ISNULL(Is_Deleted,0)=0) THROW 51201,N'نوع العميل: العنصر غير متاح أو غير فعال.',1;
 IF @Owner_ID IS NOT NULL AND NOT EXISTS(SELECT 1 FROM dbo.UsersMembers WHERE ID=@Owner_ID AND IsActive=1 AND ISNULL(IsDeleted,0)=0) THROW 51201,N'مسؤول العميل: العنصر غير متاح أو غير فعال.',1;
 IF @Admin=0 BEGIN IF @ID=0 SET @Owner_ID=@Actor_ID; ELSE SELECT @Owner_ID=Owner_ID FROM dbo.CRM_Accounts WHERE ID=@ID; END;
 IF @ID=0 BEGIN INSERT dbo.CRM_Accounts([Name_AR],[Name_EN],[Account_Type_ID],[Owner_ID],[Phone],[Email],[Address],[Country],[Website],[Registration_Number],[Notes],Is_Active,AddedUser) VALUES(@Name_AR,@Name_EN,@Account_Type_ID,@Owner_ID,@Phone,@Email,@Address,@Country,@Website,@Registration_Number,@Notes,@Active,@Actor_ID); SET @ID=CONVERT(int,SCOPE_IDENTITY()); END ELSE BEGIN UPDATE dbo.CRM_Accounts SET [Name_AR]=@Name_AR,[Name_EN]=@Name_EN,[Account_Type_ID]=@Account_Type_ID,[Owner_ID]=@Owner_ID,[Phone]=@Phone,[Email]=@Email,[Address]=@Address,[Country]=@Country,[Website]=@Website,[Registration_Number]=@Registration_Number,[Notes]=@Notes,Is_Active=@Active,Modified_User=@Actor_ID,Modified_Date=SYSDATETIME() WHERE ID=@ID; END;
 SET @Scope=@ID;
-SELECT @After=(SELECT * FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE);
+SELECT @After=(SELECT ID,Name_AR,Name_EN,Account_Type_ID,Owner_ID,Phone,Email,Address,Country,Website,Registration_Number,Notes,Normalized_Name,Is_Active,Is_Deleted,AddedUser,AddedDate,Modified_User,Modified_Date,Row_Version FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE);
 INSERT dbo.CRM_Activity_Logs(Actor_ID,Account_ID,Entity,Record_ID,Action,Before_Data,After_Data) VALUES(@Actor_ID,@Scope,N'Accounts',@ID,CASE WHEN @Before IS NULL THEN N'إضافة' ELSE N'تعديل' END,@Before,@After);
 COMMIT; SELECT ID,Row_Version FROM dbo.CRM_Accounts WHERE ID=@ID;
  END TRY BEGIN CATCH IF XACT_STATE()<>0 ROLLBACK; THROW; END CATCH
@@ -155,8 +155,13 @@ IF @Account_ID IS NULL THROW 51201,N'العميل: هذا الحقل مطلوب.
 DECLARE @Name_AR nvarchar(200)=NULLIF(LTRIM(RTRIM(@Data.value('(/row/Name_AR/text())[1]','nvarchar(max)'))),N'');
 IF LEN(NULLIF(LTRIM(RTRIM(@Data.value('(/row/Name_AR/text())[1]','nvarchar(max)'))),N''))>200 THROW 51201,N'الاسم: النص أطول من الحد المسموح.',1;
 IF @Name_AR IS NULL THROW 51201,N'الاسم: هذا الحقل مطلوب.',1;
+DECLARE @Name_EN nvarchar(200)=NULLIF(LTRIM(RTRIM(@Data.value('(/row/Name_EN/text())[1]','nvarchar(max)'))),N'');
+IF @Name_EN IS NULL OR LEN(@Data.value('(/row/Name_EN/text())[1]','nvarchar(max)'))>200 THROW 51201,N'أدخل الاسم الإنجليزي لجهة الاتصال (حتى 200 حرف).',1;
 DECLARE @Job_Title nvarchar(200)=NULLIF(LTRIM(RTRIM(@Data.value('(/row/Job_Title/text())[1]','nvarchar(max)'))),N'');
 IF LEN(NULLIF(LTRIM(RTRIM(@Data.value('(/row/Job_Title/text())[1]','nvarchar(max)'))),N''))>200 THROW 51201,N'المسمى الوظيفي: النص أطول من الحد المسموح.',1;
+IF @Job_Title IS NULL THROW 51201,N'أدخل المسمى الوظيفي بالعربية.',1;
+DECLARE @Job_Title_EN nvarchar(200)=NULLIF(LTRIM(RTRIM(@Data.value('(/row/Job_Title_EN/text())[1]','nvarchar(max)'))),N'');
+IF @Job_Title_EN IS NULL OR LEN(@Data.value('(/row/Job_Title_EN/text())[1]','nvarchar(max)'))>200 THROW 51201,N'أدخل المسمى الوظيفي بالإنجليزية (حتى 200 حرف).',1;
 DECLARE @Phone nvarchar(50)=NULLIF(LTRIM(RTRIM(@Data.value('(/row/Phone/text())[1]','nvarchar(max)'))),N'');
 IF LEN(NULLIF(LTRIM(RTRIM(@Data.value('(/row/Phone/text())[1]','nvarchar(max)'))),N''))>50 THROW 51201,N'الهاتف: النص أطول من الحد المسموح.',1;
 DECLARE @Email nvarchar(254)=NULLIF(LTRIM(RTRIM(@Data.value('(/row/Email/text())[1]','nvarchar(max)'))),N'');
@@ -181,7 +186,7 @@ IF NOT EXISTS(SELECT 1 FROM dbo.CRM_Contacts WHERE ID=@ID AND Is_Deleted=0 AND R
 IF dbo.CRM_CanAccess(@Actor_ID,@OldScope)=0 THROW 51201,N'ليس لديك صلاحية للسجل السابق.',1;
 SELECT @Before=(SELECT * FROM dbo.CRM_Contacts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE); END;
 IF @Account_ID IS NOT NULL AND NOT EXISTS(SELECT 1 FROM dbo.CRM_Accounts WHERE ID=@Account_ID AND Is_Active=1 AND ISNULL(Is_Deleted,0)=0) THROW 51201,N'العميل: العنصر غير متاح أو غير فعال.',1;
-IF @ID=0 BEGIN INSERT dbo.CRM_Contacts([Account_ID],[Name_AR],[Job_Title],[Phone],[Email],[Gender],[Notes],Is_Active,AddedUser) VALUES(@Account_ID,@Name_AR,@Job_Title,@Phone,@Email,@Gender,@Notes,@Active,@Actor_ID); SET @ID=CONVERT(int,SCOPE_IDENTITY()); END ELSE BEGIN UPDATE dbo.CRM_Contacts SET [Account_ID]=@Account_ID,[Name_AR]=@Name_AR,[Job_Title]=@Job_Title,[Phone]=@Phone,[Email]=@Email,[Gender]=@Gender,[Notes]=@Notes,Is_Active=@Active,Modified_User=@Actor_ID,Modified_Date=SYSDATETIME() WHERE ID=@ID; END;
+IF @ID=0 BEGIN INSERT dbo.CRM_Contacts([Account_ID],[Name_AR],[Name_EN],[Job_Title],[Job_Title_EN],[Phone],[Email],[Gender],[Notes],Is_Active,AddedUser) VALUES(@Account_ID,@Name_AR,@Name_EN,@Job_Title,@Job_Title_EN,@Phone,@Email,@Gender,@Notes,@Active,@Actor_ID); SET @ID=CONVERT(int,SCOPE_IDENTITY()); END ELSE BEGIN UPDATE dbo.CRM_Contacts SET [Account_ID]=@Account_ID,[Name_AR]=@Name_AR,[Name_EN]=@Name_EN,[Job_Title]=@Job_Title,[Job_Title_EN]=@Job_Title_EN,[Phone]=@Phone,[Email]=@Email,[Gender]=@Gender,[Notes]=@Notes,Is_Active=@Active,Modified_User=@Actor_ID,Modified_Date=SYSDATETIME() WHERE ID=@ID; END;
 SELECT @After=(SELECT * FROM dbo.CRM_Contacts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE);
 INSERT dbo.CRM_Activity_Logs(Actor_ID,Account_ID,Entity,Record_ID,Action,Before_Data,After_Data) VALUES(@Actor_ID,@Scope,N'Contacts',@ID,CASE WHEN @Before IS NULL THEN N'إضافة' ELSE N'تعديل' END,@Before,@After);
 COMMIT; SELECT ID,Row_Version FROM dbo.CRM_Contacts WHERE ID=@ID;
@@ -198,7 +203,8 @@ END
 GO
 CREATE OR ALTER PROCEDURE dbo.CRM_Select_Logs @Actor_ID int,@User_ID int=NULL,@From date=NULL,@To date=NULL,@Entity nvarchar(80)=NULL,@Account_ID int=NULL AS
 BEGIN SET NOCOUNT ON;
- SELECT l.*,u.FullName_Ar AS User_Name,a.Name_AR AS Account_Name FROM dbo.CRM_Activity_Logs l JOIN dbo.UsersMembers u ON u.ID=l.Actor_ID LEFT JOIN dbo.CRM_Accounts a ON a.ID=l.Account_ID
+ IF OBJECT_ID('dbo.CRM_v_Activity','V') IS NOT NULL BEGIN EXEC sys.sp_executesql N'SELECT * FROM dbo.CRM_v_Activity l WHERE dbo.CRM_CanAccess(@Actor_ID,l.Account_ID)=1 AND (l.Entity<>N''Customer_Session'' OR EXISTS(SELECT 1 FROM dbo.UsersMembers WHERE ID=@Actor_ID AND Type=1 AND IsActive=1 AND ISNULL(IsDeleted,0)=0)) AND (@User_ID IS NULL OR l.Actor_ID=@User_ID) AND (@From IS NULL OR l.AddedDate>=@From) AND (@To IS NULL OR CONVERT(date,l.AddedDate)<=@To) AND (@Entity IS NULL OR l.Entity=@Entity) AND (@Account_ID IS NULL OR l.Account_ID=@Account_ID) ORDER BY l.AddedDate DESC,l.ID DESC;',N'@Actor_ID int,@User_ID int,@From date,@To date,@Entity nvarchar(80),@Account_ID int',@Actor_ID,@User_ID,@From,@To,@Entity,@Account_ID;RETURN;END;
+ SELECT l.*,u.FullName_Ar AS User_Name,a.Name_AR AS Account_Name,CONVERT(nvarchar(40),N'إدارة النظام') Source_Name FROM dbo.CRM_Activity_Logs l JOIN dbo.UsersMembers u ON u.ID=l.Actor_ID LEFT JOIN dbo.CRM_Accounts a ON a.ID=l.Account_ID
  WHERE dbo.CRM_CanAccess(@Actor_ID,l.Account_ID)=1 AND (@User_ID IS NULL OR l.Actor_ID=@User_ID) AND (@From IS NULL OR l.AddedDate>=@From) AND (@To IS NULL OR CONVERT(date,l.AddedDate)<=@To) AND (@Entity IS NULL OR l.Entity=@Entity) AND (@Account_ID IS NULL OR l.Account_ID=@Account_ID) ORDER BY l.ID DESC;
 END
 GO
@@ -236,9 +242,9 @@ BEGIN SET NOCOUNT ON; SET XACT_ABORT ON;
  SELECT @Scope=ID FROM dbo.CRM_Accounts WHERE ID=@ID;
  IF dbo.CRM_CanAccess(@Actor_ID,@Scope)=0 THROW 51200,N'لا تملك صلاحية هذا السجل.',1;
  IF NOT EXISTS(SELECT 1 FROM dbo.CRM_Accounts WHERE ID=@ID AND Is_Deleted=0 AND Row_Version=@Version) THROW 51201,N'السجل تغير. حدّث الصفحة وأعد المحاولة.',1;
- SELECT @Before=(SELECT * FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE);
+ SELECT @Before=(SELECT ID,Name_AR,Name_EN,Account_Type_ID,Owner_ID,Phone,Email,Address,Country,Website,Registration_Number,Notes,Normalized_Name,Is_Active,Is_Deleted,AddedUser,AddedDate,Modified_User,Modified_Date,Row_Version FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE);
  UPDATE dbo.CRM_Accounts SET Is_Active=@Is_Active,Modified_User=@Actor_ID,Modified_Date=SYSDATETIME() WHERE ID=@ID;
- SELECT @After=(SELECT * FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE); SET @Found=1;
+ SELECT @After=(SELECT ID,Name_AR,Name_EN,Account_Type_ID,Owner_ID,Phone,Email,Address,Country,Website,Registration_Number,Notes,Normalized_Name,Is_Active,Is_Deleted,AddedUser,AddedDate,Modified_User,Modified_Date,Row_Version FROM dbo.CRM_Accounts WHERE ID=@ID FOR XML PATH('row'),BINARY BASE64,TYPE); SET @Found=1;
  END;
  IF @Entity=N'Contacts' BEGIN
  SELECT @Scope=Account_ID FROM dbo.CRM_Contacts WHERE ID=@ID;

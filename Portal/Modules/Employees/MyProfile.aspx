@@ -371,6 +371,7 @@
                                     <asp:Literal ID="litLastEvalDate" runat="server" Text="-"></asp:Literal></span>
                             </div>
 
+                            <asp:HyperLink ID="lnkHRProfile" runat="server" Visible="false" CssClass="btn btn-sm btn-outline-primary" Text="بيانات الموارد البشرية" />
                             <!-- ✅ زر تقييم الموظف -->
                             <asp:Button ID="btnOpenEmployeeEvaluation" runat="server"
                                 CssClass="btn btn-sm btn-primary"

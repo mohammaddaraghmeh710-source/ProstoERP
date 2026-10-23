@@ -1,11 +1,17 @@
-﻿$ErrorActionPreference='Stop'
+﻿param([switch]$OrganizationOverviewOnly,[switch]$AccountLogosOnly,[switch]$ContactsBilingualOnly,[switch]$WorkGuideOnly,[switch]$WorkGuideAccessOnly,[switch]$WorkGuideBrandsOnly,[switch]$WorkGuideContentOnly)
+$ErrorActionPreference='Stop'
+. (Join-Path $PSScriptRoot 'AccountOrganizationMigration.ps1')
+. (Join-Path $PSScriptRoot 'FileLogoMigration.ps1')
+$stagedLogos=[Collections.Generic.List[string]]::new()
+if((@($OrganizationOverviewOnly,$AccountLogosOnly,$ContactsBilingualOnly,$WorkGuideOnly,$WorkGuideAccessOnly,$WorkGuideBrandsOnly,$WorkGuideContentOnly)|Where-Object {$_}).Count -gt 1){throw 'Choose one targeted migration switch.'}
 $cfg=[xml](Get-Content (Join-Path $PSScriptRoot '../../Portal/Web.config'))
 $db=[Data.SqlClient.SqlConnection]::new([string]($cfg.configuration.connectionStrings.add|Where-Object name -eq 'Prosto_ERP_ConnectionConnection').connectionString)
-try {$db.Open();$tx=$db.BeginTransaction();try {
- foreach($file in @('005_CRM_Retire_Contracts.sql','001_CRM_Schema.sql','002_CRM_Procedures.sql','006_CRM_Delete.sql')) {
+try {$db.Open();Backup-CrmLogoDatabase $db;$tx=$db.BeginTransaction();try {
+ $files=if($WorkGuideContentOnly){@('016_CRM_WorkGuide_Content.sql')}elseif($WorkGuideBrandsOnly){@('015_CRM_WorkGuide_Brands.sql','016_CRM_WorkGuide_Content.sql')}elseif($WorkGuideAccessOnly){@('014_CRM_WorkGuide_Access.sql','015_CRM_WorkGuide_Brands.sql','016_CRM_WorkGuide_Content.sql')}elseif($WorkGuideOnly){@('013_CRM_WorkGuide.sql','014_CRM_WorkGuide_Access.sql','015_CRM_WorkGuide_Brands.sql','016_CRM_WorkGuide_Content.sql')}elseif($OrganizationOverviewOnly){@('007_CRM_Organization_Overview.sql')}elseif($AccountLogosOnly){@('008_CRM_Account_Logos.sql','010_CRM_Inline_Logos.sql')}elseif($ContactsBilingualOnly){@('009_CRM_Contact_Names.sql','011_CRM_ContactTitles_Activity.sql')}else{@('005_CRM_Retire_Contracts.sql','001_CRM_Schema.sql','002_CRM_Procedures.sql','006_CRM_Delete.sql','007_CRM_Organization_Overview.sql','008_CRM_Account_Logos.sql','009_CRM_Contact_Names.sql','010_CRM_Inline_Logos.sql','011_CRM_ContactTitles_Activity.sql','013_CRM_WorkGuide.sql','014_CRM_WorkGuide_Access.sql','015_CRM_WorkGuide_Brands.sql','016_CRM_WorkGuide_Content.sql','017_CRM_Suppliers.sql','018_CRM_Supplier_Tools.sql','019_CRM_Retire_Suppliers.sql','020_CRM_Account_Organization.sql','021_CRM_MultiBrand_WorkGuide.sql')}
+ foreach($file in $files) {
   foreach($batch in [regex]::Split([IO.File]::ReadAllText((Join-Path $PSScriptRoot $file)),'(?im)^\s*GO\s*$')) {
    if([string]::IsNullOrWhiteSpace($batch)){continue};$cmd=$db.CreateCommand();$cmd.Transaction=$tx;$cmd.CommandText=$batch;$cmd.CommandTimeout=120
    try{[void]$cmd.ExecuteNonQuery()}finally{$cmd.Dispose()}
   };Write-Output "$file applied"
- };$tx.Commit()
-}catch{if($tx.Connection){$tx.Rollback()};throw}}finally{$db.Dispose()}
+ };$check=$db.CreateCommand();$check.Transaction=$tx;$check.CommandText="SELECT CASE WHEN COL_LENGTH('dbo.CRM_Account_Types','System_Code') IS NOT NULL THEN 1 ELSE 0 END";if([int]$check.ExecuteScalar() -eq 1){foreach($supplierFile in @('017_CRM_Suppliers.sql','018_CRM_Supplier_Tools.sql','019_CRM_Retire_Suppliers.sql')){foreach($supplierBatch in [regex]::Split([IO.File]::ReadAllText((Join-Path $PSScriptRoot $supplierFile)),'(?im)^\s*GO\s*$')){if([string]::IsNullOrWhiteSpace($supplierBatch)){continue};$check.CommandText=$supplierBatch;[void]$check.ExecuteNonQuery()}}};if($AccountLogosOnly -or (-not $OrganizationOverviewOnly -and -not $ContactsBilingualOnly -and -not $WorkGuideOnly -and -not $WorkGuideAccessOnly -and -not $WorkGuideBrandsOnly -and -not $WorkGuideContentOnly)){Export-CrmLogoFiles $db $tx (Join-Path $PSScriptRoot '../../Portal/FileManager/CustomerLogos') $stagedLogos;Apply-CrmFileLogoSql $db $tx $PSScriptRoot};Apply-CrmAccountOrganization $db $tx;$tx.Commit()
+}catch{if($tx.Connection){$tx.Rollback()};Remove-CrmStagedLogos $stagedLogos;throw}}finally{$db.Dispose()}

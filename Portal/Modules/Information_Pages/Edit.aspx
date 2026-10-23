@@ -12,15 +12,18 @@
         <legend class="float-none w-auto px-2 fs-6">صلاحيات الاطلاع</legend>
         <div class="mb-3">
             <asp:Label runat="server" AssociatedControlID="lstBrands" CssClass="form-label" Text="العلامات التجارية" />
-            <asp:ListBox ID="lstBrands" runat="server" SelectionMode="Multiple" CssClass="select2 form-select" data-placeholder="اختر علامة تجارية واحدة أو أكثر" />
-            <small class="text-muted d-block mt-2">تظهر الصفحة لمستخدمي العلامات المحددة فقط، بشرط سماح نوع المستخدم والنشر. يجب اختيار علامة فعالة واحدة على الأقل.</small>
+            <asp:ListBox ID="lstBrands" runat="server" SelectionMode="Multiple" CssClass="form-select information-audience-select" data-placeholder="اختر علامة تجارية واحدة أو أكثر" />
+            <small class="text-muted d-block mt-2">تظهر الصفحة لمستخدمي العلامات المحددة فقط، بشرط سماح الجمهور المحدد والنشر. يجب اختيار علامة فعالة واحدة على الأقل.</small>
         </div>
-        <asp:Label runat="server" AssociatedControlID="ddlAccess" CssClass="form-label" Text="من يستطيع الاطلاع على الصفحة؟" />
+        <div class="mb-3"><asp:Label runat="server" AssociatedControlID="ddlAudience" CssClass="form-label" Text="جمهور الصفحة"/><asp:DropDownList ID="ddlAudience" runat="server" CssClass="form-select" onchange="informationAccess()"><asp:ListItem Value="employees">الموظفون</asp:ListItem><asp:ListItem Value="customers">العملاء</asp:ListItem><asp:ListItem Value="all">الجميع — الموظفون والعملاء</asp:ListItem></asp:DropDownList></div>
+        <div id="informationEmployees"><asp:Label runat="server" AssociatedControlID="ddlAccess" CssClass="form-label" Text="من يستطيع الاطلاع على الصفحة؟" />
         <asp:DropDownList ID="ddlAccess" runat="server" CssClass="form-select" onchange="informationAccess()">
-            <asp:ListItem Value="all">جميع أنواع المستخدمين ضمن العلامات المحددة</asp:ListItem><asp:ListItem Value="roles">أنواع مستخدمين محددة</asp:ListItem>
+            <asp:ListItem Value="all">كل أنواع الموظفين ضمن العلامات المحددة</asp:ListItem><asp:ListItem Value="roles">أنواع موظفين محددة</asp:ListItem>
         </asp:DropDownList>
-        <div id="informationRoles" class="mt-3"><asp:CheckBoxList ID="cblRoles" runat="server" RepeatLayout="Flow" CssClass="information-roles" /></div>
-        <small class="text-muted d-block mt-2">مدير النظام يستطيع الإدارة والمعاينة دائمًا. تغيير العلامات أو أنواع المستخدمين يُسجّل دون إنشاء إصدار للمحتوى، ولا يغيّر استرجاع إصدار سابق صلاحيات الاطلاع الحالية.</small>
+        <div id="informationRoles" class="mt-3"><asp:CheckBoxList ID="cblRoles" runat="server" RepeatLayout="Flow" CssClass="information-roles" /></div></div>
+        <div id="informationCustomers"><asp:Label runat="server" AssociatedControlID="ddlCustomersAccess" CssClass="form-label" Text="العملاء المسموح لهم بالاطلاع"/><asp:DropDownList ID="ddlCustomersAccess" runat="server" CssClass="form-select" onchange="informationAccess()"><asp:ListItem Value="all">كل العملاء ضمن العلامات المحددة</asp:ListItem><asp:ListItem Value="selected">عملاء محددون بالاسم</asp:ListItem></asp:DropDownList><div id="informationCustomerSelection" class="mt-3"><asp:Label runat="server" AssociatedControlID="lstCustomers" CssClass="form-label" Text="اختر العملاء"/><asp:ListBox ID="lstCustomers" runat="server" SelectionMode="Multiple" CssClass="form-select information-audience-select" data-placeholder="ابحث عن اسم العميل واختر عميلًا أو أكثر"/><small id="informationCustomerStatus" class="text-muted d-block mt-2" role="status" aria-live="polite">تظهر فقط أسماء العملاء التابعين للعلامات التجارية المختارة.</small></div></div>
+        <div id="informationEveryone" class="alert alert-primary mb-0">تظهر الصفحة لكل أنواع الموظفين ولكل العملاء ضمن العلامات التجارية المحددة، بعد النشر وخلال فترة العرض.</div>
+        <small class="text-muted d-block mt-2">مدير النظام يستطيع الإدارة والمعاينة دائمًا. تغيير العلامات أو الجمهور أو المستفيدين يُسجّل دون إنشاء إصدار للمحتوى، ولا يغيّر استرجاع إصدار سابق صلاحيات الاطلاع الحالية.</small>
     </fieldset>
     <div class="row g-3">
         <div class="col-md-6"><asp:Label runat="server" AssociatedControlID="txtTitleAr" CssClass="form-label" Text="العنوان بالعربية" /><asp:TextBox ID="txtTitleAr" runat="server" CssClass="form-control" MaxLength="250" /></div>
@@ -44,6 +47,11 @@
 </div>
 <script>
 function informationAccess() {
+    var audience=document.getElementById('<%= ddlAudience.ClientID %>').value;
+    document.getElementById('informationEmployees').hidden=audience!=='employees';
+    document.getElementById('informationCustomers').hidden=audience!=='customers';
+    document.getElementById('informationEveryone').hidden=audience!=='all';
+    document.getElementById('informationCustomerSelection').hidden=document.getElementById('<%= ddlCustomersAccess.ClientID %>').value!=='selected';
     document.getElementById('informationRoles').hidden = document.getElementById('<%= ddlAccess.ClientID %>').value !== 'roles';
 }
 function informationSchedule() {
@@ -54,7 +62,41 @@ function informationSchedule() {
     });
 }
 function informationUpdateEditors() { if (window.CKEDITOR) Object.keys(CKEDITOR.instances).forEach(function(key) { CKEDITOR.instances[key].updateElement(); }); }
+function initializeInformationCustomers(){
+    var brands=document.getElementById('<%= lstBrands.ClientID %>'),customers=document.getElementById('<%= lstCustomers.ClientID %>');
+    var customerOptions=Array.from(customers.options).map(function(option){return option.cloneNode(true);});
+    var customerStatus=document.getElementById('informationCustomerStatus');
+    function filterCustomers(){
+        var selectedBrands=new Set(Array.from(brands.selectedOptions).map(function(option){return option.value;}));
+        var selectedCustomers=new Set(Array.from(customers.selectedOptions).map(function(option){return option.value;}));
+        if(window.jQuery && jQuery(customers).data('select2')) jQuery(customers).select2('close');
+        customers.replaceChildren();
+        customerOptions.forEach(function(option){
+            if(!(option.getAttribute('data-brand-ids')||'').split(',').some(function(id){return selectedBrands.has(id);} ))return;
+            var item=option.cloneNode(true);item.selected=selectedCustomers.has(item.value);customers.appendChild(item);
+        });
+        var retained=Array.from(customers.selectedOptions).length,removed=selectedCustomers.size-retained;
+        customers.disabled=customers.options.length===0;
+        customerStatus.textContent=(!selectedBrands.size?'اختر علامة تجارية أولًا لعرض عملائها.':!customers.options.length?'لا يوجد عملاء متاحون للعلامات التجارية المختارة.':'يمكنك البحث باسم العميل ضمن العلامات المختارة.')+(removed?' أُزيلت اختيارات العملاء الذين لا يتبعون العلامات المحددة.':'');
+        if(window.jQuery && jQuery(customers).data('select2')) jQuery(customers).trigger('change.select2');
+    }
+    if(window.jQuery && jQuery.fn.select2){
+        var settings={dir:'rtl',width:'100%',language:{noResults:function(){return 'لا توجد أسماء عملاء مطابقة';}}};
+        jQuery(brands).select2({dir:'rtl',width:'100%'});
+        settings.matcher=function(params,data){
+            if(!params.term)return data;
+            var name=data.element?data.element.getAttribute('data-customer-name'):data.text;
+            return jQuery.fn.select2.defaults.defaults.matcher(params,{id:data.id,text:name||''})?data:null;
+        };
+        jQuery(customers).select2(settings);
+        var search=jQuery(customers).next('.select2').find('.select2-search__field');
+        search.attr('aria-label','البحث باسم العميل').on('keydown',function(event){if(event.key==='Enter')event.preventDefault();});
+        jQuery(brands).on('change.informationCustomers',filterCustomers);
+    }else brands.addEventListener('change',filterCustomers);
+    filterCustomers();
+}
 document.addEventListener('DOMContentLoaded', function() {
+    if(window.jQuery)jQuery(initializeInformationCustomers);else initializeInformationCustomers();
     informationAccess();
     informationSchedule();
     if (!window.CKEDITOR) return;

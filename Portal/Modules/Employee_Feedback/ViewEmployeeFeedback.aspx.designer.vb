@@ -6,7 +6,6 @@
     Protected WithEvents litTitle As Global.System.Web.UI.WebControls.Literal
     Protected WithEvents lblType As Global.System.Web.UI.WebControls.Label
     Protected WithEvents lblStatus As Global.System.Web.UI.WebControls.Label
-    Protected WithEvents lblEmployee As Global.System.Web.UI.WebControls.Label
     Protected WithEvents litMeta As Global.System.Web.UI.WebControls.Literal
     Protected WithEvents litDetails As Global.System.Web.UI.WebControls.Literal
     Protected WithEvents rptFiles As Global.System.Web.UI.WebControls.Repeater

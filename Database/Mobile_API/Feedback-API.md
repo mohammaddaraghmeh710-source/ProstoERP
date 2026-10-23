@@ -1,4 +1,4 @@
-# واجهات الشكاوى والاقتراحات لتطبيق الهاتف
+﻿# واجهات الشكاوى والاقتراحات لتطبيق الهاتف
 
 هذه الواجهات للشكاوى والاقتراحات فقط. تستخدم قواعد العمل وإجراءات SQL نفسها المستخدمة في الموقع، والصلاحيات والأنواع والمواضيع المعرفة في إدارة النظام. لا تشمل المراسلات أو إحصائيات الإدارة أو السجلات العامة.
 
@@ -160,3 +160,5 @@ API يحتفظ ببصمة البيانات والملفات مع النتيجة.
 - اختبارات `Test-FeedbackApi.ps1` تنشئ قاعدة معزولة من مخطط الجداول الأساسية فقط، وبيانات مصطنعة مرتبطة بفرع عبدالله غوشة، ثم تحذف قاعدة الاختبار ومجلد مرفقاتها. لا تعدل بيانات الموظفين الفعلية.
 
 ملفا التسليم القابلان للاستيراد: `Feedback.openapi.json` و`Prosto-Feedback.postman_collection.json`. عدّل `baseUrl` ومتغيرات الحساب والمعرفات في Postman. عند إعادة محاولة طلب محفوظ لا تعِد توليد متغير رقم العملية أو وقتها.
+
+Customer-source requests may only forward to system administrators (RecipientTypeID=1). Open responses filter RecipientTypes accordingly and omit transfer when no permitted administrator target exists. Existing request/action envelopes and close permissions remain unchanged.

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
@@ -158,13 +158,16 @@ namespace Prosto_ERP_API.Mobile
                         item["PreviewUrl"]=AttachmentUrl(Convert.ToInt32(item["ID"]),model.EmployeeNumber,false);
                         item["DownloadUrl"]=AttachmentUrl(Convert.ToInt32(item["ID"]),model.EmployeeNumber,true);
                     }
+                    var contact=First(db.Proc(Prefix+"Select_Employee_Feedback_Contact","Actor",Actor,"ID",id));
+                    var recipientTypes=canAct && Flag(permissions,"CanTransfer") ? Targets(db) : new List<Dictionary<string,object>>();
+                    if(Convert.ToInt32(contact["SourceType"])==2) recipientTypes=recipientTypes.Where(row=>Convert.ToInt32(row["ID"])==1).ToList();
                     var actions=new List<object>();
-                    if(canAct && Flag(permissions,"CanTransfer")) actions.Add(new { Code="transfer",Title="تحويل للمتابعة",CommentRequired=true,RecipientRequired=true });
+                    if(recipientTypes.Count>0) actions.Add(new { Code="transfer",Title="تحويل للمتابعة",CommentRequired=true,RecipientRequired=true });
                     if(canAct && Flag(permissions,"CanClose")) actions.Add(new { Code="close",Title="إغلاق الطلب",CommentRequired=true,RecipientRequired=false });
                     var result=new { Request=details,
-                        Contact=First(db.Proc(Prefix+"Select_Employee_Feedback_Contact","Actor",Actor,"ID",id)),
+                        Contact=contact,
                         Attachments=attachments,Workflow=Rows(db.Proc(Prefix+"Select_Employee_Feedback_Workflow","Actor",Actor,"ID",id)),
-                        AllowedActions=actions,RecipientTypes=canAct && Flag(permissions,"CanTransfer") ? Targets(db) : new List<Dictionary<string,object>>(),
+                        AllowedActions=actions,RecipientTypes=recipientTypes,
                         Replayed=replay };
                     db.Commit(); return Success(result);
                 }

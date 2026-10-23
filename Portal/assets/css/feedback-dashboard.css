@@ -1,0 +1,17 @@
+.erp-ui .feedback-admin .feedback-flex { display: flex !important; }
+.feedback-admin .feedback-entry { transition: box-shadow .15s ease; }
+.feedback-admin .feedback-entry:hover { box-shadow: 0 .25rem 1rem rgba(67,89,113,.15); }
+.feedback-admin .feedback-entry p { line-height: 1.6; }
+.feedback-admin-table { font-size: .875rem; }
+.feedback-admin-table thead th { font-size: .8rem; padding-block: .65rem; }
+.feedback-admin-table td { vertical-align: middle; white-space: normal; overflow-wrap: anywhere; }
+.feedback-admin-table .feedback-action-required > td { background-color: rgba(255,171,0,.09); }
+.feedback-admin-table .feedback-action-required > td:first-child { border-inline-start: 3px solid var(--bs-warning,#ffab00); }
+@media(max-width:768px) {
+ .feedback-admin .card-list-table thead { display: none; }
+ .feedback-admin .card-list-table tbody,.feedback-admin .card-list-table tr { display: block; }
+ .feedback-admin .card-list-table tr { margin: .75rem; border: 1px solid var(--bs-border-color,#d9dee3); border-radius: .5rem; overflow: hidden; }
+ .feedback-admin .card-list-table td { display: flex; justify-content: space-between; gap: .75rem; flex-wrap: wrap; border: 0; padding: .65rem; }
+ .feedback-admin .card-list-table td::before { content: attr(data-title); font-weight: 500; color: var(--bs-secondary-color,#697a8d); }
+ .feedback-admin .card-list-table td > div { flex-basis: 100%; }
+}

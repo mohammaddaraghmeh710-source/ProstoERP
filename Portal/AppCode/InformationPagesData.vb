@@ -1,4 +1,4 @@
-Imports System.Data
+﻿Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Globalization
 Imports System.Web
@@ -40,6 +40,13 @@ Public NotInheritable Class InformationPagesData
         Return TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(local, DateTimeKind.Unspecified), TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time"))
     End Function
 
+    Public Shared Function AudienceText(value As Object) As String
+        Select Case Convert.ToString(value)
+            Case "customers" : Return "العملاء"
+            Case "all" : Return "الموظفون والعملاء"
+            Case Else : Return "الموظفون"
+        End Select
+    End Function
     Public Shared Function StatusText(value As Object) As String
         Select Case Convert.ToString(value)
             Case "draft" : Return "مسودة"

@@ -1,4 +1,4 @@
-SET XACT_ABORT ON;
+﻿SET XACT_ABORT ON;
 IF OBJECT_ID('dbo.CustomerApi_Sessions','U') IS NULL
 BEGIN
  CREATE TABLE dbo.CustomerApi_Sessions(TokenHash binary(32) PRIMARY KEY,AccountID int NOT NULL REFERENCES dbo.Customer_Logins(AccountID),SecurityStamp uniqueidentifier NOT NULL,CreatedUtc datetime2 NOT NULL,LastUsedUtc datetime2 NOT NULL,ExpiresUtc datetime2 NOT NULL,RevokedUtc datetime2 NULL);
@@ -6,8 +6,6 @@ BEGIN
  CREATE TABLE dbo.CustomerApi_LoginRate(ClientHash binary(32) PRIMARY KEY,WindowUtc datetime2 NOT NULL,Attempts int NOT NULL);
  CREATE TABLE dbo.CustomerApi_FeedbackOperations(AccountID int NOT NULL,OperationID uniqueidentifier NOT NULL,PayloadHash binary(32) NOT NULL,PRIMARY KEY(AccountID,OperationID),FOREIGN KEY(AccountID,OperationID) REFERENCES dbo.Customer_Portal_Feedback(AccountID,OperationID));
 END;
-IF OBJECT_ID('dbo.CustomerApi_GuideOperations','U') IS NULL
- CREATE TABLE dbo.CustomerApi_GuideOperations(AccountID int NOT NULL REFERENCES dbo.Customer_Logins(AccountID),OperationID uniqueidentifier NOT NULL,PayloadHash binary(32) NOT NULL,BatchID uniqueidentifier NOT NULL,PRIMARY KEY(AccountID,OperationID));
 GO
 CREATE OR ALTER PROCEDURE dbo.CustomerApi_CheckLoginRate @ClientHash binary(32) AS
 BEGIN
@@ -40,25 +38,11 @@ BEGIN
 END;
 GO
 CREATE OR ALTER PROCEDURE dbo.CustomerApi_Logout @TokenHash binary(32) AS
-BEGIN SET NOCOUNT ON;UPDATE dbo.CustomerApi_Sessions SET RevokedUtc=SYSUTCDATETIME() WHERE TokenHash=@TokenHash AND RevokedUtc IS NULL;END;
-GO
-CREATE OR ALTER PROCEDURE dbo.CustomerApi_Guide @AccountID int,@Stamp uniqueidentifier,@Brand int,@Category int=0,@Search nvarchar(200)=N'',@Page int=1,@PageSize int=20,@Section varchar(16)='documents' AS
-BEGIN
- SET NOCOUNT ON;
- IF @Page<1 OR @Page>1000000 OR @PageSize<1 OR @PageSize>100 THROW 51910,N'قيم التصفح غير صحيحة.',1;
- IF NOT EXISTS(SELECT 1 FROM dbo.Customer_Logins l JOIN dbo.CRM_Accounts a ON a.ID=l.AccountID WHERE a.ID=@AccountID AND l.SecurityStamp=@Stamp AND l.IsActive=1 AND a.Is_Active=1 AND a.Is_Deleted=0) THROW 51911,N'انتهت صلاحية الدخول.',1;
- IF @Section='categories'
- SELECT ID,Parent_ID,Title_Ar,Full_Path_Ar,Can_View_Document,Can_Print_Document,Can_Download_Document FROM dbo.Customer_Guide_Effective(@AccountID,@Brand) WHERE Can_View_Category=1 OR Can_View_Document=1 ORDER BY Sort_Path OPTION(MAXRECURSION 100);
- ELSE BEGIN
- SELECT d.ID,d.Title_Ar,d.Description_Ar,d.AddedDate,d.Brand_ID,d.Category_ID,c.Full_Path_Ar CategoryName,c.Can_Print_Document,
- CAST(CASE WHEN ISNULL(d.Is_Download_Allowed,1)=1 THEN c.Can_Download_Document ELSE 0 END AS bit) Can_Download_Document
- INTO #Documents FROM dbo.Work_Guide_Documents d JOIN dbo.Customer_Guide_Effective(@AccountID,@Brand)c ON c.ID=d.Category_ID
- WHERE d.Brand_ID=@Brand AND (@Category=0 OR d.Category_ID=@Category) AND ISNULL(d.IsActive,1)=1 AND ISNULL(d.IsDeleted,0)=0 AND c.Can_View_Document=1
- AND (@Search=N'' OR CHARINDEX(@Search,ISNULL(d.Title_Ar,N''))>0 OR CHARINDEX(@Search,c.Full_Path_Ar)>0) OPTION(MAXRECURSION 100);
- SELECT COUNT(*) Total FROM #Documents;
- SELECT * FROM #Documents ORDER BY AddedDate DESC,ID DESC OFFSET (@Page-1)*@PageSize ROWS FETCH NEXT @PageSize ROWS ONLY;
- END;
-END;
+BEGIN SET NOCOUNT ON;SET XACT_ABORT ON;BEGIN TRAN;
+ DECLARE @Changed TABLE(AccountID int);
+ UPDATE dbo.CustomerApi_Sessions SET RevokedUtc=SYSUTCDATETIME() OUTPUT inserted.AccountID INTO @Changed WHERE TokenHash=@TokenHash AND RevokedUtc IS NULL;
+ INSERT dbo.Customer_Portal_Activity(AccountID,Action) SELECT AccountID,'logout' FROM @Changed;
+ COMMIT;END;
 GO
 CREATE OR ALTER PROCEDURE dbo.CustomerApi_Feedback @AccountID int,@Stamp uniqueidentifier,@ID int=0,@AttachmentID int=0,@Page int=1,@PageSize int=20,@Status int=0,@Search nvarchar(200)=N'' AS
 BEGIN

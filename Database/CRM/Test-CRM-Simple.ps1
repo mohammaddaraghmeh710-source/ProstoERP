@@ -7,14 +7,15 @@ function Assert([bool]$ok,[string]$msg){if(-not $ok){throw $msg}}
 try {
  $db.Open();$tx=$db.BeginTransaction()
  $ids=(Q 'SELECT (SELECT TOP(1) ID FROM UsersMembers WHERE Type=1 AND IsActive=1 AND ISNULL(IsDeleted,0)=0 ORDER BY ID) A,(SELECT TOP(1) ID FROM UsersMembers WHERE Type<>1 AND IsActive=1 AND ISNULL(IsDeleted,0)=0 ORDER BY ID) U').Rows[0]
+ $brand=(Q 'SELECT TOP(1) ID FROM Brands WHERE IsActive=1 AND ISNULL(IsDeleted,0)=0 ORDER BY ID').Rows[0].ID
  $name='CRM new workflow '+[guid]::NewGuid()
- $a=(Q 'EXEC dbo.CRM_Save_Accounts @Actor_ID=@a,@Data=@x' @{'@a'=$ids.A;'@x'="<row><Name_AR>$name</Name_AR><Owner_ID>$($ids.U)</Owner_ID><Is_Active>1</Is_Active></row>"}).Rows[0]
- $c=(Q 'EXEC dbo.CRM_Save_Contacts @Actor_ID=@a,@Data=@x' @{'@a'=$ids.U;'@x'="<row><Account_ID>$($a.ID)</Account_ID><Name_AR>Test contact</Name_AR><Email>test@example.invalid</Email><Job_Title>Manager</Job_Title><Is_Active>0</Is_Active></row>"}).Rows[0]
+ $a=(Q 'EXEC dbo.CRM_Save_Accounts @Actor_ID=@a,@Data=@x' @{'@a'=$ids.A;'@x'="<row><Name_AR>$name</Name_AR><Brand_ID>$brand</Brand_ID><Owner_ID>$($ids.U)</Owner_ID><Is_Active>1</Is_Active></row>"}).Rows[0]
+ $c=(Q 'EXEC dbo.CRM_Save_Contacts @Actor_ID=@a,@Data=@x' @{'@a'=$ids.U;'@x'="<row><Account_ID>$($a.ID)</Account_ID><Name_AR>Test contact</Name_AR><Name_EN>Test Contact</Name_EN><Email>test@example.invalid</Email><Job_Title>مدير</Job_Title><Job_Title_EN>Manager</Job_Title_EN><Is_Active>0</Is_Active></row>"}).Rows[0]
  Assert (-not (Q 'EXEC dbo.CRM_Select_Contacts @Actor_ID=@a,@ID=@id' @{'@a'=$ids.U;'@id'=$c.ID}).Rows[0].Is_Active) 'Checkbox state not saved on insert'
  [void](Q "EXEC dbo.CRM_Set_Active @Actor_ID=@a,@Entity='Contacts',@ID=@id,@Is_Active=1,@Version=@v" @{'@a'=$ids.U;'@id'=$c.ID;'@v'=$c.Row_Version})
  $now=(Q 'EXEC dbo.CRM_Select_Contacts @Actor_ID=@a,@ID=@id' @{'@a'=$ids.U;'@id'=$c.ID}).Rows[0]
  Assert $now.Is_Active 'Activation failed'
- [void](Q 'EXEC dbo.CRM_Save_Contacts @Actor_ID=@a,@ID=@id,@Version=@v,@Data=@x' @{'@a'=$ids.U;'@id'=$c.ID;'@v'=$now.Row_Version;'@x'="<row><Account_ID>$($a.ID)</Account_ID><Name_AR>Edited contact</Name_AR><Email>edited@example.invalid</Email><Job_Title>Supervisor</Job_Title><Is_Active>0</Is_Active></row>"})
+ [void](Q 'EXEC dbo.CRM_Save_Contacts @Actor_ID=@a,@ID=@id,@Version=@v,@Data=@x' @{'@a'=$ids.U;'@id'=$c.ID;'@v'=$now.Row_Version;'@x'="<row><Account_ID>$($a.ID)</Account_ID><Name_AR>Edited contact</Name_AR><Name_EN>Edited Contact</Name_EN><Email>edited@example.invalid</Email><Job_Title>Supervisor</Job_Title><Job_Title_EN>Supervisor</Job_Title_EN><Is_Active>0</Is_Active></row>"})
  $now=(Q 'EXEC dbo.CRM_Select_Contacts @Actor_ID=@a,@ID=@id' @{'@a'=$ids.U;'@id'=$c.ID}).Rows[0]
  Assert (-not $now.Is_Active -and $now.Job_Title -eq 'Supervisor') 'Edit / checkbox deactivation failed'
  $logs=Q 'EXEC dbo.CRM_Select_Logs @Actor_ID=@a,@Account_ID=@id' @{'@a'=$ids.U;'@id'=$a.ID}

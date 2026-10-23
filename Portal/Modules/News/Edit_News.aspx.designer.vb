@@ -77,6 +77,7 @@ Partial Public Class Edit_News
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents txtDetails As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtDetailsEn As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''txtDate control.

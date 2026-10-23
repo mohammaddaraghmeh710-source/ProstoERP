@@ -19,14 +19,13 @@ class CustomerApiTests
  static byte[] pdf=Encoding.ASCII.GetBytes("%PDF-1.4\n1 0 obj<</Type /Catalog>>endobj\n%%EOF");
  static void Check(bool value,string name){if(!value)throw new Exception("FAIL: "+name);Console.WriteLine("PASS: "+name);checks++;}
  static object Sql(string text,params SqlParameter[] args){using(var cn=new SqlConnection(ConfigurationManager.ConnectionStrings["Prosto_ERP_ConnectionConnection"].ConnectionString))using(var cmd=new SqlCommand(text,cn)){cn.Open();cmd.Parameters.AddRange(args);return cmd.ExecuteScalar();}}
- static async Task<HttpResponseMessage> Send(string path,string token=null,object body=null,bool post=false){var request=new HttpRequestMessage(post?HttpMethod.Post:HttpMethod.Get,path);request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));if(token!=null)request.Headers.Authorization=new AuthenticationHeaderValue("Bearer",token);if(body!=null)request.Content=new StringContent(JsonConvert.SerializeObject(body),Encoding.UTF8,"application/json");return await client.SendAsync(request);}
+ static async Task<HttpResponseMessage> Send(string path,string token=null,object body=null,bool post=false){var request=new HttpRequestMessage(post?HttpMethod.Post:HttpMethod.Get,path);request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));if(token!=null)request.Headers.Authorization=new AuthenticationHeaderValue("Bearer",token);if(body!=null)request.Content=new StringContent(JsonConvert.SerializeObject(body),Encoding.UTF8,"application/json");return await ApiPerformanceProbe.Send(client,request);}
  static async Task<JToken> Data(HttpResponseMessage response){string json=await response.Content.ReadAsStringAsync();if(!response.IsSuccessStatusCode)throw new Exception("HTTP "+response.StatusCode+": "+json);return JObject.Parse(json)["Data"];}
  static async Task<string> Login(string user="customer"){return (string)(await Data(await Send(root+"login",body:new{Username=user,Password=password},post:true)))["Token"];}
- static async Task<HttpResponseMessage> Upload(string token,JObject model,byte[] file=null){using(var form=new MultipartFormDataContent()){form.Add(new StringContent(model.ToString(),Encoding.UTF8,"application/json"),"data");if(file!=null)form.Add(new ByteArrayContent(file),"files","note.pdf");var req=new HttpRequestMessage(HttpMethod.Post,root+"feedback/requests"){Content=form};req.Headers.Authorization=new AuthenticationHeaderValue("Bearer",token);req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));return await client.SendAsync(req);}}
+ static async Task<HttpResponseMessage> Upload(string token,JObject model,byte[] file=null){using(var form=new MultipartFormDataContent()){form.Add(new StringContent(model.ToString(),Encoding.UTF8,"application/json"),"data");if(file!=null)form.Add(new ByteArrayContent(file),"files","note.pdf");var req=new HttpRequestMessage(HttpMethod.Post,root+"feedback/requests"){Content=form};req.Headers.Authorization=new AuthenticationHeaderValue("Bearer",token);req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));return await ApiPerformanceProbe.Send(client,req);}}
  static async Task Run(){
   byte[] salt=new byte[32];using(var random=RandomNumberGenerator.Create())random.GetBytes(salt);
   using(var derive=new Rfc2898DeriveBytes(password,salt,210000,HashAlgorithmName.SHA256))Sql("UPDATE Customer_Logins SET PasswordHash=@Hash,Salt=@Salt,Iterations=210000,LockedUntil=NULL,FailedAttempts=0",new SqlParameter("@Hash",derive.GetBytes(32)),new SqlParameter("@Salt",salt));
-  string portal=ConfigurationManager.AppSettings["CustomerApi.PortalRoot"];Directory.CreateDirectory(Path.Combine(portal,"App_Data"));File.WriteAllBytes(Path.Combine(portal,"App_Data/customer-test.pdf"),pdf);
   var config=new HttpConfiguration();WebApiConfig.Register(config);config.Services.Replace(typeof(System.Web.Http.Dispatcher.IAssembliesResolver),new Assemblies());config.EnsureInitialized();client=new HttpClient(new HttpServer(config)){BaseAddress=new Uri("https://localhost/")};
   var unauth=await Send(root+"me");Check(unauth.StatusCode==HttpStatusCode.Unauthorized,"Customer bearer required: "+await unauth.Content.ReadAsStringAsync());
   Check((await Send("http://localhost/"+root+"login",body:new{Username="customer",Password=password},post:true)).StatusCode==HttpStatusCode.Forbidden,"HTTPS required before credentials");
@@ -39,23 +38,8 @@ class CustomerApiTests
   Check((await Send(root+"me",employee)).StatusCode==HttpStatusCode.Unauthorized,"Employee token cannot authenticate as customer");
   Check((int)(await Data(await Send(root+"me",first)))["AccountID"]==1,"Customer identity from token");
   Check((await Send(root+"me",first)).Headers.CacheControl.NoStore,"Private responses no-store");
-  Check((await Data(await Send(root+"guide/brands",first))).Count()==2,"Multi-brand guide options");
-  Check((int)(await Data(await Send(root+"guide/documents?brandID=1",first)))["Total"]==1,"Authorized document listing");
-  Check((await Send(root+"guide/documents?brandID=1&pageSize=101",first)).StatusCode==HttpStatusCode.BadRequest,"Pagination bounds");
-  var doc=await Data(await Send(root+"guide/documents/1",first));Check(doc["File_Path"]==null && doc["FileUrl"]!=null,"No physical file paths in metadata");
-  Check((await Send(root+"guide/documents/1/file",first)).Content.Headers.ContentType.MediaType=="application/pdf","Authorized PDF stream");
-  Check((await Send(root+"guide/documents/1/file?download=true",first)).StatusCode==HttpStatusCode.Forbidden,"View-only download denied");
-  Check((await Send(root+"guide/documents/1",second)).StatusCode==HttpStatusCode.NotFound,"Other customer guide denied");
-  Sql("UPDATE Customer_Guide_Grants SET IsActive=0 WHERE AccountID=1 AND Brand_ID=2");
-  var options=await Data(await Send(root+"guide/access-request-options?brandID=2",first));Check(options.Any(x=>(int)x["ID"]==3 && (bool)x["Can_Request"]),"Unavailable guide categories requestable");
-  var access=JObject.FromObject(new{OperationID=Guid.NewGuid(),BrandID=2,CategoryIDs=new[]{3},Reason="API access request"});
-  Guid batch=(Guid)(await Data(await Send(root+"guide/access-requests",first,access,true)))["BatchID"];
-  Check((bool)(await Data(await Send(root+"guide/access-requests",first,access,true)))["Replayed"],"Guide request retry deduplicated");
-  access["Reason"]="different";Check((await Send(root+"guide/access-requests",first,access,true)).StatusCode==HttpStatusCode.Conflict,"Guide operation binds payload");
-  Check((int)(await Data(await Send(root+"guide/access-requests",first)))["Total"]==1,"Owned pending guide history");
-  Sql("DECLARE @ID int=(SELECT ID FROM Work_Guide_Access_Requests WHERE Batch_ID=@Batch);DECLARE @D xml=CONVERT(xml,CONCAT('<items><item id=\"',@ID,'\" status=\"A\" role=\"1\" note=\"approved\"/></items>'));EXEC Review_Work_Guide_Access_Request 1,@Batch,@D;",new SqlParameter("@Batch",batch));
-  Check((int)(await Data(await Send(root+"guide/documents?brandID=2",first)))["Total"]==1,"Existing admin review grants API access");
-  Check((await Send(root+"guide/documents/2/file?download=true",first)).StatusCode==HttpStatusCode.Forbidden,"Document download restriction retained");
+  foreach(var route in new[]{"guide/brands","guide/categories?brandID=1","guide/access-request-options?brandID=1","guide/documents?brandID=1","guide/documents/1","guide/documents/1/file","guide/access-requests"}) Check((await Send(root+route,first)).StatusCode==HttpStatusCode.NotFound,"Retired route unavailable: "+route);
+  Check((await Send(root+"guide/access-requests",first,new{},true)).StatusCode==HttpStatusCode.NotFound,"Retired guide submission unavailable");
   var feedback=JObject.FromObject(new{OperationID=Guid.NewGuid(),TypeID=2,TopicID=2,BrandID=1,BranchID=1,Mobile="0790000000",Title="API suggestion",Details="Original suggestion details"});
   Check((await Data(await Send(root+"feedback/options?brandID=1&typeID=2",first)))["Topics"].Count()==1,"Feedback options use existing catalogs");
   int id=(int)(await Data(await Upload(first,feedback,pdf)))["RequestID"];
@@ -77,5 +61,5 @@ class CustomerApiTests
   Console.WriteLine(checks+" API integration checks passed.");
  }
  sealed class Assemblies:System.Web.Http.Dispatcher.DefaultAssembliesResolver {public override System.Collections.Generic.ICollection<System.Reflection.Assembly> GetAssemblies(){return new[]{typeof(WebApiConfig).Assembly};}}
- static int Main(){try{Run().GetAwaiter().GetResult();return 0;}catch(Exception ex){Console.Error.WriteLine(ex);return 1;}}
+ static int Main(){try{Run().GetAwaiter().GetResult();ApiPerformanceProbe.Save("customer");return 0;}catch(Exception ex){Console.Error.WriteLine(ex);return 1;}}
 }

@@ -214,5 +214,7 @@
         table.dataset.enhanced = '1';
     }
 
+    // Conditional Web Forms regions can replace the table after initial page load.
+    window.ERPTableFeatures = { refresh: initTableFeatures };
     document.addEventListener('DOMContentLoaded', initTableFeatures);
 })();

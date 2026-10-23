@@ -8,7 +8,7 @@ Public Class AddEmployeeFeedbackTopics
     Private Const Editing As Boolean=False
     Protected Sub Page_Load(sender As Object,e As EventArgs) Handles Me.Load
         RequireAdmin()
-        If Editing AndAlso RequestID=0 Then Response.Redirect("ManageEmployeeFeedbackTopics.aspx")
+        If Editing AndAlso RequestID=0 Then SystemAdministrationUI.Redirect(Me, "ManageEmployeeFeedbackTopics.aspx")
         If Not IsPostBack Then
             Try
                 EmployeeFeedbackCatalog.FillTypes(ddlType,ActorID,0,"اختر النوع")
@@ -32,6 +32,6 @@ Public Class AddEmployeeFeedbackTopics
                 db.Save_Employee_Feedback_Topic(ActorID,If(Editing,RequestID,0),Number(ddlType),Number(ddlBrand),txtAr.Text.Trim(),txtEn.Text.Trim(),order,chkActive.Checked).ToList()
             End Using
         Catch ex As Exception : ShowError(ex) : Return : End Try
-        Response.Redirect("ManageEmployeeFeedbackTopics.aspx")
+        SystemAdministrationUI.Redirect(Me, "ManageEmployeeFeedbackTopics.aspx")
     End Sub
 End Class

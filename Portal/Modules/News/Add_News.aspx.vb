@@ -63,10 +63,13 @@ Public Class Add_News
                 If(String.IsNullOrWhiteSpace(NewsImagePath), Nothing, NewsImagePath),
                 If(dateVal.HasValue, dateVal.Value, CType(Nothing, DateTime?)),
                 orderVal,
-                True
+                True, txtDetailsEn.Text
             )
         End Using
 
+        Catch ex As ArgumentException
+            lblError.Text = Server.HtmlEncode(ex.Message)
+            lblError.Visible = True : Return
         Catch ex As System.Data.SqlClient.SqlException
             lblError.Text = "تعذّر حفظ الخبر. تحقق من العلامة التجارية وصلاحية الحساب ثم حاول مجددًا."
             lblError.Visible = True : Return

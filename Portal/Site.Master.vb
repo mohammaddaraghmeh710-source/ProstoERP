@@ -2,41 +2,15 @@
     Inherits System.Web.UI.MasterPage
     Private ReadOnly db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext()
 
-    Protected Overrides Sub OnPreRender(e As EventArgs)
-        litInformationPageLinks.Text = ""
-        If SessionManager.GetInstance.Users IsNot Nothing Then
-            Try
-                Dim pages = InformationPagesData.Query("dbo.Select_Information_Pages", InformationPagesData.P("@Actor", System.Data.SqlDbType.Int, SessionManager.GetInstance.Users.UserID))
-                Dim links As New System.Text.StringBuilder()
-                Dim english = Request.QueryString("lang") = "en"
-                For Each row As System.Data.DataRow In pages.Rows
-                    Dim url = ResolveUrl("~/Modules/Information_Pages/View.aspx?ID=" & CInt(row("ID")).ToString() & If(english, "&lang=en", "&lang=ar"))
-                    links.Append("<li class=""menu-item"" data-information-page=""1""><a class=""menu-link"" href=""").Append(Server.HtmlEncode(url)).Append("""><div>")
-                    links.Append(Server.HtmlEncode(CStr(row(If(english, "Title_En", "Title_Ar"))))).Append("</div></a></li>")
-                Next
-                If pages.Rows.Count = 0 Then links.Append("<li class=""menu-item"" data-information-page=""1""><span class=""menu-link text-muted"">لا توجد صفحات متاحة حاليًا</span></li>")
-                litInformationPageLinks.Text = links.ToString()
-            Catch ex As Exception
-                System.Diagnostics.Trace.TraceError("Information pages menu: {0}", ex)
-            End Try
-        End If
-        Dim manager = ScriptManager.GetCurrent(Page)
-        If manager IsNot Nothing AndAlso manager.IsInAsyncPostBack Then
-            Dim html = Newtonsoft.Json.JsonConvert.SerializeObject(litInformationPageLinks.Text, New Newtonsoft.Json.JsonSerializerSettings With {.StringEscapeHandling = Newtonsoft.Json.StringEscapeHandling.EscapeHtml})
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "information-menu", "(function(){var menu=document.getElementById('informationPagesMenu');if(!menu)return;Array.prototype.forEach.call(menu.querySelectorAll('[data-information-page]'),function(item){item.remove();});menu.insertAdjacentHTML('afterbegin'," & html & ");})();", True)
-        End If
-        MyBase.OnPreRender(e)
-    End Sub
-
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         tmCorrespondenceCount.Enabled = True
+        liNotification.Visible = True
         If Not IsPostBack Then
             If Not SessionManager.GetInstance.Users Is Nothing Then
                 FillUserData()
                 If tmCorrespondenceCount.Enabled Then BindCorrespondenceCount()
                 If SessionManager.GetInstance.Users.UserType <> 1 Then
                     divmenu.Visible = True
-                    liNotification.Visible = False
                     liQuicklinks.Visible = False
                 End If
             Else

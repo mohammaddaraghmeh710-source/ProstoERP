@@ -44,7 +44,8 @@ Public Class Edit_News
             txtTitleEn.Text = If(row.Title_En, "")
             txtBriefAr.Text = If(row.Brief_Ar, "")
             txtBriefEn.Text = If(row.Brief_En, "")
-            txtDetails.Text = If(row.Details, "")
+            txtDetails.Text = NewsData.CleanDetails(If(row.Details, ""))
+            txtDetailsEn.Text = NewsData.CleanDetails(NewsData.EnglishDetails(pid))
             txtOrder.Text = If(row.Item_Order Is Nothing, "", row.Item_Order.ToString())
             chkIsActive.Checked = row.IsActive
 
@@ -113,10 +114,13 @@ Public Class Edit_News
                 If(String.IsNullOrWhiteSpace(NewsImagePath), Nothing, NewsImagePath),
                 If(dateVal.HasValue, dateVal.Value, CType(Nothing, DateTime?)),
                 orderVal,
-                chkIsActive.Checked
+                chkIsActive.Checked, txtDetailsEn.Text
             )
         End Using
 
+        Catch ex As ArgumentException
+            lblError.Text = Server.HtmlEncode(ex.Message)
+            lblError.Visible = True : Return
         Catch ex As System.Data.SqlClient.SqlException
             lblError.Text = "تعذّر حفظ الخبر. تحقق من العلامة التجارية وصلاحية الحساب ثم حاول مجددًا."
             lblError.Visible = True : Return

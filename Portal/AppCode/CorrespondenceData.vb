@@ -13,10 +13,10 @@ End Enum
 
 Public NotInheritable Class CorrespondenceData
     Public Shared Function P(name As String, type As System.Data.SqlDbType, value As Object, Optional size As Integer = 0) As SqlParameter
-        Return WorkGuideAccess.Parameter(name, type, value, size)
+        Return PortalSqlData.Parameter(name, type, value, size)
     End Function
     Public Shared Function Query(procedure As String, ParamArray parameters As SqlParameter()) As System.Data.DataTable
-        Return WorkGuideAccess.Query(procedure, parameters)
+        Return PortalSqlData.Query(procedure, parameters)
     End Function
     Public Shared Function ThreadQuery(procedure As String, actor As Integer, thread As Integer) As System.Data.DataTable
         Return Query(procedure, P("@Actor", System.Data.SqlDbType.Int, actor), P("@ThreadID", System.Data.SqlDbType.Int, thread))

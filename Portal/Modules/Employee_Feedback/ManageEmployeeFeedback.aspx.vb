@@ -5,6 +5,7 @@ Public Class ManageEmployeeFeedback
     Inherits EmployeeFeedbackPage
     Private todoIDs As New HashSet(Of Integer)
     Private mineIDs As New HashSet(Of Integer)
+    Private receivedIDs As New HashSet(Of Integer)
     Protected Sub Page_Load(sender As Object,e As EventArgs) Handles Me.Load
         Dim permission=EmployeeFeedbackConfig.Mine(ActorID)
         lnkNew.Visible=permission IsNot Nothing AndAlso permission.CanSubmit
@@ -22,8 +23,9 @@ Public Class ManageEmployeeFeedback
     Private Sub FillData()
         Dim all As New List(Of FeedbackRequestRow)
         Using db As New Prosto_ERP_DataClassesDataContext()
-            For Each mode In New Integer(){0,1,3}
+            For Each mode In If(ActorType=1,New Integer(){2,0,1,3},New Integer(){0,1,3})
                 Dim part=db.ExecuteQuery(Of FeedbackRequestRow)("EXEC dbo.Select_Employee_Feedback_Requests @Actor={0},@Mode={1},@Search=N'',@Type=0,@Status=0",ActorID,mode).ToList()
+                If mode=0 Then receivedIDs=New HashSet(Of Integer)(part.Select(Function(r) r.ID))
                 If mode=1 Then mineIDs=New HashSet(Of Integer)(part.Select(Function(r) r.ID))
                 If mode=3 Then todoIDs=New HashSet(Of Integer)(part.Select(Function(r) r.ID))
                 all.AddRange(part)
@@ -55,8 +57,11 @@ Public Class ManageEmployeeFeedback
     Protected Function IsSent(id As Object) As Boolean
         Return mineIDs.Contains(Convert.ToInt32(id))
     End Function
+    Protected Function RowScope(id As Object) As String
+        Return If(IsSent(id),"طلب مرسل",If(receivedIDs.Contains(Convert.ToInt32(id)),"طلب وارد","متابعة إدارية"))
+    End Function
     Protected Function DetailLink(id As Object) As String
-        Return "ViewEmployeeFeedback.aspx?ID=" & Convert.ToInt32(id).ToString()
+        Return "ViewEmployeeFeedback.aspx?ID=" & Convert.ToInt32(id).ToString() & If(ActorType=1 AndAlso Not NeedsAction(id),"&report=1","")
     End Function
     Protected Sub Search_Click(sender As Object,e As EventArgs)
         Try : FillData() : Catch ex As Exception : ShowError(ex) : End Try

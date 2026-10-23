@@ -69,7 +69,7 @@ Public Class ManageUsers
         Next
         litDeviceHistory.Text = If(history.Length = 0, "<p class='text-muted'>لا توجد قرارات مسجلة بعد.</p>", history.ToString())
         pnlDevices.Visible = True
-        ClientScript.RegisterStartupScript(Me.GetType(), "deviceModal", "window.addEventListener('load',function(){bootstrap.Modal.getOrCreateInstance(document.getElementById('deviceModal')).show();});", True)
+        ScriptManager.RegisterStartupScript(Me, Me.GetType(), "deviceModal", "if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){bootstrap.Modal.getOrCreateInstance(document.getElementById('deviceModal')).show();},{once:true});}else{bootstrap.Modal.getOrCreateInstance(document.getElementById('deviceModal')).show();}", True)
     End Sub
 
     Protected Sub DeviceFilterChanged(sender As Object, e As EventArgs)
@@ -114,6 +114,7 @@ Public Class ManageUsers
     End Sub
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        SystemAdministrationUI.RegisterRefresh(Me, AddressOf FillData)
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -205,6 +206,7 @@ Public Class ManageUsers
                                        "../../assets/img/Prosto/avatar.png")))
                           Select New With {
                               .ID = u.ID,
+                 .IsActive = u.IsActive,
                               .PendingDevices = If(pending.ContainsKey(u.ID), pending(u.ID), 0),
                               .FullName_Ar = u.FullName_Ar,
                               .Fullname_En = u.Fullname_En,

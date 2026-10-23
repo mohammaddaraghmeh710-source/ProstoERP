@@ -17,6 +17,10 @@ Public Class ManageAttendanceIntegration
             ddlBrand.Items.Insert(0, New ListItem("اختر العلامة التجارية", "0"))
             ResetConnections()
             chkEnabled.Checked = True
+            Dim brand As Integer
+            If Integer.TryParse(Request.QueryString("brand"),brand) AndAlso ddlBrand.Items.FindByValue(brand.ToString()) IsNot Nothing Then
+                ddlBrand.SelectedValue=brand.ToString() : BrandChanged(Me,EventArgs.Empty)
+            End If
         End If
     End Sub
     Protected Sub BrandChanged(sender As Object, e As EventArgs)
@@ -113,6 +117,7 @@ Public Class ManageAttendanceIntegration
             AttendanceData.Store().Save(SessionManager.GetInstance.Users.UserID, CInt(ddlBrand.SelectedValue), txtApiUser.Text.Trim(), txtApiPassword.Text, txtBioUser.Text.Trim(), txtBioPassword.Text, chkEnabled.Checked, version, txtApiUrl.Text, txtBioUrl.Text, txtHrUrl.Text.Trim(), txtHrUser.Text.Trim(), txtHrPassword.Text)
             LoadSettings()
             ShowMessage(litMessage, "تم حفظ إعدادات API.", True)
+            SystemAdministrationUI.Complete(Me)
         Catch ex As SqlException
             System.Diagnostics.Trace.TraceWarning("Attendance settings SQL failed ({0}).", ex.Number)
             ShowMessage(litMessage, If(ex.Number = 2601 OrElse ex.Number = 2627, "اسم المستخدم للـAPI مستخدم في علامة تجارية أخرى.", If(ex.Number = 51702, "تغيرت الإعدادات بواسطة مستخدم آخر. أعد اختيار العلامة التجارية قبل الحفظ.", "تعذّر حفظ الإعدادات. تحقق من تجهيز قاعدة البيانات والصلاحيات.")))
@@ -150,6 +155,7 @@ Public Class ManageAttendanceIntegration
                 New SqlParameter("@SenderEmail", address.Address), New SqlParameter("@AppPassword", SqlDbType.VarBinary, -1) With {.Value = If(password.Length = 0, CType(DBNull.Value, Object), Prosto_ERP_ClassLibrary.AttendanceIntegration.Protect(password))},
                 New SqlParameter("@Enabled", chkEmailEnabled.Checked), New SqlParameter("@Version", SqlDbType.Binary, 8) With {.Value = If(version Is Nothing, CType(DBNull.Value, Object), version)})
             LoadEmailSettings() : ShowMessage(litEmailMessage, "تم حفظ إعدادات Gmail لهذه العلامة التجارية.", True)
+            SystemAdministrationUI.Complete(Me)
         Catch ex As FormatException
             ShowMessage(litEmailMessage, "أدخل عنوان بريد إلكتروني واحدًا صالحًا دون اسم عرض.")
         Catch ex As SqlException

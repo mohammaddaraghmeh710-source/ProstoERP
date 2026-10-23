@@ -51,6 +51,8 @@ Public Class MyProfile
         End If
 
         LoadParameters()
+        lnkHRProfile.Visible = EmployeeID > 0 AndAlso (SessionManager.GetInstance.Users.UserType = 1 OrElse EmployeeID = SessionManager.GetInstance.Users.UserID)
+        If lnkHRProfile.Visible Then lnkHRProfile.NavigateUrl = "~/Modules/Employees/HRProfile.aspx?EmployeeID=" & EmployeeID.ToString(CultureInfo.InvariantCulture)
         pnlAttendance.Visible = EmployeeID > 0 AndAlso (SessionManager.GetInstance.Users.UserType = 1 OrElse EmployeeID = SessionManager.GetInstance.Users.UserID)
         If pnlAttendance.Visible Then
             lnkAttendance.NavigateUrl = "/Modules/Employees/AttendanceHistory.aspx?EmployeeID=" & EmployeeID.ToString(CultureInfo.InvariantCulture)

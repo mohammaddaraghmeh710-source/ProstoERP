@@ -48,6 +48,7 @@ Public Class ManageEmployeeFeedbackPermissions
             Next
             EmployeeFeedbackConfig.Save(ActorID,Number(ddlRole),chkSubmit.Checked,chkTransfer.Checked,chkClose.Checked,targets,TryCast(ViewState("PermissionVersion"),Byte()))
             FillRole()
+            SystemAdministrationUI.Complete(Me)
             litMessage.Text="<div class=""alert alert-success"">تم حفظ الصلاحيات وتطبيقها على الطلبات.</div>"
         Catch ex As Exception : ShowError(ex) : End Try
     End Sub

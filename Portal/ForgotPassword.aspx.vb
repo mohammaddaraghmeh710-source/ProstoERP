@@ -8,6 +8,14 @@ Imports Newtonsoft.Json.Linq
 
 Public Class ForgotPassword
     Inherits System.Web.UI.Page
+    ' Reuse connections to the configured API; credentials remain on each request.
+    Private Shared ReadOnly SharedApiClient As New Lazy(Of HttpClient)(Function()
+        Dim origin = New Uri(ConfigurationManager.AppSettings("PasswordReset.ApiBaseUrl"))
+        Dim handler As New HttpClientHandler With {.AllowAutoRedirect = False, .UseCookies = False, .UseProxy = Not origin.IsLoopback}
+        Dim client As New HttpClient(handler) With {.Timeout = TimeSpan.FromSeconds(40)}
+        client.DefaultRequestHeaders.ExpectContinue = False
+        Return client
+    End Function)
     Protected Overrides Sub OnInit(e As EventArgs)
         ViewStateUserKey = Session.SessionID & ":password-reset"
         Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache)
@@ -97,15 +105,13 @@ Public Class ForgotPassword
     Private Async Function CallAPI(route As String, data As Object) As Task(Of JObject)
         Dim origin = New Uri(ConfigurationManager.AppSettings("PasswordReset.ApiBaseUrl"))
         If origin.Scheme <> "https" AndAlso Not (origin.Scheme = "http" AndAlso origin.IsLoopback) Then Throw New ConfigurationErrorsException("Reset API must use HTTPS.")
-        Using handler As New HttpClientHandler With {.AllowAutoRedirect = False, .UseCookies = False}, client As New HttpClient(handler)
-            client.Timeout = TimeSpan.FromSeconds(40)
+        Using request As New HttpRequestMessage(HttpMethod.Post, New Uri(origin, "api/Users/" & route))
             Dim pair = ConfigurationManager.AppSettings("PasswordReset.BasicUsername") & ":" & ConfigurationManager.AppSettings("PasswordReset.BasicPassword")
-            client.DefaultRequestHeaders.Authorization = New AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(pair)))
-            Using body As New StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json")
-                Using response = Await client.PostAsync(New Uri(origin, "api/Users/" & route), body)
+            request.Headers.Authorization = New AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(pair)))
+            request.Content = New StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json")
+                Using response = Await SharedApiClient.Value.SendAsync(request)
                     Return JObject.Parse(Await response.Content.ReadAsStringAsync())
                 End Using
-            End Using
         End Using
     End Function
 End Class

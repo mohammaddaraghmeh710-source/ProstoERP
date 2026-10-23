@@ -1,0 +1,25 @@
+.customer-circulars { scroll-margin-top: 6rem; }
+.customer-circulars .type-table-toolbar { padding: .75rem 0; }
+.customer-circulars .dataTables_length { margin: 0; }
+.customer-circulars .dataTables_length select { min-width: 4.5rem; }
+.erp-ui .crm-types #customerCircularTable :is(th,td,small,.badge) { font-size: .8125rem; line-height: 1.5; }
+.erp-ui .crm-types #customerCircularTable thead th { padding: .5rem .75rem; color: #566a7f; font-weight: 600; }
+.erp-ui .crm-types #customerCircularTable tbody td { padding: .75rem; vertical-align: middle; overflow-wrap: anywhere; }
+.customer-circulars .type-record-name { min-width: 110px; }
+.customer-circulars .badge { white-space: nowrap; }
+.customer-circulars .type-row-action { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; background: transparent; box-shadow: none; }
+.customer-circulars .type-row-action:hover { background: #e5edfc; }
+#customerCircularTable tr[hidden] { display: none !important; }
+@media(max-width:767.98px) {
+  .customer-circulars .card-datatable { padding: 0 .875rem; }
+  #customerCircularTable, #customerCircularTable tbody { display: block; width: 100%; }
+  #customerCircularTable thead { display: none; }
+  #customerCircularTable tr[data-circular-row] { display: block; margin: .875rem 0; border: 1px solid var(--erp-border,#d4d8dd); border-radius: .375rem; overflow: hidden; }
+  .erp-ui .crm-types #customerCircularTable tr[data-circular-row] td { display: flex; align-items: center; justify-content: space-between; gap: .75rem; width: 100%; text-align: end; padding: .625rem .75rem; }
+  #customerCircularTable td[data-title]::before { content: attr(data-title); position: static; float: none; flex: 0 0 30%; width: auto; font-weight: 600; text-align: start; }
+  #customerCircularTable td > .type-record-name { flex: 1; min-width: 0; text-align: start; }
+  #customerCircularTable .type-row-action { width: 38px; height: 40px; }
+  #customerCircularTable .dataTables_empty { display: block; text-align: center; }
+  #customerCircularTable .dataTables_empty::before { content: none; }
+  .customer-circulars .type-table-pagination { padding-inline: 0; }
+}

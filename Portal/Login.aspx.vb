@@ -78,7 +78,7 @@ Public Class Login
                     ShowError("اسم المستخدم أو كلمة المرور غير صحيحة، أو الحساب غير متاح.") : Return
                 End If
                 Session.Clear() : SessionManager.GetInstance.Users=Nothing : CustomerPortalData.Current=identity
-                Response.Redirect("~/CustomerPortal/Guide.aspx",False) : Context.ApplicationInstance.CompleteRequest() : Return
+                Response.Redirect("~/CustomerPortal/Dashboard.aspx",False) : Context.ApplicationInstance.CompleteRequest() : Return
             End If
             Using db As New Prosto_ERP_ClassLibrary.Prosto_ERP_DataClassesDataContext
                 Dim encryptor As New Echo.Encrptor.TripleDesEncryptor()

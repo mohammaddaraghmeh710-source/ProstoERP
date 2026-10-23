@@ -1,49 +1,4 @@
 ﻿
-CREATE OR ALTER FUNCTION dbo.Customer_Guide_Effective(@AccountID int, @Brand_ID int)
-RETURNS TABLE
-AS RETURN (
-    WITH Tree AS (
-        SELECT c.ID, c.Brand_ID, c.Parent_ID, c.Title_Ar, c.Title_En, c.Item_Order, 0 AS Level_No,
-               CAST(COALESCE(c.Title_Ar,c.Title_En,N'') AS nvarchar(max)) AS Full_Path_Ar,
-               CAST('/' + CONVERT(varchar(12),c.ID) + '/' AS varchar(max)) AS ID_Path,
-               CAST(RIGHT('0000000000'+CONVERT(varchar(10),ISNULL(c.Item_Order,999999)),10)+'-'+RIGHT('0000000000'+CONVERT(varchar(10),c.ID),10) AS varchar(max)) AS Sort_Path
-        FROM dbo.Work_Guide_Categories c
-        WHERE c.Brand_ID=@Brand_ID AND c.Parent_ID IS NULL AND ISNULL(c.IsDeleted,0)=0 AND ISNULL(c.IsActive,1)=1
-        UNION ALL
-        SELECT c.ID,c.Brand_ID,c.Parent_ID,c.Title_Ar,c.Title_En,c.Item_Order,t.Level_No+1,
-               CAST(t.Full_Path_Ar+N' / '+COALESCE(c.Title_Ar,c.Title_En,N'') AS nvarchar(max)),
-               CAST(t.ID_Path+CONVERT(varchar(12),c.ID)+'/' AS varchar(max)),
-               CAST(t.Sort_Path+'.'+RIGHT('0000000000'+CONVERT(varchar(10),ISNULL(c.Item_Order,999999)),10)+'-'+RIGHT('0000000000'+CONVERT(varchar(10),c.ID),10) AS varchar(max))
-        FROM dbo.Work_Guide_Categories c JOIN Tree t ON c.Parent_ID=t.ID
-        WHERE c.Brand_ID=@Brand_ID AND ISNULL(c.IsDeleted,0)=0 AND ISNULL(c.IsActive,1)=1
-          AND CHARINDEX('/'+CONVERT(varchar(12),c.ID)+'/',t.ID_Path)=0 AND t.Level_No<99
-    )
-    SELECT t.ID,t.Brand_ID,t.Parent_ID,t.Title_Ar,t.Title_En,t.Item_Order,t.Level_No,t.Sort_Path,t.Full_Path_Ar,
-           permission.Role_ID,permission.Role_Title_Ar,permission.Role_Title_En,permission.Role_Code,
-           CAST(ISNULL(permission.Can_View_Category,0) AS bit) AS Can_View_Category,
-           CAST(ISNULL(permission.Can_View_Document,0) AS bit) AS Can_View_Document,
-           CAST(ISNULL(permission.Can_Print_Document,0) AS bit) AS Can_Print_Document,
-           CAST(ISNULL(permission.Can_Download_Document,0) AS bit) AS Can_Download_Document
-    FROM Tree t
-    JOIN dbo.Customer_Logins u ON u.AccountID=@AccountID AND u.IsActive=1
-    JOIN dbo.CRM_Accounts a ON a.ID=u.AccountID AND a.Is_Active=1 AND a.Is_Deleted=0
-    JOIN dbo.Brands b ON b.ID=@Brand_ID AND b.IsActive=1 AND ISNULL(b.IsDeleted,0)=0
-    OUTER APPLY (
-        SELECT TOP (1) r.ID AS Role_ID,r.Title_Ar AS Role_Title_Ar,r.Title_En AS Role_Title_En,r.Code AS Role_Code,
-               p.Can_View_Category,p.Can_View_Document,p.Can_Print_Document,p.Can_Download_Document
-        FROM dbo.Customer_Guide_Grants g
-        JOIN Tree ancestor ON ancestor.ID=g.Category_ID
-        JOIN dbo.Work_Guide_Roles r ON r.ID=g.Role_ID AND ISNULL(r.IsDeleted,0)=0 AND ISNULL(r.IsActive,1)=1
-        JOIN dbo.Work_Guide_Role_Permissions p ON p.Role_ID=r.ID
-        WHERE g.AccountID=@AccountID AND g.Brand_ID=@Brand_ID AND ISNULL(g.IsActive,1)=1
-          AND (g.Start_Date IS NULL OR g.Start_Date<=GETDATE()) AND (g.End_Date IS NULL OR g.End_Date>=GETDATE())
-          AND (g.Category_ID=t.ID OR (ISNULL(g.Apply_To_Children,0)=1 AND t.ID_Path LIKE ancestor.ID_Path+'%'))
-        ORDER BY ancestor.Level_No DESC,g.ID DESC,p.ID DESC
-    ) permission
-);
-
-GO
-
 CREATE OR ALTER PROCEDURE dbo.Insert_Customer_Feedback_Request
  @Type int,@Topic int,@Brand int,@Branch int,@Name nvarchar(200),@Mobile nvarchar(30),@Email nvarchar(254)=NULL,
  @Title nvarchar(300),@Details nvarchar(max),@Disclose bit,@Files xml,@CreatedID int=NULL OUTPUT,@ReturnResult bit=1

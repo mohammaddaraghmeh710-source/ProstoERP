@@ -11,10 +11,10 @@ Public Class EditDepartments
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
-            Response.Redirect("/login.aspx")
+            SystemAdministrationUI.Redirect(Me, "/login.aspx")
         End If
         If SessionManager.GetInstance.Users.UserType <> 1 Then
-            Response.Redirect("/Default.aspx")
+            SystemAdministrationUI.Redirect(Me, "/Default.aspx")
         End If
 
         If Not Page.IsPostBack Then
@@ -153,21 +153,21 @@ Public Class EditDepartments
             )
         End Using
 
-        LBLPOP_ModalPopupExtender.Show()
+        If Not SystemAdministrationUI.Complete(Me) Then LBLPOP_ModalPopupExtender.Show()
     End Sub
 
     Protected Sub btnClosePopup_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/Departments/ManageDepartments.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/Departments/ManageDepartments.aspx")
     End Sub
 
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/Departments/ManageDepartments.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/Departments/ManageDepartments.aspx", True)
     End Sub
 
     ' فيديو طريقة العمل
     Protected Sub WorkingMethodVideo_UploadComplete(sender As Object, e As AjaxFileUploadEventArgs)
         Try
-            SaveWorkingMethodVideoOnSession(e.FileName, e.ContentType, e.GetContents())
+            SaveWorkingMethodVideoOnSession(e.FileName, SystemAdministrationUI.UploadExtension(e.FileName,False), e.GetContents())
         Catch
         End Try
     End Sub
@@ -178,7 +178,7 @@ Public Class EditDepartments
     ' فيديو طريقة التقييم
     Protected Sub EvaluationMethodVideo_UploadComplete(sender As Object, e As AjaxFileUploadEventArgs)
         Try
-            SaveEvaluationMethodVideoOnSession(e.FileName, e.ContentType, e.GetContents())
+            SaveEvaluationMethodVideoOnSession(e.FileName, SystemAdministrationUI.UploadExtension(e.FileName,False), e.GetContents())
         Catch
         End Try
     End Sub

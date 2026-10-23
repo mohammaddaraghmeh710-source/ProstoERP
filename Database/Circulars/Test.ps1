@@ -1,4 +1,4 @@
-param([string]$BuildDirectory='C:/Projects/ERPProsto/tmp/circulars-api-build',[switch]$KeepForUI)
+﻿param([string]$BuildDirectory='C:/Projects/ERPProsto/tmp/circulars-api-build',[switch]$KeepForUI)
 $ErrorActionPreference='Stop'
 $api=Join-Path $PSScriptRoot '../../Prosto_ERP_API'
 $cfg=[xml](Get-Content (Join-Path $api 'Web.config'))
@@ -32,7 +32,7 @@ try{
  if($cfg.configuration.runtime){[void]$xml.configuration.AppendChild($xml.ImportNode($cfg.configuration.runtime,$true))}
  $xml.Save("$exe.config")
  $refs=@('Prosto_ERP_API.dll','System.Web.Http.dll','System.Net.Http.Formatting.dll','Newtonsoft.Json.dll','Encryptor.dll')|ForEach-Object{'/reference:'+(Join-Path $BuildDirectory $_)}
- & (Join-Path $api 'bin/roslyn/csc.exe') /nologo /target:exe "/out:$exe" /reference:System.Net.Http.dll /reference:System.Web.dll /reference:System.Configuration.dll /reference:System.Data.dll @refs (Join-Path $PSScriptRoot 'Circulars.IntegrationTests.cs')
+ & (Join-Path $api 'bin/roslyn/csc.exe') /nologo /target:exe "/out:$exe" /reference:System.Net.Http.dll /reference:System.Web.dll /reference:System.Configuration.dll /reference:System.Data.dll @refs (Join-Path $PSScriptRoot 'Circulars.IntegrationTests.cs') (Join-Path $PSScriptRoot '../Mobile_API/ApiPerformanceProbe.cs')
  if($LASTEXITCODE -ne 0){throw 'Test compilation failed'}
  & $exe
  if($LASTEXITCODE -ne 0){throw 'Circular tests failed'}

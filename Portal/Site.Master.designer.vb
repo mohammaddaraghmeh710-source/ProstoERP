@@ -12,7 +12,6 @@ Option Explicit On
 
 
 Partial Public Class Site
-    Protected WithEvents litInformationPageLinks As Global.System.Web.UI.WebControls.Literal
 
     '''<summary>
     '''Head1 control.

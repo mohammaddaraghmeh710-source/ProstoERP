@@ -1,70 +1,31 @@
-# التعاميم — المرجع الوظيفي والتقني
+﻿# Circulars
 
-تاريخ التنفيذ: 2026-09-24.
+Administration: `Portal/Modules/Circulars/Manage.aspx` (active system administrator only). The CRM-style cards, filters, instant search, responsive table, icon actions and offcanvas editor match information-page administration. Add/edit/state changes use same-page AJAX with session CSRF and optimistic versions. Legacy administrative editor links redirect to the new editor; employee `Index.aspx`/`File.aspx` and existing mobile API routes remain compatible. Customer readers use the Dashboard table, shared modal and protected `CustomerPortal/CircularFile.aspx`, with a separate customer identity/stamp/CSRF boundary; legacy Circulars.aspx redirects remain valid.
 
-تحديث العرض: شاشة `Index.aspx` اسمها «تعاميم»، وتعرض بطاقات الملفات وفق بنية `pages-profile-projects.html` ونوافذ Bootstrap في مرجع [دليل مراجع الواجهة](../../../docs/UI-GUIDELINES.md). البيانات والمعاينة والتنزيل والإنشاء والتعديل والسجلات متاحة من الشاشة نفسها. `View.aspx` مسار تحويل للتوافق فقط. جميع Controllers للهاتف في `Prosto_ERP_API/Controllers`، وعقد التعاميم في [Circulars-API.md](Circulars-API.md)، وبقية عقود الهاتف في [Mobile API](../Mobile_API/README.md).
+One active brand is required. Employee audiences are all employees in that brand, selected user types, or branch/department/shift criteria (AND between criteria, OR between selected values). Customer audiences select multiple names or multiple customer types; visibility always intersects with current active account/login and brand. Branch/customer options cascade locally without PostBack. Arabic/English titles and summaries are required. Period yes/no controls mandatory start/end in Jordan time, stored UTC; no-period internal boundary dates are hidden from readers. Enabled/download checkboxes are the last fields before Save. New edits and state changes increment the version and preserve prior readership/audit.
 
-## الوظائف
+PDF remains a single maximum-10-MiB protected database file. Portal upload validates extension, signature and EOF; viewing uses local PDF.js 3.11.174 canvas with its matching bundled standard fonts, without native print/download controls. Download is independently enforced on the server. Metadata visits do not mark a circular read; PDF view/download does. Administrative preview is separate. Customer read/download logs store genuine account identity and snapshot name; no employee substitution. EventIDs prevent replay duplication, while receipts and existing employee/mobile logs survive updates. The unified administration report also includes email delivery states and mobile device/app/event timestamps.
 
-- عنوان (250 حرفًا)، ملخص (2000 حرف)، تاريخ التعميم، ملف PDF واحد حتى10MB، السماح بالتنزيل، تفعيل التعميم، تاريخ ووقت بداية ونهاية إلزاميان.
-- تُدخل أوقات الصلاحية بتوقيت الأردن وتُحفظ UTC. بداية الصلاحية مشمولة والنهاية غير مشمولة.
-- شاشة الموظف تعرض الفعّال فقط، وفق الاستهداف وحالة الحساب الحالية، مع بحث وترقيم صفحات وحالة مقروء/غير مقروء. غير المقروء أولًا، ثم الأحدث.
-- فتح القائمة أو تفاصيل البيانات لا يجعل التعميم مقروءًا. طلب الملف للمشاهدة أو التنزيل يسجّل العملية ويجعل الإصدار الحالي مقروءًا.
-- التحقق من التفعيل والموعد والاستهداف والسماح بالتنزيل يتم على الخادم عند طلب الملف، حتى لو كانت القائمة مفتوحة قبل انتهاء الصلاحية أو تعديل الصلاحيات.
-- كل حفظ للتعميم ينشئ إصدارًا جديدًا يظهر غير مقروء. تبقى سجلات الإصدارات وقراءاتها السابقة؛ الملف المخزن هو ملف الإصدار الحالي، ولا توجد أرشفة لنسخ PDF السابقة.
-- المعاينة الإدارية متاحة للتعاميم المجدولة والمنتهية وغير الفعالة وتُسجّل preview؛ لا تُحتسب قراءة موظف. الموظف من نوع مدير نظام في شاشة «التعاميم الموجهة إليّ» يخضع للاستهداف الطبيعي.
+## Notifications and email
 
-## المستهدفون
+Both bells use the shared `CircularNotifications.ascx`/JavaScript endpoint for currently eligible unread versions, with no PostBack. Opening the PDF clears that version. Every edited version notifies again. Scheduled circulars are silent until available; disabled, expired or revoked circulars disappear. SQL `Circular_Dispatch` creates durable per-version/recipient notices/mail. API `CircularNotificationWorker` runs every 30 seconds while hosted, atomically claims work, revalidates eligibility/current email, and uses F24 `BrandEmailSender` and per-brand Gmail settings. Messages contain encoded Arabic/English content and an authenticated portal link, never PDF attachments or public file paths.
 
-ثلاثة أوضاع:
+Configure `CircularNotifications.Enabled`, the public application root `CircularNotifications.PortalBaseUrl`, each brand sender/App Password and registered recipient email. Run the API continuously with IIS AlwaysRunning/preload (and suitable idle settings) for scheduled mail. The queue survives restarts; it cancels items no longer available. Status `submitted` means SMTP acceptance, not inbox delivery. Missing email/settings, failures and uncertain/interrupted SMTP outcomes remain visible in the circular report. Uncertain submissions are not automatically retried, preventing silent duplicate sends. Operational reconciliation is required before deliberately reissuing an uncertain notification.
 
-1. الجميع.
-2. أنواع مستخدمين: قيمة واحدة أو عدة قيم.
-3. معايير تنظيمية: علامة تجارية، فرع، قسم، وردية، مع إمكان اختيار عدة قيم لكل معيار.
+## Deployment
 
-المعايير التنظيمية المختارة تُجمع بـAND، والقيم داخل المعيار بـOR. المعيار الفارغ لا يقيّد النتائج؛ يجب اختيار معيار واحد على الأقل. مثلًا: علامة29 وفرع25 وورديتان1 و2 يعني موظفي فرع عبدالله غوشة ضمن تلك العلامة وأي من الورديتين.
+Requires current CRM/customer self-service tables/services (Customer_WriteCheck), F24 email settings and existing employee mobile/device prerequisites. `Apply.ps1` verifies a full COPY_ONLY/CHECKSUM backup, then applies 001, 002, **003 last**, and the existing email-settings schema in one transaction. Include matching Portal/API builds, controls, ASPX, assets and module Web.config. Older base scripts must not overwrite the final 003 visibility/read procedures. Existing rows are not assigned a guessed brand or translation: original employee targeting/history is preserved, and the new editor requires explicit brand/bilingual completion. No new customer circular mobile endpoint is added.
 
-تتحقق قاعدة البيانات من فعالية القيم المختارة ومن تبعية الفروع للعلامات المختارة. الاستهداف يُطابق بيانات حساب الموظف الحالية؛ تغيير قسمه أو ورديته يسري في الطلب التالي.
+## Checks
 
-## الشاشات
+`CustomerPortal/Test-CustomerPortal.ps1` includes real ASP.NET multipart/CSRF/CRUD, audiences, schedule, state, read/download, concurrency and audit checks from `Test-BrandedPortal.ps1`, in an isolated database. `Test-Notifications.ps1 -TestConnection <isolated connection>` exercises the durable queue and the real worker with injected SMTP only; it sends no email. `Test.ps1` retains employee mobile/device/API integration checks. Check the desktop/mobile offcanvas, cascading search, local PDF viewer and both bells in a disposable IIS site. Never deploy test identity injection or synthetic fixtures. Actual Gmail inbox delivery requires configured credentials and a controlled real-recipient verification.
 
-- Modules/Circulars/Index.aspx: التعاميم الموجهة للموظف.
-- Modules/Circulars/Index.aspx?admin=1: إدارة التعاميم لمدير النظام.
-- Modules/Circulars/View.aspx?admin=1: إنشاء تعميم.
-- Modules/Circulars/View.aspx?ID=…: معلومات التعميم وPDF داخل الشاشة نفسها.
-- إضافة admin=1 تفتح تفاصيل الإدارة مع تبويبات «التفاصيل والملف»، «البيانات والمستهدفون»، «سجل العمليات والاطلاع».
+## Table readers and Dashboard integration
 
-يعتمد التصميم [دليل مراجع الواجهة](../../../docs/UI-GUIDELINES.md) وأمثلة Frest في app-user-list،app-invoice-preview،app-user-view-account وforms-selects: بطاقات، جدول DataTables،Select2،تبويبات وخط زمني. الملفات الأساسية الموجودة في Site.Master لا تُحمّل مرة إضافية.
+Customer circulars appear in `CustomerPortal/Dashboard.aspx#customerCirculars` as a compact table with local brand, bilingual name and read-state filters. `CustomerPortal/Circulars.aspx` remains a redirect for notification/email compatibility; ID links open the Dashboard modal. Employee Index and administrator Manage render tables with responsive row cards; the main menu links directly to the appropriate page without children.
 
-السجلات تعرض الموظف ورقمه، نوع العملية، الإصدار، وقت الخادم، المصدر، ومعرّف الجهاز وإصدار التطبيق ووقت الهاتف إن توفرت. تُرقّم السجلات على الخادم. كل مشاهدة مستقلة تُسجّل؛ إعادة محاولة نفس EventID لا تُكرر السجل.
+`Controls/CircularReader.ascx` supplies one modal and local PDF.js reader to all three surfaces. `CircularReader.aspx` returns only current authorized metadata via session/CSRF POST. The modal displays bilingual title/summary, date and PDF together, starts protected viewing automatically and only offers allowed downloads. Language direction switches locally. A successful PDF response updates the exact version's read badge/filter and bell; metadata and administrator preview never count as employee readership. Closing/replacing a modal cancels obsolete fetch/render work.
 
-## التخزين
+Apply `Apply-Reader.ps1` on current installations for 004 after a verified full backup; the full circular installer includes it. Deploy the matching Portal DLL, reader ASCX/endpoint, customer/employee/admin markup and scripts/styles together. The optional expected-version SQL parameters preserve existing mobile calls. Stale modal metadata receives HTTP409 before receipt/log writes.
 
-| الجدول | الوظيفة |
-|---|---|
-| Circulars | البيانات والملف الحالي varbinary(max)، الصلاحية، السماح بالتنزيل، الإصدار وحقول التدقيق |
-| Circular_Targets | معايير الاستهداف وقيمها |
-| Circular_Reads | أول وآخر اطلاع للموظف على كل إصدار |
-| Circular_Logs | الإنشاء والتعديل والمشاهدة والتنزيل والمعاينة الإدارية |
-
-لا يوجد رابط PDF عام أو ملف مكشوف في مجلد الموقع. قراءة الملف تمر بإجراء Circular_File المشترك بين البوابة والهاتف، وتُسجّل وتُحدّث القراءة بمعاملة واحدة.
-
-تسجيل view/download يعني أن الخادم أجاز العملية وجهّز ملف PDF للتسليم؛ لا يثبت أن الشخص قرأ كل صفحاته أو أن الشبكة أكملت التنزيل. وقت الخادم هو المعتمد، ووقت الهاتف معلومة إضافية غير موثوقة لتحديد الصلاحية.
-
-## ملفات PDF
-
-تتحقق البوابة من امتداد PDF والحجم وترويسة %PDF- وعلامة نهاية الملف. هذا تحقق نوع وحجم، وليس فحص برمجيات خبيثة أو تدقيقًا كاملًا لكل كائن PDF. العرض عبر PDF.js المحلي مع تعطيل التقييم البرمجي، وبصفحة واحدة في كل مرة.
-
-إيقاف التنزيل يخفي الزر ويمنع download من الخادم، ويعرض PDF في canvas دون أدوات تنزيل/طباعة. لا يمكن ضمان منع حفظ البيانات المرسلة للعرض أو تصوير الشاشة.
-
-## الترقية والنشر
-
-المتطلبات: جداول الموظفين والأنواع والعلامات والفروع والأقسام والورديات، وترقيات Mobile_API حتى006_DeviceAccess.
-
-شغّل Apply.ps1 من هذا المجلد؛ ينفذ001_Schema ثم002_Procedures بمعاملة واحدة. أُدرجت ملفات البوابة وAPI في مشاريعها. ابنِ المشروعين وانشر الملفات المبنية والصفحات والأصول وقائمة Site.Master. النشر الخارجي مستقل عن التشغيل المحلي.
-
-## تسليم مطور الهاتف
-
-[Circulars-API.md](Circulars-API.md)، [OpenAPI](Circulars.openapi.json)، [Postman](Prosto-Circulars.postman_collection.json).
-
-الاختبارات: Test.ps1 يبني قاعدة معزولة بهويات وبيانات تجريبية ويشغّل Circulars.IntegrationTests.cs. يزيل القاعدة تلقائيًا؛ الخيار KeepForUI يبقيها مؤقتًا للفحص البصري فقط. لا تضف بيانات تجريبية إلى حسابات الموظفين الحقيقية.
+`CustomerPortal/Test-CustomerPortal.ps1 -MultiBrandOnly` runs schema-only synthetic SQL + real ASP.NET checks, including `Test-TableReaders.ps1`, Dashboard profile/contact CRUD, audience/membership/session/CSRF boundaries, versioned PDF delivery, exact-version read state, administrative preview audit and legacy links. Use Windows PowerShell5.1 for the .NET Framework host. Existing API/device/read audit tests remain relevant.

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -19,11 +19,11 @@ static class CustomerFeedbackApiTests
     static void Check(bool condition,string label){if(!condition)throw new Exception("FAIL: "+label);checks++;Console.WriteLine("PASS: "+label);}
     static object Sql(string sql){using(var cn=new SqlConnection(ConfigurationManager.ConnectionStrings["Prosto_ERP_ConnectionConnection"].ConnectionString))using(var cmd=new SqlCommand(sql,cn)){cn.Open();return cmd.ExecuteScalar();}}
     static DataTable Table(string sql){using(var cn=new SqlConnection(ConfigurationManager.ConnectionStrings["Prosto_ERP_ConnectionConnection"].ConnectionString))using(var cmd=new SqlCommand(sql,cn))using(var adapter=new SqlDataAdapter(cmd)){var t=new DataTable();adapter.Fill(t);return t;}}
-    static async Task<HttpResponseMessage> Send(string path,string token=null,JObject body=null){var req=new HttpRequestMessage(body==null?HttpMethod.Get:HttpMethod.Post,path);req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));if(token!=null)req.Headers.Authorization=new AuthenticationHeaderValue("Bearer",token);if(body!=null)req.Content=new StringContent(body.ToString(),Encoding.UTF8,"application/json");return await client.SendAsync(req);}
+    static async Task<HttpResponseMessage> Send(string path,string token=null,JObject body=null){var req=new HttpRequestMessage(body==null?HttpMethod.Get:HttpMethod.Post,path);req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));if(token!=null)req.Headers.Authorization=new AuthenticationHeaderValue("Bearer",token);if(body!=null)req.Content=new StringContent(body.ToString(),Encoding.UTF8,"application/json");return await ApiPerformanceProbe.Send(client,req);}
     static async Task<JToken> Data(HttpResponseMessage response){var text=await response.Content.ReadAsStringAsync();if(!response.IsSuccessStatusCode)throw new Exception("HTTP "+response.StatusCode+": "+text);return JObject.Parse(text)["Data"];}
     static JObject Event(){return JObject.FromObject(new{OperationID=Guid.NewGuid(),OccurredAt=DateTimeOffset.UtcNow.AddMinutes(-1).ToString("o")});}
     static JObject Create(bool disclose=true){var data=Event();data["TypeID"]=1;data["TopicID"]=1;data["BrandID"]=29;data["BranchID"]=25;data["Name"]="Customer Private Name";data["Mobile"]="+962790001234";data["Email"]="customer@example.test";data["Title"]="Customer test request";data["Details"]="Customer details";data["DiscloseIdentity"]=disclose;return data;}
-    static async Task<HttpResponseMessage> Upload(string path,JObject data,byte[] file=null,string token=null){using(var form=new MultipartFormDataContent()){form.Add(new StringContent(data.ToString(),Encoding.UTF8,"application/json"),"data");if(file!=null)form.Add(new ByteArrayContent(file),"files","customer.pdf");var req=new HttpRequestMessage(HttpMethod.Post,path){Content=form};req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));if(token!=null)req.Headers.Authorization=new AuthenticationHeaderValue("Bearer",token);return await client.SendAsync(req);}}
+    static async Task<HttpResponseMessage> Upload(string path,JObject data,byte[] file=null,string token=null){using(var form=new MultipartFormDataContent()){form.Add(new StringContent(data.ToString(),Encoding.UTF8,"application/json"),"data");if(file!=null)form.Add(new ByteArrayContent(file),"files","customer.pdf");var req=new HttpRequestMessage(HttpMethod.Post,path){Content=form};req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));if(token!=null)req.Headers.Authorization=new AuthenticationHeaderValue("Bearer",token);return await ApiPerformanceProbe.Send(client,req);}}
     static async Task<JToken> Open(int id,int number,string token){var data=Event();data["EmployeeNumber"]=number;return await Data(await Send(employeeApi+"requests/"+id+"/open",token,data));}
     static JObject Action(int number,string version,string action="close",int? target=null){var data=Event();data["EmployeeNumber"]=number;data["RowVersion"]=version;data["Action"]=action;data["Comment"]="Customer request handled";if(target.HasValue)data["RecipientTypeID"]=target.Value;return data;}
     static void ResetRate(){Sql("DELETE dbo.Customer_Feedback_RateLimits;");}
@@ -47,6 +47,13 @@ static class CustomerFeedbackApiTests
         Check((await Upload(customer+"requests",request,pdf)).StatusCode==HttpStatusCode.Conflict,"public operation ID does not reveal a different payload result");
         var detail=await Open(id,81001,admin);
         Check((bool)detail["Request"]["CanAct"] && (int)detail["Contact"]["SourceType"]==2 && (string)detail["Contact"]["ApplicantName"]=="Customer Private Name" && (string)detail["Contact"]["BrandName"]=="Test brand" && (string)detail["Contact"]["BranchName"]=="عبدالله غوشة","administrator can see customer contact, branch and brand centrally");
+        Check(!detail["RecipientTypes"].Any(),"close-only administrator receives no transfer recipient choices");
+        bool hadAdminRoute=Convert.ToInt32(Sql("SELECT COUNT(*) FROM dbo.Employee_Feedback_AllowedRecipients WHERE SenderUserTypeID=1 AND RecipientUserTypeID=1"))>0;
+        Sql("UPDATE dbo.Employee_Feedback_Permissions SET CanTransfer=1 WHERE UserTypeID=1;IF NOT EXISTS(SELECT 1 FROM dbo.Employee_Feedback_AllowedRecipients WHERE SenderUserTypeID=1 AND RecipientUserTypeID=1) INSERT dbo.Employee_Feedback_AllowedRecipients(SenderUserTypeID,RecipientUserTypeID) VALUES(1,1)");
+        var routable=await Open(id,81001,admin);
+        Check(routable["RecipientTypes"].Count()==1 && (int)routable["RecipientTypes"][0]["ID"]==1,"customer complaints offer only system administrators as transfer recipients");
+        Sql("UPDATE dbo.Employee_Feedback_Permissions SET CanTransfer=0 WHERE UserTypeID=1");
+        if(!hadAdminRoute) Sql("DELETE dbo.Employee_Feedback_AllowedRecipients WHERE SenderUserTypeID=1 AND RecipientUserTypeID=1");
         Check(detail["Workflow"].Count()==1 && (string)detail["Workflow"][0]["SenderName"]=="Customer Private Name","timeline preserves external sender with null internal ID");
         Sql("UPDATE dbo.Brands SET Title_Ar=N'Renamed brand' WHERE ID=29; UPDATE dbo.Branches SET Title_Ar=N'Renamed branch' WHERE ID=25;");
         var snapshot=await Open(id,81001,admin);
@@ -112,7 +119,7 @@ static class CustomerFeedbackApiTests
         var limited=await Upload(customer+"requests",Create());
         Check(limited.StatusCode==(HttpStatusCode)429 && limited.Headers.RetryAfter!=null,"public submission rate limit includes Retry-After");
         var spoof=new HttpRequestMessage(HttpMethod.Post,customer+"requests");spoof.Headers.Add("X-Forwarded-For","192.0.2.123");
-        Check((await client.SendAsync(spoof)).StatusCode==(HttpStatusCode)429,"caller forwarding headers cannot bypass public rate limits");
+        Check((await ApiPerformanceProbe.Send(client,spoof)).StatusCode==(HttpStatusCode)429,"caller forwarding headers cannot bypass public rate limits");
         Console.WriteLine("CUSTOMER CHECKS PASSED: "+checks);return checks;
     }
 }

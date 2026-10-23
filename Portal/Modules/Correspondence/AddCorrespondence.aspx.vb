@@ -7,6 +7,13 @@ Imports Prosto_ERP_ClassLibrary
 
 Public Class AddCorrespondence
     Inherits PageBase
+    Protected ReadOnly Property EditorToken As String
+        Get
+            Dim token As Guid
+            If Guid.TryParseExact(Request.QueryString("editor"), "N", token) Then Return token.ToString("N")
+            Return ""
+        End Get
+    End Property
     Private ReadOnly Property ActorID As Integer
         Get
             Return SessionManager.GetInstance.Users.UserID
@@ -134,6 +141,12 @@ Public Class AddCorrespondence
             CorrespondenceData.Cleanup(saved) : ShowError(ex) : Return
         End Try
         Session.Remove(UploadKey)
+        If EditorToken <> "" Then
+            Dim payload = New System.Web.Script.Serialization.JavaScriptSerializer().Serialize(New With {.type = "correspondence-created", .token = EditorToken, .ids = ids})
+            ScriptManager.RegisterStartupScript(Me, Me.GetType(), "correspondence-created", "window.parent.postMessage(" & payload & ",window.location.origin);", True)
+            btnSave.Enabled = False
+            Return
+        End If
         Response.Redirect("ManageCorrespondence.aspx" & If(ids.Count = 1, "?ID=" & ids(0).ToString(), "?created=" & ids.Count.ToString()), False)
         Context.ApplicationInstance.CompleteRequest()
     End Sub

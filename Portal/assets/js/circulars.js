@@ -22,7 +22,7 @@
   var status=document.getElementById('circularPdfStatus'),open=document.getElementById('circularOpen'),download=document.getElementById('circularDownload'),
       canvas=document.getElementById('circularPdfCanvas'),prev=document.getElementById('pdfPrevious'),next=document.getElementById('pdfNext'),doc=null,page=1,busy=false;
   function uuid(){if(crypto.randomUUID)return crypto.randomUUID();var b=crypto.getRandomValues(new Uint8Array(16));b[6]=(b[6]&15)|64;b[8]=(b[8]&63)|128;var s=Array.from(b,function(x){return x.toString(16).padStart(2,'0');}).join('');return s.slice(0,8)+'-'+s.slice(8,12)+'-'+s.slice(12,16)+'-'+s.slice(16,20)+'-'+s.slice(20);}
-  function markRead(){if(viewer.dataset.admin!=='1'){
+  function markRead(){document.dispatchEvent(new Event('circular-read'));if(viewer.dataset.admin!=='1'){
    var state=document.getElementById('circularReadState');if(state){state.textContent='مقروء';state.className='badge bg-label-success';}
    var id=new URL(viewer.dataset.fileUrl,location.href).searchParams.get('ID');
    var card=Array.from(document.querySelectorAll('[data-circular-id]')).find(function(c){return c.dataset.circularId===id;});
@@ -57,7 +57,7 @@
      if(typeof pdfjsLib==='undefined')throw new Error('تعذر تحميل عارض PDF.');
      if(doc)await doc.destroy();
      pdfjsLib.GlobalWorkerOptions.workerSrc='/assets/js/pdf.worker.min.js';
-     doc=await pdfjsLib.getDocument({data:new Uint8Array(data),isEvalSupported:false,enableScripting:false}).promise;page=1;
+     doc=await pdfjsLib.getDocument({data:new Uint8Array(data),isEvalSupported:false,enableScripting:false,disableFontFace:true,useSystemFonts:false,standardFontDataUrl:"/assets/vendor/libs/pdfjs/standard_fonts/"}).promise;page=1;
      await render();var controls=document.getElementById('circularPdfControls');controls.classList.remove('d-none');controls.classList.add('d-flex');
      message('تم فتح الملف وتسجيل العملية.',false);
     }

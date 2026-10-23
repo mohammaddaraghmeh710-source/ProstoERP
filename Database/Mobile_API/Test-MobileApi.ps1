@@ -49,7 +49,7 @@ try{
  $xml.Save("$exe.config")
  $compiler=Join-Path $api 'bin/roslyn/csc.exe'
  $refs=@('Prosto_ERP_API.dll','System.Web.Http.dll','System.Net.Http.Formatting.dll','Newtonsoft.Json.dll','Encryptor.dll','Prosto_ERP_ClassLibrary.dll') | ForEach-Object { '/reference:'+(Join-Path $BuildDirectory $_) }
- & $compiler /nologo /target:exe "/out:$exe" /reference:System.Net.Http.dll /reference:System.Web.dll /reference:System.Configuration.dll /reference:System.Data.dll /reference:System.Data.Linq.dll @refs (Join-Path $PSScriptRoot 'MobileApi.IntegrationTests.cs')
+ & $compiler /nologo /target:exe "/out:$exe" /reference:System.Net.Http.dll /reference:System.Web.dll /reference:System.Configuration.dll /reference:System.Data.dll /reference:System.Data.Linq.dll @refs (Join-Path $PSScriptRoot 'MobileApi.IntegrationTests.cs') (Join-Path $PSScriptRoot 'ApiPerformanceProbe.cs')
  if($LASTEXITCODE -ne 0){throw 'Test compilation failed'}
  & $exe (Join-Path $PSScriptRoot '006_DeviceAccess.sql') (Join-Path $PSScriptRoot '008_BIOLogin.sql')
  if($LASTEXITCODE -ne 0){throw 'Integration tests failed'}

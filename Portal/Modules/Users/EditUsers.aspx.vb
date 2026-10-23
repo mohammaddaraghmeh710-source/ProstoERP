@@ -12,14 +12,14 @@ Public Class EditUsers
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
         If SessionManager.GetInstance.Users Is Nothing Then
-            Response.Redirect("/login.aspx")
+            SystemAdministrationUI.Redirect(Me, "/login.aspx")
         End If
         If SessionManager.GetInstance.Users.UserType <> 1 Then
-            Response.Redirect("/Default.aspx")
+            SystemAdministrationUI.Redirect(Me, "/Default.aspx")
         End If
 
         If Not IsPostBack Then
-            ClearFileSession()
+            If Request.HttpMethod="GET" Then ClearFileSession()
             FillUserTypes()
             FillStatuses()
             FillGenders()
@@ -517,14 +517,14 @@ Public Class EditUsers
                                                  SessionManager.GetInstance.Users.UserID)
         End Using
 
-        LBLPOP_ModalPopupExtender.Show()
+        If Not SystemAdministrationUI.Complete(Me) Then LBLPOP_ModalPopupExtender.Show()
     End Sub
 
     '============ AjaxFileUpload ============
 
     Protected Sub UserImageUpload_UploadComplete(sender As Object, e As AjaxFileUploadEventArgs)
         Try
-            SaveFileOnSession(e.FileName, e.ContentType, e.GetContents())
+            SaveFileOnSession(e.FileName, SystemAdministrationUI.UploadExtension(e.FileName,True), e.GetContents())
         Catch
         End Try
     End Sub
@@ -535,11 +535,11 @@ Public Class EditUsers
     '============ أزرار أخرى ============
 
     Protected Sub btnClosePopup_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/Users/ManageUsers.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/Users/ManageUsers.aspx")
     End Sub
 
     Protected Sub btnCancel_Click(sender As Object, e As EventArgs)
-        Response.Redirect("/Modules/Users/ManageUsers.aspx")
+        SystemAdministrationUI.Redirect(Me, "/Modules/Users/ManageUsers.aspx", True)
     End Sub
 
 End Class

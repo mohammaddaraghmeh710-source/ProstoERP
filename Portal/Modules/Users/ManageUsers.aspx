@@ -11,7 +11,7 @@
 </style>
 </asp:Content>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server"><asp:UpdatePanel ID="systemAdminPanel" runat="server" UpdateMode="Conditional"><ContentTemplate>
 
     <div class="container-xxl flex-grow-1 container-p-y">
 
@@ -80,40 +80,40 @@
                                         <asp:PlaceHolder runat="server" ID="ItemPlaceHolder"></asp:PlaceHolder>
                                     </LayoutTemplate>
                                     <ItemTemplate>
-                                        <tr>
+                                        <tr data-admin-name='<%#: CRM.SystemAdministrationUI.SearchName(Container.DataItem) %>' data-admin-id='<%#: Eval("ID") %>' data-admin-active='<%# CRM.SystemAdministrationUI.State(Container.DataItem) %>'>
                                             <td data-title="المستخدم">
                                                 <div class="d-flex align-items-center">
-                                                    <img src='<%# Eval("UserImageUrl") %>'
+                                                    <img src='<%#: Eval("UserImageUrl") %>'
                                                          class="rounded-circle"
                                                          style="width:40px;height:40px;object-fit:cover;" />
                                                     <div class="ms-2">
-                                                        <div><%# Eval("FullName_Ar") %></div>
-                                                        <small class="text-muted"><%# Eval("UserName") %></small>
+                                                        <div><%#: Eval("FullName_Ar") %></div>
+                                                        <small class="text-muted"><%#: Eval("UserName") %></small>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td data-title="رقم الموظف"><%# Eval("Employee_Number") %></td>
-                                            <td data-title="نوع المستخدم"><%# Eval("UserTypeTitle") %></td>
-                                            <td data-title="الحالة"><%# Eval("StatusTitle") %></td>
+                                            <td data-title="رقم الموظف"><%#: Eval("Employee_Number") %></td>
+                                            <td data-title="نوع المستخدم"><%#: Eval("UserTypeTitle") %></td>
+                                            <td data-title="الحالة"><%#: Eval("StatusTitle") %></td>
                                             <td data-title="تاريخ الإنشاء">
-                                                <%# String.Format("{0:dd/MM/yyyy HH:mm}", Eval("AddedDate")) %>
+                                                <%#: Eval("AddedDate", "{0:yyyy/MM/dd HH:mm}") %>
                                             </td>
 
                                             <td data-title="أجهزة التطبيق">
-                                                <asp:LinkButton ID="btnDevices" runat="server" CommandName="Devices" CommandArgument='<%# Eval("ID") %>' CssClass="btn btn-sm btn-label-primary"><i class="bx bx-mobile-alt me-1"></i> إدارة الأجهزة <span class="badge bg-primary ms-1"><%# Eval("PendingDevices") %></span></asp:LinkButton>
+                                                <asp:LinkButton ID="btnDevices" runat="server" CommandName="Devices" CommandArgument='<%#: Eval("ID") %>' CssClass="btn btn-sm btn-label-primary"><i class="bx bx-mobile-alt me-1"></i> إدارة الأجهزة <span class="badge bg-primary ms-1"><%#: Eval("PendingDevices") %></span></asp:LinkButton>
                                             </td>
                                             <td data-title="QRCode">
-                                                <asp:LinkButton CssClass="btn btn-icon btn-label-success" ID="lnkQRCode" CommandName="QRCode" CommandArgument='<%#Eval("ID") %>' runat="server" ToolTip="طباعة QRCode">    <i class="bx bx-qr"></i> </asp:LinkButton>
+                                                <asp:LinkButton CssClass="btn btn-icon btn-label-success" ID="lnkQRCode" CommandName="QRCode" CommandArgument='<%#: Eval("ID") %>' runat="server" ToolTip="طباعة QRCode">    <i class="bx bx-qr"></i> </asp:LinkButton>
                                             </td>
                                             <td data-title="تعديل">
-                                                <asp:LinkButton CssClass="btn btn-icon btn-label-secondary" ID="btnEdit" CommandName="Edit" CommandArgument='<%# Eval("ID") %>' runat="server" ToolTip="تعديل">
+                                                <asp:LinkButton CssClass="btn btn-icon btn-label-secondary" ID="btnEdit" CommandName="Edit" CommandArgument='<%#: Eval("ID") %>' runat="server" ToolTip="تعديل">
                                                     <i class="bx bx-edit-alt"></i>
                                                 </asp:LinkButton>
                                             </td>
                                             <td data-title="حذف">
                                                 <asp:LinkButton CssClass="btn btn-icon btn-label-danger" ID="btnDelete"
                                                     CommandName="DeleteItem"
-                                                    CommandArgument='<%# Eval("ID") %>'
+                                                    CommandArgument='<%#: Eval("ID") %>'
                                                     runat="server"
                                                     ToolTip="حذف"
                                                     CausesValidation="false"
@@ -165,9 +165,9 @@
                       <div class="small text-muted mb-2"><%#: Eval("DeviceManufacturer") %> · <%#: Eval("DevicePlatform") %> / <%#: Eval("OSVersion") %> · التطبيق <%#: Eval("AppVersion") %> (<%#: Eval("AppBuild") %>) · <%# DeviceDate(Eval("CreatedUtc")) %></div>
                       <div class="device-id mb-1"><%#: Eval("DeviceID") %></div><div class="small mb-2">MAC: <bdi><%#: Eval("MACID") %></bdi></div>
                       <asp:Panel runat="server" Visible='<%# CStr(Eval("Status")) = "Pending" %>' CssClass="d-flex flex-wrap gap-2">
-                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-primary" CommandName="ApproveReplace" CommandArgument='<%# Eval("ID") %>' OnClientClick="return confirm('اعتماد هذا الجهاز وإلغاء جميع الأجهزة الأخرى وتوكناتها؟');"><i class="bx bx-transfer me-1"></i>الموافقة وإلغاء الأجهزة القديمة</asp:LinkButton>
-                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-success" CommandName="ApproveAdd" CommandArgument='<%# Eval("ID") %>' OnClientClick="return confirm('السماح بهذا الجهاز مع الاحتفاظ بجميع الأجهزة المعتمدة؟');"><i class="bx bx-plus-circle me-1"></i>الموافقة مع الإبقاء على الأجهزة</asp:LinkButton>
-                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-danger" CommandName="Reject" CommandArgument='<%# Eval("ID") %>' OnClientClick="return confirm('رفض طلب اعتماد هذا الجهاز؟');">رفض الطلب</asp:LinkButton>
+                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-primary" CommandName="ApproveReplace" CommandArgument='<%#: Eval("ID") %>' OnClientClick="return confirm('اعتماد هذا الجهاز وإلغاء جميع الأجهزة الأخرى وتوكناتها؟');"><i class="bx bx-transfer me-1"></i>الموافقة وإلغاء الأجهزة القديمة</asp:LinkButton>
+                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-success" CommandName="ApproveAdd" CommandArgument='<%#: Eval("ID") %>' OnClientClick="return confirm('السماح بهذا الجهاز مع الاحتفاظ بجميع الأجهزة المعتمدة؟');"><i class="bx bx-plus-circle me-1"></i>الموافقة مع الإبقاء على الأجهزة</asp:LinkButton>
+                        <asp:LinkButton runat="server" CssClass="btn btn-sm btn-label-danger" CommandName="Reject" CommandArgument='<%#: Eval("ID") %>' OnClientClick="return confirm('رفض طلب اعتماد هذا الجهاز؟');">رفض الطلب</asp:LinkButton>
                       </asp:Panel>
                       <asp:Panel runat="server" Visible='<%# CStr(Eval("Status")) <> "Pending" %>' CssClass="small text-muted"><%# DeviceLabel(Eval("Decision")) %> · <%# DeviceDate(Eval("DecidedUtc")) %><div><%#: Eval("Comment") %></div></asp:Panel>
                     </div>
@@ -183,7 +183,7 @@
                     <td><bdi><%#: Eval("DevicePlatform") %> <%#: Eval("OSVersion") %></bdi><div class="small text-muted">التطبيق <%#: Eval("AppVersion") %> (<%#: Eval("AppBuild") %>)</div></td>
                     <td><span class='<%# If(CBool(Eval("IsApproved")), "badge bg-label-success", "badge bg-label-secondary") %>'><%# If(CBool(Eval("IsApproved")), "مسموح", "غير مسموح") %></span></td>
                     <td><%# DeviceDate(Eval("LastLoginUtc")) %><div class="small text-muted">التسجيل: <%# DeviceDate(Eval("FirstSeenUtc")) %></div></td>
-                    <td><asp:LinkButton runat="server" Visible='<%# CBool(Eval("IsApproved")) %>' CssClass="btn btn-sm btn-label-danger" CommandName="Revoke" CommandArgument='<%# Eval("ID") %>' OnClientClick="return confirm('إلغاء هذا الجهاز وإنهاء جميع جلساته؟ لن يعتمد جهاز بديل تلقائيًا.');"><i class="bx bx-block me-1"></i>إلغاء الجهاز</asp:LinkButton></td>
+                    <td><asp:LinkButton runat="server" Visible='<%# CBool(Eval("IsApproved")) %>' CssClass="btn btn-sm btn-label-danger" CommandName="Revoke" CommandArgument='<%#: Eval("ID") %>' OnClientClick="return confirm('إلغاء هذا الجهاز وإنهاء جميع جلساته؟ لن يعتمد جهاز بديل تلقائيًا.');"><i class="bx bx-block me-1"></i>إلغاء الجهاز</asp:LinkButton></td>
                   </tr></ItemTemplate>
                   <EmptyDataTemplate><div class="text-center border rounded p-4 text-muted">لم يسجل الموظف أي جهاز بعد.</div></EmptyDataTemplate>
                 </asp:ListView>
@@ -204,4 +204,4 @@
       </div>
     </asp:Panel>
 
-</asp:Content>
+</ContentTemplate></asp:UpdatePanel></asp:Content>

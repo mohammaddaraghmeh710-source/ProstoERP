@@ -13,7 +13,7 @@ Public Class Tools_Viewer_QRCode
         Public Property Item_Title_En As String
         Public Property Tool_Number As String
 
-        Public Property SupplierID As Integer
+        Public Property Supplier_Account_ID As Integer?
         Public Property Supplier_Title_Ar As String
         Public Property Supplier_Title_En As String
 

@@ -1,4 +1,4 @@
-Imports System.Data
+﻿Imports System.Data
 Imports System.Data.SqlClient
 Imports System.Linq
 
@@ -29,6 +29,6 @@ Public Class Add_Users_Types
             ReportError(litMessage, ex)
             Return
         End Try
-        Response.Redirect("Manage_Users_Types.aspx?added=1")
+        SystemAdministrationUI.Redirect(Me, "Manage_Users_Types.aspx?added=1")
     End Sub
 End Class

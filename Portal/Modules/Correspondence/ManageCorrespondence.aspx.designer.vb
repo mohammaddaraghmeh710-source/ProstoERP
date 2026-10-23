@@ -1,12 +1,18 @@
 ﻿Partial Public Class ManageCorrespondence
     Protected WithEvents lnkNew As Global.System.Web.UI.WebControls.HyperLink
-    Protected WithEvents litMessage As Global.System.Web.UI.WebControls.Literal
     Protected WithEvents pnlNavigation As Global.System.Web.UI.WebControls.Panel
-    Protected WithEvents pnlList As Global.System.Web.UI.WebControls.Panel
-    Protected WithEvents litStatistics As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents hfThread As Global.System.Web.UI.WebControls.HiddenField
+    Protected WithEvents hfNavigation As Global.System.Web.UI.WebControls.HiddenField
+    Protected WithEvents hfDraftText As Global.System.Web.UI.WebControls.HiddenField
+    Protected WithEvents hfVisible As Global.System.Web.UI.WebControls.HiddenField
+    Protected WithEvents btnSelectThread As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents upFeedback As Global.System.Web.UI.UpdatePanel
+    Protected WithEvents litMessage As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents upFilters As Global.System.Web.UI.UpdatePanel
+    Protected WithEvents pnlTitleSearch As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents txtTitleSearch As Global.System.Web.UI.WebControls.TextBox
     Protected WithEvents pnlSearch As Global.System.Web.UI.WebControls.Panel
     Protected WithEvents txtPerson As Global.System.Web.UI.WebControls.TextBox
-    Protected WithEvents txtTitleSearch As Global.System.Web.UI.WebControls.TextBox
     Protected WithEvents ddlFilter As Global.System.Web.UI.WebControls.DropDownList
     Protected WithEvents ddlKind As Global.System.Web.UI.WebControls.DropDownList
     Protected WithEvents ddlPriority As Global.System.Web.UI.WebControls.DropDownList
@@ -18,42 +24,43 @@
     Protected WithEvents ddlBranch As Global.System.Web.UI.WebControls.DropDownList
     Protected WithEvents txtSender As Global.System.Web.UI.WebControls.TextBox
     Protected WithEvents txtReceiver As Global.System.Web.UI.WebControls.TextBox
-    Protected WithEvents pnlReport As Global.System.Web.UI.WebControls.Panel
-    Protected WithEvents rptReport As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents btnQuickSearch As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents upList As Global.System.Web.UI.UpdatePanel
+    Protected WithEvents pnlList As Global.System.Web.UI.WebControls.Panel
     Protected WithEvents lstThreads As Global.System.Web.UI.WebControls.ListView
     Protected WithEvents itemPlaceholder As Global.System.Web.UI.WebControls.PlaceHolder
-    Protected WithEvents pnlConversation As Global.System.Web.UI.WebControls.Panel
-    Protected WithEvents lnkBack As Global.System.Web.UI.WebControls.HyperLink
-    Protected WithEvents hfVisible As Global.System.Web.UI.WebControls.HiddenField
+    Protected WithEvents pnlOversight As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents litStatistics As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents pnlReport As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents rptReport As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents lstOversight As Global.System.Web.UI.WebControls.ListView
     Protected WithEvents upConversation As Global.System.Web.UI.UpdatePanel
+    Protected WithEvents litSync As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents pnlEmpty As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents pnlConversation As Global.System.Web.UI.WebControls.Panel
     Protected WithEvents imgOther As Global.System.Web.UI.WebControls.Image
     Protected WithEvents litOtherName As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents litTitle As Global.System.Web.UI.WebControls.Literal
     Protected WithEvents litThreadID As Global.System.Web.UI.WebControls.Literal
     Protected WithEvents lblState As Global.System.Web.UI.WebControls.Label
-    Protected WithEvents litTitle As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents btnCloseStart As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents lnkTransfer As Global.System.Web.UI.WebControls.HyperLink
+    Protected WithEvents pnlArchiveAction As Global.System.Web.UI.WebControls.Panel
     Protected WithEvents litBrief As Global.System.Web.UI.WebControls.Literal
     Protected WithEvents litDetails As Global.System.Web.UI.WebControls.Literal
     Protected WithEvents litDates As Global.System.Web.UI.WebControls.Literal
-    Protected WithEvents litRefresh As Global.System.Web.UI.WebControls.Literal
-    Protected WithEvents rptMessages As Global.System.Web.UI.WebControls.Repeater
-    Protected WithEvents rptFiles As Global.System.Web.UI.WebControls.Repeater
     Protected WithEvents litOrganization As Global.System.Web.UI.WebControls.Literal
     Protected WithEvents litRelated As Global.System.Web.UI.WebControls.Literal
-    Protected WithEvents pnlClosedNote As Global.System.Web.UI.WebControls.Panel
-    Protected WithEvents litClosedText As Global.System.Web.UI.WebControls.Literal
-    Protected WithEvents pnlCompose As Global.System.Web.UI.WebControls.Panel
-    Protected WithEvents txtReply As Global.System.Web.UI.WebControls.TextBox
-    Protected WithEvents AttachmentUpload As Global.AjaxControlToolkit.AjaxFileUpload
-    Protected WithEvents lblQueued As Global.System.Web.UI.WebControls.Label
-    Protected WithEvents btnClearUploads As Global.System.Web.UI.WebControls.LinkButton
-    Protected WithEvents btnSend As Global.System.Web.UI.WebControls.Button
-    Protected WithEvents btnCloseStart As Global.System.Web.UI.WebControls.Button
-    Protected WithEvents lnkTransfer As Global.System.Web.UI.WebControls.HyperLink
+    Protected WithEvents pnlAudit As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents rptAudit As Global.System.Web.UI.WebControls.Repeater
     Protected WithEvents pnlArchive As Global.System.Web.UI.WebControls.Panel
     Protected WithEvents txtArchiveReason As Global.System.Web.UI.WebControls.TextBox
     Protected WithEvents btnArchive As Global.System.Web.UI.WebControls.Button
-    Protected WithEvents pnlAudit As Global.System.Web.UI.WebControls.Panel
-    Protected WithEvents rptAudit As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents litRefresh As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents rptMessages As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents rptFiles As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents pnlClosedNote As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents litClosedText As Global.System.Web.UI.WebControls.Literal
     Protected WithEvents pnlClose As Global.System.Web.UI.WebControls.Panel
     Protected WithEvents litCloseError As Global.System.Web.UI.WebControls.Literal
     Protected WithEvents pnlOutcome As Global.System.Web.UI.WebControls.Panel
@@ -64,5 +71,12 @@
     Protected WithEvents btnCloseConfirm As Global.System.Web.UI.WebControls.Button
     Protected WithEvents lblCloseTarget As Global.System.Web.UI.WebControls.Label
     Protected WithEvents CloseModal As Global.AjaxControlToolkit.ModalPopupExtender
-    Protected WithEvents litSync As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents upComposer As Global.System.Web.UI.UpdatePanel
+    Protected WithEvents hfSendSucceeded As Global.System.Web.UI.WebControls.HiddenField
+    Protected WithEvents pnlCompose As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents lblQueued As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents AttachmentUpload As Global.AjaxControlToolkit.AjaxFileUpload
+    Protected WithEvents btnClearUploads As Global.System.Web.UI.WebControls.LinkButton
+    Protected WithEvents txtReply As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents btnSend As Global.System.Web.UI.WebControls.Button
 End Class

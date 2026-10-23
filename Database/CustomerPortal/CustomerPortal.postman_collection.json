@@ -36,10 +36,6 @@
       "value": "1"
     },
     {
-      "key": "categoryID",
-      "value": "1"
-    },
-    {
       "key": "typeID",
       "value": "1"
     },
@@ -49,10 +45,6 @@
     },
     {
       "key": "branchID",
-      "value": "1"
-    },
-    {
-      "key": "documentID",
       "value": "1"
     },
     {
@@ -124,136 +116,6 @@
           }
         ],
         "url": "{{baseUrl}}/api/v1/customer/me"
-      }
-    },
-    {
-      "name": "العلامات التجارية",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{baseUrl}}/api/v1/customer/guide/brands"
-      }
-    },
-    {
-      "name": "التصنيفات المسموحة",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{baseUrl}}/api/v1/customer/guide/categories?brandID={{brandID}}"
-      }
-    },
-    {
-      "name": "الملفات المسموحة",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{baseUrl}}/api/v1/customer/guide/documents?brandID={{brandID}}&page=1&pageSize=20"
-      }
-    },
-    {
-      "name": "تفاصيل الملف",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{baseUrl}}/api/v1/customer/guide/documents/{{documentID}}"
-      }
-    },
-    {
-      "name": "عرض PDF",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{baseUrl}}/api/v1/customer/guide/documents/{{documentID}}/file"
-      }
-    },
-    {
-      "name": "تنزيل PDF",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{baseUrl}}/api/v1/customer/guide/documents/{{documentID}}/file?download=true"
-      }
-    },
-    {
-      "name": "تصنيفات طلب الصلاحية",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{baseUrl}}/api/v1/customer/guide/access-request-options?brandID={{brandID}}"
-      }
-    },
-    {
-      "name": "تقديم طلب صلاحية",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{baseUrl}}/api/v1/customer/guide/access-requests",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"OperationID\": \"{{guideOperationID}}\",\n  \"BrandID\": \"{{brandID}}\",\n  \"CategoryIDs\": [\n    \"{{categoryID}}\"\n  ],\n  \"Reason\": \"سبب طلب الصلاحية\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        }
-      }
-    },
-    {
-      "name": "طلباتي للصلاحيات",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{baseUrl}}/api/v1/customer/guide/access-requests?brandID=0&status=P&page=1&pageSize=20"
       }
     },
     {

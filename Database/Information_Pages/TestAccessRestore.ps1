@@ -1,4 +1,4 @@
-param([Parameter(Mandatory=$true)][string]$ConfigPath)
+﻿param([Parameter(Mandatory=$true)][string]$ConfigPath)
 $ErrorActionPreference='Stop'
 $config=[xml](Get-Content -LiteralPath $ConfigPath)
 $cs=[string]($config.configuration.connectionStrings.add|Where-Object name -eq 'Prosto_ERP_ConnectionConnection').connectionString

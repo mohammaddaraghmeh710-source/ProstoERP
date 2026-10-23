@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
@@ -17,7 +17,6 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using System.Xml.Linq;
 using Newtonsoft.Json;
 
 namespace Prosto_ERP_API.Mobile
@@ -73,7 +72,7 @@ namespace Prosto_ERP_API.Mobile
                 int difference=actual.Length^expected.Length;
                 for(int i=0;i<actual.Length;i++) difference|=actual[i]^expected[i];
                 var logged=credential==null ? new List<Dictionary<string,object>>() : Rows(db.Proc("dbo.Customer_LoginResult","AccountID",credential["AccountID"],"Stamp",credential["SecurityStamp"],"Success",difference==0));
-                if(logged.Count==0) throw new FeedbackException(HttpStatusCode.Unauthorized,"INVALID_CREDENTIALS","اسم المستخدم أو كلمة المرور غير صحيحة أو الحساب غير متاح.");
+                if(logged.Count==0) {db.Proc("dbo.Customer_LogLoginFailure","Username",model.Username.Trim());throw new FeedbackException(HttpStatusCode.Unauthorized,"INVALID_CREDENTIALS","اسم المستخدم أو كلمة المرور غير صحيحة أو الحساب غير متاح.");}
                 var identity=logged[0]; string token=MobileApiSupport.NewToken();
                 var created=Rows(db.Proc("dbo.CustomerApi_CreateSession","AccountID",identity["AccountID"],"Stamp",identity["SecurityStamp"],"TokenHash",MobileApiSupport.TokenHash(token)))[0];
                 return Success(new { Token=token,TokenType="Bearer",ExpiresUtc=created["ExpiresUtc"],IdleMinutes=480,Customer=new { AccountID=identity["AccountID"],Name=identity["Name_AR"] } });
@@ -84,60 +83,6 @@ namespace Prosto_ERP_API.Mobile
         [CustomerSession,HttpGet,Route("me")]
         public HttpResponseMessage Me() { return Execute(()=> { using(var db=new FeedbackDb()) {var row=Rows(Query(db,"dbo.Customer_Session"))[0];return Success(new { AccountID=Account,Name=row["Name_AR"],ExpiresUtc=Session["ExpiresUtc"] });} }); }
 
-        [CustomerSession,HttpGet,Route("guide/brands")]
-        public HttpResponseMessage Brands() { return GuideSection("brands",0); }
-        [CustomerSession,HttpGet,Route("guide/categories")]
-        public HttpResponseMessage Categories(int brandID) { return GuideSection("categories",brandID); }
-        [CustomerSession,HttpGet,Route("guide/access-request-options")]
-        public HttpResponseMessage RequestOptions(int brandID) { return GuideSection("request-categories",brandID); }
-        HttpResponseMessage GuideSection(string section,int brand) { return Execute(()=> { if(!ModelState.IsValid || brand<0 || (section!="brands" && brand==0)) throw FeedbackController.Invalid();using(var db=new FeedbackDb()) return Success(Rows(Query(db,"dbo.Customer_WorkGuide","Section",section,"Brand",brand))); }); }
-        [CustomerSession,HttpGet,Route("guide/documents")]
-        public HttpResponseMessage Documents(int brandID,int categoryID=0,string search="",int page=1,int pageSize=20) { return Execute(()=> {
-            Paging(page,pageSize,search);if(brandID<=0 || categoryID<0) throw FeedbackController.Invalid();
-            using(var db=new FeedbackDb()) return Paged(Query(db,"dbo.CustomerApi_Guide","Brand",brandID,"Category",categoryID,"Search",search??"","Page",page,"PageSize",pageSize),page,pageSize);
-        }); }
-        [CustomerSession,HttpGet,Route("guide/documents/{id:int:min(1)}")]
-        public HttpResponseMessage Document(int id) { return Execute(()=> { using(var db=new FeedbackDb()) { var row=DocumentRow(db,id);row.Remove("File_Path");row["FileUrl"]=Url.Link("CustomerGuideFile",new {id=id});return Success(row); } }); }
-        Dictionary<string,object> DocumentRow(FeedbackDb db,int id) {
-            var row=Rows(Query(db,"dbo.Customer_Guide","Section","file","DocumentID",id)).FirstOrDefault();if(row==null) throw Missing();return row;
-        }
-        [CustomerSession,HttpGet,Route("guide/documents/{id:int:min(1)}/file",Name="CustomerGuideFile")]
-        public HttpResponseMessage GuideFile(int id,bool download=false) { return Execute(()=> {
-            if(!ModelState.IsValid) throw FeedbackController.Invalid();
-            using(var db=new FeedbackDb()) {
-                var row=DocumentRow(db,id);
-                if(download && !Convert.ToBoolean(row["Can_Download_Document"])) throw new FeedbackException(HttpStatusCode.Forbidden,"DOWNLOAD_DENIED","التنزيل غير متاح لهذا الملف.");
-                string relative=Convert.ToString(row["File_Path"]).Replace('\\','/');
-                if(relative.Contains(":") || relative.StartsWith("//")) throw Missing();
-                string root=ConfigurationManager.AppSettings["CustomerApi.PortalRoot"];
-                if(string.IsNullOrWhiteSpace(root) || !Path.IsPathRooted(root)) throw new ConfigurationErrorsException("Configure CustomerApi.PortalRoot.");
-                root=Path.GetFullPath(root).TrimEnd('\\','/')+Path.DirectorySeparatorChar;
-                string path=Path.GetFullPath(Path.Combine(root,relative.TrimStart('~','/')));
-                if(!path.StartsWith(root,StringComparison.OrdinalIgnoreCase) || !string.Equals(Path.GetExtension(path),".pdf",StringComparison.OrdinalIgnoreCase) || !File.Exists(path)) throw Missing();
-                Query(db,"dbo.Customer_LogDocument","DocumentID",id,"Action",download ? "download" : "view");
-                return FileResponse(path,"application/pdf","guide-"+id+".pdf",download);
-            }
-        }); }
-        [CustomerSession,HttpGet,Route("guide/access-requests")]
-        public HttpResponseMessage AccessRequests(int brandID=0,string status="P",int page=1,int pageSize=20) { return Execute(()=> {
-            Paging(page,pageSize,"");if(brandID<0 || !new[]{"P","A","R","H"}.Contains(status)) throw FeedbackController.Invalid();
-            using(var db=new FeedbackDb()) { var rows=Rows(Query(db,"dbo.Customer_WorkGuide","Section","requests","Brand",brandID,"Status",status));return Success(new {Total=rows.Count,Page=page,PageSize=pageSize,Items=rows.Skip((page-1)*pageSize).Take(pageSize)}); }
-        }); }
-        [CustomerSession,HttpPost,Route("guide/access-requests")]
-        public HttpResponseMessage RequestAccess(CustomerAccessCreate model) { return Execute(()=> {
-            Validate(model);if(model.OperationID==Guid.Empty || model.CategoryIDs==null || model.CategoryIDs.Length<1 || model.CategoryIDs.Length>200 || model.CategoryIDs.Any(x=>x<1)) throw FeedbackController.Invalid();
-            model.CategoryIDs=model.CategoryIDs.Distinct().OrderBy(x=>x).ToArray();
-            byte[] hash;using(var sha=SHA256.Create()) hash=sha.ComputeHash(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model)));
-            using(var db=new FeedbackDb()) {
-                db.Begin();Lock(db,"customer-guide:"+Account+":"+model.OperationID);
-                var previous=Rows(db.Text("SELECT BatchID,PayloadHash FROM dbo.CustomerApi_GuideOperations WHERE AccountID=@Account AND OperationID=@Operation","Account",Account,"Operation",model.OperationID));
-                if(previous.Count>0) { MatchHash(previous[0]["PayloadHash"],hash);db.Commit();return Success(new {BatchID=previous[0]["BatchID"],Replayed=true}); }
-                string categories=new XElement("items",model.CategoryIDs.Select(id=>new XElement("item",new XAttribute("id",id)))).ToString();
-                var saved=Rows(Query(db,"dbo.Customer_WorkGuide","Section","submit","Brand",model.BrandID,"Categories",categories,"Reason",model.Reason))[0];
-                db.Text("INSERT dbo.CustomerApi_GuideOperations(AccountID,OperationID,PayloadHash,BatchID) VALUES(@Account,@Operation,@Hash,@Batch)","Account",Account,"Operation",model.OperationID,"Hash",hash,"Batch",saved["Batch_ID"]);
-                db.Commit();return Success(new {BatchID=saved["Batch_ID"],Replayed=false});
-            }
-        }); }
         [CustomerSession,HttpGet,Route("feedback/options")]
         public HttpResponseMessage FeedbackOptions(int brandID=0,int typeID=0) { return Execute(()=> {
             if(!ModelState.IsValid || brandID<0 || typeID<0) throw FeedbackController.Invalid();using(var db=new FeedbackDb()) return Success(new {
@@ -197,7 +142,7 @@ namespace Prosto_ERP_API.Mobile
             if(known!=null) response=MobileApiSupport.Error(Request,known.Status,known.Code,known.Message);
             else if(sql!=null && sql.Number==51911) response=MobileApiSupport.Error(Request,HttpStatusCode.Unauthorized,"SESSION_INVALID","يلزم تسجيل الدخول مجددًا.");
             else if(sql!=null && sql.Number==51912) response=MobileApiSupport.Error(Request,HttpStatusCode.NotFound,"NOT_FOUND","الطلب غير متاح لك.");
-            else if(sql!=null && (sql.Number==51910 || sql.Number==51500 || (sql.Number>=51100 && sql.Number<=51109))) response=MobileApiSupport.Error(Request,HttpStatusCode.BadRequest,"BUSINESS_RULE",sql.Message);
+            else if(sql!=null && (sql.Number==51910 || sql.Number==51500)) response=MobileApiSupport.Error(Request,HttpStatusCode.BadRequest,"BUSINESS_RULE",sql.Message);
             else if(sql!=null && (sql.Number==51802 || sql.Number==1205)) response=MobileApiSupport.Error(Request,HttpStatusCode.Conflict,"RETRY_OPERATION","أعد المحاولة بنفس رقم العملية.");
             else if(ex is JsonException || ex is ArgumentException || ex is FormatException) response=MobileApiSupport.Error(Request,HttpStatusCode.BadRequest,"INVALID_REQUEST","تحقق من بيانات الطلب.");
             else {Trace.TraceError("Customer API failed ({0}).",ex.GetType().Name);response=MobileApiSupport.Error(Request,HttpStatusCode.InternalServerError,"SERVER_ERROR","تعذر إتمام العملية.");}
@@ -207,12 +152,6 @@ namespace Prosto_ERP_API.Mobile
     public sealed class CustomerPortalLogin {
         [Required,StringLength(100)] public string Username {get;set;}
         [Required,StringLength(128)] public string Password {get;set;}
-    }
-    public sealed class CustomerAccessCreate {
-        public Guid OperationID {get;set;}
-        [Range(1,int.MaxValue)] public int BrandID {get;set;}
-        public int[] CategoryIDs {get;set;}
-        [Required,StringLength(1000)] public string Reason {get;set;}
     }
     public sealed class CustomerPortalFeedbackCreate {
         public Guid OperationID {get;set;}

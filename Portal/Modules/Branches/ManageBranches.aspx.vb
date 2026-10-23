@@ -2,6 +2,7 @@
     Inherits PageBase
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        SystemAdministrationUI.RegisterRefresh(Me, AddressOf FillData)
         If SessionManager.GetInstance.Users Is Nothing Then
             Response.Redirect("/login.aspx")
         End If
@@ -30,6 +31,7 @@
              Join br In brands On b.BrandID Equals br.ID
              Select New With {
                  .ID = b.ID,
+                 .IsActive = b.IsActive,
                  .Title_Ar = b.Title_Ar,
                  .Title_En = b.Title_En,
                  .AddedDate = b.AddedDate,
